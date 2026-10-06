@@ -7,9 +7,9 @@
       "本次更新包含多项优化与修复"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.3.16-1791301188.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.3.16-1791301188.apk",
-    "lastBuildSha": "0b53bce857294d4cfe8e51b2b30267693e0e93ae"
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.3.16-1791301743.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.3.16-1791301743.apk",
+    "lastBuildSha": "db58b147cb167295b247c5b157b581bbab8c8481"
   },
   "home": {
     "categories": [
@@ -24334,8 +24334,9 @@
     "lastRelease": {
       "version": "1.3.16",
       "code": 151,
-      "at": "2026-10-06T15:39:53Z",
-      "sha": "0b53bce857294d4cfe8e51b2b30267693e0e93ae"
-    }
+      "at": "2026-10-06T15:49:09Z",
+      "sha": "db58b147cb167295b247c5b157b581bbab8c8481"
+    },
+    "mode": "content"
   }
 }
