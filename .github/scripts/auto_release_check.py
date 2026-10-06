@@ -58,7 +58,15 @@ def main():
     # 4. 检查 app 源码自上次构建以来是否有改动
     base = last_build_sha if last_build_sha else ""
     if base:
-        changed = sh(f"git diff --name-only {base}..HEAD -- app build.gradle.kts settings.gradle.kts gradle.properties gradle/ 2>/dev/null")
+        # 基线校验：仓库重建/force push 后旧 SHA 会失效，此时回退用 HEAD~1 作为基线
+        valid = sh(f"git cat-file -e {base}^{{commit}} 2>/dev/null && echo yes || echo no")
+        if valid != "yes":
+            print(f"  基线 {base[:10]} 无效（仓库可能重建），回退用 HEAD~1 作为基线")
+            base = sh("git rev-parse HEAD~1 2>/dev/null || echo ''").strip()
+        if base:
+            changed = sh(f"git diff --name-only {base}..HEAD -- app build.gradle.kts settings.gradle.kts gradle.properties gradle/ 2>/dev/null")
+        else:
+            changed = sh("git log --oneline -1 -- app 2>/dev/null")
     else:
         # 无 lastBuildSha：以仓库内已存在的 admin-data 版本为基准，有源码提交即视为需要发布
         changed = sh("git log --oneline -1 -- app 2>/dev/null")
