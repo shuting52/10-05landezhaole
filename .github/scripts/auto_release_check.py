@@ -1,18 +1,25 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Auto Release · 检测与版本号推进
-在 GitHub Actions 中运行：判断 app 源码是否有新提交需要发布，
+Auto Release · 检测与版本号推进（v3：控制台双模式）
+在 GitHub Actions 中运行：判断仓库是否有需要发布的改动，
 若有则自动推进 versionCode/versionName（写回 app/build.gradle.kts），
 并把结果输出到 $GITHUB_OUTPUT 供后续步骤使用。
+
+【写死规则8 · 控制台双模式（2026-10-06 定）】
+- 控制台「✅ 应用并实时同步」→ autoRelease.mode = "content"
+  → 仅内容改动时不构建、不 bump 版本、不弹更新窗；本体 5 秒轮询实时生效
+- 控制台「🚀 发布 / 触发更新」→ autoRelease.mode = "release"
+  → 构建新 APK、更新 apkUrl、本体弹出更新窗口
+- 源码/构建改动（app/、build.gradle.kts、gradle 等）→ 始终触发自动发布（v2 核心价值保留）
 
 规则（遵循 AGENTS.md「版本严格对齐 / 四要素同步」）：
 1. 读取云端 admin-data.json 的 version.code（上次已发布版本）
 2. 读取 app/build.gradle.kts 的 versionCode（源码当前版本）
 3. 若 admin-data.json 记录 lastBuildSha == 当前 HEAD → 该提交已发布，跳过
-4. 若自 lastBuildSha 以来 app/** 源码有改动 → 需要发布：
-   - 若源码 versionCode <= 云端 code → versionCode+1 且 versionName patch+1
-   - 若源码 versionCode > 云端 code（开发者已手动升过）→ 直接采用源码版本
+4. 分类自 lastBuildSha 以来的改动：
+   - 源码/构建类 → 需要发布
+   - 仅内容类（admin-data.json 等）→ 仅当 mode=release 才发布
 5. 写回 build.gradle.kts 并输出 need=yes / newCode / newName
 """
 import json
@@ -25,6 +32,12 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fi
 BUILD_FILE = os.path.join(REPO_ROOT, "app", "build.gradle.kts")
 ADMIN_FILE = os.path.join(REPO_ROOT, "admin-data.json")
 
+# 源码/构建类改动：这些改动始终需要发版（自动发布的核心价值）
+SRC_PATTERNS = (
+    "app/", "build.gradle.kts", "settings.gradle.kts",
+    "gradle.properties", "gradle/", "gradlew",
+)
+
 def sh(cmd):
     return subprocess.run(cmd, shell=True, capture_output=True, text=True).stdout.strip()
 
@@ -35,6 +48,8 @@ def main():
     cloud_code = admin["version"]["code"]
     cloud_name = admin["version"]["name"]
     last_build_sha = admin["version"].get("lastBuildSha", "")
+    # 控制台操作模式（写死规则8）：content=内容同步不弹窗 | release=显式发布弹窗
+    mode = admin.get("autoRelease", {}).get("mode", "content")
 
     # 2. 源码版本
     with open(BUILD_FILE, encoding="utf-8") as f:
@@ -48,17 +63,16 @@ def main():
 
     head = sh("git rev-parse HEAD")
 
-    print(f"云端 version: code={cloud_code} name={cloud_name} lastBuildSha={last_build_sha[:10] if last_build_sha else '(无)'}")
+    print(f"云端 version: code={cloud_code} name={cloud_name} lastBuildSha={last_build_sha[:10] if last_build_sha else '(无)'} mode={mode}")
     print(f"源码 version: code={src_code} name={src_name} HEAD={head[:10]}")
 
     # 3. 已发布过该提交 → 跳过
     if last_build_sha and last_build_sha == head:
         print("==> 当前 HEAD 已构建发布，跳过"); write_out(need="no"); return
 
-    # 4. 检查自上次构建以来的仓库内容改动（v2：全仓库任何内容更新都触发）
-    # 排除项：.github/（工作流+脚本自身）、*.md 文档、纯工具脚本、keystore、元数据等非内容文件
+    # 4. 检查自上次构建以来的仓库内容改动
     EXCLUDE = (
-        ".github/", "src/", "*.md", "metadata.json", ".env.example", ".gitignore",
+        ".github/", "console-apk/", "src/", "*.md", "metadata.json", ".env.example", ".gitignore",
         "debug.keystore", "*.jks", "auto_release.sh", "merge_sites.py",
         "release_v1.8.1.sh", "add_cloud_browsers.py", "sites_", "gradle-wrapper",
     )
@@ -76,7 +90,7 @@ def main():
     else:
         # 无 lastBuildSha：以仓库内已存在的 admin-data 版本为基准，有内容提交即视为需要发布
         all_changed = sh("git log --oneline -1 2>/dev/null").splitlines()
-    # 过滤排除项，剩下的都是值得发布的内容更新
+    # 过滤排除项
     changed = [l for l in all_changed if l.strip() and not any(l.startswith(p) or l.endswith(p.rstrip("/")) for p in EXCLUDE)]
     print("自上次构建以来的内容改动:", len(changed), "个文件" if changed else "(无)")
     if changed:
@@ -85,6 +99,19 @@ def main():
     # 无内容改动且源码版本 == 云端版本 → 无需发布
     if not changed and src_code <= cloud_code:
         print("==> 仓库无内容更新，跳过"); write_out(need="no"); return
+
+    # 【写死规则8】分类判定：源码改动始终发版；仅内容改动看控制台 mode
+    src_changed = [l for l in changed if l.startswith(SRC_PATTERNS)]
+    content_changed = [l for l in changed if not l.startswith(SRC_PATTERNS)]
+
+    if src_changed:
+        print(f"==> 检测到源码/构建改动 {len(src_changed)} 个文件 -> 需要发布")
+    elif content_changed and mode == "release":
+        print(f"==> 控制台显式发布（mode=release），内容改动 {len(content_changed)} 个 -> 需要发布")
+    else:
+        if content_changed:
+            print(f"==> 仅内容同步（mode={mode}）：不 bump 版本、不弹更新窗，本体已实时生效")
+        print("==> 无需发布，跳过"); write_out(need="no"); return
 
     # 5. 推进版本
     if src_code <= cloud_code:
