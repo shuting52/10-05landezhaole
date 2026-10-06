@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- 控制台自更新：新版本 APK 下载到应用私有缓存目录 console_update/ -->
+    <cache-path name="console_update" path="console_update/" />
+    <external-path name="external_downloads" path="Download/" />
+    <cache-path name="cache" path="/" />
+    <files-path name="files" path="/" />
+</paths>

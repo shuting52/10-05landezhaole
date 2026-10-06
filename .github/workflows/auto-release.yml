@@ -1,0 +1,87 @@
+name: Auto Release (自动发布新版本)
+
+# 触发：app 源码或构建配置有 push 时，自动检测并发布新版本
+# 说明：本工作流使用 GITHUB_TOKEN 推送发布提交，GitHub 官方保证
+#       GITHUB_TOKEN 产生的 push 不会再次触发本工作流（防循环）。
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'app/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - 'gradle/**'
+      - 'gradlew'
+      - 'gradlew.bat'
+  # 支持手动触发（修复后重跑/强制发布用）
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auto-release
+  cancel-in-progress: false
+
+jobs:
+  auto-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    if: github.repository == 'shuting52/10-05landezhaole'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # 需要完整历史以比较 lastBuildSha
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Grant execute permission
+        run: chmod +x gradlew
+
+      - name: Prepare signing key
+        run: |
+          set -e
+          # 优先使用正式签名 secrets（与 CI build.yml 一致）
+          if [ -n "${{ secrets.LZDZ_KEYSTORE_BASE64 }}" ]; then
+            mkdir -p signing
+            echo "${{ secrets.LZDZ_KEYSTORE_BASE64 }}" | base64 -d > signing/lzdz-release.keystore
+            cp signing/lzdz-release.keystore my-upload-key.jks
+            echo "使用正式签名密钥"
+          else
+            # 回退：拉取 landezhaole10-02 公开跟踪的 debug.keystore（与 1.3.x 系列签名一致）
+            curl -sL --retry 3 --retry-all-errors -o debug.keystore \
+              "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/debug.keystore"
+            ls -la debug.keystore && echo "使用 debug.keystore 签名"
+          fi
+
+      - name: Check release needed & bump version
+        id: check
+        run: python3 .github/scripts/auto_release_check.py
+
+      - name: Build Release APK
+        if: steps.check.outputs.need == 'yes'
+        run: ./gradlew :app:assembleRelease --no-daemon -Dorg.gradle.jvmargs="-Xmx2g -XX:MaxMetaspaceSize=512m"
+
+      - name: Publish (update admin-data / upload apk / commit / sync old repo)
+        if: steps.check.outputs.need == 'yes'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_PAT: ${{ secrets.RELEASE_PAT }}
+        run: python3 .github/scripts/auto_release_publish.py
+
+      - name: Report
+        if: always()
+        run: |
+          if [ "${{ steps.check.outputs.need }}" = "yes" ]; then
+            echo "✅ 自动发布完成：v${{ steps.check.outputs.new_name }} (code ${{ steps.check.outputs.new_code }})"
+          else
+            echo "ℹ️ 无源码新改动，无需发布"
+          fi
