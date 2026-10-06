@@ -55,7 +55,13 @@ def main():
     if last_build_sha and last_build_sha == head:
         print("==> 当前 HEAD 已构建发布，跳过"); write_out(need="no"); return
 
-    # 4. 检查 app 源码自上次构建以来是否有改动
+    # 4. 检查自上次构建以来的仓库内容改动（v2：全仓库任何内容更新都触发）
+    # 排除项：.github/（工作流+脚本自身）、*.md 文档、纯工具脚本、keystore、元数据等非内容文件
+    EXCLUDE = (
+        ".github/", "src/", "*.md", "metadata.json", ".env.example", ".gitignore",
+        "debug.keystore", "*.jks", "auto_release.sh", "merge_sites.py",
+        "release_v1.8.1.sh", "add_cloud_browsers.py", "sites_", "gradle-wrapper",
+    )
     base = last_build_sha if last_build_sha else ""
     if base:
         # 基线校验：仓库重建/force push 后旧 SHA 会失效，此时回退用 HEAD~1 作为基线
@@ -64,20 +70,21 @@ def main():
             print(f"  基线 {base[:10]} 无效（仓库可能重建），回退用 HEAD~1 作为基线")
             base = sh("git rev-parse HEAD~1 2>/dev/null || echo ''").strip()
         if base:
-            changed = sh(f"git diff --name-only {base}..HEAD -- app build.gradle.kts settings.gradle.kts gradle.properties gradle/ 2>/dev/null")
+            all_changed = sh(f"git diff --name-only {base}..HEAD 2>/dev/null").splitlines()
         else:
-            changed = sh("git log --oneline -1 -- app 2>/dev/null")
+            all_changed = sh("git log --oneline -1 2>/dev/null").splitlines()
     else:
-        # 无 lastBuildSha：以仓库内已存在的 admin-data 版本为基准，有源码提交即视为需要发布
-        changed = sh("git log --oneline -1 -- app 2>/dev/null")
-    changed = [l for l in changed.splitlines() if l.strip()]
-    print("自上次构建以来的 app 改动:", len(changed), "个文件" if changed else "(无)")
+        # 无 lastBuildSha：以仓库内已存在的 admin-data 版本为基准，有内容提交即视为需要发布
+        all_changed = sh("git log --oneline -1 2>/dev/null").splitlines()
+    # 过滤排除项，剩下的都是值得发布的内容更新
+    changed = [l for l in all_changed if l.strip() and not any(l.startswith(p) or l.endswith(p.rstrip("/")) for p in EXCLUDE)]
+    print("自上次构建以来的内容改动:", len(changed), "个文件" if changed else "(无)")
     if changed:
         print("  示例:", "; ".join(changed[:3]))
 
-    # 无源码改动且源码版本 == 云端版本 → 无需发布
+    # 无内容改动且源码版本 == 云端版本 → 无需发布
     if not changed and src_code <= cloud_code:
-        print("==> app 源码无新改动，跳过"); write_out(need="no"); return
+        print("==> 仓库无内容更新，跳过"); write_out(need="no"); return
 
     # 5. 推进版本
     if src_code <= cloud_code:

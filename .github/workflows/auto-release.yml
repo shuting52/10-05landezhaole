@@ -6,15 +6,9 @@ name: Auto Release (自动发布新版本)
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'app/**'
-      - 'build.gradle.kts'
-      - 'settings.gradle.kts'
-      - 'gradle.properties'
-      - 'gradle/**'
-      - 'gradlew'
-      - 'gradlew.bat'
-  # 支持手动触发（修复后重跑/强制发布用）
+    # v2：任何 push 到 main 都触发（不限路径），由 check 脚本判定是否值得发布
+    # 自动发布自身的提交走 GitHub API（不产生 git push），不会触发循环
+  # 支持手动触发
   workflow_dispatch:
 
 permissions:
