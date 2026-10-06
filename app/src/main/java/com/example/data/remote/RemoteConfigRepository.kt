@@ -29,7 +29,7 @@ class RemoteConfigRepository(private val context: Context) {
     private val adapter = moshi.adapter(AdminData::class.java)
 
     private val owner = "shuting52"
-    private val repo = "landezhaole10-02"
+    private val repo = "10-05landezhaole"
     private val branch = "main"
     private val filePath = "admin-data.json"
 
