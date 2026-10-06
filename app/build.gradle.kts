@@ -61,8 +61,8 @@ android {
     // v1.3.5：新增 500+ AI 行业与云工具站点；工具箱界面优化；UI 动态边框；图片加载稳定性修复
     // v1.3.7：全站二级页面/子工具窗口/底部抽屉/弹窗全面升级液体玻璃半透折射背景
     // v1.3.13：重建仓库后恢复自动发布基线；下拉选择框组件 + Skill Tab 视觉优化
-    versionCode = 150
-    versionName = "1.3.15"
+    versionCode = 151
+    versionName = "1.3.16"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
