@@ -191,33 +191,37 @@ fun CategorySitesDialog(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // 2. Horizontal Category Chips in Dialog
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    FilterChip(
-                        selected = activeCategory.isBlank(),
-                        onClick = {
-                            activeCategory = ""
-                            onSelectCategory("")
-                        },
-                        label = { Text("全部") }
+            // 2. 下拉分类选择框（以当前选中项为中心对齐，选中后自动收回并更新文本与全量站点联动）
+            val dropdownItems = remember(categories) {
+                listOf(
+                    CenteredDropdownItem(
+                        id = "",
+                        title = "全部分类",
+                        subtitle = "浏览全部收录站点 (${totalSitesCount}个)",
+                        badge = "${totalSitesCount}"
                     )
-                }
-                items(categories.size) { idx ->
-                    val cat = categories[idx]
-                    FilterChip(
-                        selected = activeCategory == cat.id,
-                        onClick = {
-                            activeCategory = cat.id
-                            onSelectCategory(cat.id)
-                        },
-                        label = { Text(cat.name) }
+                ) + categories.map { cat ->
+                    CenteredDropdownItem(
+                        id = cat.id,
+                        title = cat.name,
+                        subtitle = "${cat.cards.size} 个精选站点",
+                        badge = "${cat.cards.size}"
                     )
                 }
             }
+
+            CenteredDropdownSelect(
+                selectedId = activeCategory,
+                items = dropdownItems,
+                onItemSelected = { selectedCatId ->
+                    activeCategory = selectedCatId
+                    onSelectCategory(selectedCatId)
+                },
+                label = "当前浏览分类",
+                placeholder = "选择分类...",
+                accentColor = FlameRed,
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Spacer(modifier = Modifier.height(10.dp))
 

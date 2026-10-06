@@ -43,6 +43,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.example.ui.components.CenteredDropdownItem
+import com.example.ui.components.CenteredDropdownSelect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -177,145 +179,114 @@ fun LicensePlateSection(modifier: Modifier = Modifier) {
             }
         }
 
-        // 1. 选号设置：身份（下拉菜单）
+        // 1. 选号设置：身份（居中下拉选择框）
         Text("身份", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF7A4A45))
-        Box {
-            Surface(
-                onClick = { identityMenuOpen = true },
-                shape = RoundedCornerShape(12.dp),
-                color = Color.White,
-                border = BorderStroke(1.2.dp, Color(0xFF7A4A45).copy(alpha = 0.38f)),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text("选择身份", fontSize = 10.5.sp, color = Color(0xFF7A4A45))
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = if (isUnit) "🏢 单位车辆" else "👤 个人车辆",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1E293B)
-                        )
-                    }
-                    Icon(Icons.Filled.ArrowDropDown, contentDescription = "选择身份", tint = Color(0xFF7A4A45))
-                }
-            }
-            DropdownMenu(expanded = identityMenuOpen, onDismissRequest = { identityMenuOpen = false }) {
-                DropdownMenuItem(
-                    text = { Text("👤 个人车辆", fontSize = 14.sp, fontWeight = FontWeight.SemiBold) },
-                    onClick = { isUnit = false; identityMenuOpen = false; regeneratePool() }
+        val identityItems = remember {
+            listOf(
+                CenteredDropdownItem(
+                    id = false,
+                    title = "👤 个人车辆",
+                    subtitle = "居民非营运小型客车",
+                    badge = "私家车"
+                ),
+                CenteredDropdownItem(
+                    id = true,
+                    title = "🏢 单位车辆",
+                    subtitle = "机关事业单位 / 企业法人车辆",
+                    badge = "公户"
                 )
-                DropdownMenuItem(
-                    text = { Text("🏢 单位车辆", fontSize = 14.sp, fontWeight = FontWeight.SemiBold) },
-                    onClick = { isUnit = true; identityMenuOpen = false; regeneratePool() }
-                )
-            }
+            )
         }
+        CenteredDropdownSelect(
+            selectedId = isUnit,
+            items = identityItems,
+            onItemSelected = { unit ->
+                isUnit = unit
+                regeneratePool()
+            },
+            label = "选择身份",
+            accentColor = Color(0xFF7A4A45),
+            modifier = Modifier.fillMaxWidth()
+        )
 
-        // 2. 选号设置：省份（点击弹出全国 34 省级行政区检索选择面板）
+        // 2. 选号设置：省份（居中下拉选择框，全国 34 省级行政区，展开自动定位当前选中省）
         Text("省份", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF7A4A45))
-        Surface(
-            onClick = { provinceDialogOpen = true },
-            shape = RoundedCornerShape(12.dp),
-            color = Color.White,
-            border = BorderStroke(1.2.dp, Color(0xFFDE2910).copy(alpha = 0.45f)),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("选择省份（全国 34 省级行政区）", fontSize = 10.5.sp, color = Color(0xFF7A4A45))
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = "${currentProvince.second.first}（简称：${currentProvince.first} · 含 ${currentProvince.second.second.size} 个城市）",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E293B)
-                    )
-                }
-                Icon(Icons.Filled.ArrowDropDown, contentDescription = "选择省份", tint = Color(0xFFDE2910))
+        val provinceDropdownItems = remember {
+            NationalCityData.mapIndexed { idx, p ->
+                CenteredDropdownItem(
+                    id = idx,
+                    title = "${p.second.first}（简称：${p.first}）",
+                    subtitle = "含 ${p.second.second.size} 个地级市 · 机关代号 ${p.first}",
+                    badge = p.first
+                )
             }
         }
+        CenteredDropdownSelect(
+            selectedId = selectedProvinceIdx,
+            items = provinceDropdownItems,
+            onItemSelected = { provIdx ->
+                selectProvince(provIdx)
+            },
+            label = "选择省份（全国 34 省级行政区）",
+            accentColor = Color(0xFFDE2910),
+            maxListHeight = 320.dp,
+            modifier = Modifier.fillMaxWidth()
+        )
 
-        // 3. 选号设置：城市（点击弹出当前省份/或全国城市检索选择面板）
+        // 3. 选号设置：城市（居中下拉选择框，当前省份辖下所有地级市）
         Text("城市", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF7A4A45))
-        Surface(
-            onClick = { cityDialogOpen = true },
-            shape = RoundedCornerShape(12.dp),
-            color = Color.White,
-            border = BorderStroke(1.5.dp, Color(0xFFDE2910).copy(alpha = 0.75f)),
+        val cityDropdownItems = remember(selectedProvinceIdx) {
+            val p = NationalCityData[selectedProvinceIdx.coerceIn(0, NationalCityData.lastIndex)]
+            p.second.second.mapIndexed { idx, c ->
+                CenteredDropdownItem(
+                    id = idx,
+                    title = "${c.first} (${p.first}${c.second})",
+                    subtitle = "发牌机关代号 ${p.first}${c.second}",
+                    badge = "${p.first}${c.second}"
+                )
+            }
+        }
+        CenteredDropdownSelect(
+            selectedId = selectedCityIdx,
+            items = cityDropdownItems,
+            onItemSelected = { cIdx ->
+                selectCity(cIdx)
+            },
+            label = "选择城市（发牌机关代号联动）",
+            accentColor = Color(0xFFDE2910),
+            maxListHeight = 300.dp,
             modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("选择城市（支持全国任意城市检索）", fontSize = 10.5.sp, color = Color(0xFFDE2910))
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = "${currentCity.first} · 发牌机关代号 ${currentProvince.first}${currentCity.second}",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E293B)
-                    )
-                }
-                Icon(Icons.Filled.ArrowDropDown, contentDescription = "选择城市", tint = Color(0xFFDE2910))
-            }
-        }
+        )
 
-        // 4. 选号设置：类型（下拉菜单）
+        // 4. 选号设置：类型（居中下拉选择框）
         Text("类型", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF7A4A45))
-        Box {
-            Surface(
-                onClick = { typeMenuOpen = true },
-                shape = RoundedCornerShape(12.dp),
-                color = Color.White,
-                border = BorderStroke(1.2.dp, Color(0xFF7A4A45).copy(alpha = 0.38f)),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text("选择号牌类型", fontSize = 10.5.sp, color = Color(0xFF7A4A45))
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = if (isNewEnergy) "🟢 新能源绿牌（8位）" else "🔵 燃油蓝牌（7位）",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1E293B)
-                        )
-                    }
-                    Icon(Icons.Filled.ArrowDropDown, contentDescription = "选择号牌类型", tint = Color(0xFF7A4A45))
-                }
-            }
-            DropdownMenu(expanded = typeMenuOpen, onDismissRequest = { typeMenuOpen = false }) {
-                DropdownMenuItem(
-                    text = { Text("🔵 燃油蓝牌（7位标准号牌）", fontSize = 14.sp, fontWeight = FontWeight.SemiBold) },
-                    onClick = {
-                        isNewEnergy = false
-                        typeMenuOpen = false
-                        regeneratePool(newEnergy = false)
-                    }
+        val typeItems = remember {
+            listOf(
+                CenteredDropdownItem(
+                    id = false,
+                    title = "🔵 燃油蓝牌（7位标准号牌）",
+                    subtitle = "常规燃油车及传统能源客车",
+                    badge = "7位"
+                ),
+                CenteredDropdownItem(
+                    id = true,
+                    title = "🟢 新能源绿牌（8位渐变绿）",
+                    subtitle = "纯电 EV / 插电混动 PHEV 专属",
+                    badge = "8位"
                 )
-                DropdownMenuItem(
-                    text = { Text("🟢 新能源绿牌（8位小型/大型新能源）", fontSize = 14.sp, fontWeight = FontWeight.SemiBold) },
-                    onClick = {
-                        isNewEnergy = true
-                        typeMenuOpen = false
-                        regeneratePool(newEnergy = true)
-                    }
-                )
-            }
+            )
         }
+        CenteredDropdownSelect(
+            selectedId = isNewEnergy,
+            items = typeItems,
+            onItemSelected = { newEnergy ->
+                isNewEnergy = newEnergy
+                regeneratePool(newEnergy = newEnergy)
+            },
+            label = "选择号牌类型",
+            accentColor = Color(0xFF7A4A45),
+            modifier = Modifier.fillMaxWidth()
+        )
 
         // 号牌池
         Row(
