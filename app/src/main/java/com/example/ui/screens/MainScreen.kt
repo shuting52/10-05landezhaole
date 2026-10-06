@@ -395,52 +395,71 @@ fun MainScreen(
                             .fillMaxSize()
                             .padding(paddingValues)
                     ) {
-                        // v1.2.6：Skill 顶部 Tab 采用液态玻璃折射半透胶囊条
+                        // Skill 顶部 Tab 采用精致液态玻璃拟态 + 流光微边框胶囊
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 12.dp, vertical = 6.dp)
-                                .clip(RoundedCornerShape(20.dp))
+                                .padding(horizontal = 14.dp, vertical = 6.dp)
+                                .clip(RoundedCornerShape(22.dp))
                                 .background(
                                     Brush.linearGradient(
                                         listOf(
-                                            Color.White.copy(alpha = 0.44f),
-                                            Color(0xFFF5F0FF).copy(alpha = 0.30f),
-                                            Color(0xFFFFEDF5).copy(alpha = 0.34f),
-                                            Color.White.copy(alpha = 0.48f)
+                                            Color.White.copy(alpha = 0.85f),
+                                            Color(0xFFFAF5FF).copy(alpha = 0.70f),
+                                            Color(0xFFFFF0F5).copy(alpha = 0.75f),
+                                            Color.White.copy(alpha = 0.90f)
                                         )
                                     )
                                 )
                                 .border(
-                                    width = 1.2.dp,
+                                    width = 1.4.dp,
                                     brush = Brush.linearGradient(
                                         listOf(
-                                            Color.White.copy(alpha = 0.92f),
-                                            Color(0xFFD8B4FE).copy(alpha = 0.45f),
-                                            Color.White.copy(alpha = 0.88f)
+                                            Color(0xFFFF007A).copy(alpha = 0.40f),
+                                            Color(0xFF7928CA).copy(alpha = 0.45f),
+                                            Color(0xFF0070F3).copy(alpha = 0.40f),
+                                            Color(0xFFFF0080).copy(alpha = 0.35f)
                                         )
                                     ),
-                                    shape = RoundedCornerShape(20.dp)
+                                    shape = RoundedCornerShape(22.dp)
                                 )
                         ) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 12.dp, vertical = 4.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    .padding(4.dp),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
-                                androidx.compose.material3.FilterChip(
-                                    selected = skillSubTabIndex == 0,
-                                    onClick = { skillSubTabIndex = 0 },
-                                    label = { Text(uiState.cloudUiText?.promptTab?.ifBlank { "提示词区" } ?: "提示词区", fontWeight = FontWeight.Bold, fontSize = 11.5.sp) },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                androidx.compose.material3.FilterChip(
-                                    selected = skillSubTabIndex == 1,
-                                    onClick = { skillSubTabIndex = 1 },
-                                    label = { Text(uiState.cloudUiText?.skillTab?.ifBlank { "Skill 技能库" } ?: "Skill 技能库", fontWeight = FontWeight.Bold, fontSize = 11.5.sp) },
-                                    modifier = Modifier.weight(1f)
-                                )
+                                val promptLabel = uiState.cloudUiText?.promptTab?.ifBlank { "提示词区" } ?: "提示词区"
+                                val skillLabel = uiState.cloudUiText?.skillTab?.ifBlank { "Skill 技能库" } ?: "Skill 技能库"
+
+                                listOf(
+                                    0 to ("✨ $promptLabel"),
+                                    1 to ("⚡ $skillLabel")
+                                ).forEach { (tabIdx, title) ->
+                                    val isSelected = skillSubTabIndex == tabIdx
+                                    Surface(
+                                        onClick = { skillSubTabIndex = tabIdx },
+                                        shape = RoundedCornerShape(18.dp),
+                                        color = if (isSelected) Color(0xFF1E1B4B) else Color.Transparent,
+                                        shadowElevation = if (isSelected) 3.dp else 0.dp,
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 10.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = title,
+                                                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.SemiBold,
+                                                fontSize = 13.sp,
+                                                color = if (isSelected) Color.White else Color(0xFF64748B)
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
 

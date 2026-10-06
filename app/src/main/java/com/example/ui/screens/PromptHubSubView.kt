@@ -116,38 +116,91 @@ fun PromptHubSubView(
             Pair("video", "视频提示词 (${videoList.size})")
         )
         val typeIndex = typeTabs.indexOfFirst { it.first == selectedType }.coerceAtLeast(0)
-        // v1.1.12：Skill 顶部 Tab 重写为 UiverseTabBar 样式（白底 + 琥珀选中 + 墨色描边 3dp + 圆角 14dp）
-        Row(
+        // 提示词子分类选项卡（精美液态玻璃半透底板 + 渐变流光微描边 + 高级胶囊指示器）
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .neoShadow(
-                    offsetX = 3.dp,
-                    offsetY = 3.dp,
-                    shadowColor = UiverseAmber,
-                    borderColor = UiverseInk,
-                    borderWidth = 3.dp,
-                    shape = RoundedCornerShape(14.dp),
-                    backgroundColor = Color.White
-                )
-                .clip(RoundedCornerShape(14.dp))
-        ) {
-            typeTabs.forEach { (type, label) ->
-                val isSelected = selectedType == type
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(if (isSelected) UiverseAmber else Color.Transparent)
-                        .clickable { selectedType = type }
-                        .padding(vertical = 11.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = if (type == null) "全部" else label.substringBefore(" ("),
-                        fontWeight = FontWeight.ExtraBold,
-                        color = if (isSelected) UiverseInk else UiverseTextMuted,
-                        fontSize = 13.sp,
-                        maxLines = 1
+                .clip(RoundedCornerShape(20.dp))
+                .background(
+                    Brush.linearGradient(
+                        listOf(
+                            Color.White.copy(alpha = 0.88f),
+                            Color(0xFFFFF7ED).copy(alpha = 0.75f),
+                            Color(0xFFFFF1F2).copy(alpha = 0.70f),
+                            Color.White.copy(alpha = 0.92f)
+                        )
                     )
+                )
+                .border(
+                    width = 1.3.dp,
+                    brush = Brush.linearGradient(
+                        listOf(
+                            Color(0xFFFFB800).copy(alpha = 0.50f),
+                            Color(0xFFFF5E00).copy(alpha = 0.40f),
+                            Color(0xFF9333EA).copy(alpha = 0.35f),
+                            Color(0xFFFFB800).copy(alpha = 0.45f)
+                        )
+                    ),
+                    shape = RoundedCornerShape(20.dp)
+                )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                typeTabs.forEach { (type, label) ->
+                    val isSelected = selectedType == type
+                    val cleanText = if (type == null) "全部" else label.substringBefore(" (")
+                    val count = when (type) {
+                        "image" -> imageList.size
+                        "video" -> videoList.size
+                        else -> prompts.size
+                    }
+
+                    Surface(
+                        onClick = { selectedType = type },
+                        shape = RoundedCornerShape(16.dp),
+                        color = if (isSelected) {
+                            Color(0xFFFF9500)
+                        } else {
+                            Color.Transparent
+                        },
+                        shadowElevation = if (isSelected) 3.dp else 0.dp,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 10.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = cleanText,
+                                fontWeight = if (isSelected) FontWeight.Black else FontWeight.Bold,
+                                color = if (isSelected) Color.White else Color(0xFF475569),
+                                fontSize = 13.5.sp,
+                                maxLines = 1
+                            )
+                            if (count > 0) {
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Surface(
+                                    shape = CircleShape,
+                                    color = if (isSelected) Color.White.copy(alpha = 0.28f) else Color(0xFFF1F5F9)
+                                ) {
+                                    Text(
+                                        text = "$count",
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isSelected) Color.White else Color(0xFF64748B),
+                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
