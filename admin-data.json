@@ -24285,7 +24285,7 @@
     "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/console/console-apk-v1.3.2-1791247619.apk"
   },
   "ipMonitor": {
-    "enabled": true,
+    "enabled": false,
     "url": "https://myip.ipip.net/"
   },
   "tools": [],
