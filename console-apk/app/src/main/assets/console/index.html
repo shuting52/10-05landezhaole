@@ -1112,6 +1112,10 @@ async function publish(bump = false, actionDesc = ""){
       // 新版本发布后：APK 仓库只保留当前版本与最新版本两个安装包（清理更旧的）
       cleanupOldApks();
     }
+    // 写死规则8（2026-10-06）：控制台双模式——「应用」=内容实时同步不弹窗，「发布」=版本更新弹窗
+    // mode 写入 admin-data.json 的 autoRelease，CI 自动发布脚本据此判定是否 bump 版本
+    S.admin.autoRelease = S.admin.autoRelease || {};
+    S.admin.autoRelease.mode = bump ? "release" : "content";
     const msg = bump 
       ? `console: [发布新版本 v${S.admin.version.name} code:${S.admin.version.code}] ${actionDesc || "更新"}`
       : `console: 应用并实时同步 ${new Date().toLocaleString("zh-CN")}`;
