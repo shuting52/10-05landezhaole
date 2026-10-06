@@ -24274,9 +24274,9 @@
     "customHtml": ""
   },
   "marquee": {
-    "enabled": false,
+    "enabled": true,
     "icon": "📪",
-    "defaultText": "欢迎使用懒得找了～海量白嫖资源等你探索，遇到问题请到官方群反馈！",
+    "defaultText": "喜迎国庆～盛世华诞 祝祖国母亲生日快乐 繁荣昌盛～",
     "segments": []
   },
   "console": {
@@ -24324,8 +24324,7 @@
   "_ai_notice": "内容由AI生成",
   "uiText": {
     "splashSub": "盛世华诞",
-    "luckyTitle": "✨ 分类列表 · 今日宝藏",
-    "marqueeDefault": "盛世华诞～祝祖国母亲生日快乐～繁荣昌盛"
+    "luckyTitle": "✨ 分类列表 · 今日宝藏"
   },
   "uiTextDefs": [],
   "autoRelease": {
