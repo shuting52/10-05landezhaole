@@ -60,8 +60,9 @@ android {
     // v1.3.4：版本更新发布（与云端 admin-data.json version.code=139 / name=1.3.4 四要素对齐）
     // v1.3.5：新增 500+ AI 行业与云工具站点；工具箱界面优化；UI 动态边框；图片加载稳定性修复
     // v1.3.7：全站二级页面/子工具窗口/底部抽屉/弹窗全面升级液体玻璃半透折射背景
-    versionCode = 147
-    versionName = "1.3.12"
+    // v1.3.13：重建仓库后恢复自动发布基线；下拉选择框组件 + Skill Tab 视觉优化
+    versionCode = 148
+    versionName = "1.3.13"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
