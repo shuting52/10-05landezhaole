@@ -111,6 +111,8 @@ def build_new_admin_data(code, name, apk_url, apk_url_raw, changelog, head_sha):
         "enabled": True,
         "repo": REPO,
         "workflow": "Auto Release (自动发布新版本)",
+        # 写死规则8：发布完成后回到内容同步模式（下一次控制台“应用”不弹更新窗）
+        "mode": "content",
         "lastRelease": {
             "version": name,
             "code": int(code),
