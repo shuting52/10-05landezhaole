@@ -1,0 +1,6784 @@
+{
+ "ai_models": [
+  {
+   "title": "ChatGPT",
+   "url": "https://chatgpt.com",
+   "desc": "OpenAI 通用对话旗舰",
+   "subcatId": "通用对话",
+   "badge": "HOT"
+  },
+  {
+   "title": "Gemini",
+   "url": "https://gemini.google.com",
+   "desc": "Google Gemini 多模态助手",
+   "subcatId": "通用对话",
+   "badge": "HOT"
+  },
+  {
+   "title": "Claude",
+   "url": "https://claude.ai",
+   "desc": "Anthropic Claude 长上下文对话",
+   "subcatId": "通用对话",
+   "badge": "HOT"
+  },
+  {
+   "title": "文心一言",
+   "url": "https://yiyan.baidu.com",
+   "desc": "百度文心大模型对话",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "通义千问",
+   "url": "https://tongyi.aliyun.com",
+   "desc": "阿里通义千问对话",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "豆包",
+   "url": "https://www.doubao.com",
+   "desc": "字节豆包 AI 助手",
+   "subcatId": "通用对话",
+   "badge": "HOT"
+  },
+  {
+   "title": "Kimi",
+   "url": "https://kimi.moonshot.cn",
+   "desc": "月之暗面 Kimi 长文助手",
+   "subcatId": "通用对话",
+   "badge": "HOT"
+  },
+  {
+   "title": "智谱清言",
+   "url": "https://chatglm.cn",
+   "desc": "智谱 ChatGLM 对话",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "讯飞星火",
+   "url": "https://xinghuo.xfyun.cn",
+   "desc": "科大讯飞星火大模型",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "天工AI",
+   "url": "https://www.tiangong.cn",
+   "desc": "昆仑万维天工大模型",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "腾讯混元",
+   "url": "https://hunyuan.tencent.com",
+   "desc": "腾讯混元大模型",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "DeepSeek",
+   "url": "https://chat.deepseek.com",
+   "desc": "深度求索 DeepSeek 对话",
+   "subcatId": "通用对话",
+   "badge": "HOT"
+  },
+  {
+   "title": "百川智能",
+   "url": "https://www.baichuan-ai.com",
+   "desc": "百川大模型对话",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "腾讯元宝",
+   "url": "https://yuanbao.tencent.com",
+   "desc": "腾讯元宝 AI 助手",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "海螺AI",
+   "url": "https://hailuoai.com",
+   "desc": "MiniMax 海螺 AI 助手",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "跃问",
+   "url": "https://stepchat.cn",
+   "desc": "阶跃星辰跃问对话",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "LMSYS Chat",
+   "url": "https://chat.lmsys.org",
+   "desc": "Chatbot Arena 模型竞技场",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "Poe",
+   "url": "https://poe.com",
+   "desc": "多模型聚合 Poe",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "Perplexity",
+   "url": "https://www.perplexity.ai",
+   "desc": "AI 搜索引擎",
+   "subcatId": "通用对话",
+   "badge": "HOT"
+  },
+  {
+   "title": "Midjourney",
+   "url": "https://www.midjourney.com",
+   "desc": "顶级 AI 生图",
+   "subcatId": "生图与视频",
+   "badge": "HOT"
+  },
+  {
+   "title": "Stable Diffusion",
+   "url": "https://stability.ai",
+   "desc": "Stability AI 开源生图",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "DALL·E",
+   "url": "https://labs.openai.com",
+   "desc": "OpenAI 图像生成",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "即梦AI",
+   "url": "https://jimeng.jianying.com",
+   "desc": "字节即梦 AI 创作",
+   "subcatId": "生图与视频",
+   "badge": "HOT"
+  },
+  {
+   "title": "可灵AI",
+   "url": "https://klingai.com",
+   "desc": "快手可灵视频生成",
+   "subcatId": "生图与视频",
+   "badge": "HOT"
+  },
+  {
+   "title": "Runway",
+   "url": "https://runwayml.com",
+   "desc": "AI 视频生成 Runway",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "Pika",
+   "url": "https://pika.art",
+   "desc": "Pika AI 视频",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "Luma Dream Machine",
+   "url": "https://lumalabs.ai",
+   "desc": "Luma 视频生成",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "Sora",
+   "url": "https://sora.com",
+   "desc": "OpenAI Sora 视频",
+   "subcatId": "生图与视频",
+   "badge": "HOT"
+  },
+  {
+   "title": "Picasso",
+   "url": "https://picasso.soulapk.com",
+   "desc": "Soul AI 绘画",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "LiblibAI",
+   "url": "https://www.liblib.art",
+   "desc": "国内模型广场与生图",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "吐司AI",
+   "url": "https://tusi.cn",
+   "desc": "免费在线生图",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "Leonardo AI",
+   "url": "https://leonardo.ai",
+   "desc": "Leonardo 生图平台",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "Ideogram",
+   "url": "https://ideogram.ai",
+   "desc": "文字排版生图",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "Flux",
+   "url": "https://blackforestlabs.ai",
+   "desc": "Black Forest Labs FLUX",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "Suno",
+   "url": "https://suno.com",
+   "desc": "AI 音乐创作",
+   "subcatId": "智能体与效率",
+   "badge": ""
+  },
+  {
+   "title": "Udio",
+   "url": "https://www.udio.com",
+   "desc": "AI 音乐生成 Udio",
+   "subcatId": "智能体与效率",
+   "badge": ""
+  },
+  {
+   "title": "通义听悟",
+   "url": "https://tingwu.aliyun.com",
+   "desc": "阿里会议转写总结",
+   "subcatId": "智能体与效率",
+   "badge": ""
+  },
+  {
+   "title": "讯飞听见",
+   "url": "https://www.iflyrec.com",
+   "desc": "语音转写服务",
+   "subcatId": "智能体与效率",
+   "badge": ""
+  },
+  {
+   "title": "Notion AI",
+   "url": "https://www.notion.so",
+   "desc": "AI 笔记协作",
+   "subcatId": "智能体与效率",
+   "badge": ""
+  },
+  {
+   "title": "Gamma",
+   "url": "https://gamma.app",
+   "desc": "AI 生成演示文稿",
+   "subcatId": "智能体与效率",
+   "badge": ""
+  },
+  {
+   "title": "Beautiful.ai",
+   "url": "https://www.beautiful.ai",
+   "desc": "AI 智能幻灯片",
+   "subcatId": "智能体与效率",
+   "badge": ""
+  },
+  {
+   "title": "Tome",
+   "url": "https://tome.app",
+   "desc": "AI 演示与故事",
+   "subcatId": "智能体与效率",
+   "badge": ""
+  },
+  {
+   "title": "Bard/Firebase",
+   "url": "https://ai.google.dev",
+   "desc": "Google AI 开发者",
+   "subcatId": "智能体与效率",
+   "badge": ""
+  },
+  {
+   "title": "Coze",
+   "url": "https://www.coze.cn",
+   "desc": "扣子 AI 应用搭建",
+   "subcatId": "智能体与效率",
+   "badge": "HOT"
+  },
+  {
+   "title": "Dify",
+   "url": "https://cloud.dify.ai",
+   "desc": "开源 LLM 应用平台",
+   "subcatId": "智能体与效率",
+   "badge": ""
+  },
+  {
+   "title": "Replit",
+   "url": "https://replit.com",
+   "desc": "在线编程+AI",
+   "subcatId": "智能体与效率",
+   "badge": ""
+  },
+  {
+   "title": "v0.dev",
+   "url": "https://v0.dev",
+   "desc": "Vercel AI 前端生成",
+   "subcatId": "智能体与效率",
+   "badge": ""
+  },
+  {
+   "title": "Cursor",
+   "url": "https://cursor.com",
+   "desc": "AI 代码编辑器",
+   "subcatId": "智能体与效率",
+   "badge": "HOT"
+  },
+  {
+   "title": "Felo",
+   "url": "https://felo.ai",
+   "desc": "AI 搜索助手",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "Mistral Le Chat",
+   "url": "https://chat.mistral.ai",
+   "desc": "Mistral 对话",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "Cohere",
+   "url": "https://cohere.com",
+   "desc": "企业 AI 平台",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "Grok AI",
+   "url": "https://grok.com",
+   "desc": "xAI 对话",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "Qtrade AI",
+   "url": "https://www.qtrade.ai",
+   "desc": "AI 量化工具",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "沉浸式翻译",
+   "url": "https://immersivetranslate.com",
+   "desc": "浏览器翻译插件",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "Napkin",
+   "url": "https://www.napkin.ai",
+   "desc": "AI 图表生成",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "Copy.ai",
+   "url": "https://www.copy.ai",
+   "desc": "AI 营销文案",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "Jasper",
+   "url": "https://www.jasper.ai",
+   "desc": "AI 内容创作",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "Writesonic",
+   "url": "https://writesonic.com",
+   "desc": "AI 写作平台",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "Rytr",
+   "url": "https://rytr.me",
+   "desc": "AI 文案助手",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "Mem",
+   "url": "https://mem.ai",
+   "desc": "AI 备忘录",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "Reclaim AI",
+   "url": "https://reclaim.ai",
+   "desc": "AI 日程管理",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "Chatbox",
+   "url": "https://chatboxai.app",
+   "desc": "AI 桌面客户端",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "LobeChat",
+   "url": "https://lobehub.com",
+   "desc": "开源 AI 助手",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "Cherry Studio",
+   "url": "https://cherry-ai.com",
+   "desc": "AI 聚合客户端",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "ChatALL",
+   "url": "https://chatall.ai",
+   "desc": "多模型并行对话",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "Tongyi Wanxiang",
+   "url": "https://tongyi.aliyun.com/wanxiang",
+   "desc": "通义万相生图",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "文心一格",
+   "url": "https://yige.baidu.com",
+   "desc": "百度 AI 艺术生图",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "腾讯智影",
+   "url": "https://zenvideo.qq.com",
+   "desc": "AI 视频创作",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "剪映创作",
+   "url": "https://www.capcut.cn",
+   "desc": "AI 视频剪辑",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "Vidu",
+   "url": "https://www.vidu.cn",
+   "desc": "生数科技视频生成",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "Dreamina",
+   "url": "https://dreamina.capcut.com",
+   "desc": "剪映 Dreamina 创作",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "海螺AI 视频",
+   "url": "https://hailuoai.video",
+   "desc": "MiniMax 视频生成",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "通义听悟",
+   "url": "https://tingwu.aliyun.com",
+   "desc": "音视频转写",
+   "subcatId": "智能体与效率",
+   "badge": ""
+  },
+  {
+   "title": "讯飞星火认知",
+   "url": "https://xinghuo.xfyun.cn",
+   "desc": "讯飞大模型",
+   "subcatId": "智能体与效率",
+   "badge": ""
+  },
+  {
+   "title": "智谱AutoGLM",
+   "url": "https://chatglm.cn",
+   "desc": "智谱智能体",
+   "subcatId": "智能体与效率",
+   "badge": ""
+  },
+  {
+   "title": "Kimi 智能助手",
+   "url": "https://kimi.moonshot.cn",
+   "desc": "月之暗面 Kimi",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "腾讯混元对话",
+   "url": "https://hunyuan.tencent.com",
+   "desc": "混元对话",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "百川知百川",
+   "url": "https://www.baichuan-ai.com",
+   "desc": "百川智能",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "豆包浏览器",
+   "url": "https://www.doubao.com",
+   "desc": "豆包对话",
+   "subcatId": "通用对话",
+   "badge": ""
+  },
+  {
+   "title": "文小言",
+   "url": "https://wenxiaoyan.baidu.com",
+   "desc": "百度 AI 对话",
+   "subcatId": "通用对话",
+   "badge": ""
+  }
+ ],
+ "ai_canvas": [
+  {
+   "title": "Miro",
+   "url": "https://miro.com",
+   "desc": "无限画布协作白板",
+   "subcatId": "无限画布",
+   "badge": ""
+  },
+  {
+   "title": "Figma",
+   "url": "https://www.figma.com",
+   "desc": "设计协作画布",
+   "subcatId": "无限画布",
+   "badge": ""
+  },
+  {
+   "title": "Boardmix",
+   "url": "https://boardmix.cn",
+   "desc": "国内在线协作白板",
+   "subcatId": "无限画布",
+   "badge": ""
+  },
+  {
+   "title": "Pixso",
+   "url": "https://pixso.cn",
+   "desc": "国产设计协作工具",
+   "subcatId": "无限画布",
+   "badge": ""
+  },
+  {
+   "title": "ProcessOn",
+   "url": "https://www.processon.com",
+   "desc": "在线流程图思维导图",
+   "subcatId": "无限画布",
+   "badge": ""
+  },
+  {
+   "title": "幕布",
+   "url": "https://mubu.com",
+   "desc": "大纲与思维导图",
+   "subcatId": "无限画布",
+   "badge": ""
+  },
+  {
+   "title": "Xmind",
+   "url": "https://xmind.cn",
+   "desc": "思维导图软件",
+   "subcatId": "无限画布",
+   "badge": ""
+  },
+  {
+   "title": "Whimsical",
+   "url": "https://whimsical.com",
+   "desc": "白板与流程图",
+   "subcatId": "无限画布",
+   "badge": ""
+  },
+  {
+   "title": "Excalidraw",
+   "url": "https://excalidraw.com",
+   "desc": "手绘风无限画布",
+   "subcatId": "无限画布",
+   "badge": ""
+  },
+  {
+   "title": "tldraw",
+   "url": "https://www.tldraw.com",
+   "desc": "开源白板组件",
+   "subcatId": "无限画布",
+   "badge": ""
+  },
+  {
+   "title": "AhaSlides",
+   "url": "https://ahaslides.com",
+   "desc": "互动演示白板",
+   "subcatId": "无限画布",
+   "badge": ""
+  },
+  {
+   "title": "Canva",
+   "url": "https://www.canva.cn",
+   "desc": "在线设计画布",
+   "subcatId": "无限画布",
+   "badge": "HOT"
+  },
+  {
+   "title": "稿定设计",
+   "url": "https://www.gaoding.com",
+   "desc": "国内在线设计",
+   "subcatId": "无限画布",
+   "badge": ""
+  },
+  {
+   "title": "创客贴",
+   "url": "https://www.chuangkit.com",
+   "desc": "在线平面设计",
+   "subcatId": "无限画布",
+   "badge": ""
+  },
+  {
+   "title": "remove.bg",
+   "url": "https://www.remove.bg",
+   "desc": "在线抠图",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Photopea",
+   "url": "https://www.photopea.com",
+   "desc": "在线 PS 替代",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "美图秀秀",
+   "url": "https://pc.meitu.com",
+   "desc": "美图秀秀网页版",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "稿定抠图",
+   "url": "https://www.gaoding.com/koutu",
+   "desc": "稿定AI抠图",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "佐糖",
+   "url": "https://picwish.cn",
+   "desc": "在线图片处理",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "改图鸭",
+   "url": "https://www.gaituya.com",
+   "desc": "在线修图工具",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "佐图",
+   "url": "https://www.zuotu.com",
+   "desc": "图片压缩与处理",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "TinyPNG",
+   "url": "https://tinypng.com",
+   "desc": "图片无损压缩",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Squoosh",
+   "url": "https://squoosh.app",
+   "desc": "Google 图片压缩",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Pixabay",
+   "url": "https://pixabay.com",
+   "desc": "免费图片素材",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Pexels",
+   "url": "https://www.pexels.com",
+   "desc": "免费图片视频素材",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Unsplash",
+   "url": "https://unsplash.com",
+   "desc": "高清摄影图库",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "涂鸦王国",
+   "url": "https://www.pixiv.net",
+   "desc": "插画创作社区",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "站酷",
+   "url": "https://www.zcool.com.cn",
+   "desc": "设计师交流平台",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "花瓣",
+   "url": "https://huaban.com",
+   "desc": "设计灵感采集",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "汇图网",
+   "url": "https://www.huitu.com",
+   "desc": "设计素材下载",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "千图网",
+   "url": "https://www.58pic.com",
+   "desc": "设计素材平台",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Sketchfab",
+   "url": "https://sketchfab.com",
+   "desc": "3D 模型库",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Blender 官网",
+   "url": "https://www.blender.org",
+   "desc": "开源 3D 软件",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Vectornator",
+   "url": "https://www.linearity.io",
+   "desc": "矢量设计",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Vecteezy",
+   "url": "https://www.vecteezy.com",
+   "desc": "矢量素材库",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Flaticon",
+   "url": "https://www.flaticon.com",
+   "desc": "免费图标库",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "IconFont",
+   "url": "https://www.iconfont.cn",
+   "desc": "阿里图标库",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "ColorHunt",
+   "url": "https://colorhunt.co",
+   "desc": "配色方案",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Coolors",
+   "url": "https://coolors.co",
+   "desc": "在线取色器",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Font Awesome",
+   "url": "https://fontawesome.com",
+   "desc": "字体图标库",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Google Fonts",
+   "url": "https://fonts.google.com",
+   "desc": "谷歌字体库",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "字体天下",
+   "url": "https://www.fonts.net.cn",
+   "desc": "中文字体下载",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "求字体",
+   "url": "https://www.qiuziti.com",
+   "desc": "字体识别工具",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "MyFonts",
+   "url": "https://www.myfonts.com",
+   "desc": "商业字体",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Topaz Labs",
+   "url": "https://www.topazlabs.com",
+   "desc": "AI 图像增强",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "waifu2x",
+   "url": "https://waifu2x.udp.jp",
+   "desc": "动漫图片放大",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Bigjpg",
+   "url": "https://bigjpg.com",
+   "desc": "图片无损放大",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "佐糖抠图",
+   "url": "https://picwish.cn",
+   "desc": "AI 智能抠图",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Remove Image BG",
+   "url": "https://www.remove-image-bg.com",
+   "desc": "免费扣背景",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Photopea 中文",
+   "url": "https://www.photopea.com",
+   "desc": "在线 PS",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Krita",
+   "url": "https://krita.org",
+   "desc": "开源绘画软件",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "火骨架",
+   "url": "https://www.pixivision.net",
+   "desc": "绘画灵感",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Deviantart",
+   "url": "https://www.deviantart.com",
+   "desc": "艺术社区",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Artbreeder",
+   "url": "https://www.artbreeder.com",
+   "desc": "基因图像",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Sketchfab 模型",
+   "url": "https://sketchfab.com",
+   "desc": "3D 模型素材",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "CGTrader",
+   "url": "https://www.cgtrader.com",
+   "desc": "3D 模型交易",
+   "subcatId": "聚合平台",
+   "badge": ""
+  },
+  {
+   "title": "Getimg.ai",
+   "url": "https://getimg.ai",
+   "desc": "AI 批量生图",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "SeaArt",
+   "url": "https://www.seaart.ai",
+   "desc": "海艺 AI 绘画",
+   "subcatId": "生图与视频",
+   "badge": ""
+  },
+  {
+   "title": "Civitai 里站",
+   "url": "https://civitai.com",
+   "desc": "模型社区",
+   "subcatId": "聚合平台",
+   "badge": ""
+  }
+ ],
+ "ai_prompts": [
+  {
+   "title": "Prompt Hero",
+   "url": "https://prompthero.com",
+   "desc": "Prompt 灵感库",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "Lexica",
+   "url": "https://lexica.art",
+   "desc": "Stable Diffusion 提示词库",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "OpenArt",
+   "url": "https://openart.ai",
+   "desc": "AI 提示词与画廊",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "PromptBase",
+   "url": "https://promptbase.com",
+   "desc": "Prompt 交易市场",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "FlowGPT",
+   "url": "https://flowgpt.com",
+   "desc": "热门 Prompt 分享社区",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "Awesome-CHATGPT",
+   "url": "https://github.com/f/awesome-chatgpt-prompts",
+   "desc": "ChatGPT Prompt 大全",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "Learn Prompting",
+   "url": "https://learnprompting.org",
+   "desc": "提示词学习教程",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "Prompt 中文网",
+   "url": "https://www.promptcn.com",
+   "desc": "中文提示词社区",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "GitHub Copilot",
+   "url": "https://github.com/features/copilot",
+   "desc": "AI 编程助手",
+   "subcatId": "Skill社区",
+   "badge": ""
+  },
+  {
+   "title": "Hugging Face",
+   "url": "https://huggingface.co",
+   "desc": "AI 模型社区",
+   "subcatId": "Skill社区",
+   "badge": "HOT"
+  },
+  {
+   "title": "Kaggle",
+   "url": "https://www.kaggle.com",
+   "desc": "机器学习竞赛社区",
+   "subcatId": "Skill社区",
+   "badge": ""
+  },
+  {
+   "title": "ModelScope",
+   "url": "https://modelscope.cn",
+   "desc": "魔搭 AI 模型社区",
+   "subcatId": "Skill社区",
+   "badge": ""
+  },
+  {
+   "title": "Civitai",
+   "url": "https://civitai.com",
+   "desc": "AI 模型与 LoRA 社区",
+   "subcatId": "Skill社区",
+   "badge": ""
+  },
+  {
+   "title": "Gradio",
+   "url": "https://gradio.app",
+   "desc": "AI Demo 快速搭建",
+   "subcatId": "Skill社区",
+   "badge": ""
+  },
+  {
+   "title": "Replicate",
+   "url": "https://replicate.com",
+   "desc": "云端模型 API",
+   "subcatId": "Skill社区",
+   "badge": ""
+  },
+  {
+   "title": "Fish Audio",
+   "url": "https://fish.audio",
+   "desc": "AI 语音合成",
+   "subcatId": "Skill社区",
+   "badge": ""
+  },
+  {
+   "title": "ElevenLabs",
+   "url": "https://elevenlabs.io",
+   "desc": "AI 语音克隆",
+   "subcatId": "Skill社区",
+   "badge": ""
+  },
+  {
+   "title": "Bing 图像",
+   "url": "https://www.bing.com/images/create",
+   "desc": "必应 AI 生图",
+   "subcatId": "灵感画廊",
+   "badge": ""
+  },
+  {
+   "title": "Niji Journey",
+   "url": "https://nijijourney.com",
+   "desc": "二次元 AI 生图",
+   "subcatId": "灵感画廊",
+   "badge": ""
+  },
+  {
+   "title": "Perchance",
+   "url": "https://perchance.org",
+   "desc": "随机生成器合集",
+   "subcatId": "灵感画廊",
+   "badge": ""
+  },
+  {
+   "title": "Artbreeder",
+   "url": "https://www.artbreeder.com",
+   "desc": "AI 肖像基因编辑",
+   "subcatId": "灵感画廊",
+   "badge": ""
+  },
+  {
+   "title": "NightCafe",
+   "url": "https://creator.nightcafe.studio",
+   "desc": "AI 艺术创作",
+   "subcatId": "灵感画廊",
+   "badge": ""
+  },
+  {
+   "title": "Playground AI",
+   "url": "https://playground.com",
+   "desc": "AI 绘画创作",
+   "subcatId": "灵感画廊",
+   "badge": ""
+  },
+  {
+   "title": "DeviantArt",
+   "url": "https://www.deviantart.com",
+   "desc": "艺术社区与 AI 画廊",
+   "subcatId": "灵感画廊",
+   "badge": ""
+  },
+  {
+   "title": "PromptLayer",
+   "url": "https://promptlayer.com",
+   "desc": "Prompt 工程平台",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "Promptomania",
+   "url": "https://promptomania.com",
+   "desc": "结构化提示词生成",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "OpenPrompt 中文",
+   "url": "https://www.openprompt.cn",
+   "desc": "中文提示词库",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "Phraser",
+   "url": "https://phraser.tech",
+   "desc": "AI 提示词生成器",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "Protobot",
+   "url": "https://protobot.com",
+   "desc": "随机创意提示",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "PromptFolder",
+   "url": "https://promptfolder.com",
+   "desc": "提示词管理",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "Stable Diffusion Prompts",
+   "url": "https://stable-diffusion-art.com",
+   "desc": "SD 提示词教程",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "Krea 灵感",
+   "url": "https://www.krea.ai",
+   "desc": "AI 灵感画廊",
+   "subcatId": "灵感画廊",
+   "badge": ""
+  },
+  {
+   "title": "Artstation",
+   "url": "https://www.artstation.com",
+   "desc": "艺术创作社区",
+   "subcatId": "灵感画廊",
+   "badge": ""
+  },
+  {
+   "title": "Behance",
+   "url": "https://www.behance.net",
+   "desc": "设计灵感社区",
+   "subcatId": "灵感画廊",
+   "badge": ""
+  },
+  {
+   "title": "Dribbble",
+   "url": "https://dribbble.com",
+   "desc": "设计师灵感库",
+   "subcatId": "灵感画廊",
+   "badge": ""
+  },
+  {
+   "title": "Pintrest",
+   "url": "https://www.pinterest.com",
+   "desc": "灵感采集社区",
+   "subcatId": "灵感画廊",
+   "badge": ""
+  },
+  {
+   "title": "花瓣灵感",
+   "url": "https://huaban.com",
+   "desc": "中文灵感采集",
+   "subcatId": "灵感画廊",
+   "badge": ""
+  },
+  {
+   "title": "PromptPerfect",
+   "url": "https://promptperfect.jina.ai",
+   "desc": "提示词优化",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "Orion Prompt",
+   "url": "https://www.orion-prompt.com",
+   "desc": "AI 提示词库",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "CLIP Interrogator",
+   "url": "https://huggingface.co/spaces/fffiloni/CLIP-Interrogator-2",
+   "desc": "反推提示词",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "Prompt Engineering Guide",
+   "url": "https://www.promptingguide.ai",
+   "desc": "提示词工程指南",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "Sharesight 社区",
+   "url": "https://www.promptengineering.org",
+   "desc": "提示词社区",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "Krea AI 社区",
+   "url": "https://www.krea.ai",
+   "desc": "AI 创作社区",
+   "subcatId": "灵感画廊",
+   "badge": ""
+  },
+  {
+   "title": "PromptVine",
+   "url": "https://www.promptvine.com",
+   "desc": "提示词资源",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  },
+  {
+   "title": "Prompting Guide 中文",
+   "url": "https://www.promptingguide.ai",
+   "desc": "中文提示词教程",
+   "subcatId": "Prompt咒语",
+   "badge": ""
+  }
+ ],
+ "tools_magic": [
+  {
+   "title": "Google 翻译",
+   "url": "https://translate.google.com",
+   "desc": "在线翻译",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "百度翻译",
+   "url": "https://fanyi.baidu.com",
+   "desc": "百度在线翻译",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "DeepL",
+   "url": "https://www.deepl.com",
+   "desc": "深度学习翻译",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "有道翻译",
+   "url": "https://fanyi.youdao.com",
+   "desc": "有道在线翻译",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "Grammarly",
+   "url": "https://www.grammarly.com",
+   "desc": "英文写作校对",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "QuillBot",
+   "url": "https://quillbot.com",
+   "desc": "AI 改写润色",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "SmallPDF",
+   "url": "https://smallpdf.com",
+   "desc": "PDF 在线处理",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "iLovePDF",
+   "url": "https://www.ilovepdf.com",
+   "desc": "PDF 合并压缩",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "迅捷PDF",
+   "url": "https://app.xunjiepdf.com",
+   "desc": "PDF 转换工具",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "WPS 在线",
+   "url": "https://www.kdocs.cn",
+   "desc": "金山在线文档",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "腾讯文档",
+   "url": "https://docs.qq.com",
+   "desc": "腾讯在线协作",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "石墨文档",
+   "url": "https://shimo.im",
+   "desc": "石墨在线文档",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "Notion",
+   "url": "https://www.notion.so",
+   "desc": "全能笔记协作",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "语雀",
+   "url": "https://www.yuque.com",
+   "desc": "阿里知识库",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "飞书文档",
+   "url": "https://www.feishu.cn",
+   "desc": "飞书在线文档",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "幕布思维导图",
+   "url": "https://mubu.com",
+   "desc": "大纲导图",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "百度网盘",
+   "url": "https://pan.baidu.com",
+   "desc": "百度云存储",
+   "subcatId": "网络工具",
+   "badge": ""
+  },
+  {
+   "title": "阿里云盘",
+   "url": "https://www.alipan.com",
+   "desc": "阿里云存储",
+   "subcatId": "网络工具",
+   "badge": ""
+  },
+  {
+   "title": "夸克网盘",
+   "url": "https://pan.quark.cn",
+   "desc": "夸克云存储",
+   "subcatId": "网络工具",
+   "badge": ""
+  },
+  {
+   "title": "123云盘",
+   "url": "https://www.123pan.com",
+   "desc": "123云盘",
+   "subcatId": "网络工具",
+   "badge": ""
+  },
+  {
+   "title": "蓝奏云",
+   "url": "https://www.lanzou.com",
+   "desc": "蓝奏云存储",
+   "subcatId": "网络工具",
+   "badge": ""
+  },
+  {
+   "title": "腾讯微云",
+   "url": "https://www.weiyun.com",
+   "desc": "腾讯微云",
+   "subcatId": "网络工具",
+   "badge": ""
+  },
+  {
+   "title": "GitHub",
+   "url": "https://github.com",
+   "desc": "全球最大代码托管",
+   "subcatId": "极客工具",
+   "badge": "HOT"
+  },
+  {
+   "title": "Gitee",
+   "url": "https://gitee.com",
+   "desc": "国内代码托管",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "Stack Overflow",
+   "url": "https://stackoverflow.com",
+   "desc": "程序员问答社区",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "菜鸟教程",
+   "url": "https://www.runoob.com",
+   "desc": "编程入门教程",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "W3School",
+   "url": "https://www.w3school.com.cn",
+   "desc": "前端学习教程",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "MDN Web Docs",
+   "url": "https://developer.mozilla.org",
+   "desc": "Web 开发文档",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "CSDN",
+   "url": "https://www.csdn.net",
+   "desc": "技术社区博客",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "掘金",
+   "url": "https://juejin.cn",
+   "desc": "开发者技术社区",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "博客园",
+   "url": "https://www.cnblogs.com",
+   "desc": "技术博客平台",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "OSCHINA",
+   "url": "https://www.oschina.net",
+   "desc": "开源中国社区",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "Json.cn",
+   "url": "https://www.json.cn",
+   "desc": "JSON 在线解析",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "在线正则",
+   "url": "https://regex101.com",
+   "desc": "正则表达式测试",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "ASCII 码表",
+   "url": "https://www.asciitable.com",
+   "desc": "ASCII 查询",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "二维码生成",
+   "url": "https://cli.im",
+   "desc": "草料二维码",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "百度脑图",
+   "url": "https://naotu.baidu.com",
+   "desc": "在线思维导图",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "ProcessOn",
+   "url": "https://www.processon.com",
+   "desc": "流程图制图",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "AlltoAll",
+   "url": "https://www.alltoall.net",
+   "desc": "万能格式转换",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "转换云",
+   "url": "https://www.zhuanhuanyun.com",
+   "desc": "在线文件转换",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "CloudConvert",
+   "url": "https://cloudconvert.com",
+   "desc": "云端格式转换",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "Feem 传输",
+   "url": "https://feem.io",
+   "desc": "跨设备文件传输",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "LocalSend",
+   "url": "https://localsend.org",
+   "desc": "开源局域网传输",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "AirDroid",
+   "url": "https://www.airdroid.com",
+   "desc": "手机电脑互传",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "向日葵远程",
+   "url": "https://sunlogin.oray.com",
+   "desc": "远程桌面控制",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "ToDesk",
+   "url": "https://www.todesk.com",
+   "desc": "免费远程控制",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "TeamViewer",
+   "url": "https://www.teamviewer.com",
+   "desc": "国际远程软件",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "网易见外",
+   "url": "https://jianwai.netease.com",
+   "desc": "AI 翻译字幕工具",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "腾讯 AI 实验室",
+   "url": "https://ailab.tencent.com",
+   "desc": "腾讯 AI 研究",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "Model Zoo",
+   "url": "https://modelzoo.co",
+   "desc": "AI 模型集合",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "Papers with Code",
+   "url": "https://paperswithcode.com",
+   "desc": "论文代码集合",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "arXiv 中文",
+   "url": "https://arxiv.org",
+   "desc": "论文预印本",
+   "subcatId": "极客工具",
+   "badge": ""
+  },
+  {
+   "title": "老唐导航",
+   "url": "https://www.laoleng.vip",
+   "desc": "资源导航站",
+   "subcatId": "网络工具",
+   "badge": ""
+  },
+  {
+   "title": "小舒同学",
+   "url": "https://www.xiaoshu.site",
+   "desc": "AI 工具导航",
+   "subcatId": "网络工具",
+   "badge": ""
+  },
+  {
+   "title": "WikiHow",
+   "url": "https://www.wikihow.com",
+   "desc": "生活技能百科",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "马蜂窝攻略",
+   "url": "https://www.mafengwo.cn",
+   "desc": "旅行攻略",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "国家政务平台",
+   "url": "https://gjzwfw.www.gov.cn",
+   "desc": "政务办事大厅",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "个人所得税",
+   "url": "https://etax.chinatax.gov.cn",
+   "desc": "个税APP官网",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "全国社保",
+   "url": "https://si.12333.gov.cn",
+   "desc": "社保公共服务",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "12333 官网",
+   "url": "https://www.12333.gov.cn",
+   "desc": "人社服务",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "住房公积金",
+   "url": "https://www.12329.cn",
+   "desc": "公积金查询",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "交管12123",
+   "url": "https://bj.122.gov.cn",
+   "desc": "交管服务",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "国家反诈",
+   "url": "https://www.12321.cn",
+   "desc": "反诈举报",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "微信支付官网",
+   "url": "https://pay.weixin.qq.com",
+   "desc": "微信支付",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "支付宝官网",
+   "url": "https://www.alipay.com",
+   "desc": "支付宝",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "中国移动",
+   "url": "https://www.10086.cn",
+   "desc": "移动营业厅",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "中国联通",
+   "url": "https://www.10010.com",
+   "desc": "联通营业厅",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "中国电信",
+   "url": "https://www.189.cn",
+   "desc": "电信营业厅",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "国家企业信用",
+   "url": "https://www.gsxt.gov.cn",
+   "desc": "企业信息公示",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "中国裁判文书网",
+   "url": "https://wenshu.court.gov.cn",
+   "desc": "裁判文书查询",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "中国执行信息公开",
+   "url": "https://zxgk.court.gov.cn",
+   "desc": "执行信息查询",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  },
+  {
+   "title": "国家知识产权局",
+   "url": "https://www.cnipa.gov.cn",
+   "desc": "商标专利查询",
+   "subcatId": "日常百宝箱",
+   "badge": ""
+  }
+ ],
+ "short_drama": [
+  {
+   "title": "红果短剧",
+   "url": "https://www.hongguodrama.com",
+   "desc": "红果免费短剧",
+   "subcatId": "热门短剧",
+   "badge": "HOT"
+  },
+  {
+   "title": "河马剧场",
+   "url": "https://www.hemady.com",
+   "desc": "河马免费短剧",
+   "subcatId": "热门短剧",
+   "badge": ""
+  },
+  {
+   "title": "番茄短剧",
+   "url": "https://fanqienovel.com",
+   "desc": "番茄短剧频道",
+   "subcatId": "热门短剧",
+   "badge": ""
+  },
+  {
+   "title": "星芽短剧",
+   "url": "https://xingya.tv",
+   "desc": "星芽短视频剧",
+   "subcatId": "热门短剧",
+   "badge": ""
+  },
+  {
+   "title": "快手极速短剧",
+   "url": "https://www.kuaishou.com",
+   "desc": "快手短剧频道",
+   "subcatId": "热门短剧",
+   "badge": ""
+  },
+  {
+   "title": "抖音短剧",
+   "url": "https://www.douyin.com",
+   "desc": "抖音短剧频道",
+   "subcatId": "热门短剧",
+   "badge": ""
+  },
+  {
+   "title": "迷你世界短剧",
+   "url": "https://www.mingewellet.com",
+   "desc": "迷你短剧",
+   "subcatId": "最新上架",
+   "badge": ""
+  },
+  {
+   "title": "青潮剧场",
+   "url": "https://www.qingchao.tv",
+   "desc": "青潮免费短剧",
+   "subcatId": "最新上架",
+   "badge": ""
+  },
+  {
+   "title": "九州短剧",
+   "url": "https://www.jiuzhou.tv",
+   "desc": "九州竖屏短剧",
+   "subcatId": "最新上架",
+   "badge": ""
+  },
+  {
+   "title": "芒果TV短剧",
+   "url": "https://www.mgtv.com",
+   "desc": "芒果短剧频道",
+   "subcatId": "最新上架",
+   "badge": ""
+  }
+ ],
+ "movie": [
+  {
+   "title": "腾讯视频",
+   "url": "https://v.qq.com",
+   "desc": "腾讯在线视频",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "爱奇艺",
+   "url": "https://www.iqiyi.com",
+   "desc": "爱奇艺视频",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "优酷",
+   "url": "https://www.youku.com",
+   "desc": "优酷视频",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "芒果TV",
+   "url": "https://www.mgtv.com",
+   "desc": "芒果在线视频",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "B站",
+   "url": "https://www.bilibili.com",
+   "desc": "Bilibili 弹幕视频",
+   "subcatId": "在线看",
+   "badge": "HOT"
+  },
+  {
+   "title": "西瓜视频",
+   "url": "https://www.ixigua.com",
+   "desc": "西瓜视频",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "咪咕视频",
+   "url": "https://www.miguvideo.com",
+   "desc": "咪咕在线视频",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "搜狐视频",
+   "url": "https://tv.sohu.com",
+   "desc": "搜狐视频",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "1905电影网",
+   "url": "https://www.1905.com",
+   "desc": "国内电影在线",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "Netflix",
+   "url": "https://www.netflix.com",
+   "desc": "Netflix 流媒体",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "Disney+",
+   "url": "https://www.disneyplus.com",
+   "desc": "迪士尼流媒体",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "Apple TV+",
+   "url": "https://tv.apple.com",
+   "desc": "Apple 流媒体",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "豆瓣电影",
+   "url": "https://movie.douban.com",
+   "desc": "电影评分社区",
+   "subcatId": "下载",
+   "badge": ""
+  },
+  {
+   "title": "IMDb",
+   "url": "https://www.imdb.com",
+   "desc": "国际电影资料库",
+   "subcatId": "下载",
+   "badge": ""
+  },
+  {
+   "title": "Rotten Tomatoes",
+   "url": "https://www.rottentomatoes.com",
+   "desc": "烂番茄评分",
+   "subcatId": "下载",
+   "badge": ""
+  },
+  {
+   "title": "迅雷下载",
+   "url": "https://www.xunlei.com",
+   "desc": "迅雷下载工具",
+   "subcatId": "下载",
+   "badge": ""
+  },
+  {
+   "title": "115网盘下载",
+   "url": "https://115.com",
+   "desc": "115 云存储",
+   "subcatId": "下载",
+   "badge": ""
+  },
+  {
+   "title": "字幕库",
+   "url": "https://www.zimuoo.com",
+   "desc": "字幕下载",
+   "subcatId": "下载",
+   "badge": ""
+  },
+  {
+   "title": "射手网字幕",
+   "url": "https://assrt.net",
+   "desc": "射手字幕下载",
+   "subcatId": "下载",
+   "badge": ""
+  },
+  {
+   "title": "人人影视",
+   "url": "https://www.rrvs.info",
+   "desc": "影视资源站",
+   "subcatId": "下载",
+   "badge": ""
+  },
+  {
+   "title": "AGE 动漫",
+   "url": "https://www.agedm.org",
+   "desc": "动漫在线观看",
+   "subcatId": "动漫",
+   "badge": ""
+  },
+  {
+   "title": "樱花动漫",
+   "url": "https://www.yhdm.io",
+   "desc": "樱花动漫在线",
+   "subcatId": "动漫",
+   "badge": ""
+  },
+  {
+   "title": "嘀哩嘀哩",
+   "url": "https://www.dilidili.wang",
+   "desc": "二次元动漫网",
+   "subcatId": "动漫",
+   "badge": ""
+  },
+  {
+   "title": "异世界动漫",
+   "url": "https://www.verydm.com",
+   "desc": "动漫资源",
+   "subcatId": "动漫",
+   "badge": ""
+  },
+  {
+   "title": "Anilist",
+   "url": "https://anilist.co",
+   "desc": "动漫番剧数据库",
+   "subcatId": "动漫",
+   "badge": ""
+  },
+  {
+   "title": "Anime1",
+   "url": "https://anime1.me",
+   "desc": "日本动漫在线",
+   "subcatId": "动漫",
+   "badge": ""
+  },
+  {
+   "title": "zoro.to",
+   "url": "https://zoro.to",
+   "desc": "海外动漫在线",
+   "subcatId": "动漫",
+   "badge": ""
+  },
+  {
+   "title": "美国电影协会",
+   "url": "https://www.mpaa.org",
+   "desc": "电影分级",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "Cineamo",
+   "url": "https://cineamo.com",
+   "desc": "电影资讯",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "烂番茄新鲜度",
+   "url": "https://www.rottentomatoes.com",
+   "desc": "电影新鲜度",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "MyDramaList",
+   "url": "https://mydramalist.com",
+   "desc": "亚洲剧集库",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "Viki",
+   "url": "https://www.viki.com",
+   "desc": "亚洲影视平台",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "Plex",
+   "url": "https://www.plex.tv",
+   "desc": "媒体服务器",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "Jellyfin",
+   "url": "https://jellyfin.org",
+   "desc": "开源媒体服务",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "Kodi",
+   "url": "https://kodi.tv",
+   "desc": "开源播放中心",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "MX Player",
+   "url": "https://www.mxplayer.in",
+   "desc": "安卓视频播放器",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "君子网",
+   "url": "https://www.jzdy.net",
+   "desc": "影视资源",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "全网影视",
+   "url": "https://www.qw5.tv",
+   "desc": "影视搜索",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "奇热网",
+   "url": "https://www.7772.com",
+   "desc": "在线影视",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "星辰影院",
+   "url": "https://www.xcyy8.com",
+   "desc": "影视在线",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "久久电影",
+   "url": "https://www.99dyw.com",
+   "desc": "电影资源",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "影视大全",
+   "url": "https://www.ysdq.com",
+   "desc": "视频聚合",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "动漫花园",
+   "url": "https://www.dmhy.org",
+   "desc": "动漫资源发布",
+   "subcatId": "动漫",
+   "badge": ""
+  },
+  {
+   "title": "AcFun",
+   "url": "https://www.acfun.cn",
+   "desc": "弹幕视频网站",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "央视网",
+   "url": "https://www.cctv.com",
+   "desc": "央视节目",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "湖南卫视",
+   "url": "https://www.hunantv.com",
+   "desc": "芒果内容",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "浙江卫视",
+   "url": "https://www.zjstv.com",
+   "desc": "浙视内容",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "纪录片之家",
+   "url": "https://www.jlpzj.com",
+   "desc": "纪录片资源",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "国家地理",
+   "url": "https://www.natgeo.com.cn",
+   "desc": "自然纪录片",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "Discovery",
+   "url": "https://www.discovery.com",
+   "desc": "探索频道",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "BBC",
+   "url": "https://www.bbc.com",
+   "desc": "英国广播公司",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "华数TV",
+   "url": "https://www.wasu.com",
+   "desc": "华数电视",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "百视TV",
+   "url": "https://www.bestv.com.cn",
+   "desc": "百视视频",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "广东IPTV",
+   "url": "https://www.gdntv.com",
+   "desc": "广东影视频道",
+   "subcatId": "在线看",
+   "badge": ""
+  },
+  {
+   "title": "环球记录",
+   "url": "https://www.nationalgeographic.com",
+   "desc": "国家地理英文站",
+   "subcatId": "在线看",
+   "badge": ""
+  }
+ ],
+ "discounts": [
+  {
+   "title": "美团",
+   "url": "https://www.meituan.com",
+   "desc": "美团本地生活",
+   "subcatId": "外卖美食",
+   "badge": "HOT"
+  },
+  {
+   "title": "饿了么",
+   "url": "https://www.ele.me",
+   "desc": "饿了么外卖",
+   "subcatId": "外卖美食",
+   "badge": ""
+  },
+  {
+   "title": "大众点评",
+   "url": "https://www.dianping.com",
+   "desc": "本地吃喝玩乐",
+   "subcatId": "外卖美食",
+   "badge": ""
+  },
+  {
+   "title": "口碑",
+   "url": "https://www.koubei.com",
+   "desc": "阿里本地生活",
+   "subcatId": "外卖美食",
+   "badge": ""
+  },
+  {
+   "title": "肯德基",
+   "url": "https://www.kfc.com.cn",
+   "desc": "肯德基优惠",
+   "subcatId": "外卖美食",
+   "badge": ""
+  },
+  {
+   "title": "麦当劳",
+   "url": "https://www.mcdonalds.com.cn",
+   "desc": "麦当劳优惠",
+   "subcatId": "外卖美食",
+   "badge": ""
+  },
+  {
+   "title": "瑞幸咖啡",
+   "url": "https://www.luckincoffee.com",
+   "desc": "瑞幸咖啡优惠券",
+   "subcatId": "咖啡饮品",
+   "badge": ""
+  },
+  {
+   "title": "星巴克",
+   "url": "https://www.starbucks.com.cn",
+   "desc": "星巴克中国",
+   "subcatId": "咖啡饮品",
+   "badge": ""
+  },
+  {
+   "title": "库迪咖啡",
+   "url": "https://www.cotticoffee.com",
+   "desc": "库迪咖啡",
+   "subcatId": "咖啡饮品",
+   "badge": ""
+  },
+  {
+   "title": "喜茶",
+   "url": "https://www.heytea.com",
+   "desc": "喜茶点单",
+   "subcatId": "咖啡饮品",
+   "badge": ""
+  },
+  {
+   "title": "奈雪的茶",
+   "url": "https://www.naixue.com",
+   "desc": "奈雪茶饮",
+   "subcatId": "咖啡饮品",
+   "badge": ""
+  },
+  {
+   "title": "蜜雪冰城",
+   "url": "https://www.mixue.com",
+   "desc": "蜜雪冰城",
+   "subcatId": "咖啡饮品",
+   "badge": ""
+  },
+  {
+   "title": "滴滴出行",
+   "url": "https://www.didiglobal.com",
+   "desc": "滴滴打车优惠",
+   "subcatId": "出行生活",
+   "badge": ""
+  },
+  {
+   "title": "T3出行",
+   "url": "https://www.t3go.com",
+   "desc": "T3 网约车",
+   "subcatId": "出行生活",
+   "badge": ""
+  },
+  {
+   "title": "哈啰出行",
+   "url": "https://www.hellobike.com",
+   "desc": "哈啰单车出行",
+   "subcatId": "出行生活",
+   "badge": ""
+  },
+  {
+   "title": "携程旅行",
+   "url": "https://www.ctrip.com",
+   "desc": "携程机票酒店",
+   "subcatId": "出行生活",
+   "badge": ""
+  },
+  {
+   "title": "去哪儿",
+   "url": "https://www.qunar.com",
+   "desc": "去哪儿旅游",
+   "subcatId": "出行生活",
+   "badge": ""
+  },
+  {
+   "title": "飞猪旅行",
+   "url": "https://www.fliggy.com",
+   "desc": "阿里飞猪旅游",
+   "subcatId": "出行生活",
+   "badge": ""
+  },
+  {
+   "title": "同程旅行",
+   "url": "https://www.ly.com",
+   "desc": "同程旅游",
+   "subcatId": "出行生活",
+   "badge": ""
+  },
+  {
+   "title": "马蜂窝",
+   "url": "https://www.mafengwo.cn",
+   "desc": "旅游攻略社区",
+   "subcatId": "出行生活",
+   "badge": ""
+  },
+  {
+   "title": "airbnb",
+   "url": "https://www.airbnb.cn",
+   "desc": "爱彼迎民宿",
+   "subcatId": "出行生活",
+   "badge": ""
+  },
+  {
+   "title": "途家民宿",
+   "url": "https://www.tujia.com",
+   "desc": "途家民宿预订",
+   "subcatId": "出行生活",
+   "badge": ""
+  },
+  {
+   "title": "12306",
+   "url": "https://www.12306.cn",
+   "desc": "铁路购票",
+   "subcatId": "出行生活",
+   "badge": ""
+  },
+  {
+   "title": "南航",
+   "url": "https://www.csair.com",
+   "desc": "南方航空官网",
+   "subcatId": "出行生活",
+   "badge": ""
+  },
+  {
+   "title": "国航",
+   "url": "https://www.airchina.com.cn",
+   "desc": "中国国航官网",
+   "subcatId": "出行生活",
+   "badge": ""
+  }
+ ],
+ "resources": [
+  {
+   "title": "52破解",
+   "url": "https://www.52pojie.cn",
+   "desc": "软件逆向论坛",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "吾爱破解",
+   "url": "https://www.52pojie.cn",
+   "desc": "无广告软件分享",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "果核剥壳",
+   "url": "https://www.ghxi.com",
+   "desc": "软件破解绿色版",
+   "subcatId": "软件库",
+   "badge": "HOT"
+  },
+  {
+   "title": "马小帮",
+   "url": "https://www.maxiaobang.com",
+   "desc": "工具软件集合",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "Doge资源站",
+   "url": "https://www.dogedoge.com",
+   "desc": "软件资源导航",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "下载之家",
+   "url": "https://www.downxia.com",
+   "desc": "软件下载站",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "飘云阁",
+   "url": "https://www.chinapo.net",
+   "desc": "软件破解社区",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "itellyou",
+   "url": "https://msdn.itellyou.cn",
+   "desc": "系统镜像下载",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "知行软件",
+   "url": "https://www.zhixingsoft.cn",
+   "desc": "正版软件推荐",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "Wallhaven",
+   "url": "https://wallhaven.cc",
+   "desc": "高清壁纸社区",
+   "subcatId": "高清壁纸",
+   "badge": ""
+  },
+  {
+   "title": "Wallpaper Engine",
+   "url": "https://www.wallpaperengine.io",
+   "desc": "动态壁纸",
+   "subcatId": "高清壁纸",
+   "badge": ""
+  },
+  {
+   "title": "极简壁纸",
+   "url": "https://bz.zzzmh.cn",
+   "desc": "极简风格壁纸",
+   "subcatId": "高清壁纸",
+   "badge": ""
+  },
+  {
+   "title": "彼岸壁纸",
+   "url": "https://pic.netbian.com",
+   "desc": "彼岸高清壁纸",
+   "subcatId": "高清壁纸",
+   "badge": ""
+  },
+  {
+   "title": "小米壁纸",
+   "url": "https://tu.mi.com",
+   "desc": "小米主题壁纸",
+   "subcatId": "高清壁纸",
+   "badge": ""
+  },
+  {
+   "title": "Reddit",
+   "url": "https://www.reddit.com",
+   "desc": "全球社区论坛",
+   "subcatId": "极客社区",
+   "badge": ""
+  },
+  {
+   "title": "V2EX",
+   "url": "https://www.v2ex.com",
+   "desc": "创意工作者社区",
+   "subcatId": "极客社区",
+   "badge": ""
+  },
+  {
+   "title": "Hacker News",
+   "url": "https://news.ycombinator.com",
+   "desc": "硅谷科技社区",
+   "subcatId": "极客社区",
+   "badge": ""
+  },
+  {
+   "title": "少数派",
+   "url": "https://sspai.com",
+   "desc": "高效生活应用推荐",
+   "subcatId": "极客社区",
+   "badge": ""
+  },
+  {
+   "title": "什么值得买",
+   "url": "https://www.smzdm.com",
+   "desc": "好价商品社区",
+   "subcatId": "极客社区",
+   "badge": ""
+  },
+  {
+   "title": "差评",
+   "url": "https://www.dapian.com",
+   "desc": "科技测评媒体",
+   "subcatId": "极客社区",
+   "badge": ""
+  },
+  {
+   "title": "IT之家",
+   "url": "https://www.ithome.com",
+   "desc": "科技资讯社区",
+   "subcatId": "极客社区",
+   "badge": ""
+  },
+  {
+   "title": "E 站漫画",
+   "url": "https://exhentai.org",
+   "desc": "漫画资源站",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "MangaDex",
+   "url": "https://mangadex.org",
+   "desc": "漫画阅读平台",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "Manganelo",
+   "url": "https://www.manganelo.tv",
+   "desc": "漫画在线",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "Webtoon",
+   "url": "https://www.webtoons.com",
+   "desc": "条漫平台",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "动漫之家",
+   "url": "https://www.dmzj.com",
+   "desc": "中文漫画站",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "腐漫画",
+   "url": "https://www.fumanhua.com",
+   "desc": "漫画资源",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "国家数字图书馆",
+   "url": "https://www.nlc.cn",
+   "desc": "数字图书馆",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "中国知网",
+   "url": "https://www.cnki.net",
+   "desc": "学术文献库",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "万方数据",
+   "url": "https://www.wanfangdata.com.cn",
+   "desc": "学术数据库",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "ScienceDirect",
+   "url": "https://www.sciencedirect.com",
+   "desc": "学术期刊库",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "PMC",
+   "url": "https://www.ncbi.nlm.nih.gov/pmc",
+   "desc": "生物医学文献",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "Library Genesis",
+   "url": "https://libgen.is",
+   "desc": "电子书镜像库",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "嗶哩嗶哩素材",
+   "url": "https://search.bilibili.com",
+   "desc": "B站素材",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "蜗牛资源",
+   "url": "https://www.woniuxy.com",
+   "desc": "软件资源站",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "枫林软件",
+   "url": "https://www.00fx.com",
+   "desc": "绿色软件站",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "软件学堂",
+   "url": "https://www.xue51.com",
+   "desc": "软件教程站",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "远景论坛",
+   "url": "https://bbs.pcbeta.com",
+   "desc": "系统技术论坛",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "MDL 论坛",
+   "url": "https://forums.mydigitallife.net",
+   "desc": "海外系统论坛",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "AppDarwin",
+   "url": "https://appddarwing.com",
+   "desc": "苹果软件库",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "苹果软件站",
+   "url": "https://www.apple.com.cn",
+   "desc": "苹果官网",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "Softpedia",
+   "url": "https://www.softpedia.com",
+   "desc": "全球软件库",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "FileHippo",
+   "url": "https://filehippo.com",
+   "desc": "软件下载站",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "MajorGeeks",
+   "url": "https://www.majorgeeks.com",
+   "desc": "软件工具站",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "壁纸引擎创意工坊",
+   "url": "https://steamcommunity.com",
+   "desc": "动态壁纸工坊",
+   "subcatId": "高清壁纸",
+   "badge": ""
+  },
+  {
+   "title": "极简高清壁纸",
+   "url": "https://wallpaperaccess.com",
+   "desc": "高清壁纸站",
+   "subcatId": "高清壁纸",
+   "badge": ""
+  },
+  {
+   "title": "GoodFon",
+   "url": "https://www.goodfon.com",
+   "desc": "精美壁纸",
+   "subcatId": "高清壁纸",
+   "badge": ""
+  },
+  {
+   "title": "VOFix",
+   "url": "https://www.voopix.com",
+   "desc": "视频工具",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "Ocenaudio",
+   "url": "https://www.ocenaudio.com",
+   "desc": "音频编辑",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "野葱素材",
+   "url": "https://www.yecong.com",
+   "desc": "免费素材",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "千库网",
+   "url": "https://588ku.com",
+   "desc": "素材库",
+   "subcatId": "软件库",
+   "badge": ""
+  },
+  {
+   "title": "摄图网",
+   "url": "https://699pic.com",
+   "desc": "图片素材",
+   "subcatId": "高清壁纸",
+   "badge": ""
+  },
+  {
+   "title": "花瓣头部",
+   "url": "https://huaban.com",
+   "desc": "灵感图片",
+   "subcatId": "高清壁纸",
+   "badge": ""
+  }
+ ],
+ "music": [
+  {
+   "title": "网易云音乐",
+   "url": "https://music.163.com",
+   "desc": "网易云音乐",
+   "subcatId": "无损听歌",
+   "badge": ""
+  },
+  {
+   "title": "QQ音乐",
+   "url": "https://y.qq.com",
+   "desc": "QQ 音乐",
+   "subcatId": "无损听歌",
+   "badge": ""
+  },
+  {
+   "title": "酷狗音乐",
+   "url": "https://www.kugou.com",
+   "desc": "酷狗音乐",
+   "subcatId": "无损听歌",
+   "badge": ""
+  },
+  {
+   "title": "酷我音乐",
+   "url": "https://www.kuwo.cn",
+   "desc": "酷我音乐",
+   "subcatId": "无损听歌",
+   "badge": ""
+  },
+  {
+   "title": "咪咕音乐",
+   "url": "https://music.migu.cn",
+   "desc": "咪咕音乐",
+   "subcatId": "无损听歌",
+   "badge": ""
+  },
+  {
+   "title": "Spotify",
+   "url": "https://open.spotify.com",
+   "desc": "Spotify 流媒体",
+   "subcatId": "无损听歌",
+   "badge": ""
+  },
+  {
+   "title": "Apple Music",
+   "url": "https://music.apple.com",
+   "desc": "Apple Music",
+   "subcatId": "无损听歌",
+   "badge": ""
+  },
+  {
+   "title": "YouTube Music",
+   "url": "https://music.youtube.com",
+   "desc": "YouTube 音乐",
+   "subcatId": "无损听歌",
+   "badge": ""
+  },
+  {
+   "title": "SoundCloud",
+   "url": "https://soundcloud.com",
+   "desc": "独立音乐社区",
+   "subcatId": "无损听歌",
+   "badge": ""
+  },
+  {
+   "title": "荔枝FM",
+   "url": "https://www.lizhi.fm",
+   "desc": "荔枝电台",
+   "subcatId": "网络电台",
+   "badge": ""
+  },
+  {
+   "title": "喜马拉雅",
+   "url": "https://www.ximalaya.com",
+   "desc": "有声书电台",
+   "subcatId": "网络电台",
+   "badge": ""
+  },
+  {
+   "title": "蜻蜓FM",
+   "url": "https://www.qtfm.cn",
+   "desc": "蜻蜓电台",
+   "subcatId": "网络电台",
+   "badge": ""
+  },
+  {
+   "title": "企鹅FM",
+   "url": "https://fm.qq.com",
+   "desc": "企鹅电台",
+   "subcatId": "网络电台",
+   "badge": ""
+  },
+  {
+   "title": "云听",
+   "url": "https://www.radio.cn",
+   "desc": "中央广播电视总台音频",
+   "subcatId": "网络电台",
+   "badge": ""
+  },
+  {
+   "title": "洛雪音乐",
+   "url": "https://github.com/lyswhut/lx-music-desktop",
+   "desc": "开源音乐播放器",
+   "subcatId": "歌曲下载",
+   "badge": ""
+  },
+  {
+   "title": "音乐标签",
+   "url": "https://www.lanzou.com",
+   "desc": "音乐无损下载资源",
+   "subcatId": "歌曲下载",
+   "badge": ""
+  },
+  {
+   "title": "Free MP3",
+   "url": "https://mp3free.online",
+   "desc": "免费 MP3 下载",
+   "subcatId": "歌曲下载",
+   "badge": ""
+  },
+  {
+   "title": "Audiomack",
+   "url": "https://audiomack.com",
+   "desc": "免费音乐下载",
+   "subcatId": "歌曲下载",
+   "badge": ""
+  },
+  {
+   "title": "Jamendo",
+   "url": "https://www.jamendo.com",
+   "desc": "免费版权音乐",
+   "subcatId": "歌曲下载",
+   "badge": ""
+  },
+  {
+   "title": "网易云VIP歌曲",
+   "url": "https://music.163.com",
+   "desc": "网易云音乐",
+   "subcatId": "无损听歌",
+   "badge": ""
+  },
+  {
+   "title": "洛雪音乐 GitHub",
+   "url": "https://github.com/lyswhut/lx-music-desktop",
+   "desc": "开源音乐播放",
+   "subcatId": "歌曲下载",
+   "badge": ""
+  },
+  {
+   "title": "MusicFree",
+   "url": "https://musicfree.catcat.cloud",
+   "desc": "开源聚合播放器",
+   "subcatId": "歌曲下载",
+   "badge": ""
+  },
+  {
+   "title": "Listen1",
+   "url": "https://listen1.github.io",
+   "desc": "聚合音乐听歌",
+   "subcatId": "歌曲下载",
+   "badge": ""
+  },
+  {
+   "title": "Spotify 下载",
+   "url": "https://spotifydown.com",
+   "desc": "Spotify 曲目下载",
+   "subcatId": "歌曲下载",
+   "badge": ""
+  },
+  {
+   "title": "YTMP3",
+   "url": "https://ytmp3.cc",
+   "desc": "YouTube 转 MP3",
+   "subcatId": "歌曲下载",
+   "badge": ""
+  },
+  {
+   "title": "BeatStars",
+   "url": "https://www.beatstars.com",
+   "desc": "嘻哈音乐交易",
+   "subcatId": "歌曲下载",
+   "badge": ""
+  },
+  {
+   "title": "音频提取",
+   "url": "https://www.videvo.net",
+   "desc": "背景音乐素材",
+   "subcatId": "歌曲下载",
+   "badge": ""
+  },
+  {
+   "title": "哔哩音乐",
+   "url": "https://www.bilibili.com",
+   "desc": "音乐视频",
+   "subcatId": "无损听歌",
+   "badge": ""
+  },
+  {
+   "title": "全民K歌",
+   "url": "https://kg.qq.com",
+   "desc": "在线K歌",
+   "subcatId": "无损听歌",
+   "badge": ""
+  },
+  {
+   "title": "唱吧",
+   "url": "https://changba.com",
+   "desc": "唱歌平台",
+   "subcatId": "无损听歌",
+   "badge": ""
+  },
+  {
+   "title": "网易云音乐人",
+   "url": "https://music.163.com",
+   "desc": "音乐人社区",
+   "subcatId": "无损听歌",
+   "badge": ""
+  },
+  {
+   "title": "抖音音乐",
+   "url": "https://www.douyin.com",
+   "desc": "热门音乐",
+   "subcatId": "无损听歌",
+   "badge": ""
+  },
+  {
+   "title": "快手音乐",
+   "url": "https://www.kuaishou.com",
+   "desc": "音乐视频",
+   "subcatId": "无损听歌",
+   "badge": ""
+  },
+  {
+   "title": "5sing",
+   "url": "https://5sing.kugou.com",
+   "desc": "原创音乐社区",
+   "subcatId": "网络电台",
+   "badge": ""
+  },
+  {
+   "title": "中国原创音乐",
+   "url": "https://www.musicpink.cn",
+   "desc": "原创音乐网站",
+   "subcatId": "网络电台",
+   "badge": ""
+  },
+  {
+   "title": "Radio Garden",
+   "url": "https://radio.garden",
+   "desc": "全球电台地图",
+   "subcatId": "网络电台",
+   "badge": ""
+  },
+  {
+   "title": "网易公开课音频",
+   "url": "https://open.163.com",
+   "desc": "音频课程",
+   "subcatId": "网络电台",
+   "badge": ""
+  },
+  {
+   "title": "小宇宙",
+   "url": "https://www.xiaoyuzhoufm.com",
+   "desc": "播客平台",
+   "subcatId": "网络电台",
+   "badge": ""
+  },
+  {
+   "title": "播客中文",
+   "url": "https://podcasts.apple.com",
+   "desc": "中文播客",
+   "subcatId": "网络电台",
+   "badge": ""
+  }
+ ],
+ "novel": [
+  {
+   "title": "起点中文网",
+   "url": "https://www.qidian.com",
+   "desc": "起点网文平台",
+   "subcatId": "热门网文",
+   "badge": "HOT"
+  },
+  {
+   "title": "番茄小说",
+   "url": "https://fanqienovel.com",
+   "desc": "番茄免费小说",
+   "subcatId": "热门网文",
+   "badge": "HOT"
+  },
+  {
+   "title": "七猫免费小说",
+   "url": "https://www.qimao.com",
+   "desc": "七猫免费阅读",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "飞卢小说",
+   "url": "https://b.faloo.com",
+   "desc": "飞卢小说网",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "纵横中文网",
+   "url": "https://www.zongheng.com",
+   "desc": "纵横网文平台",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "晋江文学城",
+   "url": "https://www.jjwxc.net",
+   "desc": "晋江言情文学",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "起点女生网",
+   "url": "https://www.qdmm.com",
+   "desc": "起点女生频道",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "书旗小说",
+   "url": "https://www.shuqi.com",
+   "desc": "书旗免费小说",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "QQ阅读",
+   "url": "https://book.qq.com",
+   "desc": "QQ 阅读",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "掌阅",
+   "url": "https://www.ireader.com.cn",
+   "desc": "掌阅书城",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "熊猫看书",
+   "url": "https://www.panda.co.jp",
+   "desc": "熊猫免费阅读",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "得到",
+   "url": "https://www.dedao.cn",
+   "desc": "知识付费阅读",
+   "subcatId": "经典书库",
+   "badge": ""
+  },
+  {
+   "title": "微信读书",
+   "url": "https://weread.qq.com",
+   "desc": "微信读书",
+   "subcatId": "经典书库",
+   "badge": ""
+  },
+  {
+   "title": "豆瓣阅读",
+   "url": "https://read.douban.com",
+   "desc": "豆瓣阅读",
+   "subcatId": "经典书库",
+   "badge": ""
+  },
+  {
+   "title": "古登堡计划",
+   "url": "https://www.gutenberg.org",
+   "desc": "公版电子书库",
+   "subcatId": "经典书库",
+   "badge": ""
+  },
+  {
+   "title": "Z-Library",
+   "url": "https://z-lib.io",
+   "desc": "电子书下载库",
+   "subcatId": "经典书库",
+   "badge": ""
+  },
+  {
+   "title": "Google Books",
+   "url": "https://books.google.com",
+   "desc": "谷歌图书",
+   "subcatId": "经典书库",
+   "badge": ""
+  },
+  {
+   "title": "哔哩轻小说",
+   "url": "https://lightnovel.us",
+   "desc": "轻小说阅读",
+   "subcatId": "经典书库",
+   "badge": ""
+  },
+  {
+   "title": "有声听书吧",
+   "url": "https://www.ting66.cn",
+   "desc": "有声书资源",
+   "subcatId": "有声听书",
+   "badge": ""
+  },
+  {
+   "title": "懒人听书",
+   "url": "https://www.lrts.me",
+   "desc": "懒人听书",
+   "subcatId": "有声听书",
+   "badge": ""
+  },
+  {
+   "title": "酷我听书",
+   "url": "https://www.kuwo.cn",
+   "desc": "酷我听书频道",
+   "subcatId": "有声听书",
+   "badge": ""
+  },
+  {
+   "title": "喜马拉雅听书",
+   "url": "https://www.ximalaya.com",
+   "desc": "喜马拉雅有声书",
+   "subcatId": "有声听书",
+   "badge": ""
+  },
+  {
+   "title": "起点读书",
+   "url": "https://www.qidian.com",
+   "desc": "起点中文网",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "潇湘书院",
+   "url": "https://www.xxsy.net",
+   "desc": "潇湘言情网",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "红袖添香",
+   "url": "https://www.hongxiu.com",
+   "desc": "女频网文平台",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "云起书院",
+   "url": "https://yunqi.qq.com",
+   "desc": "腾讯女频小说",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "逐浪小说",
+   "url": "https://www.zhulang.com",
+   "desc": "逐浪文学",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "塔读文学",
+   "url": "https://www.tadu.com",
+   "desc": "塔读小说",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "起点男生频道",
+   "url": "https://www.qidian.com",
+   "desc": "男频网文",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "笔趣阁",
+   "url": "https://www.biquge.co",
+   "desc": "免费小说阅读",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "顶点小说",
+   "url": "https://www.23qb.com",
+   "desc": "免费小说站",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "17K小说网",
+   "url": "https://www.17k.com",
+   "desc": "17K 原创文学",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "起点女生",
+   "url": "https://www.qdmm.com",
+   "desc": "女频阅读",
+   "subcatId": "热门网文",
+   "badge": ""
+  },
+  {
+   "title": "番茄免费听书",
+   "url": "https://fanqienovel.com",
+   "desc": "听书频道",
+   "subcatId": "有声听书",
+   "badge": ""
+  },
+  {
+   "title": "懒人畅听",
+   "url": "https://www.lrts.me",
+   "desc": "听书平台",
+   "subcatId": "有声听书",
+   "badge": ""
+  }
+ ],
+ "game": [
+  {
+   "title": "Steam",
+   "url": "https://store.steampowered.com",
+   "desc": "Steam 游戏平台",
+   "subcatId": "单机免米",
+   "badge": "HOT"
+  },
+  {
+   "title": "Epic Games",
+   "url": "https://www.epicgames.com",
+   "desc": "Epic 免费游戏",
+   "subcatId": "单机免米",
+   "badge": "HOT"
+  },
+  {
+   "title": "GOG",
+   "url": "https://www.gog.com",
+   "desc": "GOG 无 DRM 游戏",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "Origin",
+   "url": "https://www.origin.com",
+   "desc": "EA 游戏平台",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "Ubisoft Connect",
+   "url": "https://connect.ubisoft.com",
+   "desc": "育碧游戏平台",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "3DM",
+   "url": "https://www.3dmgame.com",
+   "desc": "3DM 游戏网",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "游民星空",
+   "url": "https://www.gamersky.com",
+   "desc": "单机游戏门户",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "游侠网",
+   "url": "https://www.ali213.net",
+   "desc": "游侠游戏资讯",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "TapTap",
+   "url": "https://www.taptap.cn",
+   "desc": "手游社区平台",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "4399",
+   "url": "https://www.4399.com",
+   "desc": "4399 小游戏",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "7k7k",
+   "url": "https://www.7k7k.com",
+   "desc": "7k7k 小游戏",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "2144",
+   "url": "https://www.2144.cn",
+   "desc": "2144 小游戏",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "Minecraft 官网",
+   "url": "https://www.minecraft.net",
+   "desc": "我的世界官网",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "Roblox",
+   "url": "https://www.roblox.com",
+   "desc": "Roblox 沙盒游戏",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "CrazyGames",
+   "url": "https://www.crazygames.com",
+   "desc": "免安装网页游戏",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "Poki",
+   "url": "https://poki.com",
+   "desc": "Poki 免费网页游戏",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "SteamDB",
+   "url": "https://steamdb.info",
+   "desc": "Steam 数据查询",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "HowLongToBeat",
+   "url": "https://howlongtobeat.com",
+   "desc": "游戏时长查询",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "MC百科",
+   "url": "https://www.mcmod.cn",
+   "desc": "我的世界模组百科",
+   "subcatId": "怀旧模拟器",
+   "badge": ""
+  },
+  {
+   "title": "PPSSPP",
+   "url": "https://www.ppsspp.org",
+   "desc": "PSP 模拟器",
+   "subcatId": "怀旧模拟器",
+   "badge": ""
+  },
+  {
+   "title": "RetroArch",
+   "url": "https://www.retroarch.com",
+   "desc": "全平台模拟器",
+   "subcatId": "怀旧模拟器",
+   "badge": ""
+  },
+  {
+   "title": "DosBox",
+   "url": "https://www.dosbox.com",
+   "desc": "DOS 游戏模拟器",
+   "subcatId": "怀旧模拟器",
+   "badge": ""
+  },
+  {
+   "title": "口袋妖怪中心",
+   "url": "https://www.pokemon.com",
+   "desc": "宝可梦官网",
+   "subcatId": "怀旧模拟器",
+   "badge": ""
+  },
+  {
+   "title": "4399 怀旧专区",
+   "url": "https://www.4399.com/flash",
+   "desc": "4399 Flash 专区",
+   "subcatId": "怀旧模拟器",
+   "badge": ""
+  },
+  {
+   "title": "CurseForge",
+   "url": "https://www.curseforge.com",
+   "desc": "游戏模组平台",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "Nexus Mods",
+   "url": "https://www.nexusmods.com",
+   "desc": "单机游戏模组",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "Modrim",
+   "url": "https://www.modrinth.com",
+   "desc": "开源模组平台",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "itch.io",
+   "url": "https://itch.io",
+   "desc": "独立游戏平台",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "GameJolt",
+   "url": "https://gamejolt.com",
+   "desc": "独立游戏社区",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "Newgrounds",
+   "url": "https://www.newgrounds.com",
+   "desc": "网页游戏社区",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "Kongregate",
+   "url": "https://www.kongregate.com",
+   "desc": "网页游戏平台",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "Y8",
+   "url": "https://www.y8.com",
+   "desc": "Y8 网页游戏",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "Poki 中文",
+   "url": "https://poki.com",
+   "desc": "网页游戏",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "Twitch",
+   "url": "https://www.twitch.tv",
+   "desc": "游戏直播平台",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "斗鱼",
+   "url": "https://www.douyu.com",
+   "desc": "游戏直播",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "虎牙直播",
+   "url": "https://www.huya.com",
+   "desc": "游戏直播平台",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "电竞数据",
+   "url": "https://www.esportsearnings.com",
+   "desc": "电竞奖金统计",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "Steam Charts",
+   "url": "https://steamcharts.com",
+   "desc": "Steam 在线数据",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "米哈游",
+   "url": "https://www.mihoyo.com",
+   "desc": "原神开发商",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "原神官网",
+   "url": "https://ys.mihoyo.com",
+   "desc": "原神官服",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "网易游戏",
+   "url": "https://game.163.com",
+   "desc": "网易游戏中心",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "腾讯游戏",
+   "url": "https://game.qq.com",
+   "desc": "腾讯游戏平台",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "完美世界",
+   "url": "https://www.wanmei.com",
+   "desc": "游戏厂商",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "电玩巴士",
+   "url": "https://www.tgbus.com",
+   "desc": "游戏资讯",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "游久网",
+   "url": "https://www.uuu9.com",
+   "desc": "游戏门户",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "Gametop",
+   "url": "https://gametop.com",
+   "desc": "免费单机游戏",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "Big Fish",
+   "url": "https://www.bigfishgames.com",
+   "desc": "休闲游戏",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "Miniclip",
+   "url": "https://www.miniclip.com",
+   "desc": "网页小游戏",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "Frive",
+   "url": "https://friv.com",
+   "desc": "免费小游戏",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "Armor Games",
+   "url": "https://armorgames.com",
+   "desc": "Flash 游戏",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "GOG 免费游戏",
+   "url": "https://www.gog.com",
+   "desc": "免费游戏专区",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "Free Epic 专区",
+   "url": "https://store.epicgames.com",
+   "desc": "Epic 免费游戏",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "家庭模拟器",
+   "url": "https://dol.retrogames.cc",
+   "desc": "红白机模拟器",
+   "subcatId": "怀旧模拟器",
+   "badge": ""
+  },
+  {
+   "title": "EmulatorZone",
+   "url": "https://www.emulator-zone.com",
+   "desc": "模拟器资源",
+   "subcatId": "怀旧模拟器",
+   "badge": ""
+  },
+  {
+   "title": "Rom Hustler",
+   "url": "https://romhustler.org",
+   "desc": "ROM 下载",
+   "subcatId": "怀旧模拟器",
+   "badge": ""
+  },
+  {
+   "title": "Vimm 模仿",
+   "url": "https://vimm.net",
+   "desc": "游戏 ROM 库",
+   "subcatId": "怀旧模拟器",
+   "badge": ""
+  },
+  {
+   "title": "Switch 模拟器",
+   "url": "https://yuzu-emu.org",
+   "desc": "Switch 模拟器",
+   "subcatId": "怀旧模拟器",
+   "badge": ""
+  },
+  {
+   "title": "Ryujinx",
+   "url": "https://ryujinx.org",
+   "desc": "开源 Switch 模拟器",
+   "subcatId": "怀旧模拟器",
+   "badge": ""
+  },
+  {
+   "title": "TapTap 国际",
+   "url": "https://www.taptap.com",
+   "desc": "国际手游社区",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "Pokemon Showdown",
+   "url": "https://play.pokemonshowdown.com",
+   "desc": "宝可梦对战",
+   "subcatId": "在线秒玩",
+   "badge": ""
+  },
+  {
+   "title": "Nintendo",
+   "url": "https://www.nintendo.com",
+   "desc": "任天堂官网",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "PlayStation",
+   "url": "https://www.playstation.com",
+   "desc": "PS 官方",
+   "subcatId": "单机免米",
+   "badge": ""
+  },
+  {
+   "title": "Xbox",
+   "url": "https://www.xbox.com",
+   "desc": "Xbox 官方",
+   "subcatId": "单机免米",
+   "badge": ""
+  }
+ ],
+ "tools": [
+  {
+   "title": "百度AI识图",
+   "url": "https://image.baidu.com",
+   "desc": "百度识图",
+   "subcatId": "AI助理",
+   "badge": ""
+  },
+  {
+   "title": "微信搜一搜",
+   "url": "https://weixin.sogou.com",
+   "desc": "微信文章搜索",
+   "subcatId": "AI助理",
+   "badge": ""
+  },
+  {
+   "title": "讯飞输入法在线",
+   "url": "https://srf.xunfei.cn",
+   "desc": "讯飞语音在线",
+   "subcatId": "AI助理",
+   "badge": ""
+  },
+  {
+   "title": "腾讯AI Lab",
+   "url": "https://ai.tencent.com",
+   "desc": "腾讯 AI 实验室",
+   "subcatId": "AI助理",
+   "badge": ""
+  },
+  {
+   "title": "FLOMO",
+   "url": "https://flomoapp.com",
+   "desc": "碎片笔记",
+   "subcatId": "AI助理",
+   "badge": ""
+  },
+  {
+   "title": "印象笔记",
+   "url": "https://www.yinxiang.com",
+   "desc": "印象笔记",
+   "subcatId": "AI助理",
+   "badge": ""
+  },
+  {
+   "title": "为知笔记",
+   "url": "https://www.wiz.cn",
+   "desc": "为知笔记",
+   "subcatId": "AI助理",
+   "badge": ""
+  },
+  {
+   "title": "Everything",
+   "url": "https://www.voidtools.com",
+   "desc": "本地文件秒搜",
+   "subcatId": "文件处理",
+   "badge": ""
+  },
+  {
+   "title": "格式工厂",
+   "url": "http://www.pcfreetime.com",
+   "desc": "视频格式转换",
+   "subcatId": "文件处理",
+   "badge": ""
+  },
+  {
+   "title": "剪映",
+   "url": "https://www.capcut.cn",
+   "desc": "剪映视频剪辑",
+   "subcatId": "文件处理",
+   "badge": ""
+  },
+  {
+   "title": "必剪",
+   "url": "https://bcut.bilibili.com",
+   "desc": "B站必剪",
+   "subcatId": "文件处理",
+   "badge": ""
+  },
+  {
+   "title": "Audacity",
+   "url": "https://www.audacityteam.org",
+   "desc": "开源音频编辑",
+   "subcatId": "文件处理",
+   "badge": ""
+  },
+  {
+   "title": "迅捷视频转换",
+   "url": "https://app.xunjiepdf.com/video",
+   "desc": "视频格式转换",
+   "subcatId": "文件处理",
+   "badge": ""
+  },
+  {
+   "title": "夸克扫描王",
+   "url": "https://www.quark.cn",
+   "desc": "夸克扫描工具",
+   "subcatId": "图片处理",
+   "badge": ""
+  },
+  {
+   "title": "百度识图",
+   "url": "https://image.baidu.com",
+   "desc": "以图搜图",
+   "subcatId": "图片处理",
+   "badge": ""
+  },
+  {
+   "title": "Google 识图",
+   "url": "https://lens.google.com",
+   "desc": "谷歌镜头识图",
+   "subcatId": "图片处理",
+   "badge": ""
+  },
+  {
+   "title": "佐糖去水印",
+   "url": "https://picwish.cn",
+   "desc": "在线去水印",
+   "subcatId": "图片处理",
+   "badge": ""
+  },
+  {
+   "title": "迅捷图片压缩",
+   "url": "https://www.yasuotu.com",
+   "desc": "在线图片压缩",
+   "subcatId": "图片处理",
+   "badge": ""
+  },
+  {
+   "title": "改图宝",
+   "url": "https://www.gaituya.com",
+   "desc": "在线图片编辑",
+   "subcatId": "图片处理",
+   "badge": ""
+  },
+  {
+   "title": "我爱音效",
+   "url": "https://www.woaieff.com",
+   "desc": "音效素材库",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "麦子工具",
+   "url": "https://www.maicoo.com",
+   "desc": "在线工具箱",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "uTool",
+   "url": "https://u.tools",
+   "desc": "效率工具集合",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "HiPDF",
+   "url": "https://www.hipdf.cn",
+   "desc": "在线 PDF 工具",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "TinyPNG",
+   "url": "https://tinypng.com",
+   "desc": "图片压缩",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "百度脑图",
+   "url": "https://naotu.baidu.com",
+   "desc": "在线思维导图",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "ProcessOn 思维导图",
+   "url": "https://www.processon.com",
+   "desc": "在线导图",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "在线进制转换",
+   "url": "https://tool.oschina.net",
+   "desc": "程序员工具",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "Kimi 网页阅读",
+   "url": "https://kimi.moonshot.cn",
+   "desc": "长文阅读助手",
+   "subcatId": "AI助理",
+   "badge": ""
+  },
+  {
+   "title": "通义智文",
+   "url": "https://read.reader.aliyun.com",
+   "desc": "AI 阅读助手",
+   "subcatId": "AI助理",
+   "badge": ""
+  },
+  {
+   "title": "百度文库",
+   "url": "https://wenku.baidu.com",
+   "desc": "文档资源库",
+   "subcatId": "AI助理",
+   "badge": ""
+  },
+  {
+   "title": "腾讯问卷",
+   "url": "https://wj.qq.com",
+   "desc": "在线问卷工具",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "问卷星",
+   "url": "https://www.wjx.cn",
+   "desc": "在线问卷",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "金数据",
+   "url": "https://jinshuju.net",
+   "desc": "表单收集",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "剪映网页版",
+   "url": "https://www.capcut.cn",
+   "desc": "在线视频剪辑",
+   "subcatId": "文件处理",
+   "badge": ""
+  },
+  {
+   "title": "闪剪",
+   "url": "https://www.xflash.cn",
+   "desc": "AI 视频剪辑",
+   "subcatId": "文件处理",
+   "badge": ""
+  },
+  {
+   "title": "优速文件转换",
+   "url": "https://www.toolfy.cn",
+   "desc": "文件转换工具",
+   "subcatId": "文件处理",
+   "badge": ""
+  },
+  {
+   "title": "格式转换王",
+   "url": "https://www.formatx.cn",
+   "desc": "万能格式转换",
+   "subcatId": "文件处理",
+   "badge": ""
+  },
+  {
+   "title": "屏幕录制",
+   "url": "https://www.screenrec.com",
+   "desc": "在线录屏",
+   "subcatId": "文件处理",
+   "badge": ""
+  },
+  {
+   "title": "搜狗输入法在线",
+   "url": "https://shurufa.sogou.com",
+   "desc": "在线输入法",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "微信输入法",
+   "url": "https://z.weixin.qq.com",
+   "desc": "微信键盘",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "谷歌地球",
+   "url": "https://earth.google.com",
+   "desc": "3D 地球",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "百度地图",
+   "url": "https://map.baidu.com",
+   "desc": "地图导航",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "高德地图",
+   "url": "https://www.amap.com",
+   "desc": "高德导航",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "腾讯地图",
+   "url": "https://map.qq.com",
+   "desc": "腾讯地图",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "国家反诈中心",
+   "url": "https://www.12321.cn",
+   "desc": "反诈举报平台",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "国家政务服务平台",
+   "url": "https://gjzwfw.www.gov.cn",
+   "desc": "一网通办服务",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "个人所得税",
+   "url": "https://etax.chinatax.gov.cn",
+   "desc": "个税申报",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "中国人民银行征信",
+   "url": "https://ipcrs.pbccrc.org.cn",
+   "desc": "个人信用查询",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "交管12123",
+   "url": "https://bj.122.gov.cn",
+   "desc": "交通违法处理",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "全国企业信用",
+   "url": "https://www.gsxt.gov.cn",
+   "desc": "企业信息公示",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "国家知识产权局",
+   "url": "https://www.cnipa.gov.cn",
+   "desc": "专利商标查询",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "铁路12306",
+   "url": "https://www.12306.cn",
+   "desc": "铁路购票",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "向日葵",
+   "url": "https://sunlogin.oray.com",
+   "desc": "远程控制",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "Fildes 云盘",
+   "url": "https://www.filse.club",
+   "desc": "文件分享工具",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "百度网盘搜索",
+   "url": "https://www.yezhong.net",
+   "desc": "网盘资源搜索",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "夸克网盘搜索",
+   "url": "https://www.alipansou.com",
+   "desc": "网盘搜索引擎",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "微博热搜",
+   "url": "https://s.weibo.com",
+   "desc": "微博热点榜",
+   "subcatId": "AI助理",
+   "badge": ""
+  },
+  {
+   "title": "百度指数",
+   "url": "https://index.baidu.com",
+   "desc": "搜索热度指数",
+   "subcatId": "AI助理",
+   "badge": ""
+  },
+  {
+   "title": "微信指数",
+   "url": "https://weixin.sogou.com",
+   "desc": "微信热度指数",
+   "subcatId": "AI助理",
+   "badge": ""
+  },
+  {
+   "title": "时光机",
+   "url": "https://web.archive.org",
+   "desc": "网页存档回溯",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "在线 ps",
+   "url": "https://www.showimg.cn",
+   "desc": "图片处理",
+   "subcatId": "图片处理",
+   "badge": ""
+  },
+  {
+   "title": "证件照制作",
+   "url": "https://www.dabaoku.com",
+   "desc": "在线证件照",
+   "subcatId": "图片处理",
+   "badge": ""
+  },
+  {
+   "title": "压缩图",
+   "url": "https://www.yasuotu.com",
+   "desc": "图片压缩",
+   "subcatId": "图片处理",
+   "badge": ""
+  },
+  {
+   "title": "图片放大",
+   "url": "https://waifu2x.booru.pics",
+   "desc": "AI 图片放大",
+   "subcatId": "图片处理",
+   "badge": ""
+  },
+  {
+   "title": "Real-ESRGAN",
+   "url": "https://github.com/xinntao/Real-ESRGAN",
+   "desc": "AI 超分工具",
+   "subcatId": "图片处理",
+   "badge": ""
+  },
+  {
+   "title": "文件快递",
+   "url": "https://www.wenshushu.cn",
+   "desc": "文件快传工具",
+   "subcatId": "文件处理",
+   "badge": ""
+  },
+  {
+   "title": "临时邮箱",
+   "url": "https://www.linshiyouxiang.net",
+   "desc": "临时邮箱工具",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "临时手机号",
+   "url": "https://www.z-sms.com",
+   "desc": "临时短信接收",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "在线短链接",
+   "url": "https://dwz.cn",
+   "desc": "百度短链接",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "TinyURL",
+   "url": "https://tinyurl.com",
+   "desc": "短链接服务",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "Bitly",
+   "url": "https://bitly.com",
+   "desc": "链接管理",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "草料二维码",
+   "url": "https://cli.im",
+   "desc": "二维码批量生成",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "在线图片OCR",
+   "url": "https://ocr.wdku.net",
+   "desc": "图片文字识别",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "腾讯OCR",
+   "url": "https://cloud.tencent.com",
+   "desc": "通用 OCR",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "字根五笔",
+   "url": "https://wubi.youdao.com",
+   "desc": "五笔输入工具",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "在线代码运行",
+   "url": "https://www.codecopy.cn",
+   "desc": "在线调试代码",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "JSFiddle",
+   "url": "https://jsfiddle.net",
+   "desc": "前端代码试验",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "CodePen",
+   "url": "https://codepen.io",
+   "desc": "前端创意展示",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "在线 API",
+   "url": "https://api.codelife.cc",
+   "desc": "聚合 API 调试",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "HTTPBin",
+   "url": "https://httpbin.org",
+   "desc": "HTTP 接口测试",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "Postman",
+   "url": "https://www.postman.com",
+   "desc": "接口调试工具",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "在线身份证生成",
+   "url": "https://www.2345.com",
+   "desc": "工具集合",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "单位换算",
+   "url": "https://www.convertworld.com",
+   "desc": "单位转换工具",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "时区换算",
+   "url": "https://www.timeanddate.com",
+   "desc": "世界时间查询",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "农历查询",
+   "url": "https://www.hko.gov.hk",
+   "desc": "万年历查询",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "世界时钟",
+   "url": "https://time.is",
+   "desc": "全球时间",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "FindMyApp",
+   "url": "https://www.findmyapp.io",
+   "desc": "AI 找软件",
+   "subcatId": "AI助理",
+   "badge": ""
+  },
+  {
+   "title": "RegexGPT",
+   "url": "https://regexgpt.net",
+   "desc": "正则生成",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "Colors 工具",
+   "url": "https://www.0to255.com",
+   "desc": "颜色工具",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "SVG 编辑器",
+   "url": "https://boxy-svg.com",
+   "desc": "矢量编辑",
+   "subcatId": "图片处理",
+   "badge": ""
+  },
+  {
+   "title": "在线 Markdown",
+   "url": "https://markdown.com.cn",
+   "desc": "MD 编辑器",
+   "subcatId": "文件处理",
+   "badge": ""
+  },
+  {
+   "title": "在线导图",
+   "url": "https://zhimap.com",
+   "desc": "思维导图",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "便签",
+   "url": "https://www.eduyun.cn",
+   "desc": "云笔记",
+   "subcatId": "AI助理",
+   "badge": ""
+  },
+  {
+   "title": "在线翻译聚合",
+   "url": "https://www.iciba.com",
+   "desc": "词霸翻译查词",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "时间戳转换",
+   "url": "https://tool.lu/timestamp",
+   "desc": "时间戳工具",
+   "subcatId": "在线工具",
+   "badge": ""
+  },
+  {
+   "title": "国家中小学智慧教育",
+   "url": "https://www.smartedu.cn",
+   "desc": "免费教育平台",
+   "subcatId": "AI助理",
+   "badge": ""
+  }
+ ],
+ "pc_setup": [
+  {
+   "title": "微软官方下载",
+   "url": "https://www.microsoft.com/zh-cn/software-download",
+   "desc": "Win 系统官方镜像",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "MSDN 系统库",
+   "url": "https://msdn.itellyou.cn",
+   "desc": "系统镜像库",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "Ventoy",
+   "url": "https://www.ventoy.net",
+   "desc": "多系统启动盘",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "Rufus",
+   "url": "https://rufus.ie",
+   "desc": "U盘启动盘制作",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "PE工具箱",
+   "url": "https://www.wepe.com.cn",
+   "desc": "微PE工具箱",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "驱动精灵",
+   "url": "https://www.drivergenius.com",
+   "desc": "驱动管理",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "驱动人生",
+   "url": "https://www.160.com",
+   "desc": "驱动更新工具",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "360驱动大师",
+   "url": "https://www.360.cn",
+   "desc": "驱动安装",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "激活工具",
+   "url": "https://github.com/massgravel/Microsoft-Activation-Scripts",
+   "desc": "开源激活脚本",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "CPU-Z",
+   "url": "https://www.cpuid.com",
+   "desc": "CPU 检测",
+   "subcatId": "硬件检测",
+   "badge": ""
+  },
+  {
+   "title": "GPU-Z",
+   "url": "https://www.techpowerup.com/gpuz",
+   "desc": "显卡检测",
+   "subcatId": "硬件检测",
+   "badge": ""
+  },
+  {
+   "title": "鲁大师",
+   "url": "https://www.ludashi.com",
+   "desc": "跑分检测工具",
+   "subcatId": "硬件检测",
+   "badge": ""
+  },
+  {
+   "title": "AIDA64",
+   "url": "https://www.aida64.com",
+   "desc": "硬件信息检测",
+   "subcatId": "硬件检测",
+   "badge": ""
+  },
+  {
+   "title": "CrystalDiskInfo",
+   "url": "https://crystalmark.info",
+   "desc": "硬盘健康检测",
+   "subcatId": "硬件检测",
+   "badge": ""
+  },
+  {
+   "title": "HWMonitor",
+   "url": "https://www.cpuid.com/softwares/hwmonitor.html",
+   "desc": "温度监控",
+   "subcatId": "硬件检测",
+   "badge": ""
+  },
+  {
+   "title": "HWiNFO",
+   "url": "https://www.hwinfo.com",
+   "desc": "硬件诊断",
+   "subcatId": "硬件检测",
+   "badge": ""
+  },
+  {
+   "title": "Geekbench",
+   "url": "https://www.geekbench.com",
+   "desc": "性能跑分",
+   "subcatId": "硬件检测",
+   "badge": ""
+  },
+  {
+   "title": "7-Zip",
+   "url": "https://www.7-zip.org",
+   "desc": "解压压缩神器",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "Bandizip",
+   "url": "https://www.bandisoft.com",
+   "desc": "解压软件",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "Snipaste",
+   "url": "https://www.snipaste.com",
+   "desc": "截图贴图工具",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "Everything",
+   "url": "https://www.voidtools.com",
+   "desc": "文件搜索",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "PotPlayer",
+   "url": "https://potplayer.daum.net",
+   "desc": "全能视频播放",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "VLC",
+   "url": "https://www.videolan.org",
+   "desc": "开源播放器",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "微信电脑版",
+   "url": "https://weixin.qq.com",
+   "desc": "微信官方下载",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "QQ 电脑版",
+   "url": "https://im.qq.com",
+   "desc": "QQ 官方下载",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "输入法-搜狗",
+   "url": "https://shurufa.sogou.com",
+   "desc": "搜狗输入法",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "输入法-百度",
+   "url": "https://shurufa.baidu.com",
+   "desc": "百度输入法",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "联想驱动",
+   "url": "https://driverdl.lenovo.com.cn",
+   "desc": "联想驱动下载",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "华硕官网",
+   "url": "https://www.asus.com.cn",
+   "desc": "华硕驱动下载",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "惠普支持",
+   "url": "https://support.hp.com",
+   "desc": "惠普驱动支持",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "戴尔支持",
+   "url": "https://www.dell.com/support",
+   "desc": "戴尔驱动支持",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "雷蛇官网",
+   "url": "https://www.razer.com",
+   "desc": "雷蛇外设驱动",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "罗技支持",
+   "url": "https://www.logitech.com",
+   "desc": "罗技驱动下载",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "微软运行库",
+   "url": "https://www.microsoft.com/download",
+   "desc": "微软运行库下载",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "DirectX 下载",
+   "url": "https://www.microsoft.com/download",
+   "desc": "DX 运行库",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": ".NET 下载",
+   "url": "https://dotnet.microsoft.com",
+   "desc": ".NET 运行库",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "火绒安全",
+   "url": "https://www.huorong.cn",
+   "desc": "轻量安全软件",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "360安全卫士",
+   "url": "https://www.360.cn",
+   "desc": "安全防护工具",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "腾讯电脑管家",
+   "url": "https://guanjia.qq.com",
+   "desc": "电脑管家",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "CCleaner",
+   "url": "https://www.ccleaner.com",
+   "desc": "系统清理工具",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "Revo Uninstaller",
+   "url": "https://www.revouninstaller.com",
+   "desc": "强力卸载工具",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "Geek Uninstaller",
+   "url": "https://geekuninstaller.com",
+   "desc": "绿色卸载工具",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "IObit 卸载",
+   "url": "https://www.iobit.com",
+   "desc": "卸载清理工具",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "火绒剑",
+   "url": "https://www.huorong.cn",
+   "desc": "系统分析工具",
+   "subcatId": "硬件检测",
+   "badge": ""
+  },
+  {
+   "title": "毛子系统",
+   "url": "https://www.tenforums.com",
+   "desc": "Win 系统资源",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "远景创意",
+   "url": "https://bbs.pcbeta.com",
+   "desc": "系统论坛",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "WinRAR",
+   "url": "https://www.win-rar.com",
+   "desc": "压缩软件官网",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "IDM",
+   "url": "https://www.internetdownloadmanager.com",
+   "desc": "下载管理器",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "迅雷",
+   "url": "https://www.xunlei.com",
+   "desc": "下载工具",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "爱奇艺客户端",
+   "url": "https://www.iqiyi.com",
+   "desc": "视频客户端",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "QQ 音乐客户端",
+   "url": "https://y.qq.com",
+   "desc": "音乐客户端",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "网易云客户端",
+   "url": "https://music.163.com",
+   "desc": "音乐客户端",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "微信 Windows",
+   "url": "https://weixin.qq.com",
+   "desc": "微信桌面版",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "腾讯会议",
+   "url": "https://meeting.tencent.com",
+   "desc": "视频会议",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "钉钉",
+   "url": "https://www.dingtalk.com",
+   "desc": "企业办公",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "飞书",
+   "url": "https://www.feishu.cn",
+   "desc": "企业协作",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "WPS",
+   "url": "https://www.wps.cn",
+   "desc": "办公软件",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "Office",
+   "url": "https://www.microsoft.com",
+   "desc": "办公套件",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "Teamviwer 替代",
+   "url": "https://www.anydesk.com",
+   "desc": "远程桌面",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "UltraISO",
+   "url": "https://www.ultraiso.com",
+   "desc": "镜像工具",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "DiskGenius",
+   "url": "https://www.diskgenius.cn",
+   "desc": "分区工具",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "傲梅分区",
+   "url": "https://www.disktool.cn",
+   "desc": "磁盘分区",
+   "subcatId": "系统装机",
+   "badge": ""
+  },
+  {
+   "title": "Tenorshare 数据恢复",
+   "url": "https://www.tenorshare.com",
+   "desc": "数据恢复",
+   "subcatId": "硬件检测",
+   "badge": ""
+  },
+  {
+   "title": "EaseUS 数据恢复",
+   "url": "https://www.easeus.com",
+   "desc": "数据恢复工具",
+   "subcatId": "硬件检测",
+   "badge": ""
+  },
+  {
+   "title": "Recuva",
+   "url": "https://www.ccleaner.com/recuva",
+   "desc": "误删恢复",
+   "subcatId": "硬件检测",
+   "badge": ""
+  },
+  {
+   "title": "傲梅备份",
+   "url": "https://www.abdusun.com",
+   "desc": "系统备份",
+   "subcatId": "硬件检测",
+   "badge": ""
+  },
+  {
+   "title": "华军软件园",
+   "url": "https://www.onlinedown.net",
+   "desc": "软件下载站",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "太平洋下载",
+   "url": "https://dl.pconline.com.cn",
+   "desc": "软件下载",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "天空下载",
+   "url": "https://www.skycn.com",
+   "desc": "软件站",
+   "subcatId": "日常必备",
+   "badge": ""
+  },
+  {
+   "title": "系统之家",
+   "url": "https://www.xitongzhijia.net",
+   "desc": "系统镜像",
+   "subcatId": "系统装机",
+   "badge": ""
+  }
+ ],
+ "explore": [
+  {
+   "title": "抖音",
+   "url": "https://www.douyin.com",
+   "desc": "短视频平台",
+   "subcatId": "趣味解压",
+   "badge": "HOT"
+  },
+  {
+   "title": "快手",
+   "url": "https://www.kuaishou.com",
+   "desc": "短视频平台",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "小红书",
+   "url": "https://www.xiaohongshu.com",
+   "desc": "生活方式社区",
+   "subcatId": "趣味解压",
+   "badge": "HOT"
+  },
+  {
+   "title": "微博",
+   "url": "https://weibo.com",
+   "desc": "社交资讯平台",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "知乎",
+   "url": "https://www.zhihu.com",
+   "desc": "问答社区",
+   "subcatId": "趣味解压",
+   "badge": "HOT"
+  },
+  {
+   "title": "豆瓣",
+   "url": "https://www.douban.com",
+   "desc": "书影音社区",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "天涯社区",
+   "url": "https://www.tianya.cn",
+   "desc": "天涯论坛",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "贴吧",
+   "url": "https://tieba.baidu.com",
+   "desc": "百度贴吧",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "今日头条",
+   "url": "https://www.toutiao.com",
+   "desc": "资讯平台",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "虎扑",
+   "url": "https://www.hupu.com",
+   "desc": "体育社区",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "懂球帝",
+   "url": "https://www.dongqiudi.com",
+   "desc": "足球资讯社区",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "什么值得买社区",
+   "url": "https://post.smzdm.com",
+   "desc": "好物分享社区",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "V2EX",
+   "url": "https://www.v2ex.com",
+   "desc": "技术创意社区",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "Product Hunt",
+   "url": "https://www.producthunt.com",
+   "desc": "新产品发布社区",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "Dev.to",
+   "url": "https://dev.to",
+   "desc": "开发者博客社区",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "Medium",
+   "url": "https://medium.com",
+   "desc": "写作平台",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "力扣",
+   "url": "https://leetcode.cn",
+   "desc": "算法刷题",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "牛客网",
+   "url": "https://www.nowcoder.com",
+   "desc": "求职刷题社区",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "Gitee 开源",
+   "url": "https://gitee.com/explore",
+   "desc": "开源项目探索",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "Awesome 清单",
+   "url": "https://github.com/sindresorhus/awesome",
+   "desc": "Awesome 资源清单",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "Apache 软件基金会",
+   "url": "https://www.apache.org",
+   "desc": "开源基金会",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "NPM",
+   "url": "https://www.npmjs.com",
+   "desc": "JS 包管理",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "PyPI",
+   "url": "https://pypi.org",
+   "desc": "Python 包管理",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "Docker Hub",
+   "url": "https://hub.docker.com",
+   "desc": "容器镜像仓库",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "CRAN",
+   "url": "https://cran.r-project.org",
+   "desc": "R 语言包",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "导航聚合-龙轩",
+   "url": "https://www.ilongxuan.com",
+   "desc": "工具导航站",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "咖啡导航",
+   "url": "https://www.cafe104.com",
+   "desc": "AI 工具导航",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "WayToAGI",
+   "url": "https://www.waytoagi.com",
+   "desc": "AI 学习导航",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "AI 工具集",
+   "url": "https://www.ai-toolset.com",
+   "desc": "AI 工具导航",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "优秀网站集",
+   "url": "https://www.ilovewp.cn",
+   "desc": "优质网站推荐",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "AIGC开放社区",
+   "url": "https://aicg.cc",
+   "desc": "AIGC 资讯社区",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "量子位",
+   "url": "https://www.qbitai.com",
+   "desc": "AI 科技媒体",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "机器之心",
+   "url": "https://www.jiqizhixin.com",
+   "desc": "AI 专业媒体",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "新智元",
+   "url": "https://www.ainewy.com",
+   "desc": "AI 前沿媒体",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "36氪",
+   "url": "https://36kr.com",
+   "desc": "科技创投资讯",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "虎嗅",
+   "url": "https://www.huxiu.com",
+   "desc": "商业科技媒体",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "非凡工具",
+   "url": "https://www.ffix.cn",
+   "desc": "效率工具导航",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "阿虚同学",
+   "url": "https://www.axios.co",
+   "desc": "实用资源导航",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "Boxun 导航",
+   "url": "https://boxun.com",
+   "desc": "工具导航",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "创造者",
+   "url": "https://www.ccreator.cn",
+   "desc": "AI 工具库",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "AI城市",
+   "url": "https://www.ai-city.cn",
+   "desc": "AI 应用导航",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "引人入胜",
+   "url": "https://www.pickledworks.com",
+   "desc": "创意工具集合",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "NoCode 导航",
+   "url": "https://www.nocode.cn",
+   "desc": "无代码工具导航",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "独立开发者周刊",
+   "url": "https://mdhweekly.com",
+   "desc": "开发者周刊",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "Gitstar Ranking",
+   "url": "https://gitstar-ranking.com",
+   "desc": "GitHub 明星榜",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "GitHub Trending",
+   "url": "https://github.com/trending",
+   "desc": "GitHub 热榜",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "hellogithub",
+   "url": "https://hellogithub.com",
+   "desc": "开源项目精选月刊",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "Open Source Awards",
+   "url": "https://opensourceawards.com",
+   "desc": "开源获奖项目",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "起点读书",
+   "url": "https://www.qidian.com",
+   "desc": "小说平台",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "网易新闻",
+   "url": "https://news.163.com",
+   "desc": "新闻资讯",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "腾讯新闻",
+   "url": "https://news.qq.com",
+   "desc": "腾讯资讯",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "百度资讯",
+   "url": "https://news.baidu.com",
+   "desc": "百度新闻",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "搜狐新闻",
+   "url": "https://news.sohu.com",
+   "desc": "搜狐资讯",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "澎湃新闻",
+   "url": "https://www.thepaper.cn",
+   "desc": "严肃新闻媒体",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "界面新闻",
+   "url": "https://www.jiemian.com",
+   "desc": "财经科技新闻",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "创业邦",
+   "url": "https://www.cyzone.cn",
+   "desc": "创投媒体",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "亿邦动力",
+   "url": "https://www.ebrun.com",
+   "desc": "电商行业媒体",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "雪球",
+   "url": "https://xueqiu.com",
+   "desc": "投资社区",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "东方财富",
+   "url": "https://www.eastmoney.com",
+   "desc": "财经资讯",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "同花顺",
+   "url": "https://www.10jqka.com.cn",
+   "desc": "炒股软件",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "贝壳找房",
+   "url": "https://www.ke.com",
+   "desc": "房产服务平台",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "安居客",
+   "url": "https://www.anjuke.com",
+   "desc": "房产信息平台",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "链家",
+   "url": "https://www.lianjia.com",
+   "desc": "二手房平台",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "少数派 效率",
+   "url": "https://sspai.com",
+   "desc": "效率工具推荐",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "效率工具集",
+   "url": "https://www.toolify.com",
+   "desc": "AI 工具导航",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "Futurepedia",
+   "url": "https://www.futurepedia.io",
+   "desc": "AI 工具大全",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "There's An AI",
+   "url": "https://theresanaiforthat.com",
+   "desc": "AI 工具索引",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "AI工具集导航",
+   "url": "https://www.buzzing.cc",
+   "desc": "AI 工具合集",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "SD视觉库",
+   "url": "https://www.sdvn.com",
+   "desc": "AI 绘画导航",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "怪奇酷站",
+   "url": "https://www.v2ex.com",
+   "desc": "酷站分享",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "汉典",
+   "url": "https://www.zdic.net",
+   "desc": "在线字典",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "汉字笔顺",
+   "url": "https://www.hanzi5.com",
+   "desc": "笔顺查询",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "Wolfram Alpha",
+   "url": "https://www.wolframalpha.com",
+   "desc": "知识计算引擎",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "DuckDuckGo",
+   "url": "https://duckduckgo.com",
+   "desc": "隐私搜索引擎",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "小众软件",
+   "url": "https://www.appinn.com",
+   "desc": "效率软件社区",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "异次元软件世界",
+   "url": "https://www.iplaysoft.com",
+   "desc": "软件推荐博客",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "小众导航",
+   "url": "https://www.softpedia.cn",
+   "desc": "软件资源",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "咸鱼导航",
+   "url": "https://www.xianyu55.com",
+   "desc": "综合导航站",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "Aixplora",
+   "url": "https://www.aixplora.com",
+   "desc": "AI 导航",
+   "subcatId": "导航聚合",
+   "badge": ""
+  },
+  {
+   "title": "AI 博客",
+   "url": "https://www.aibase.com",
+   "desc": "AI 资讯站",
+   "subcatId": "极客开发",
+   "badge": ""
+  },
+  {
+   "title": "星野",
+   "url": "https://www.starfield.ai",
+   "desc": "AI 社区",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "VeryReal",
+   "url": "https://alwaysreal.cc",
+   "desc": "沉浸式社区",
+   "subcatId": "趣味解压",
+   "badge": ""
+  },
+  {
+   "title": "吾爱导航",
+   "url": "https://www.daohang.org.cn",
+   "desc": "综合导航",
+   "subcatId": "导航聚合",
+   "badge": ""
+  }
+ ],
+ "partners": [
+  {
+   "title": "站长之家",
+   "url": "https://www.chinaz.com",
+   "desc": "站长工具平台",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "爱站网",
+   "url": "https://www.aizhan.com",
+   "desc": "SEO 查询工具",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "5118",
+   "url": "https://www.5118.com",
+   "desc": "关键词工具",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "百度站长平台",
+   "url": "https://ziyuan.baidu.com",
+   "desc": "百度站长工具",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "Google Search Console",
+   "url": "https://search.google.com/search-console",
+   "desc": "谷歌站长工具",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "站长素材",
+   "url": "https://sc.chinaz.com",
+   "desc": "站长免费素材",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "figma 社区",
+   "url": "https://www.figma.com/community",
+   "desc": "设计资源社区",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "自由职业者平台",
+   "url": "https://www.zhipin.com",
+   "desc": "BOSS直聘",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "智联招聘",
+   "url": "https://www.zhaopin.com",
+   "desc": "智联招聘",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "前程无忧",
+   "url": "https://www.51job.com",
+   "desc": "招聘求职",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "猎聘",
+   "url": "https://www.liepin.com",
+   "desc": "高端招聘",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "猪八戒网",
+   "url": "https://www.zbj.com",
+   "desc": "威客任务平台",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "一品威客",
+   "url": "https://www.epwk.com",
+   "desc": "众包任务平台",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "Freelancer",
+   "url": "https://www.freelancer.com",
+   "desc": "国际接单平台",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "Upwork",
+   "url": "https://www.upwork.com",
+   "desc": "自由职业平台",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "知识星球",
+   "url": "https://www.zsxq.com",
+   "desc": "付费社群平台",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "小红书创作中心",
+   "url": "https://creator.xiaohongshu.com",
+   "desc": "内容创作平台",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "抖音创作者",
+   "url": "https://creator.douyin.com",
+   "desc": "短视频创作平台",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "快手创作者",
+   "url": "https://cp.kuaishou.com",
+   "desc": "快手创作平台",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "百度统计",
+   "url": "https://tongji.baidu.com",
+   "desc": "网站统计工具",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "CNZZ 站长统计",
+   "url": "https://www.cnzz.com",
+   "desc": "站长流量统计",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "Google Analytics",
+   "url": "https://analytics.google.com",
+   "desc": "谷歌分析",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "Plausible",
+   "url": "https://plausible.io",
+   "desc": "隐私友好统计",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "站长工具-友情链接",
+   "url": "https://www.chinaz.com",
+   "desc": "站长工具",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "Favicon 生成",
+   "url": "https://www.websiteplanet.com",
+   "desc": "图标生成工具",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "screely",
+   "url": "https://screely.com",
+   "desc": "截图美化工具",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "Carrd",
+   "url": "https://carrd.co",
+   "desc": "轻量建站",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "Rakuten",
+   "url": "https://www.rakuten.com",
+   "desc": "返利平台",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "Shopify",
+   "url": "https://www.shopify.cn",
+   "desc": "电商开店",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "拼多多商家",
+   "url": "https://mobile.pinduoduo.com",
+   "desc": "电商开店",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "闲鱼",
+   "url": "https://www.goofish.com",
+   "desc": "二手交易",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "转转",
+   "url": "https://www.zhuanzhuan.com",
+   "desc": "二手交易平台",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "抖音电商",
+   "url": "https://shop.douyin.com",
+   "desc": "直播带货开店",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "快手电商",
+   "url": "https://www.kuaishou.com",
+   "desc": "快手小店",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "小红书电商",
+   "url": "https://www.xiaohongshu.com",
+   "desc": "种草电商",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "百度推广",
+   "url": "https://www2.baidu.com",
+   "desc": "百度广告平台",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "Google Ads",
+   "url": "https://ads.google.com",
+   "desc": "谷歌广告",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "微信公众号平台",
+   "url": "https://mp.weixin.qq.com",
+   "desc": "公众号运营",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "千川投放",
+   "url": "https://qianchuan.jinritemai.com",
+   "desc": "抖音广告投放",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "巨量引擎",
+   "url": "https://www.oceanengine.com",
+   "desc": "字节广告平台",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "阿里妈妈",
+   "url": "https://www.alimama.com",
+   "desc": "淘宝联盟",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "京东联盟",
+   "url": "https://union.jd.com",
+   "desc": "京东推广",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "迅雷联盟",
+   "url": "https://www.xunlei.com",
+   "desc": "站长福利",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "起点广告",
+   "url": "https://www.startad.cn",
+   "desc": "广告联盟",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "欧朋联盟",
+   "url": "https://www.oppo.com",
+   "desc": "广告合作",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "字节跳动开放平台",
+   "url": "https://open.douyin.com",
+   "desc": "开放平台",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "腾讯开放平台",
+   "url": "https://open.tencent.com",
+   "desc": "开放平台",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "微信小程序",
+   "url": "https://developers.weixin.qq.com",
+   "desc": "小程序开发",
+   "subcatId": "副业兼职",
+   "badge": ""
+  },
+  {
+   "title": "阿里云市场",
+   "url": "https://market.aliyun.com",
+   "desc": "云服务市场",
+   "subcatId": "站长力荐",
+   "badge": ""
+  },
+  {
+   "title": "腾讯云市场",
+   "url": "https://market.cloud.tencent.com",
+   "desc": "云服务",
+   "subcatId": "站长力荐",
+   "badge": ""
+  }
+ ],
+ "ai_bot_ecosystem": [
+  {
+   "title": "GitHub Copilot Chat",
+   "url": "https://github.com/features/copilot",
+   "desc": "AI 编程助手",
+   "subcatId": "编程代码",
+   "badge": ""
+  },
+  {
+   "title": "Codeium",
+   "url": "https://www.codeium.com",
+   "desc": "免费 AI 编程",
+   "subcatId": "编程代码",
+   "badge": ""
+  },
+  {
+   "title": "Tabnine",
+   "url": "https://www.tabnine.com",
+   "desc": "AI 代码补全",
+   "subcatId": "编程代码",
+   "badge": ""
+  },
+  {
+   "title": "Amazon CodeWhisperer",
+   "url": "https://aws.amazon.com/codewhisperer",
+   "desc": "AWS 编程助手",
+   "subcatId": "编程代码",
+   "badge": ""
+  },
+  {
+   "title": "Fitten Code",
+   "url": "https://code.fittentech.com",
+   "desc": "Fitten AI 编程",
+   "subcatId": "编程代码",
+   "badge": ""
+  },
+  {
+   "title": "Baidu Comate",
+   "url": "https://comate.baidu.com",
+   "desc": "百度 AI 编程",
+   "subcatId": "编程代码",
+   "badge": ""
+  },
+  {
+   "title": "通义灵码",
+   "url": "https://tongyi.aliyun.com/lingma",
+   "desc": "阿里灵码编程",
+   "subcatId": "编程代码",
+   "badge": ""
+  },
+  {
+   "title": "stable-diffusion-webui",
+   "url": "https://github.com/AUTOMATIC1111/stable-diffusion-webui",
+   "desc": "SD WebUI 开源",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "ComfyUI",
+   "url": "https://github.com/comfyanonymous/ComfyUI",
+   "desc": "ComfyUI 工作流",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "Fooocus",
+   "url": "https://github.com/lllyasviel/Fooocus",
+   "desc": "简化生图工具",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "InsightFace",
+   "url": "https://github.com/deepinsight/insightface",
+   "desc": "人脸识别算法",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "Whisper",
+   "url": "https://github.com/openai/whisper",
+   "desc": "OpenAI 语音识别",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "WPS AI",
+   "url": "https://ai.wps.cn",
+   "desc": "WPS AI 办公",
+   "subcatId": "办公写作",
+   "badge": ""
+  },
+  {
+   "title": "飞书智能伙伴",
+   "url": "https://www.feishu.cn",
+   "desc": "飞书智能办公",
+   "subcatId": "办公写作",
+   "badge": ""
+  },
+  {
+   "title": "百度文库 AI",
+   "url": "https://wenku.baidu.com",
+   "desc": "AI 文档创作",
+   "subcatId": "办公写作",
+   "badge": ""
+  },
+  {
+   "title": "网易有道写作",
+   "url": "https://write.youdao.com",
+   "desc": "AI 英文写作",
+   "subcatId": "办公写作",
+   "badge": ""
+  },
+  {
+   "title": "秘塔写作猫",
+   "url": "https://xiezuocat.com",
+   "desc": "AI 中文写作校对",
+   "subcatId": "办公写作",
+   "badge": ""
+  },
+  {
+   "title": "讯飞写作",
+   "url": "https://www.iflytek.com",
+   "desc": "讯飞 AI 写作",
+   "subcatId": "办公写作",
+   "badge": ""
+  },
+  {
+   "title": "科研-Connected Papers",
+   "url": "https://www.connectedpapers.com",
+   "desc": "论文图谱",
+   "subcatId": "科研评测",
+   "badge": ""
+  },
+  {
+   "title": "科研-Semantic Scholar",
+   "url": "https://www.semanticscholar.org",
+   "desc": "学术搜索",
+   "subcatId": "科研评测",
+   "badge": ""
+  },
+  {
+   "title": "科研-ArXiv",
+   "url": "https://arxiv.org",
+   "desc": "论文预印本",
+   "subcatId": "科研评测",
+   "badge": ""
+  },
+  {
+   "title": "Hugging Face Spaces",
+   "url": "https://huggingface.co/spaces",
+   "desc": "AI Demo 空间",
+   "subcatId": "实用AI",
+   "badge": ""
+  },
+  {
+   "title": "Ollama",
+   "url": "https://ollama.com",
+   "desc": "本地大模型运行",
+   "subcatId": "实用AI",
+   "badge": ""
+  },
+  {
+   "title": "LM Studio",
+   "url": "https://lmstudio.ai",
+   "desc": "本地模型推理",
+   "subcatId": "实用AI",
+   "badge": ""
+  },
+  {
+   "title": "RunPod",
+   "url": "https://runpod.io",
+   "desc": "GPU 算力云",
+   "subcatId": "实用AI",
+   "badge": ""
+  },
+  {
+   "title": "AutoDL",
+   "url": "https://www.autodl.com",
+   "desc": "国内 GPU 算力",
+   "subcatId": "实用AI",
+   "badge": ""
+  },
+  {
+   "title": "飞桨AI Studio",
+   "url": "https://aistudio.baidu.com",
+   "desc": "百度飞桨平台",
+   "subcatId": "实用AI",
+   "badge": ""
+  },
+  {
+   "title": "梯度算力",
+   "url": "https://www.vast.ai",
+   "desc": "分布式算力",
+   "subcatId": "实用AI",
+   "badge": ""
+  },
+  {
+   "title": "Claude Code",
+   "url": "https://www.anthropic.com/claude-code",
+   "desc": "Anthropic 编程 Agent",
+   "subcatId": "编程代码",
+   "badge": ""
+  },
+  {
+   "title": "CodeRabbit",
+   "url": "https://www.coderabbit.ai",
+   "desc": "AI 代码评审",
+   "subcatId": "编程代码",
+   "badge": ""
+  },
+  {
+   "title": "Sourcery",
+   "url": "https://sourcery.ai",
+   "desc": "AI 代码质量",
+   "subcatId": "编程代码",
+   "badge": ""
+  },
+  {
+   "title": "Qodo",
+   "url": "https://www.qodo.ai",
+   "desc": "AI 测试生成",
+   "subcatId": "编程代码",
+   "badge": ""
+  },
+  {
+   "title": "Vercel AI SDK",
+   "url": "https://ai-sdk.dev",
+   "desc": "AI 应用 SDK",
+   "subcatId": "编程代码",
+   "badge": ""
+  },
+  {
+   "title": "Cloudflare Workers AI",
+   "url": "https://developers.cloudflare.com/workers-ai",
+   "desc": "边缘 AI 推理",
+   "subcatId": "编程代码",
+   "badge": ""
+  },
+  {
+   "title": "Retool AI",
+   "url": "https://retool.com",
+   "desc": "AI 内部工具",
+   "subcatId": "办公写作",
+   "badge": ""
+  },
+  {
+   "title": "Coda AI",
+   "url": "https://coda.io",
+   "desc": "AI 文档协作",
+   "subcatId": "办公写作",
+   "badge": ""
+  },
+  {
+   "title": "Lark 智能伙伴",
+   "url": "https://www.feishu.cn/ai",
+   "desc": "飞书 AI 伙伴",
+   "subcatId": "办公写作",
+   "badge": ""
+  },
+  {
+   "title": "Durable",
+   "url": "https://durable.co",
+   "desc": "AI 建站",
+   "subcatId": "办公写作",
+   "badge": ""
+  },
+  {
+   "title": "Wix AI",
+   "url": "https://www.wix.com",
+   "desc": "AI 建站工具",
+   "subcatId": "办公写作",
+   "badge": ""
+  },
+  {
+   "title": "Framer AI",
+   "url": "https://www.framer.com",
+   "desc": "AI 网站生成",
+   "subcatId": "办公写作",
+   "badge": ""
+  },
+  {
+   "title": "Webflow AI",
+   "url": "https://webflow.com",
+   "desc": "AI 网页设计",
+   "subcatId": "办公写作",
+   "badge": ""
+  },
+  {
+   "title": "Napkin AI",
+   "url": "https://www.napkin.ai",
+   "desc": "AI 可视化图表",
+   "subcatId": "办公写作",
+   "badge": ""
+  },
+  {
+   "title": "Beautiful Diagrams",
+   "url": "https://www.beautiful.ai",
+   "desc": "AI 图表设计",
+   "subcatId": "办公写作",
+   "badge": ""
+  },
+  {
+   "title": "Clipchamp",
+   "url": "https://clipchamp.com",
+   "desc": "AI 视频编辑",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "Opus Clip",
+   "url": "https://www.opus.pro",
+   "desc": "长视频切短片",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "Descript",
+   "url": "https://www.descript.com",
+   "desc": "AI 播客剪辑",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "HeyGen",
+   "url": "https://www.heygen.com",
+   "desc": "数字人视频",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "D-ID",
+   "url": "https://www.d-id.com",
+   "desc": "AI 数字人",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "Synthesia",
+   "url": "https://www.synthesia.io",
+   "desc": "AI 视频制作",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "ElevenReader",
+   "url": "https://elevenlabs.io",
+   "desc": "AI 有声阅读",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "Rask AI",
+   "url": "https://www.rask.ai",
+   "desc": "AI 视频翻译",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "Immersity AI",
+   "url": "https://www.immersity.ai",
+   "desc": "2D转3D 视频",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "Krea",
+   "url": "https://www.krea.ai",
+   "desc": "AI 实时创作",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "Cutout Pro",
+   "url": "https://www.cutout.pro",
+   "desc": "AI 图片工具包",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "Fireworks AI",
+   "url": "https://fireworks.ai",
+   "desc": "AI 生图平台",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "Grok",
+   "url": "https://grok.x.ai",
+   "desc": "xAI Grok 对话",
+   "subcatId": "实用AI",
+   "badge": ""
+  },
+  {
+   "title": "Genspark",
+   "url": "https://www.genspark.ai",
+   "desc": "AI 搜索智能体",
+   "subcatId": "实用AI",
+   "badge": ""
+  },
+  {
+   "title": "You.com",
+   "url": "https://you.com",
+   "desc": "AI 搜索",
+   "subcatId": "实用AI",
+   "badge": ""
+  },
+  {
+   "title": "Elicit",
+   "url": "https://elicit.com",
+   "desc": "AI 文献调研",
+   "subcatId": "科研评测",
+   "badge": ""
+  },
+  {
+   "title": "Consensus",
+   "url": "https://consensus.app",
+   "desc": "AI 论文问答",
+   "subcatId": "科研评测",
+   "badge": ""
+  },
+  {
+   "title": "Scite",
+   "url": "https://scite.ai",
+   "desc": "论文引用分析",
+   "subcatId": "科研评测",
+   "badge": ""
+  },
+  {
+   "title": "PaperDigest",
+   "url": "https://www.paperdigest.org",
+   "desc": "论文摘要总结",
+   "subcatId": "科研评测",
+   "badge": ""
+  },
+  {
+   "title": "Zhipu CogVideoX",
+   "url": "https://open.bigmodel.cn",
+   "desc": "智谱视频模型",
+   "subcatId": "视觉与多模态",
+   "badge": ""
+  },
+  {
+   "title": "阿里云百炼",
+   "url": "https://bailian.aliyun.com",
+   "desc": "模型服务",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  }
+ ],
+ "coding_tools": [
+  {
+   "title": "GitHub Copilot Agent",
+   "url": "https://github.com/features/copilot",
+   "desc": "Agent 编程助手",
+   "subcatId": "智能体Agent",
+   "badge": ""
+  },
+  {
+   "title": "Devin",
+   "url": "https://devin.ai",
+   "desc": "Cognition AI 程序员",
+   "subcatId": "智能体Agent",
+   "badge": ""
+  },
+  {
+   "title": "SWE-agent",
+   "url": "https://github.com/princeton-nlp/SWE-agent",
+   "desc": "开源软件工程师 Agent",
+   "subcatId": "智能体Agent",
+   "badge": ""
+  },
+  {
+   "title": "OpenHands",
+   "url": "https://github.com/All-Hands-AI/OpenHands",
+   "desc": "开源 AI 软件开发",
+   "subcatId": "智能体Agent",
+   "badge": ""
+  },
+  {
+   "title": "Cline",
+   "url": "https://cline.bot",
+   "desc": "VS Code 编程 Agent",
+   "subcatId": "智能体Agent",
+   "badge": ""
+  },
+  {
+   "title": "Continue",
+   "url": "https://continue.dev",
+   "desc": "开源 AI 编程助手",
+   "subcatId": "智能体Agent",
+   "badge": ""
+  },
+  {
+   "title": "Trae",
+   "url": "https://www.trae.ai",
+   "desc": "AI 原生 IDE",
+   "subcatId": "智能体Agent",
+   "badge": ""
+  },
+  {
+   "title": "通义灵码 IDE",
+   "url": "https://tongyi.aliyun.com/lingma",
+   "desc": "阿里灵码 Agent",
+   "subcatId": "智能体Agent",
+   "badge": ""
+  },
+  {
+   "title": "OpenRouter",
+   "url": "https://openrouter.ai",
+   "desc": "多模型 API 路由",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "Groq",
+   "url": "https://groq.com",
+   "desc": "极速推理 API",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "Together AI",
+   "url": "https://www.together.ai",
+   "desc": "模型推理云",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "Fireworks",
+   "url": "https://fireworks.ai",
+   "desc": "快速推理 API",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "SiliconFlow",
+   "url": "https://siliconflow.cn",
+   "desc": "国内模型 API",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "字节火山方舟",
+   "url": "https://www.volcengine.com",
+   "desc": "火山引擎模型服务",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "阿里百炼",
+   "url": "https://bailian.aliyun.com",
+   "desc": "阿里大模型平台",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "百度千帆",
+   "url": "https://qianfan.cloud.baidu.com",
+   "desc": "百度千帆平台",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "腾讯云 TI",
+   "url": "https://cloud.tencent.com",
+   "desc": "腾讯云 AI 平台",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "Runway Gen",
+   "url": "https://runwayml.com",
+   "desc": "视频生成 API",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "PaddlePaddle",
+   "url": "https://www.paddlepaddle.org.cn",
+   "desc": "百度飞桨框架",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "PyTorch",
+   "url": "https://pytorch.org",
+   "desc": "PyTorch 框架",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "TensorFlow",
+   "url": "https://www.tensorflow.org",
+   "desc": "TF 框架",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "Transformers",
+   "url": "https://huggingface.co/docs/transformers",
+   "desc": "HuggingFace 库",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "LangChain",
+   "url": "https://www.langchain.com",
+   "desc": "LLM 应用框架",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "LlamaIndex",
+   "url": "https://www.llamaindex.ai",
+   "desc": "知识库框架",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "AutoGen",
+   "url": "https://microsoft.github.io/autogen",
+   "desc": "微软多智能体框架",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "CrewAI",
+   "url": "https://www.crewai.com",
+   "desc": "多智能体协作框架",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "vLLM",
+   "url": "https://github.com/vllm-project/vllm",
+   "desc": "高性能推理引擎",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "OpenCV",
+   "url": "https://opencv.org",
+   "desc": "计算机视觉库",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "JetBrains",
+   "url": "https://www.jetbrains.com",
+   "desc": "专业 IDE 全家桶",
+   "subcatId": "智能IDE",
+   "badge": ""
+  },
+  {
+   "title": "Visual Studio Code",
+   "url": "https://code.visualstudio.com",
+   "desc": "超轻量编辑器",
+   "subcatId": "智能IDE",
+   "badge": ""
+  },
+  {
+   "title": "Android Studio",
+   "url": "https://developer.android.com/studio",
+   "desc": "Android 开发 IDE",
+   "subcatId": "智能IDE",
+   "badge": ""
+  },
+  {
+   "title": "Xcode",
+   "url": "https://developer.apple.com/xcode",
+   "desc": "苹果开发 IDE",
+   "subcatId": "智能IDE",
+   "badge": ""
+  },
+  {
+   "title": "IntelliJ IDEA",
+   "url": "https://www.jetbrains.com/idea",
+   "desc": "Java/Kotlin IDE",
+   "subcatId": "智能IDE",
+   "badge": ""
+  },
+  {
+   "title": "Zed",
+   "url": "https://zed.dev",
+   "desc": "新一代编辑器",
+   "subcatId": "智能IDE",
+   "badge": ""
+  },
+  {
+   "title": "Windsurf",
+   "url": "https://windsurf.com",
+   "desc": "AI 编辑器",
+   "subcatId": "智能IDE",
+   "badge": ""
+  },
+  {
+   "title": "Aider",
+   "url": "https://aider.chat",
+   "desc": "终端 AI 编程",
+   "subcatId": "智能体Agent",
+   "badge": ""
+  },
+  {
+   "title": "Devin CLI",
+   "url": "https://devin.ai",
+   "desc": "Devin 命令行",
+   "subcatId": "智能体Agent",
+   "badge": ""
+  },
+  {
+   "title": "Camel-AI",
+   "url": "https://www.camel-ai.org",
+   "desc": "多智能体研究框架",
+   "subcatId": "智能体Agent",
+   "badge": ""
+  },
+  {
+   "title": "MetaGPT",
+   "url": "https://github.com/geekan/MetaGPT",
+   "desc": "多智能体软件公司",
+   "subcatId": "智能体Agent",
+   "badge": ""
+  },
+  {
+   "title": "ChatDev",
+   "url": "https://github.com/OpenBMB/ChatDev",
+   "desc": "对话式软件开发",
+   "subcatId": "智能体Agent",
+   "badge": ""
+  },
+  {
+   "title": "Gorilla",
+   "url": "https://gorilla.cs.berkeley.edu",
+   "desc": "API 调用模型",
+   "subcatId": "智能体Agent",
+   "badge": ""
+  },
+  {
+   "title": "Groq Cloud",
+   "url": "https://console.groq.com",
+   "desc": "Groq API 控制台",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "DeepSeek API",
+   "url": "https://platform.deepseek.com",
+   "desc": "DeepSeek 开放平台",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "Moonshot AI",
+   "url": "https://platform.moonshot.cn",
+   "desc": "Kimi 开放平台",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "Zhipu API",
+   "url": "https://open.bigmodel.cn",
+   "desc": "智谱开放平台",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "MiniMax API",
+   "url": "https://api.minimax.io",
+   "desc": "MiniMax 开放平台",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "阶跃星辰 API",
+   "url": "https://platform.stepfun.com",
+   "desc": "StepFun 开放平台",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "百川 API",
+   "url": "https://platform.baichuan-ai.com",
+   "desc": "百川开放平台",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "零一万物 API",
+   "url": "https://platform.lingyiwanwu.com",
+   "desc": "Yi 模型开放平台",
+   "subcatId": "MaaS与算力",
+   "badge": ""
+  },
+  {
+   "title": "Ollama 模型库",
+   "url": "https://ollama.com/library",
+   "desc": "本地模型下载",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "ModelScope 魔搭",
+   "url": "https://modelscope.cn",
+   "desc": "国内模型社区",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "OpenBMB",
+   "url": "https://www.openbmb.cn",
+   "desc": "开源大模型社区",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "Ray",
+   "url": "https://www.ray.io",
+   "desc": "分布式计算框架",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "DVC",
+   "url": "https://dvc.org",
+   "desc": "机器学习版本管理",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "MLflow",
+   "url": "https://mlflow.org",
+   "desc": "ML 生命周期管理",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "Neptune",
+   "url": "https://neptune.ai",
+   "desc": "实验追踪平台",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "Weights & Biases",
+   "url": "https://wandb.ai",
+   "desc": "实验记录平台",
+   "subcatId": "AI框架生态",
+   "badge": ""
+  },
+  {
+   "title": "Anaconda",
+   "url": "https://www.anaconda.com",
+   "desc": "Python 数据科学发行版",
+   "subcatId": "智能IDE",
+   "badge": ""
+  },
+  {
+   "title": "Jupyter",
+   "url": "https://jupyter.org",
+   "desc": "交互式笔记本",
+   "subcatId": "智能IDE",
+   "badge": ""
+  },
+  {
+   "title": "DataGrip",
+   "url": "https://www.jetbrains.com/datagrip",
+   "desc": "数据库 IDE",
+   "subcatId": "智能IDE",
+   "badge": ""
+  },
+  {
+   "title": "PyCharm",
+   "url": "https://www.jetbrains.com/pycharm",
+   "desc": "Python IDE",
+   "subcatId": "智能IDE",
+   "badge": ""
+  },
+  {
+   "title": "WebStorm",
+   "url": "https://www.jetbrains.com/webstorm",
+   "desc": "前端 IDE",
+   "subcatId": "智能IDE",
+   "badge": ""
+  },
+  {
+   "title": "Eclipse",
+   "url": "https://eclipseide.org",
+   "desc": "老牌 IDE",
+   "subcatId": "智能IDE",
+   "badge": ""
+  },
+  {
+   "title": "Obsidian",
+   "url": "https://obsidian.md",
+   "desc": "本地知识库",
+   "subcatId": "智能IDE",
+   "badge": ""
+  },
+  {
+   "title": "Logseq",
+   "url": "https://logseq.com",
+   "desc": "大纲笔记工具",
+   "subcatId": "智能IDE",
+   "badge": ""
+  }
+ ]
+}

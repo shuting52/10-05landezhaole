@@ -1,0 +1,20 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    <path android:fillColor="#07C160" android:pathData="M10,10h60v60h-60z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M20,20h40v40h-40z"/>
+    <path android:fillColor="#07C160" android:pathData="M30,30h20v20h-20z"/>
+
+    <path android:fillColor="#07C160" android:pathData="M130,10h60v60h-60z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M140,20h40v40h-40z"/>
+    <path android:fillColor="#07C160" android:pathData="M150,30h20v20h-20z"/>
+
+    <path android:fillColor="#07C160" android:pathData="M10,130h60v60h-60z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M20,140h40v40h-40z"/>
+    <path android:fillColor="#07C160" android:pathData="M30,150h20v20h-20z"/>
+
+    <!-- QR Data Blocks -->
+    <path android:fillColor="#07C160" android:pathData="M80,20h15v15h-15z M100,20h15v15h-15z M80,50h35v15h-35z M20,80h15v35h-15z M50,80h25v15h-25z M90,80h20v20h-20z M120,80h30v15h-30z M160,80h25v25h-25z M85,115h30v15h-30z M130,110h20v20h-20z M165,120h20v40h-20z M80,140h20v30h-20z M110,145h35v15h-35z M115,170h30v15h-30z"/>
+</vector>

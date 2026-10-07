@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.Console" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">#0B0B1A</item>
+        <item name="android:navigationBarColor">#0B0B1A</item>
+        <item name="android:windowBackground">#0B0B1A</item>
+    </style>
+</resources>

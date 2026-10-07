@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v1.0.8 修复「下载安装失败」：本体更新弹窗 installViaFileProvider 需要 FileProvider 共享
+     cacheDir/update 下的新 APK 与公共下载目录，缺失该文件会导致回退安装必失败。 -->
+<paths>
+    <!-- 更新下载缓存目录（downloadWithProgress 保存 latest.apk 的位置） -->
+    <cache-path name="update_cache" path="update/" />
+    <!-- 签名冲突时拷贝到公共下载目录的安装包 -->
+    <external-path name="external_downloads" path="Download/" />
+    <external-files-path name="external_files" path="." />
+</paths>

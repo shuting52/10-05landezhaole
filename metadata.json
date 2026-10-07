@@ -1,0 +1,6 @@
+{
+  "name": "懒得找了",
+  "description": "GitHub 云端同步的 Android 资源与工具导航应用",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
