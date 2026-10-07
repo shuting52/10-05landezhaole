@@ -47,32 +47,32 @@ class AdminRepository(private val context: Context) {
 
     // ---------------- Token / 仓库配置 ----------------
 
-    var token: String
-        get() {
-            val saved = prefs.getString("lzdz_gh_token", "")?.trim().orEmpty()
-            if (saved.isNotBlank() && saved != PLACEHOLDER_TOKEN) return saved
-            // BuildConfig 占位（不硬编码真实 Token）
-            val fromBuildConfig = "".trim()
-            return if (fromBuildConfig.isBlank() || fromBuildConfig == PLACEHOLDER_TOKEN) "" else fromBuildConfig
-        }
-        set(value) {
-            prefs.edit().putString("lzdz_gh_token", value.trim()).apply()
-        }
+    fun getToken(): String {
+        val saved = prefs.getString("lzdz_gh_token", "")?.trim().orEmpty()
+        if (saved.isNotBlank() && saved != PLACEHOLDER_TOKEN) return saved
+        // BuildConfig 占位（不硬编码真实 Token）
+        val fromBuildConfig = "".trim()
+        return if (fromBuildConfig.isBlank() || fromBuildConfig == PLACEHOLDER_TOKEN) "" else fromBuildConfig
+    }
 
-    var config: GithubConfig
-        get() {
-            val owner = prefs.getString("lzdz_gh_owner", DEFAULT_OWNER)?.takeUnless { it.isBlank() } ?: DEFAULT_OWNER
-            val repo = prefs.getString("lzdz_gh_repo", DEFAULT_REPO)?.takeUnless { it.isBlank() } ?: DEFAULT_REPO
-            val branch = prefs.getString("lzdz_gh_branch", DEFAULT_BRANCH)?.takeUnless { it.isBlank() } ?: DEFAULT_BRANCH
-            return GithubConfig(owner, repo, branch)
-        }
-        set(cfg) {
-            prefs.edit()
-                .putString("lzdz_gh_owner", cfg.owner.trim().takeUnless { it.isBlank() } ?: DEFAULT_OWNER)
-                .putString("lzdz_gh_repo", cfg.repo.trim().takeUnless { it.isBlank() } ?: DEFAULT_REPO)
-                .putString("lzdz_gh_branch", cfg.branch.trim().takeUnless { it.isBlank() } ?: DEFAULT_BRANCH)
-                .apply()
-        }
+    fun setToken(value: String) {
+        prefs.edit().putString("lzdz_gh_token", value.trim()).apply()
+    }
+
+    fun getConfig(): GithubConfig {
+        val owner = prefs.getString("lzdz_gh_owner", DEFAULT_OWNER)?.takeUnless { it.isBlank() } ?: DEFAULT_OWNER
+        val repo = prefs.getString("lzdz_gh_repo", DEFAULT_REPO)?.takeUnless { it.isBlank() } ?: DEFAULT_REPO
+        val branch = prefs.getString("lzdz_gh_branch", DEFAULT_BRANCH)?.takeUnless { it.isBlank() } ?: DEFAULT_BRANCH
+        return GithubConfig(owner, repo, branch)
+    }
+
+    fun setConfig(cfg: GithubConfig) {
+        prefs.edit()
+            .putString("lzdz_gh_owner", cfg.owner.trim().takeUnless { it.isBlank() } ?: DEFAULT_OWNER)
+            .putString("lzdz_gh_repo", cfg.repo.trim().takeUnless { it.isBlank() } ?: DEFAULT_REPO)
+            .putString("lzdz_gh_branch", cfg.branch.trim().takeUnless { it.isBlank() } ?: DEFAULT_BRANCH)
+            .apply()
+    }
 
     // ---------------- 通知偏好 ----------------
 

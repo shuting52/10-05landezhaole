@@ -61,12 +61,12 @@ class AdminViewModel(application: Application) : AndroidViewModel(application) {
     private val customLogs = mutableListOf<ActivityLog>()
 
     init {
-        val cfg = repo.config
+        val cfg = repo.getConfig()
         _uiState.value = _uiState.value.copy(
             githubOwner = cfg.owner,
             githubRepo = cfg.repo,
             githubBranch = cfg.branch,
-            githubToken = repo.token,
+            githubToken = repo.getToken(),
             notifReview = repo.getNotificationPref("review"),
             notifDownload = repo.getNotificationPref("download"),
             notifWeekly = repo.getNotificationPref("weekly"),
@@ -160,7 +160,7 @@ class AdminViewModel(application: Application) : AndroidViewModel(application) {
                 _uiState.value.githubRepo,
                 _uiState.value.githubBranch,
             ))
-            repo.token = _uiState.value.githubToken
+            repo.setToken(_uiState.value.githubToken)
             try {
                 // 先走 API，失败走镜像链
                 val (text, sha) = runCatching { repo.ghReadText() }.getOrElse { repo.ghReadMirror() }
@@ -427,7 +427,7 @@ class AdminViewModel(application: Application) : AndroidViewModel(application) {
             LogActionType.DELETE -> 0xFFE94B4B
             LogActionType.REVIEW -> 0xFF5B8FF9
         }
-        val cfg = repo.config
+        val cfg = repo.getConfig()
         customLogs.add(0, ActivityLog(
             id = "log_${System.currentTimeMillis()}",
             operator = "管理员",
