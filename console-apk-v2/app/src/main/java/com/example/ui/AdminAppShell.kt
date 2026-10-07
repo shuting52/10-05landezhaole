@@ -78,6 +78,7 @@ import com.example.ui.screens.TextManagementScreen
 import com.example.ui.screens.ThemeKitScreen
 import com.example.ui.theme.Cinnabar
 import com.example.ui.theme.Gold
+import com.example.ui.theme.GoldDark
 import com.example.ui.theme.Ink
 import com.example.ui.theme.InkBlack
 import com.example.ui.theme.Paper

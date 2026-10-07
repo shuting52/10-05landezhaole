@@ -60,7 +60,7 @@ fun CardTableSection(
     pageSize: Int = 10,
     showFilters: Boolean = true,
     showHeaderActions: Boolean = true,
-    onSaveCard: (ResourceCard?, String, String, String, ButtonType, CardStatus, String, String, String, String, String, String) -> Unit,
+    onSaveCard: (ResourceCard?, String, String, String, ButtonType, CardStatus, String, String, String, String, String, String, String) -> Unit,
     onDeleteCard: (ResourceCard) -> Unit,
     onShowToast: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -206,8 +206,8 @@ fun CardTableSection(
         categories = categories,
         categoryObjects = categoryObjects,
         onDismiss = { formOpen = false },
-        onSubmit = { card, name, desc, url, btnType, status, cat, subcatId, icon, fallbackText, badge, badgeType ->
-            onSaveCard(card, name, desc, url, btnType, status, cat, subcatId, icon, fallbackText, badge, badgeType)
+        onSubmit = { card, name, desc, url, btnType, status, cat, subcatId, icon, fallbackText, badge, badgeType, highlights ->
+            onSaveCard(card, name, desc, url, btnType, status, cat, subcatId, icon, fallbackText, badge, badgeType, highlights)
             formOpen = false
         },
     )

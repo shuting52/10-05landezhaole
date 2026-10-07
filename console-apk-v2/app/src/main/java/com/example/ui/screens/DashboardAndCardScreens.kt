@@ -64,7 +64,7 @@ fun DashboardScreen(
     uiState: AdminUiState,
     onDateRangeChange: (String) -> Unit,
     onNavigate: (AdminScreen) -> Unit,
-    onSaveCard: (ResourceCard?, String, String, String, ButtonType, CardStatus, String, String, String, String, String, String) -> Unit,
+    onSaveCard: (ResourceCard?, String, String, String, ButtonType, CardStatus, String, String, String, String, String, String, String) -> Unit,
     onDeleteCard: (ResourceCard) -> Unit,
     onShowToast: (String) -> Unit,
 ) {
@@ -149,8 +149,8 @@ fun DashboardScreen(
         categories = uiState.categories.map { it.name },
         categoryObjects = uiState.categories,
         onDismiss = { createOpen = false },
-        onSubmit = { _, name, desc, url, btnType, status, cat, subcatId, icon, fallbackText, badge, badgeType ->
-            onSaveCard(null, name, desc, url, btnType, status, cat, subcatId, icon, fallbackText, badge, badgeType)
+        onSubmit = { _, name, desc, url, btnType, status, cat, subcatId, icon, fallbackText, badge, badgeType, highlights ->
+            onSaveCard(null, name, desc, url, btnType, status, cat, subcatId, icon, fallbackText, badge, badgeType, highlights)
             createOpen = false
         },
     )
@@ -216,7 +216,7 @@ fun ActivityLogRow(log: ActivityLog) {
 @Composable
 fun CardManagementScreen(
     uiState: AdminUiState,
-    onSaveCard: (ResourceCard?, String, String, String, ButtonType, CardStatus, String, String, String, String, String, String) -> Unit,
+    onSaveCard: (ResourceCard?, String, String, String, ButtonType, CardStatus, String, String, String, String, String, String, String) -> Unit,
     onDeleteCard: (ResourceCard) -> Unit,
     onShowToast: (String) -> Unit,
 ) {

@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +37,8 @@ import com.example.ui.theme.Ink
 // 控制台弹窗组件（Kotlin Compose 重写版，视觉与 v2.1.0 发布物一致）
 // ============================================================================
 
-/** 卡片编辑/新增弹窗：12 个字段 + 保存校验 */
+/** 卡片编辑/新增弹窗：13 个字段 + 保存校验 */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardFormDialog(
     open: Boolean,
@@ -44,7 +46,7 @@ fun CardFormDialog(
     categories: List<String>,
     categoryObjects: List<CategoryItem>,
     onDismiss: () -> Unit,
-    onSubmit: (ResourceCard?, String, String, String, ButtonType, CardStatus, String, String, String, String, String, String) -> Unit,
+    onSubmit: (ResourceCard?, String, String, String, ButtonType, CardStatus, String, String, String, String, String, String, String) -> Unit,
 ) {
     if (!open) return
 
@@ -212,7 +214,7 @@ fun CardFormDialog(
                     }
                     onSubmit(
                         card, name, desc, url, buttonType, status,
-                        category, subcatId, icon, fallbackText, badge, badgeType,
+                        category, subcatId, icon, fallbackText, badge, badgeType, highlights,
                     )
                 },
             ) { Text("保存", color = Cinnabar) }
