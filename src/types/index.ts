@@ -14,6 +14,13 @@ export interface ResourceCard {
   status: CardStatus;
   updatedAt: string;
   category: string;
+  // 真实数据扩展字段（映射回 admin-data 用）
+  _raw?: unknown;
+  _url?: string;
+  _categoryId?: string;
+  _subcatId?: string;
+  _badge?: string;
+  _badgeType?: string;
 }
 
 export interface ResourceButton {
@@ -23,6 +30,10 @@ export interface ResourceButton {
   usageCount: number;
   status: "enabled" | "disabled";
   updatedAt: string;
+  // 真实数据扩展字段
+  _raw?: unknown;
+  _url?: string;
+  _desc?: string;
 }
 
 export interface TextItem {
@@ -32,6 +43,8 @@ export interface TextItem {
   content: string;
   usageCount: number;
   updatedAt: string;
+  // 真实数据扩展字段
+  _key?: string;
 }
 
 export interface Category {
