@@ -19,20 +19,6 @@ android {
         versionName = "2.1.0"
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("release")
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    buildFeatures {
-        compose = true
-        buildConfig = true
-    }
     signingConfigs {
         create("release") {
             // 与本体一致：优先仓库签名密钥，缺失回退 debug.keystore
@@ -47,7 +33,22 @@ android {
             keyPassword = if (useDebugFallback) "android" else (System.getenv("CONSOLE_KEY_PASSWORD") ?: "lzdz123456")
         }
     }
-}
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+    }
 
 dependencies {
     // 与 v2.1.0 发布物一致的依赖（compose + okhttp + coroutines）
