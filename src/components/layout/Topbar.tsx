@@ -1,10 +1,12 @@
 import { useLocation } from "react-router-dom";
-import { Bell, HelpCircle, Menu, Search } from "lucide-react";
+import { Bell, CheckCircle2, HelpCircle, Menu, Search } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { pageTitles } from "./navConfig";
 import { UserMenu } from "./UserMenu";
+import { useEffect, useState } from "react";
+import { getStore, subscribe } from "@/lib/store";
 
 interface TopbarProps {
   onOpenSidebar: () => void;
@@ -13,6 +15,20 @@ interface TopbarProps {
 export function Topbar({ onOpenSidebar }: TopbarProps) {
   const location = useLocation();
   const title = pageTitles[location.pathname] ?? "总览";
+  const [conn, setConn] = useState(getStore().state);
+
+  useEffect(() => subscribe((s) => setConn(s.state)), []);
+
+  const connLabel =
+    conn === "connected"
+      ? "云端已连接"
+      : conn === "readonly"
+        ? "只读模式"
+        : conn === "loading"
+          ? "连接中…"
+          : conn === "error"
+            ? "连接异常"
+            : "未连接";
 
   return (
     <header className="sticky top-0 z-20 border-b border-border bg-paper/85 backdrop-blur-md">
@@ -44,6 +60,18 @@ export function Topbar({ onOpenSidebar }: TopbarProps) {
         </div>
 
         <div className="ml-auto flex items-center gap-1 md:ml-0">
+          {(conn === "connected" || conn === "readonly") && (
+            <span className="mr-1 hidden items-center gap-1.5 rounded-full bg-[#2F7D5B]/10 px-2.5 py-1 text-xs font-medium text-[#2F7D5B] sm:flex">
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              {connLabel}
+            </span>
+          )}
+          {(conn === "error" || conn === "idle") && (
+            <span className="mr-1 hidden items-center gap-1.5 rounded-full bg-gold/15 px-2.5 py-1 text-xs font-medium text-[#9A7420] sm:flex">
+              <span className="h-2 w-2 rounded-full bg-gold" />
+              {connLabel}
+            </span>
+          )}
           <Button
             variant="ghost"
             size="icon"
