@@ -247,7 +247,7 @@ class AdminRepository(private val context: Context) {
                 }
             }.getOrNull()
             ?: "upload_${System.currentTimeMillis()}.bin"
-        val safeName = originalName.replace(Regex("[\\\\/:*?\"<>|\\s]+"), "_").trim('_')
+        val safeName = Regex("[\\\\/:*?\"<>|\\s]+").replace(originalName, "_").trim('_')
         val path = "$subFolder/$safeName"
         // 已存在则带 sha 覆盖
         var existingSha = ""
