@@ -33,8 +33,17 @@ jobs:
             "https://cdn.jsdelivr.net/gh/shuting52/landezhaole10-02@main/debug.keystore"
           ls -la debug.keystore
 
-      # Kotlin 层（数据层/模型/ViewModel）编译验证；
-      # UI 层为 jadx 反编译 Java（可读，含反编译伪代码，不参与 Java 编译）
-      - name: Compile Kotlin layer
+      # 完整构建 Console v2 Release APK（Kotlin 层 + UI 层全部参与编译）
+      # 说明：UI 层正在逐步由 jadx 反编译 Java 改写为 Kotlin Compose，
+      #       构建成功即可产出 v2.1.1 发布包，供 2.1.0 旧版控制台检测更新。
+      - name: Build Console v2 Release APK
         run: |
-          ./gradlew -p console-apk-v2 :app:compileReleaseKotlin --no-daemon -Dorg.gradle.jvmargs="-Xmx2g"
+          ./gradlew -p console-apk-v2 :app:assembleRelease --no-daemon -Dorg.gradle.jvmargs="-Xmx2g"
+          ls -la console-apk-v2/app/build/outputs/apk/release/
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: console-v2-apk
+          path: console-apk-v2/app/build/outputs/apk/release/app-release.apk
+          retention-days: 7
