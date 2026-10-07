@@ -241,7 +241,7 @@ class AdminRepository(private val context: Context) {
         val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
             ?: throw IllegalStateException("读取本地文件失败")
         val originalName: String = customFileName
-            ?: runCatching<String> {
+            ?: runCatching<String?> {
                 context.contentResolver.query(uri, null, null, null, null)?.use { c ->
                     if (c.moveToFirst()) {
                         val idx = c.getColumnIndex("_display_name")
