@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --paper: #f7f3ea;
+    --ink: #193b3d;
+    --cinnabar: #c63c32;
+    --gold: #c99a3d;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-paper text-inkblack font-sans antialiased;
+    /* 极淡的宣纸纹理：两层柔和径向渐变，克制不抢内容 */
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(201, 154, 61, 0.05), transparent 42%),
+      radial-gradient(circle at 88% 92%, rgba(25, 59, 61, 0.045), transparent 46%);
+    background-attachment: fixed;
+    overflow-x: hidden;
+  }
+
+  /* 防止主内容区横向滚动 */
+  #root {
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: rgba(198, 60, 50, 0.16);
+  }
+
+  /* 细滚动条，贴合工具后台气质 */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(25, 59, 61, 0.18);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(25, 59, 61, 0.32);
+    background-clip: content-box;
+  }
+}
+
+@layer components {
+  /* 云纹 / 回纹 极淡背景点缀，仅作装饰 */
+  .pattern-cloud {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23193B3D' stroke-opacity='0.05' stroke-width='1.2'%3E%3Cpath d='M20 60c0-8 6-14 14-14s14 6 14 14'/%3E%3Cpath d='M48 60c0-8 6-14 14-14s14 6 14 14'/%3E%3Cpath d='M34 74c0-8 6-14 14-14s14 6 14 14'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .pattern-fret {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='%23C99A3D' stroke-opacity='0.10' stroke-width='1'%3E%3Cpath d='M0 20h12v-8h8v16h8v-8h12'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* 印章式小图标底座 */
+  .seal-badge {
+    @apply inline-flex items-center justify-center rounded-lg;
+  }
+
+  .card-surface {
+    @apply rounded-2xl border border-border bg-paper-soft shadow-soft;
+  }
+
+  .focus-ring {
+    @apply outline-none ring-offset-2 ring-offset-paper focus-visible:ring-2 focus-visible:ring-cinnabar/60;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
