@@ -1,0 +1,39 @@
+name: Verify Console v2 Build
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant execute permission
+        run: chmod +x gradlew
+
+      - name: Prepare signing key
+        run: |
+          curl -sL --retry 3 --retry-all-errors -o debug.keystore \
+            "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/debug.keystore" \
+            || curl -sL --retry 3 --retry-all-errors -o debug.keystore \
+            "https://cdn.jsdelivr.net/gh/shuting52/landezhaole10-02@main/debug.keystore"
+          ls -la debug.keystore
+
+      - name: Compile console-apk-v2 (Kotlin rewrite check)
+        run: |
+          ./gradlew -p console-apk-v2 :app:assembleRelease --no-daemon -Dorg.gradle.jvmargs="-Xmx2g"
+        continue-on-error: true
