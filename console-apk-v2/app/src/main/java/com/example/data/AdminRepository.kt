@@ -304,7 +304,7 @@ class AdminRepository(private val context: Context) {
             .url(url)
             .header("Accept", "application/vnd.github+json")
             .header("X-GitHub-Api-Version", "2022-11-28")
-        if (getToken().isNotBlank()) builder.header("Authorization", "Bearer $token")
+        if (getToken().isNotBlank()) builder.header("Authorization", "Bearer ${getToken()}")
         return builder.build()
     }
 
