@@ -240,14 +240,14 @@ class AdminRepository(private val context: Context) {
         // 读取文件字节
         val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
             ?: throw IllegalStateException("读取本地文件失败")
-        val originalName = customFileName
+        val originalName: String = customFileName
             ?: runCatching {
                 context.contentResolver.query(uri, null, null, null, null)?.use { c ->
                     if (c.moveToFirst()) c.getColumnIndex("_display_name").takeIf { it >= 0 }?.let { c.getString(it) }
                 }
             }.getOrNull()
             ?: "upload_${System.currentTimeMillis()}.bin"
-        val safeName = Regex("[\\\\/:*?\"<>|\\s]+").replace(originalName, "_").trim('_')
+        val safeName = originalName.replace("[\\/:*?\"<>|\s]+".toRegex(), "_").trim('_')
         val path = "$subFolder/$safeName"
         // 已存在则带 sha 覆盖
         var existingSha = ""
