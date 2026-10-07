@@ -15,8 +15,8 @@ android {
         applicationId = "com.aistudio.landezhaole.qrxwpm"
         minSdk = 24
         targetSdk = 36
-        versionCode = 58
-        versionName = "2.1.0"
+        versionCode = 59
+        versionName = "2.1.1"
     }
 
     signingConfigs {
