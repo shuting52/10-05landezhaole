@@ -1,9 +1,9 @@
 {
   "name": "lazy-find",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
-  "description": "懒得找了 · 卡片资源管理后台 Dashboard",
+  "description": "懒得找了 · 卡片资源管理后台 Dashboard（已对接真实 GitHub API 云端数据）",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
