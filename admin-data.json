@@ -1,17 +1,15 @@
 {
   "version": {
-    "code": 149,
-    "name": "1.3.14",
+    "code": 150,
+    "name": "1.3.15",
     "changelog": [
-      "✨ v1.3.14 更新来啦～",
-      "1. 主题切换弹窗全新升级为高透半折射液体玻璃质感",
-      "2. 百宝箱圆盘界面紧凑化微调，布局更加精致",
-      "3. 移除车标识别功能，精简优化工具箱"
+      "✨ v1.3.15 更新来啦～",
+      "feat(ui): 主题切换弹窗液体玻璃升级与百宝箱圆盘界面微调"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.3.14-1791362189.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.3.14-1791362189.apk",
-    "lastBuildSha": "de03e92a9bc03a8cbfc0cd589427075b912b0ce9"
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.3.15-1791362814.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.3.15-1791362814.apk",
+    "lastBuildSha": "41cba9c1e08902b0a48bf4019755d352ab8806ca"
   },
   "home": {
     "categories": [
@@ -24265,12 +24263,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.3.14 已上线",
+    "title": "懒得找了 v1.3.15 已上线",
     "changelog": [
-      "✨ v1.3.14 更新来啦～",
-      "1. 主题切换弹窗全新升级为高透半折射液体玻璃质感",
-      "2. 百宝箱圆盘界面紧凑化微调，布局更加精致",
-      "3. 移除车标识别功能，精简优化工具箱"
+      "✨ v1.3.15 更新来啦～",
+      "feat(ui): 主题切换弹窗液体玻璃升级与百宝箱圆盘界面微调"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24337,10 +24333,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.3.13",
-      "code": 148,
-      "at": "2026-10-07T07:23:16Z",
-      "sha": "de03e92a9bc03a8cbfc0cd589427075b912b0ce9"
+      "version": "1.3.15",
+      "code": 150,
+      "at": "2026-10-07T08:46:59Z",
+      "sha": "41cba9c1e08902b0a48bf4019755d352ab8806ca"
     }
   }
 }
