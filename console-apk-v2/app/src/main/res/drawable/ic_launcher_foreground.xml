@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:gravity="center" android:height="66dp" android:width="66dp" android:drawable="@drawable/img_launcher_seal_1791342919827"/>
+</layer-list>
