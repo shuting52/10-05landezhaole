@@ -34,6 +34,32 @@ export interface ResourceButton {
   _raw?: unknown;
   _url?: string;
   _desc?: string;
+  _apkUrl?: string;
+  _author?: string;
+  _badge?: string;
+  _badgeType?: string;
+  _tags?: string;
+  _iconUrl?: string;
+  _previewUrl?: string;
+  _mode?: "file" | "url" | string;
+}
+
+export interface SkillItem {
+  id: string;
+  type: string;
+  promptType: string;
+  title: string;
+  desc: string;
+  prompt: string;
+  url: string;
+  author: string;
+  badge: string;
+  tags: string;
+  previewUrl: string;
+  mediaUrl: string;
+  iconUrl: string;
+  mode: "file" | "url" | string;
+  _raw?: unknown;
 }
 
 export interface TextItem {

@@ -70,13 +70,21 @@ export function softwareToButton(s: SoftwareDto): ResourceButton {
   return {
     id: s.id,
     name: s.title,
-    type: "download",
+    type: s.mode && s.mode !== "url" ? "download" : "link",
     usageCount: 0,
-    status: s.badgeType === "new" ? "enabled" : "enabled",
+    status: "enabled",
     updatedAt: "-",
     _raw: s,
-    _url: s.url,
-    _desc: s.desc,
+    _url: s.url || "",
+    _desc: s.desc || "",
+    _apkUrl: s.apkUrl || "",
+    _author: s.author || "",
+    _badge: s.badge || "",
+    _badgeType: s.badgeType || "",
+    _tags: s.tags || "",
+    _iconUrl: s.iconUrl || "",
+    _previewUrl: s.previewUrl || "",
+    _mode: s.mode || (s.apkUrl ? "file" : "url"),
   } as ResourceButton;
 }
 
@@ -118,6 +126,7 @@ export function buildStats(data: AdminData) {
       trend: "up" as const,
       icon: "download" as const,
       tone: "gold" as const,
+      action: { label: "去管理", to: "/buttons" },
     },
     {
       id: "skills",
@@ -128,6 +137,7 @@ export function buildStats(data: AdminData) {
       trend: "up" as const,
       icon: "users" as const,
       tone: "ink" as const,
+      action: { label: "去管理", to: "/skills" },
     },
     {
       id: "version",

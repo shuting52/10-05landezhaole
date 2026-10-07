@@ -24280,9 +24280,9 @@
     "segments": []
   },
   "console": {
-    "version": "2.0.0",
-    "code": 57,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/console/console-apk-v2.0.0-1791346979.apk"
+    "version": "2.1.0",
+    "code": 58,
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/console/console-apk-v2.1.0-1791350711.apk"
   },
   "ipMonitor": {
     "enabled": false,

@@ -224,4 +224,50 @@ export async function purgeCdn(path = CONFIG_PATH): Promise<boolean> {
   }
 }
 
+
+/** 将浏览器 File 对象转换为 Base64 字符串（不含 data:*;base64, 前缀） */
+export function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const res = typeof reader.result === "string" ? reader.result : "";
+      const b64 = res.includes(",") ? res.split(",")[1] : res;
+      resolve(b64);
+    };
+    reader.onerror = () => reject(new Error("读取本地文件失败"));
+    reader.readAsDataURL(file);
+  });
+}
+
+/**
+ * 上传本地文件（支持 .apk / .zip / .md / 图片 / 视频等）到 GitHub 仓库，
+ * 自动刷新 jsDelivr CDN 并返回本体软件可直接下载的 raw.githubusercontent.com 直链。
+ */
+export async function ghUploadFile(
+  file: File,
+  subFolder: "auto" | "dist/uploads" | "dist/apk" = "auto"
+): Promise<{ rawUrl: string; path: string; sha: string; fileName: string }> {
+  const token = getToken();
+  if (!token) {
+    throw new Error("请先在「系统设置」中配置 GitHub Token 后再上传文件");
+  }
+  const { owner, repo, branch } = getConfig();
+  const safeName = (file.name || `upload_${Date.now()}.bin`)
+    .replace(/[\\/:*?"<>|\s]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  const isApk = safeName.toLowerCase().endsWith(".apk");
+  const folder =
+    subFolder === "auto"
+      ? isApk
+        ? "dist/apk"
+        : "dist/uploads"
+      : subFolder;
+  const path = `${folder}/${Date.now()}_${safeName}`;
+  const b64 = await fileToBase64(file);
+  const sha = await ghUploadBinary(path, b64, `console: 上传资源文件 ${safeName}`);
+  await purgeCdn(path);
+  const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
+  return { rawUrl, path, sha, fileName: safeName };
+}
+
 export { CONFIG_PATH };

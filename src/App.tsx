@@ -5,6 +5,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import Dashboard from "@/pages/Dashboard";
 import CardManagement from "@/pages/CardManagement";
 import ButtonManagement from "@/pages/ButtonManagement";
+import SkillManagement from "@/pages/SkillManagement";
 import TextManagement from "@/pages/TextManagement";
 import CategoryManagement from "@/pages/CategoryManagement";
 import Settings from "@/pages/Settings";
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/cards" element={<CardManagement />} />
           <Route path="/buttons" element={<ButtonManagement />} />
+          <Route path="/skills" element={<SkillManagement />} />
           <Route path="/texts" element={<TextManagement />} />
           <Route path="/categories" element={<CategoryManagement />} />
           <Route path="/settings" element={<Settings />} />

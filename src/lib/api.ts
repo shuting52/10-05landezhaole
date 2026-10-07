@@ -11,6 +11,7 @@ import type {
   Paginated,
   ResourceButton,
   ResourceCard,
+  SkillItem,
   StatItem,
   TextItem,
 } from "@/types";
@@ -231,35 +232,135 @@ export const api = {
     await saveAdmin(admin, { message: `console: 删除分类 ${id}` });
   },
 
-  /** 保存软件（新增/编辑） */
+  /** 保存软件（新增/编辑，支持本地上传 APK/ZIP/MD 直下与 URL 跳转双模式） */
   async saveSoftware(item: ResourceButton): Promise<void> {
     const admin = await ensureAdmin();
-    const softwares = admin.software || [];
+    admin.software = admin.software || [];
+    const softwares = admin.software;
     const existing = softwares.find((s) => s.id === item.id);
     const raw = (item._raw as Record<string, unknown>) || {};
+    const cleanUrl = (item._url ?? "").trim();
+    const cleanApkUrl = (item._apkUrl ?? "").trim();
+    const primaryLink = cleanApkUrl || cleanUrl;
+    const isFileExt = /\.(apk|zip|md)(\?.*)?$/i.test(primaryLink);
+    const finalMode =
+      item._mode === "file" || isFileExt || Boolean(cleanApkUrl)
+        ? "file"
+        : item._mode || "url";
+    const finalApkUrl = finalMode === "file" ? cleanApkUrl || cleanUrl : cleanApkUrl;
+    const finalUrl = finalMode === "file" ? cleanUrl : cleanUrl || cleanApkUrl;
+
     if (existing) {
-      existing.title = item.name;
-      existing.url = item._url || existing.url;
-      existing.desc = item._desc || existing.desc;
+      existing.title = item.name.trim();
+      existing.desc = (item._desc ?? existing.desc ?? "").trim();
+      existing.url = finalUrl;
+      existing.apkUrl = finalApkUrl;
+      existing.author = (item._author ?? existing.author ?? "").trim();
+      existing.badge = (item._badge ?? existing.badge ?? "").trim();
+      existing.badgeType = (item._badgeType ?? existing.badgeType ?? "").trim();
+      existing.tags = (item._tags ?? existing.tags ?? "").trim();
+      existing.iconUrl = (item._iconUrl ?? existing.iconUrl ?? "").trim();
+      existing.previewUrl = (item._previewUrl ?? existing.previewUrl ?? "").trim();
+      existing.mode = finalMode;
     } else {
-      softwares.push({
+      softwares.unshift({
+        ...raw,
         id: item.id || `sw_${Date.now()}`,
         type: "software",
-        title: item.name,
-        desc: item._desc || "",
-        url: item._url || "",
-        author: "",
-        badge: "",
-        tags: "",
-        apkUrl: "",
-        previewUrl: "",
-        iconUrl: "",
-        mode: "url",
-        badgeType: "",
-        ...raw,
+        title: item.name.trim(),
+        desc: (item._desc ?? "").trim(),
+        url: finalUrl,
+        author: (item._author ?? "").trim(),
+        badge: (item._badge ?? "").trim(),
+        badgeType: (item._badgeType ?? "").trim(),
+        tags: (item._tags ?? "").trim(),
+        apkUrl: finalApkUrl,
+        previewUrl: (item._previewUrl ?? "").trim(),
+        iconUrl: (item._iconUrl ?? "").trim(),
+        mode: finalMode,
       });
     }
     await saveAdmin(admin, { message: `console: 软件「${item.name}」${existing ? "编辑" : "新增"}` });
+  },
+
+  /** 获取全部 Skill 技能库 */
+  async getSkills(): Promise<SkillItem[]> {
+    const admin = await ensureAdmin();
+    return (admin.skills || []).map((sk) => ({
+      id: sk.id,
+      type: sk.type || "skill",
+      promptType: sk.promptType || "skill",
+      title: sk.title || "",
+      desc: sk.desc || "",
+      prompt: sk.prompt || "",
+      url: sk.url || "",
+      author: sk.author || "懒得找了",
+      badge: sk.badge || "",
+      tags: sk.tags || "",
+      previewUrl: sk.previewUrl || "",
+      mediaUrl: sk.mediaUrl || "",
+      iconUrl: sk.iconUrl || "",
+      mode: sk.mode || "file",
+      _raw: sk,
+    }));
+  },
+
+  /** 保存 Skill（新增/编辑，支持本地上传 ZIP/MD/APK 文件在本体直接下载） */
+  async saveSkill(item: SkillItem): Promise<void> {
+    const admin = await ensureAdmin();
+    admin.skills = admin.skills || [];
+    const skills = admin.skills;
+    const existing = skills.find((s) => s.id === item.id);
+    const raw = (item._raw as Record<string, unknown>) || {};
+    const cleanUrl = (item.url || "").trim();
+    const isFileExt = /\.(zip|md|apk)(\?.*)?$/i.test(cleanUrl);
+    const finalMode =
+      item.mode === "file" || isFileExt
+        ? "file"
+        : item.mode === "url"
+        ? "url"
+        : "file";
+
+    if (existing) {
+      existing.title = item.title.trim();
+      existing.desc = (item.desc || "").trim();
+      existing.promptType = (item.promptType || "skill").trim();
+      existing.prompt = item.prompt || "";
+      existing.url = cleanUrl;
+      existing.author = (item.author || "懒得找了").trim();
+      existing.badge = (item.badge || "").trim();
+      existing.tags = (item.tags || "").trim();
+      existing.previewUrl = (item.previewUrl || "").trim();
+      existing.mediaUrl = (item.mediaUrl || "").trim();
+      existing.iconUrl = (item.iconUrl || "").trim();
+      existing.mode = finalMode;
+    } else {
+      skills.unshift({
+        ...raw,
+        id: item.id || `sk_${Date.now()}`,
+        type: "skill",
+        promptType: (item.promptType || "skill").trim(),
+        title: item.title.trim(),
+        desc: (item.desc || "").trim(),
+        prompt: item.prompt || "",
+        url: cleanUrl,
+        author: (item.author || "懒得找了").trim(),
+        badge: (item.badge || "").trim(),
+        tags: (item.tags || "").trim(),
+        previewUrl: (item.previewUrl || "").trim(),
+        mediaUrl: (item.mediaUrl || "").trim(),
+        iconUrl: (item.iconUrl || "").trim(),
+        mode: finalMode,
+      });
+    }
+    await saveAdmin(admin, { message: `console: Skill「${item.title}」${existing ? "编辑" : "新增"}` });
+  },
+
+  /** 删除 Skill */
+  async deleteSkill(id: string): Promise<void> {
+    const admin = await ensureAdmin();
+    admin.skills = (admin.skills || []).filter((s) => s.id !== id);
+    await saveAdmin(admin, { message: `console: 删除 Skill ${id}` });
   },
 
   /** 删除软件 */
