@@ -1,4 +1,4 @@
-name: Verify Console v2 Build
+name: Verify Console v2 Kotlin
 
 on:
   workflow_dispatch:
@@ -33,7 +33,8 @@ jobs:
             "https://cdn.jsdelivr.net/gh/shuting52/landezhaole10-02@main/debug.keystore"
           ls -la debug.keystore
 
-      - name: Compile console-apk-v2 (Kotlin rewrite check)
+      # Kotlin 层（数据层/模型/ViewModel）编译验证；
+      # UI 层为 jadx 反编译 Java（可读，含反编译伪代码，不参与 Java 编译）
+      - name: Compile Kotlin layer
         run: |
-          ./gradlew -p console-apk-v2 :app:assembleRelease --no-daemon -Dorg.gradle.jvmargs="-Xmx2g"
-        continue-on-error: true
+          ./gradlew -p console-apk-v2 :app:compileReleaseKotlin --no-daemon -Dorg.gradle.jvmargs="-Xmx2g"

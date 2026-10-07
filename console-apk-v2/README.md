@@ -31,9 +31,18 @@ console-apk-v2/app/src/main/
 └── assets/admin-data.json       # 内置缓存数据
 ```
 
-> 注意：源码为 Java 形式（由 Kotlin 产物反编译），含 jadx 注释与 `@Metadata`；
-> 反编译重建的源码可直接阅读、可作为维护参考。若需恢复原生 Kotlin 源码，
-> 建议基于本工程结构逐步改写回 Kotlin。
+> 反编译重建的源码可作为**维护参考基线**，核心逻辑已改写为可读 Kotlin。
+
+## 源码状态
+
+| 层级 | 状态 | 说明 |
+|---|---|---|
+| 数据层 `data/AdminRepository.kt` | ✅ Kotlin 改写完成 | GitHub API 读写/镜像链/上传/CDN 刷新，**编译通过** |
+| 模型层 `model/*.kt`（25 个） | ✅ Kotlin data class | 与发布物字段完全对齐，**编译通过** |
+| 逻辑层 `viewmodel/AdminViewModel.kt` | ✅ Kotlin 改写完成 | 全部管理操作/发布/持久化，**编译通过** |
+| UI 层 `ui/*.java` | ⚠️ jadx 反编译 Java | Compose 反编译产物，**可读但含反编译伪代码，无法直接编译**（`not an enclosing class` 等为 jadx 限制）；如需从源码出可运行 APK，需按 `ui/` 结构人工重写为 Kotlin Compose |
+
+> Kotlin 层编译验证：`.github/workflows/verify-console-v2.yml`（手动触发，`compileReleaseKotlin`）。
 
 ## 构建
 
