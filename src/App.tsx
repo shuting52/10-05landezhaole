@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -8,8 +9,14 @@ import TextManagement from "@/pages/TextManagement";
 import CategoryManagement from "@/pages/CategoryManagement";
 import Settings from "@/pages/Settings";
 import OperationLogs from "@/pages/OperationLogs";
+import { loadAdmin } from "@/lib/store";
 
 export default function App() {
+  // 启动即尝试加载云端 admin-data（GitHub API 优先，失败自动降级只读镜像）
+  useEffect(() => {
+    void loadAdmin();
+  }, []);
+
   return (
     <>
       <Routes>
