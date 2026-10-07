@@ -152,30 +152,117 @@ fun CuteCartoonLiquidGlassDialog(
     onConfirm: () -> Unit = onDismissRequest,
     content: @Composable () -> Unit
 ) {
-    com.example.ui.components.LiquidGlassDialogShell(
+    Dialog(
         onDismissRequest = onDismissRequest,
-        title = title,
-        subtitle = "懒得找了 · 纯净安全保障",
-        centerTitle = true
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        Column(
+        val infiniteTransition = rememberInfiniteTransition(label = "cute_cartoon_sparkle")
+        val floatPhase by infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = 6.283185f,
+            animationSpec = infiniteRepeatable(tween(3600, easing = LinearEasing), RepeatMode.Restart),
+            label = "float_bubble"
+        )
+        val bobbingY = (kotlin.math.sin(floatPhase) * 6f)
+        val sparkleAlpha = (0.5f + 0.45f * kotlin.math.sin(floatPhase * 2f))
+
+        Surface(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(18.dp)
+                .fillMaxWidth(0.92f)
+                .clip(RoundedCornerShape(26.dp))
+                .shadow(20.dp, RoundedCornerShape(26.dp)),
+            shape = RoundedCornerShape(26.dp),
+            color = Color.White.copy(alpha = 0.90f),
+            border = BorderStroke(
+                1.5.dp,
+                Brush.linearGradient(
+                    listOf(
+                        Color.White,
+                        Color(0xFFF472B6).copy(alpha = 0.6f),
+                        Color(0xFF38BDF8).copy(alpha = 0.5f),
+                        Color(0xFFA78BFA).copy(alpha = 0.6f),
+                        Color.White
+                    )
+                )
+            )
         ) {
-            content()
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Canvas(modifier = Modifier.matchParentSize()) {
+                    val w = size.width
+                    val h = size.height
+                    drawCircle(
+                        color = Color(0xFFFFB6C1).copy(alpha = 0.35f * sparkleAlpha),
+                        radius = 14.dp.toPx(),
+                        center = Offset(w * 0.88f, 28.dp.toPx() + bobbingY)
+                    )
+                    drawCircle(
+                        color = Color(0xFF38BDF8).copy(alpha = 0.30f * (1.2f - sparkleAlpha)),
+                        radius = 9.dp.toPx(),
+                        center = Offset(24.dp.toPx(), 45.dp.toPx() - bobbingY)
+                    )
+                    drawCircle(
+                        color = Color(0xFFA78BFA).copy(alpha = 0.28f * sparkleAlpha),
+                        radius = 7.dp.toPx(),
+                        center = Offset(w * 0.82f, h - 35.dp.toPx() + bobbingY)
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(14.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(
+                                    Brush.linearGradient(
+                                        listOf(Color(0xFFEC4899), Color(0xFF8B5CF6))
+                                    )
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("🐰", fontSize = 18.sp)
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = title,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Black,
+                                color = Color(0xFF1E293B)
+                            )
+                            Text(
+                                text = "✨ 懒得找了 · 纯净安全保障",
+                                fontSize = 11.sp,
+                                color = Color(0xFF8B5CF6),
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
 
-            Button(
-                onClick = onConfirm,
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF8B5CF6)
-                ),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(confirmButtonText, fontWeight = FontWeight.Bold, fontSize = 13.5.sp)
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    content()
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    Button(
+                        onClick = onConfirm,
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF8B5CF6)
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(confirmButtonText, fontWeight = FontWeight.Bold, fontSize = 13.5.sp)
+                    }
+                }
             }
         }
     }
@@ -615,42 +702,23 @@ fun SettingsScreen(
             CuteCartoonLiquidGlassDialog(
                 onDismissRequest = { activeDialogType = null },
                 title = "关于我们",
-                confirmButtonText = "我知道了",
+                confirmButtonText = "知道了",
                 onConfirm = { activeDialogType = null }
             ) {
-                Column(
-                    modifier = Modifier
-                        .height(380.dp)
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    // v1.0.1：全新动态 CSS 品牌标签（渐变流光 + 呼吸动画）
                     DynamicCssBrandTag()
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = "「懒得找了」· 纯净聚合生态",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E293B),
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "「懒得找了」是一款坚持以“用户体验至上、免搜索一键直达、纯粹高效”为宗旨的全球数字化精品资源与效率工具导航平台。\n\n" +
-                                "在这个信息爆炸却又充斥着垃圾广告、付费陷阱与虚假下载链接的时代，寻找一个真正好用、安全、干净的工具往往需要耗费大量的时间和精力。我们开发这款软件的初衷，正是为了让所有互联网爱好者、极客、设计师、开发者以及普通用户，都能够「告别繁琐检索，一键直达互联网的真正宝藏」。\n\n" +
-                                "✨ 我们的核心基石与产品理念：\n" +
-                                "1. 【极速纯净 · 拒绝干扰】\n" +
-                                "本软件完全摒弃任何形式的开屏流氓广告、横幅弹窗推广和强制引流。从启动到使用，始终保持毫秒级响应，开箱即用，还给用户最清爽的交互环境。\n\n" +
-                                "2. 【数据去中心化 · 本地绝对安全】\n" +
-                                "所有个人收藏、使用记录、本地样式配置均直接持久化于您设备本地的沙盒加密数据库中。我们不设立中心化账号体系，杜绝任何个人隐私数据的云端泄漏隐患。\n\n" +
-                                "3. 【全球视野 · 聚合前沿引擎】\n" +
-                                "不仅涵盖全球最新最前沿的 AI 大模型、智能搜索、数字画布与前沿开发套件，更全新收录了超 100 款全球精选云端沙盒浏览器（包含 Muse 及全球多节点云端浏览解决方案），助您跨越设备性能与地域限制，畅享安全隔离的极速云端冲浪。\n\n" +
-                                "4. 【开放生态 · 互利共赢】\n" +
-                                "我们支持作者自发布生态与离线百宝箱工具集，持续搜罗和整理全网开源、绿色无毒的实用软件及 Skill 技能库，与广大互联网技术同行者一同成长。\n\n" +
-                                "感谢每一位支持与陪伴「懒得找了」走过每一次版本迭代的朋友！您的每一次点击、每一条反馈，都是推动我们不断精进、打磨极致细节的最大动力。",
-                        fontSize = 12.5.sp,
+                        text = "「懒得找了」致力于打造一个纯净、聚合、高效的资源与工具导航平台。让大家不用再到处求资源、不用忍受满屏广告垃圾，一键直达互联网精品！\n\n" +
+                                "✨ 我们的初心与承诺：\n" +
+                                "· 纯净体验：无任何强制广告流，启动极速，开箱即用\n" +
+                                "· 隐私安全：核心浏览与收藏数据皆存放于设备本地加密空间，不上传个人隐私\n" +
+                                "· 开放生态：支持作者自主发布分享优质工具，与广大互联网爱好者共同成长\n\n" +
+                                "感谢大家一路以来的支持与反馈，我们会持续迭代，把更多真正实用的宝藏工具带给每一位朋友。",
+                        fontSize = 13.sp,
                         lineHeight = 20.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Start
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -659,48 +727,33 @@ fun SettingsScreen(
             CuteCartoonLiquidGlassDialog(
                 onDismissRequest = { activeDialogType = null },
                 title = "用户协议",
-                confirmButtonText = "我已认真阅读并同意",
+                confirmButtonText = "我已阅读并同意",
                 onConfirm = { activeDialogType = null }
             ) {
                 Column(
                     modifier = Modifier
-                        .height(380.dp)
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .height(340.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
                     Text(
-                        text = "用户服务协议与法律声明",
-                        fontSize = 14.5.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E293B),
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        text = "【重要须知与前言】\n" +
-                                "欢迎您选择并使用「懒得找了」（以下统称“本软件”或“本平台”）。在您正式安装、访问或使用本软件提供的各项服务前，请您务必审慎、完整地阅读并充分理解本《用户协议》各项条款，特别是免除或限制责任的条款、法律适用及争议解决条款。当您点击“同意”或实际使用本软件，即视为您已与本软件开发者达成具有法律效力的协议。\n\n" +
-                                "第一条：服务宗旨与功能范畴\n" +
-                                "1.1 本软件为一款开放、综合型的网络资源信息索引、分类直达导航以及本地多功能效率工具箱平台。\n" +
-                                "1.2 服务内容包括但不限于：第三方官方网站快速索引直达、云端沙盒浏览器导航、AI效率工具聚合、实用离线生活/工作百宝箱、车标识别、测速、IP环境诊断参考、用户自定义本地收藏管理等。\n" +
-                                "1.3 本平台绝大多数基础服务均支持免登录、免注册畅享，旨在为用户提供极致轻便的使用体验。\n\n" +
-                                "第二条：第三方资源免责与外链指引\n" +
-                                "2.1 本软件所展示的所有第三方网站名称、商标、LOGO、产品介绍及超链接跳转入口，其所有知识产权与合法权益均属于各原始官方权利人所有。本软件仅提供便于公众查找的技术索引与外链导航服务。\n" +
-                                "2.2 当您点击导航项离开本软件并访问外部第三方网站时，外部网站的运营、内容合规性、服务可用性及安全性均独立于本软件。本软件无法亦无权对第三方网站的实际服务做出任何形式的担保或承担连带保证责任。请您在访问外部站点时提高网络安全与反诈防范意识，妥善保管个人财产与账号信息。\n\n" +
-                                "第三条：用户合法合规使用准则\n" +
-                                "3.1 用户在使用本软件的各项功能（包括但不限于自定义添加站点、作者自主上传软件、提交反馈与Skill技能包）时，必须严格遵守《中华人民共和国网络安全法》《中华人民共和国数据安全法》及相关现行法律法规。\n" +
-                                "3.2 严禁任何用户利用本软件从事危害国家安全、宣扬恐怖暴力、传播淫秽色情、实施网络诈骗、发布计算机病毒木马、侵犯他人名誉权或知识产权等违法犯罪活动。\n" +
-                                "3.3 如发现任何违规外链或恶意内容，平台有权在不事先通知的情况下立即执行阻断、清理、下架或限制访问。\n\n" +
-                                "第四条：免责与不可抗力条款\n" +
-                                "4.1 鉴于互联网网络的特殊性，因运营商网络故障、电信主干线路拥堵、第三方服务器宕机、黑客恶意攻击、政府管制或不可抗力等非本软件直接过错原因造成的服务中断、延迟或数据异常，开发者将在力所能及范围内积极组织修复，但不承担由此可能产生的任何间接经济损失。\n" +
-                                "4.2 工具箱内包含的如“IP纯净度参考”、“网络测速”等检测工具，其测试结果受制于公网公开接口及节点运营商波动，仅供技术研究比对参考，不作为权威司法或商业鉴定的排他性依据。\n\n" +
-                                "第五条：知识产权与软件版权保护\n" +
-                                "5.1 本软件的整体架构设计、界面UI排版、代码编译产物、图标设计及独创视觉元素，其版权与知识产权均归「懒得找了」开发者依法所有，受法律保护。未经明确书面许可，严禁对其进行非法二次打包篡改或恶意商业化反编译。\n\n" +
-                                "第六条：协议修改、补充与生效\n" +
-                                "6.1 开发者保留根据法律法规变动、业务升级或功能调整对本协议内容适时予以修订的权利。更新后的协议条款将通过版本更新或端内弹窗公示，一经公布即生效。",
+                        text = "【引言与总则】\n" +
+                                "欢迎您使用「懒得找了」应用及相关服务！在您使用本软件前，请务必审慎阅读、充分理解本协议各条款内容。当您开始使用本应用，即视为您已充分理解并同意接受本协议的全部约定。\n\n" +
+                                "第一条：服务内容与形式\n" +
+                                "1.1 本应用为一款综合型资源索引与效率工具集合体，提供聚合搜索、分类直达、实用工具箱、作者资源分享及本地文件管理等功能。\n" +
+                                "1.2 本应用坚持免强制注册登录机制，绝大多数功能均可本地离线或免密无感畅享。\n\n" +
+                                "第二条：知识产权与免责声明\n" +
+                                "2.1 本应用所收录展示的第三方网站、产品链接及商标标识，其知识产权均归各原始权利人所有。本应用仅提供超链接导航服务，不对第三方站点的真实性、有效性、安全性承担连带保证责任。\n" +
+                                "2.2 当您点击导航直达跳转至外部第三方网站时，请严格遵守外部网站的使用协议并提高安全防范意识，注意保护个人财产与账号密码安全。\n\n" +
+                                "第三条：用户行为与自主发布规范\n" +
+                                "3.1 用户使用本应用（包括作者上传软件与Skill技能模块）时，必须遵守中华人民共和国相关法律法规，不得利用本应用从事任何违法违规行为。\n" +
+                                "3.2 严禁上传含有病毒、木马、恶意扣费、侵犯他人隐私或侵犯知识产权的文件及链接。平台有权对违规内容立即执行下架、清除或限制访问。\n\n" +
+                                "第四条：免责与不可抗力\n" +
+                                "4.1 因互联网网络波动、通信运营商故障、黑客攻击、系统维护或不可抗力导致的服务中断或延迟，平台将在第一时间内全力修复，但不承担由此引起的间接损失。\n\n" +
+                                "第五条：协议修改与终止\n" +
+                                "5.1 平台有权根据法律法规变化或业务运营需要对本协议进行修订，修改后的协议将在应用内及时公布更新。",
                         fontSize = 12.5.sp,
                         lineHeight = 19.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Start
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -709,46 +762,33 @@ fun SettingsScreen(
             CuteCartoonLiquidGlassDialog(
                 onDismissRequest = { activeDialogType = null },
                 title = "隐私政策",
-                confirmButtonText = "我已充分理解并知悉",
+                confirmButtonText = "我已充分理解",
                 onConfirm = { activeDialogType = null }
             ) {
                 Column(
                     modifier = Modifier
-                        .height(380.dp)
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .height(340.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
                     Text(
-                        text = "个人信息与隐私安全保护指南",
-                        fontSize = 14.5.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E293B),
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        text = "【承诺与总则】\n" +
-                                "「懒得找了」（以下统称“我们”）深知个人信息和隐私数据对您的极端重要性。我们始终恪守“最小必要化采集”、“数据存储本地化”、“透明安全”、“严禁非法买卖与追踪”的严苛准则。本隐私政策旨在向您详尽披露我们如何对待您的个人信息，请您务必仔细阅读。\n\n" +
-                                "第一条：我们绝不收集的核心敏感信息\n" +
-                                "1.1 我们坚决执行无账户、免实名绑定的纯净模式，绝不会主动索取、收集、保存或上传您的真实姓名、身份证件号码、人脸生物特征、家庭住址、通讯录好友名单、银行卡或支付凭据信息。\n" +
-                                "1.2 本软件严禁接入任何带有跨应用追踪、常驻后台监听或用户画像营销特征的商业化第三方广告监测SDK。\n\n" +
-                                "第二条：本地数据沙盒存储机制\n" +
-                                "2.1 【个人偏好与主题配置】：您在软件中设置的主题风格、深色模式切换、环形菜单自定义偏好、界面布局等，均100%保存在您手机本地的 SQLite / SharedPreferences 安全沙盒中，不产生任何云端上传行为。\n" +
-                                "2.2 【收藏夹与历史痕迹】：您标记的常用网站、自定义添加的专属外链、离线百宝箱的使用记录，均由您的手机本地数据库独立管控，您可以随时在应用内一键清除或随软件卸载而物理销毁。\n\n" +
-                                "第三条：必要网络交互与权限最小化调用\n" +
-                                "3.1 【网络访问权限 (INTERNET)】：用于同步由公开GitHub仓库驱动的云端导航最新数据源、检查软件新版本、加载站点Favicon图标，以及在您点击外链时唤醒内置/系统浏览器直达目标站点。\n" +
-                                "3.2 【IP网络环境检测参考】：主界面及百宝箱中的“IP位置与纯净度”功能，仅通过向公开权威公共查询接口（如 myip.ipip.net / ipinfo 等）发送瞬时网络请求以获取客户端当前的公共出口IP与归属地，仅用于本地即时呈现网络连通状态参考，服务器端绝不进行任何持久化追踪归档。\n" +
-                                "3.3 【系统文件选择器】：当您使用本地软件上传或导入功能时，软件严格调用 Android 系统官方的安全存储框架（Storage Access Framework），仅读取您明确选中的单个特定文件，绝对不会扫描、遍历或窥探您相册内的私密照片或机密文件。\n\n" +
-                                "第四条：用户对个人数据的自主管理权利\n" +
-                                "4.1 您拥有对自己本地数据的绝对控制权：您可随时在“设置”或各模块中清空缓存、清除搜索历史、重置默认主题，所有操作均在设备本地物理生效，无法恢复且不留痕迹。\n\n" +
-                                "第五条：未成年人特殊保护体系\n" +
-                                "5.1 我们特别关注未成年人身心健康，平台所收录内容持续进行人工与算法审查，坚决剔除一切不利于青少年健康成长的有害信息。\n\n" +
-                                "第六条：隐私政策修订与监督反馈\n" +
-                                "6.1 随着软件业务的演进与法律法规更新，我们可能对本政策做出审慎调整，并在软件内更新公示。若您对个人隐私保护有任何疑问或改进建议，可通过「软件反馈」或官方社群随时联系我们。",
+                        text = "【引言与承诺】\n" +
+                                "「懒得找了」深知个人信息安全对您的重要性。我们始终恪守“最小必要”、“存储本地化”、“安全透明”原则，致力于为您提供无干扰、无追踪的纯净数字环境。\n\n" +
+                                "第一条：我们收集与处理的信息\n" +
+                                "1.1 本地偏好数据：您的主题选择、深浅色模式、每日使用习惯记录完全保存在您本地手机的 SQLite / Room 沙盒中，绝不上报云端服务器。\n" +
+                                "1.2 收藏夹与浏览记录：您收藏的网站或历史点击记录均属于设备本地私有数据，不经过任何后台远程统计，您可以随时在应用内一键清除。\n" +
+                                "1.3 IP实时监控定位信息：主界面顶部展示的 IP 归属地数据，仅通过公开接口（如 myip.ipip.net）请求当前客户端的出网 IP 及大致城市，仅用于客户端本地呈现网络健康状况，服务器端不予持久化存储或归档。\n\n" +
+                                "第二条：权限调用与使用声明\n" +
+                                "2.1 网络访问权限（INTERNET）：仅用于加载导航列表、网络健康监测以及打开外部链接。\n" +
+                                "2.2 文档/文件选择器：当您使用「本地上传APK」或「本地上传Skill技能包（ZIP/MD）」时，系统仅调用 Android 系统原生的文件选择器（Storage Access Framework），我们仅读取您主动授权选中的单个文件元信息，不会扫描或遍历您的私有相册与手机存储。\n\n" +
+                                "第三条：第三方服务与SDK声明\n" +
+                                "3.1 本应用不接入任何弹窗广告SDK、个性化广告追踪SDK或后台常驻定位SDK，杜绝隐私泄露风险。\n\n" +
+                                "第四条：用户权利与自主控制\n" +
+                                "4.1 随时删除：您可以随时在设置或各个模块中删除您添加的本地资源与自定义代码主题，数据即刻在本地被永久擦除。\n\n" +
+                                "第五条：政策更新与联系方式\n" +
+                                "5.1 我们会根据业务发展更新隐私政策，重大变更将通过应用内公告方式予以公示。",
                         fontSize = 12.5.sp,
                         lineHeight = 19.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Start
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -965,233 +1005,276 @@ private fun ContactAuthorDialog(
         }
     }
 
-    com.example.ui.components.LiquidGlassDialogShell(
+    AlertDialog(
         onDismissRequest = onDismiss,
-        title = "联系作者",
-        subtitle = "扫码支持或添加好友交流 · 开发不易感谢陪伴",
-        centerTitle = true
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TabRow(
-                selectedTabIndex = selectedTab,
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(10.dp))
-            ) {
-                tabs.forEachIndexed { index, tabTitle ->
-                    Tab(
-                        selected = selectedTab == index,
-                        onClick = { selectedTab = index },
-                        text = {
-                            Text(
-                                text = tabTitle,
-                                fontSize = 12.sp,
-                                fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal,
-                                color = if (selectedTab == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+        containerColor = Color.White.copy(alpha = 0.90f),
+        shape = RoundedCornerShape(26.dp),
+        modifier = Modifier
+            .clip(RoundedCornerShape(26.dp))
+            .border(
+                width = 1.5.dp,
+                brush = Brush.linearGradient(
+                    listOf(
+                        Color.White,
+                        Color(0xFFF472B6).copy(alpha = 0.6f),
+                        Color(0xFF38BDF8).copy(alpha = 0.5f),
+                        Color(0xFFA78BFA).copy(alpha = 0.6f),
+                        Color.White
+                    )
+                ),
+                shape = RoundedCornerShape(26.dp)
+            ),
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(
+                            Brush.linearGradient(
+                                listOf(
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.secondary
+                                )
                             )
-                        }
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.SupportAgent,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp)
                     )
                 }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            when (selectedTab) {
-                0 -> {
-                    // 支付宝
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Card(
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
-                            border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFF1677FF).copy(alpha = 0.3f)),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(220.dp)
-                                    .padding(10.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                ContactQrImage(url = aliQr, contentDescription = "支付宝扫码")
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            text = "投喂作者",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Black,
-                            color = Color(0xFF1677FF)
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = "开发不易，投喂作者一杯奶茶呗～",
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-
-                        Spacer(modifier = Modifier.height(14.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(
-                                onClick = { openAlipay() },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1677FF)),
-                                shape = RoundedCornerShape(20.dp)
-                            ) {
-                                Text("唤醒支付宝", fontSize = 12.sp)
-                            }
-
-                            OutlinedButton(
-                                onClick = {
-                                    copyText(context, "官方交流QQ群", cloudSettings?.qqGroupUin?.ifBlank { "439211347" } ?: "439211347")
-                                },
-                                shape = RoundedCornerShape(20.dp)
-                            ) {
-                                Icon(Icons.Filled.ContentCopy, contentDescription = null, modifier = Modifier.size(14.dp))
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("复制QQ群号", fontSize = 12.sp)
-                            }
-                        }
-                    }
-                }
-                1 -> {
-                    // QQ
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Card(
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
-                            border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFF1976D2).copy(alpha = 0.3f)),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(220.dp)
-                                    .padding(10.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                ContactQrImage(url = qqQr, contentDescription = "QQ扫码")
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            text = "扫一扫 加好友",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Black,
-                            color = Color(0xFF1976D2)
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = "QQ 扫码加好友交流～",
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-
-                        Spacer(modifier = Modifier.height(14.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(
-                                onClick = { openQq() },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1976D2)),
-                                shape = RoundedCornerShape(20.dp)
-                            ) {
-                                Text("唤醒QQ", fontSize = 12.sp)
-                            }
-
-                            OutlinedButton(
-                                onClick = {
-                                    copyText(context, "官方交流QQ群", cloudSettings?.qqGroupUin?.ifBlank { "439211347" } ?: "439211347")
-                                },
-                                shape = RoundedCornerShape(20.dp)
-                            ) {
-                                Icon(Icons.Filled.ContentCopy, contentDescription = null, modifier = Modifier.size(14.dp))
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("复制QQ群号", fontSize = 12.sp)
-                            }
-                        }
-                    }
-                }
-                2 -> {
-                    // 微信
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Card(
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
-                            border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFF07C160).copy(alpha = 0.3f)),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(220.dp)
-                                    .padding(10.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                ContactQrImage(url = wxQr, contentDescription = "微信扫码")
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            text = "扫一扫 加好友",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Black,
-                            color = Color(0xFF07C160)
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = "微信扫码加好友交流～",
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-
-                        Spacer(modifier = Modifier.height(14.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(
-                                onClick = { openWeChat() },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF07C160)),
-                                shape = RoundedCornerShape(20.dp)
-                            ) {
-                                Text("唤醒微信", fontSize = 12.sp)
-                            }
-
-                            OutlinedButton(
-                                onClick = {
-                                    copyText(context, "官方交流QQ群", cloudSettings?.qqGroupUin?.ifBlank { "439211347" } ?: "439211347")
-                                },
-                                shape = RoundedCornerShape(20.dp)
-                            ) {
-                                Icon(Icons.Filled.ContentCopy, contentDescription = null, modifier = Modifier.size(14.dp))
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("复制QQ群号", fontSize = 12.sp)
-                            }
-                        }
-                    }
+                Spacer(modifier = Modifier.width(10.dp))
+                Column {
+                    Text("联系作者", fontWeight = FontWeight.Black, fontSize = 16.sp)
+                    Text("扫码支持或添加好友交流", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TabRow(
+                    selectedTabIndex = selectedTab,
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                ) {
+                    tabs.forEachIndexed { index, tabTitle ->
+                        Tab(
+                            selected = selectedTab == index,
+                            onClick = { selectedTab = index },
+                            text = {
+                                Text(
+                                    text = tabTitle,
+                                    fontSize = 12.sp,
+                                    fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal,
+                                    color = if (selectedTab == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        )
+                    }
+                }
 
-            Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                when (selectedTab) {
+                    0 -> {
+                        // 支付宝
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Card(
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.White),
+                                border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFF1677FF).copy(alpha = 0.3f)),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(220.dp)
+                                        .padding(10.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    ContactQrImage(url = aliQr, contentDescription = "支付宝扫码")
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "投喂作者",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Black,
+                                color = Color(0xFF1677FF)
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "开发不易，投喂作者一杯奶茶呗～",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            Spacer(modifier = Modifier.height(14.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(
+                                    onClick = { openAlipay() },
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1677FF)),
+                                    shape = RoundedCornerShape(20.dp)
+                                ) {
+                                    Text("唤醒支付宝", fontSize = 12.sp)
+                                }
+
+                                OutlinedButton(
+                                    onClick = {
+                                        copyText(context, "官方交流QQ群", cloudSettings?.qqGroupUin?.ifBlank { "439211347" } ?: "439211347")
+                                    },
+                                    shape = RoundedCornerShape(20.dp)
+                                ) {
+                                    Icon(Icons.Filled.ContentCopy, contentDescription = null, modifier = Modifier.size(14.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text("复制QQ群号", fontSize = 12.sp)
+                                }
+                            }
+                        }
+                    }
+                    1 -> {
+                        // QQ
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Card(
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.White),
+                                border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFF1976D2).copy(alpha = 0.3f)),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(220.dp)
+                                        .padding(10.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    ContactQrImage(url = qqQr, contentDescription = "QQ扫码")
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "扫一扫 加好友",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Black,
+                                color = Color(0xFF1976D2)
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "QQ 扫码加好友交流～",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            Spacer(modifier = Modifier.height(14.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(
+                                    onClick = { openQq() },
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1976D2)),
+                                    shape = RoundedCornerShape(20.dp)
+                                ) {
+                                    Text("唤醒QQ", fontSize = 12.sp)
+                                }
+
+                                OutlinedButton(
+                                    onClick = {
+                                        copyText(context, "官方交流QQ群", cloudSettings?.qqGroupUin?.ifBlank { "439211347" } ?: "439211347")
+                                    },
+                                    shape = RoundedCornerShape(20.dp)
+                                ) {
+                                    Icon(Icons.Filled.ContentCopy, contentDescription = null, modifier = Modifier.size(14.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text("复制QQ群号", fontSize = 12.sp)
+                                }
+                            }
+                        }
+                    }
+                    2 -> {
+                        // 微信
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Card(
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.White),
+                                border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFF07C160).copy(alpha = 0.3f)),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(220.dp)
+                                        .padding(10.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    ContactQrImage(url = wxQr, contentDescription = "微信扫码")
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "扫一扫 加好友",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Black,
+                                color = Color(0xFF07C160)
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "微信扫码加好友交流～",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            Spacer(modifier = Modifier.height(14.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(
+                                    onClick = { openWeChat() },
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF07C160)),
+                                    shape = RoundedCornerShape(20.dp)
+                                ) {
+                                    Text("唤醒微信", fontSize = 12.sp)
+                                }
+
+                                OutlinedButton(
+                                    onClick = {
+                                        copyText(context, "官方交流QQ群", cloudSettings?.qqGroupUin?.ifBlank { "439211347" } ?: "439211347")
+                                    },
+                                    shape = RoundedCornerShape(20.dp)
+                                ) {
+                                    Icon(Icons.Filled.ContentCopy, contentDescription = null, modifier = Modifier.size(14.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text("复制QQ群号", fontSize = 12.sp)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(
                     onClick = {
                         onDismiss()
                         onOpenFeedback()
                     },
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.weight(1f)
+                    shape = RoundedCornerShape(10.dp)
                 ) {
                     Icon(Icons.Filled.BugReport, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = Modifier.width(4.dp))
@@ -1200,14 +1283,13 @@ private fun ContactAuthorDialog(
                 Button(
                     onClick = onDismiss,
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.weight(1f)
+                    shape = RoundedCornerShape(10.dp)
                 ) {
                     Text("关闭")
                 }
             }
         }
-    }
+    )
 }
 
 /**

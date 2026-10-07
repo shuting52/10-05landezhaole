@@ -32,7 +32,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import com.example.ui.components.streamingBorder
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -136,6 +135,7 @@ import com.example.ui.components.neoShadow
 import com.example.ui.screens.toolbox.ColdJokeSection
 import com.example.ui.screens.toolbox.CurrencySection
 import com.example.ui.screens.toolbox.EmergencyPhoneSection
+import com.example.ui.screens.toolbox.EnvCheckSection
 import com.example.ui.screens.toolbox.FoodPickerScreenView
 import com.example.ui.screens.toolbox.LicensePlateSection
 import com.example.ui.screens.toolbox.MouthpieceSection
@@ -214,11 +214,17 @@ enum class ToolboxTab(
         icon = Icons.Filled.EventNote,
         desc = "开始/结束日期 · 备注 · 保存删除 · 周期看板"
     ),
+    ENV_CHECK(
+        title = "环境检测 · ping0.cc",
+        shortLabel = "环境检测",
+        icon = Icons.Filled.Wifi,
+        desc = "IP 地址 · 地理位置 · 代理/VPN · 网络类型 一键检测"
+    ),
     LOCATION_MOCK(
-        title = "IP纯净度检测 (ping0.cc 仅作为参考)",
+        title = "IP纯净度检测 · ping0.cc",
         shortLabel = "IP纯净度",
         icon = Icons.Filled.Security,
-        desc = "原生深度诊断 · IP 纯净度 · 住宅/机房识别 · 欺诈评分 (ping0.cc 仅作为参考)"
+        desc = "IP 欺诈评分 · 纯净度检测 · 住宅/机房/代理识别 · 原生IP深度诊断 (ping0.cc)"
     ),
     CAR_BRAND(
         title = "车标大全 · 真实车标智能识别",
@@ -491,6 +497,7 @@ fun ToolboxScreen(
                     ToolboxTab.SPEED_TEST -> SpeedTestSection()
                     ToolboxTab.CURRENCY -> CurrencySection()
                     ToolboxTab.PERIOD -> PeriodSection()
+                    ToolboxTab.ENV_CHECK -> EnvCheckSection()
                     ToolboxTab.LOCATION_MOCK -> com.example.ui.screens.toolbox.LocationMockSection()
                     ToolboxTab.CAR_BRAND -> com.example.ui.screens.toolbox.CarBrandSection()
                 }
@@ -730,16 +737,30 @@ private val RING_MENU_GROUPS: List<RingMenuGroup> = listOf(
         )
     ),
     RingMenuGroup(
+        id = "env_check",
+        entryLabel = "环境检测",
+        sheetTitle = "环境检测",
+        sheetSub = "IP 地址",
+        icon = ToolboxTab.ENV_CHECK.icon,
+        options = listOf(
+            RingMenuOption(
+                tab = ToolboxTab.ENV_CHECK,
+                name = "环境检测",
+                desc = "IP 地址"
+            )
+        )
+    ),
+    RingMenuGroup(
         id = "location_mock",
         entryLabel = "IP纯净度",
-        sheetTitle = "IP 纯净度检测",
-        sheetSub = "原生深度诊断 (ping0.cc 仅作为参考)",
+        sheetTitle = "IP纯净度检测",
+        sheetSub = "ping0.cc 纯净度与欺诈分分析",
         icon = ToolboxTab.LOCATION_MOCK.icon,
         options = listOf(
             RingMenuOption(
                 tab = ToolboxTab.LOCATION_MOCK,
-                name = "IP 纯净度与欺诈检测",
-                desc = "原生深度诊断 · IP纯净度安全分 · 住宅/机房识别 · 代理检测 (ping0.cc 仅作为参考)"
+                name = "IP纯净度检测",
+                desc = "类似 ping0.cc 的 IP 欺诈评分 · 纯净度 · 住宅/机房/代理识别 · 原生IP深度诊断"
             )
         )
     ),
@@ -892,15 +913,25 @@ private fun RingMenuSection(
                             )
                         }
                     )
-                    .streamingBorder(
-                        cornerRadius = 30.dp,
-                        strokeWidth = 1.6.dp,
-                        glowWidth = 3.6.dp,
-                        accentColor = rmAccent,
-                        tailColor = rmAccent.copy(alpha = 0.5f),
-                        baseBorderColor = if (isDark) Color.White.copy(alpha = 0.35f) else Color.White.copy(alpha = 0.65f),
-                        phaseOffset = ringIndex * 90f,
-                        showGlow = true
+                    .border(
+                        width = 1.5.dp,
+                        brush = Brush.linearGradient(
+                            colors = if (isDark) {
+                                listOf(
+                                    Color.White.copy(alpha = 0.42f),
+                                    Color(0xFFA78BFA).copy(alpha = 0.25f),
+                                    Color.White.copy(alpha = 0.35f)
+                                )
+                            } else {
+                                listOf(
+                                    Color.White.copy(alpha = 0.95f),
+                                    Color.White.copy(alpha = 0.45f),
+                                    Color(0xFFE9D5FF).copy(alpha = 0.85f),
+                                    Color.White.copy(alpha = 0.92f)
+                                )
+                            }
+                        ),
+                        shape = containerShape
                     )
                     .padding(top = 14.dp, bottom = 22.dp, start = 12.dp, end = 12.dp)
                     .testTag("ring_card_${ringIndex + 1}")
@@ -1946,13 +1977,18 @@ private fun EmotionalQuotesDialog(
                         )
                     )
                 )
-                .streamingBorder(
-                    cornerRadius = 28.dp,
-                    strokeWidth = 1.8.dp,
-                    glowWidth = 3.8.dp,
-                    baseBorderColor = Color.White.copy(alpha = 0.70f),
-                    rainbow = true,
-                    showGlow = true
+                .border(
+                    width = 1.6.dp,
+                    brush = Brush.linearGradient(
+                        listOf(
+                            Color.White.copy(alpha = 0.95f),
+                            Color(0xFFA855F7).copy(alpha = 0.50f),
+                            Color(0xFF38BDF8).copy(alpha = 0.45f),
+                            Color(0xFFEC4899).copy(alpha = 0.40f),
+                            Color.White.copy(alpha = 0.95f)
+                        )
+                    ),
+                    shape = RoundedCornerShape(28.dp)
                 )
         ) {
             // 背景液态玻璃光斑
@@ -2275,13 +2311,17 @@ private fun IndependentCssDynamicWindow(
                 .fillMaxWidth(0.96f)
                 .fillMaxHeight(0.92f)
                 .clip(RoundedCornerShape(30.dp))
-                .streamingBorder(
-                    cornerRadius = 30.dp,
-                    strokeWidth = 2.dp,
-                    glowWidth = 4.dp,
-                    baseBorderColor = Color.White.copy(alpha = 0.65f),
-                    rainbow = true,
-                    showGlow = true
+                .border(
+                    width = 1.8.dp,
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.95f),
+                            Color(0xFF8B5CF6).copy(alpha = 0.65f),
+                            Color(0xFFEC4899).copy(alpha = 0.60f),
+                            Color.White.copy(alpha = 0.95f)
+                        )
+                    ),
+                    shape = RoundedCornerShape(30.dp)
                 ),
             color = Color.Transparent,
             tonalElevation = 0.dp
