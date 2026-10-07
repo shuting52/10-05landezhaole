@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="58" android:versionName="2.1.0" android:compileSdkVersion="36" android:compileSdkVersionCodename="16" package="com.aistudio.landezhaole.qrxwpm" platformBuildVersionCode="36" platformBuildVersionName="16">
-    <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="36"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <permission android:name="com.aistudio.landezhaole.qrxwpm.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" android:protectionLevel="signature"/>

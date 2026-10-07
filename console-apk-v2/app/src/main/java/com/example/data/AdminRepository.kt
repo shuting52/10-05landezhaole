@@ -6,6 +6,7 @@ import android.util.Base64
 import com.example.model.GithubConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
@@ -303,5 +304,5 @@ class AdminRepository(private val context: Context) {
     }
 
     private fun String.toRequestBody() =
-        okhttp3.RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), this)
+        okhttp3.RequestBody.create(this.toMediaType(), this)
 }
