@@ -46,6 +46,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import com.example.ui.components.LiquidGlassDialogShell
 import com.example.ui.components.streamingBorder
 import com.example.ui.theme.ThemePreset
@@ -101,13 +105,32 @@ fun UiverseDialog(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // 顶栏分类快速切换胶囊（全部 / 暗黑极客 / iOS风格 / 新拟态）
+            // 顶栏分类快速切换胶囊（全部 / 暗黑极客 / iOS风格 / 新拟态）- 液体玻璃高透半折射质感
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(14.dp))
-                    .background(Color(0xFF0F172A).copy(alpha = 0.85f))
-                    .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(14.dp))
+                    .background(
+                        brush = Brush.linearGradient(
+                            listOf(
+                                Color.White.copy(alpha = 0.60f),
+                                Color(0xFFF1F5F9).copy(alpha = 0.38f),
+                                Color(0xFFF8FAFC).copy(alpha = 0.48f),
+                                Color.White.copy(alpha = 0.68f)
+                            )
+                        )
+                    )
+                    .border(
+                        width = 1.1.dp,
+                        brush = Brush.linearGradient(
+                            listOf(
+                                Color.White.copy(alpha = 0.95f),
+                                Color(0xFFCBD5E1).copy(alpha = 0.50f),
+                                Color.White.copy(alpha = 0.90f)
+                            )
+                        ),
+                        shape = RoundedCornerShape(14.dp)
+                    )
                     .padding(4.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
@@ -119,10 +142,12 @@ fun UiverseDialog(
                 ).forEach { (tabKey, tabTitle) ->
                     val isTabSelected = selectedCategoryTab == tabKey
                     val tabModifier = if (isTabSelected) {
-                        Modifier.background(
-                            brush = Brush.linearGradient(listOf(Color(0xFF8B5CF6), Color(0xFF38BDF8))),
-                            shape = RoundedCornerShape(10.dp)
-                        )
+                        Modifier
+                            .background(
+                                brush = Brush.linearGradient(listOf(Color(0xFF8B5CF6), Color(0xFF38BDF8))),
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                            .border(1.dp, Color.White.copy(alpha = 0.8f), RoundedCornerShape(10.dp))
                     } else {
                         Modifier.background(
                             color = Color.Transparent,
@@ -142,7 +167,7 @@ fun UiverseDialog(
                             text = tabTitle,
                             fontSize = 11.5.sp,
                             fontWeight = if (isTabSelected) FontWeight.Black else FontWeight.SemiBold,
-                            color = if (isTabSelected) Color.White else Color(0xFF94A3B8)
+                            color = if (isTabSelected) Color.White else Color(0xFF475569)
                         )
                     }
                 }
@@ -327,7 +352,7 @@ fun UiverseDialog(
 }
 
 /**
- * 高质感专属按钮（自适应暗黑底与七彩流光模糊边框，文本自适应换行）
+ * 液体玻璃专属主题卡片（高透折射微弧曲面反射 + 七彩流光跑动边框）
  */
 @Composable
 private fun DarkThemeButton(
@@ -339,16 +364,38 @@ private fun DarkThemeButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val cardShape = RoundedCornerShape(16.dp)
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(16.dp),
-        color = Color(0xFF0D1117).copy(alpha = 0.94f),
+        shape = cardShape,
+        color = Color.Transparent,
         border = androidx.compose.foundation.BorderStroke(
-            width = if (isSelected) 1.8.dp else 1.dp,
-            color = if (isSelected) accentColor else Color.White.copy(alpha = 0.15f)
+            width = if (isSelected) 1.8.dp else 1.1.dp,
+            color = if (isSelected) accentColor else Color.White.copy(alpha = 0.85f)
         ),
         modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
+            .clip(cardShape)
+            .background(
+                brush = Brush.linearGradient(
+                    colors = if (isSelected) {
+                        listOf(
+                            Color.White.copy(alpha = 0.90f),
+                            Color(0xFFFAF5FF).copy(alpha = 0.78f),
+                            Color(0xFFF3E8FF).copy(alpha = 0.68f),
+                            Color.White.copy(alpha = 0.94f)
+                        )
+                    } else {
+                        listOf(
+                            Color.White.copy(alpha = 0.62f),
+                            Color(0xFFF8FAFC).copy(alpha = 0.44f),
+                            Color(0xFFEDE9FE).copy(alpha = 0.35f),
+                            Color.White.copy(alpha = 0.70f)
+                        )
+                    },
+                    start = Offset(0f, 0f),
+                    end = Offset(800f, 260f)
+                )
+            )
             .then(
                 if (isSelected) {
                     Modifier.streamingBorder(
@@ -362,71 +409,95 @@ private fun DarkThemeButton(
                 } else Modifier
             )
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.weight(1f)
-            ) {
-                // 颜色指示光点
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clip(CircleShape)
-                        .background(
-                            Brush.linearGradient(
-                                listOf(accentColor, secondaryColor)
-                            )
+        Box(modifier = Modifier.fillMaxWidth()) {
+            // 液体玻璃顶部曲面光学折射高光带
+            Canvas(modifier = Modifier.matchParentSize()) {
+                val w = size.width
+                val h = size.height
+                drawRoundRect(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = if (isSelected) 0.68f else 0.45f),
+                            Color.White.copy(alpha = 0.08f),
+                            Color.Transparent
                         ),
-                    contentAlignment = Alignment.Center
+                        startY = 0f,
+                        endY = h * 0.42f
+                    ),
+                    topLeft = Offset(4.dp.toPx(), 2.dp.toPx()),
+                    size = Size(w - 8.dp.toPx(), h * 0.38f),
+                    cornerRadius = CornerRadius(14.dp.toPx(), 14.dp.toPx())
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.weight(1f)
                 ) {
-                    if (isSelected) {
-                        Icon(
-                            imageVector = Icons.Filled.Check,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(14.dp)
+                    // 颜色指示光点
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(CircleShape)
+                            .background(
+                                Brush.linearGradient(
+                                    listOf(accentColor, secondaryColor)
+                                )
+                            )
+                            .border(1.dp, Color.White.copy(alpha = 0.9f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isSelected) {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                    }
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = title,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isSelected) accentColor else Color(0xFF1E293B),
+                            maxLines = 1
+                        )
+                        Text(
+                            text = subtitle,
+                            fontSize = 10.5.sp,
+                            color = if (isSelected) accentColor.copy(alpha = 0.85f) else Color(0xFF64748B),
+                            maxLines = 1
                         )
                     }
                 }
 
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = title,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = if (isSelected) accentColor else Color(0xFFF1F5F9),
-                        maxLines = 1
-                    )
-                    Text(
-                        text = subtitle,
-                        fontSize = 10.5.sp,
-                        color = Color(0xFF94A3B8),
-                        maxLines = 1
-                    )
-                }
-            }
-
-            if (isSelected) {
-                Spacer(modifier = Modifier.width(6.dp))
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(accentColor.copy(alpha = 0.18f))
-                        .padding(horizontal = 7.dp, vertical = 3.dp)
-                ) {
-                    Text(
-                        text = "当前使用",
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = accentColor
-                    )
+                if (isSelected) {
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(accentColor.copy(alpha = 0.16f))
+                            .border(1.dp, accentColor.copy(alpha = 0.35f), RoundedCornerShape(6.dp))
+                            .padding(horizontal = 7.dp, vertical = 3.dp)
+                    ) {
+                        Text(
+                            text = "当前使用",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = accentColor
+                        )
+                    }
                 }
             }
         }

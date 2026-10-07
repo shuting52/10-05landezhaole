@@ -1,14 +1,16 @@
 {
   "version": {
-    "code": 148,
-    "name": "1.3.13",
+    "code": 149,
+    "name": "1.3.14",
     "changelog": [
-      "✨ v1.3.13 更新来啦～",
-      "本次更新包含多项优化与修复"
+      "✨ v1.3.14 更新来啦～",
+      "1. 主题切换弹窗全新升级为高透半折射液体玻璃质感",
+      "2. 百宝箱圆盘界面紧凑化微调，布局更加精致",
+      "3. 移除车标识别功能，精简优化工具箱"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.3.13-1791357790.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.3.13-1791357790.apk",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.3.14-1791362189.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.3.14-1791362189.apk",
     "lastBuildSha": "de03e92a9bc03a8cbfc0cd589427075b912b0ce9"
   },
   "home": {
@@ -24263,10 +24265,12 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.3.13 已上线",
+    "title": "懒得找了 v1.3.14 已上线",
     "changelog": [
-      "✨ v1.3.13 更新来啦～",
-      "本次更新包含多项优化与修复"
+      "✨ v1.3.14 更新来啦～",
+      "1. 主题切换弹窗全新升级为高透半折射液体玻璃质感",
+      "2. 百宝箱圆盘界面紧凑化微调，布局更加精致",
+      "3. 移除车标识别功能，精简优化工具箱"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",

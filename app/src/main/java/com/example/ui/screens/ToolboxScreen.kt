@@ -742,20 +742,6 @@ private val RING_MENU_GROUPS: List<RingMenuGroup> = listOf(
                 desc = "原生深度诊断 · IP纯净度安全分 · 住宅/机房识别 · 代理检测 (ping0.cc 仅作为参考)"
             )
         )
-    ),
-    RingMenuGroup(
-        id = "car_brand",
-        entryLabel = "车标识别",
-        sheetTitle = "车标大全",
-        sheetSub = "真实车标智能识别",
-        icon = ToolboxTab.CAR_BRAND.icon,
-        options = listOf(
-            RingMenuOption(
-                tab = ToolboxTab.CAR_BRAND,
-                name = "车标大全",
-                desc = "网络真实车标库(大众/宝马/迈巴赫等) · 智能识别"
-            )
-        )
     )
 )
 
@@ -827,15 +813,15 @@ private fun RingMenuSection(
         baseChunks
     }
 
-    val containerShape = RoundedCornerShape(30.dp)
+    val containerShape = RoundedCornerShape(26.dp)
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 6.dp)
+            .padding(top = 4.dp)
             .testTag("ring_menu_container"),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(18.dp)
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         ringChunks.forEachIndexed { ringIndex, chunkGroups ->
             val baseGroupOffset = ringIndex * 8
@@ -844,10 +830,10 @@ private fun RingMenuSection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(
-                        elevation = 18.dp,
+                        elevation = 14.dp,
                         shape = containerShape,
-                        ambientColor = rmAccent.copy(alpha = 0.22f),
-                        spotColor = rmAccent.copy(alpha = 0.26f)
+                        ambientColor = rmAccent.copy(alpha = 0.20f),
+                        spotColor = rmAccent.copy(alpha = 0.24f)
                     )
                     .clip(containerShape)
                     .background(
@@ -893,7 +879,7 @@ private fun RingMenuSection(
                         }
                     )
                     .streamingBorder(
-                        cornerRadius = 30.dp,
+                        cornerRadius = 26.dp,
                         strokeWidth = 1.6.dp,
                         glowWidth = 3.6.dp,
                         accentColor = rmAccent,
@@ -902,7 +888,7 @@ private fun RingMenuSection(
                         phaseOffset = ringIndex * 90f,
                         showGlow = true
                     )
-                    .padding(top = 14.dp, bottom = 22.dp, start = 12.dp, end = 12.dp)
+                    .padding(top = 10.dp, bottom = 16.dp, start = 10.dp, end = 10.dp)
                     .testTag("ring_card_${ringIndex + 1}")
             ) {
                 // 液态玻璃折射光斑 + 镜面高光流光层（每个独立环形卡片各自折射）
@@ -1009,9 +995,9 @@ private fun LiquidGlassSingleRing(
 ) {
     val isDark = presentationStyle == RingPresentationStyle.CYBER_GLASS
     val rmAccentSoft = rmAccent.copy(alpha = if (isDark) 0.22f else 0.15f)
-    val ringSize = 300.dp
-    val ringInner = 124.dp
-    val itemRadius = 108.dp
+    val ringSize = 252.dp
+    val ringInner = 106.dp
+    val itemRadius = 90.dp
     val coroutineScope = androidx.compose.runtime.rememberCoroutineScope()
 
     // =========================================================================
@@ -1265,7 +1251,7 @@ private fun LiquidGlassSingleRing(
 
         Box(
             modifier = Modifier
-                .size(ringInner - 10.dp)
+                .size(ringInner - 8.dp)
                 .scale(holeScale)
                 .clip(CircleShape)
                 .background(
@@ -1339,8 +1325,8 @@ private fun LiquidGlassSingleRing(
         ) {
             Text(
                 text = "懒 得 找 了",
-                fontSize = 13.sp,
-                letterSpacing = 1.2.sp,
+                fontSize = 11.5.sp,
+                letterSpacing = 1.sp,
                 color = if (isHolePressed || isRingDragging) rmAccent else rmText.copy(alpha = 0.85f),
                 fontWeight = FontWeight.Bold
             )
@@ -1467,7 +1453,7 @@ private fun LiquidGlassSingleRing(
                 // 当按住或拖拽按钮时触发的专属 CSS 动态特效层
                 if (isPressed || isActive || isThisItemDragging) {
                     val pulseAlpha = 0.45f + 0.35f * sin(blobPhase * 3f)
-                    Canvas(modifier = Modifier.size(74.dp)) {
+                    Canvas(modifier = Modifier.size(64.dp)) {
                         when (pressEffect) {
                             RingPressEffect.LIQUID_RIPPLE -> {
                                 drawCircle(
@@ -1484,7 +1470,7 @@ private fun LiquidGlassSingleRing(
                             RingPressEffect.JELLY_BOUNCE -> {
                                 drawRoundRect(
                                     color = rmAccent.copy(alpha = 0.24f),
-                                    cornerRadius = CornerRadius(20.dp.toPx(), 20.dp.toPx())
+                                    cornerRadius = CornerRadius(18.dp.toPx(), 18.dp.toPx())
                                 )
                             }
                             RingPressEffect.GRAVITY_VORTEX -> {
@@ -1510,8 +1496,8 @@ private fun LiquidGlassSingleRing(
 
                 Column(
                     modifier = Modifier
-                        .size(62.dp)
-                        .clip(RoundedCornerShape(18.dp))
+                        .size(54.dp)
+                        .clip(RoundedCornerShape(16.dp))
                         .background(
                             if (isActive || isPressed || isThisItemDragging) {
                                 Brush.linearGradient(
@@ -1529,7 +1515,7 @@ private fun LiquidGlassSingleRing(
                         .border(
                             width = if (isActive || isPressed || isThisItemDragging) 1.2.dp else 0.dp,
                             color = if (isActive || isPressed || isThisItemDragging) Color.White.copy(alpha = 0.90f) else Color.Transparent,
-                            shape = RoundedCornerShape(18.dp)
+                            shape = RoundedCornerShape(16.dp)
                         )
                         // 按住不放随手指移动：既可把当前功能图标拖出跟随手指，也可顺着圆周拨动整个星环旋转；轻触或松手打开功能
                         .pointerInput(globalIndex) {
@@ -1628,21 +1614,21 @@ private fun LiquidGlassSingleRing(
                     if (!group.emojiIcon.isNullOrBlank()) {
                         Text(
                             text = group.emojiIcon,
-                            fontSize = 16.sp
+                            fontSize = 14.5.sp
                         )
                     } else {
                         Icon(
                             imageVector = group.icon,
                             contentDescription = "${group.entryLabel}，打开面板",
                             tint = if (isActive || isPressed || isThisItemDragging) rmAccent else rmText,
-                            modifier = Modifier.size(19.dp)
+                            modifier = Modifier.size(17.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.height(3.dp))
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = group.entryLabel,
                         color = if (isActive || isPressed || isThisItemDragging) rmAccent else rmText,
-                        fontSize = 9.5.sp,
+                        fontSize = 8.5.sp,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
