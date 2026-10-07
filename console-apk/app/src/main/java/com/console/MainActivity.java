@@ -247,7 +247,9 @@ public class MainActivity extends Activity {
         }, "Android");
 
         setContentView(webView);
-        webView.loadUrl("file:///android_asset/console/index.html");
+        // v2.0.0：新版管理工作台（GitHub Pages 在线版，React 管理台），替代内嵌 WebView 页面
+        // 旧版控制台（内嵌 index.html）→ 升级安装本版后直接打开新版管理工作台
+        webView.loadUrl("https://shuting52.github.io/10-05landezhaole/");
     }
 
     // ==================== 控制台自更新（安装） ====================
