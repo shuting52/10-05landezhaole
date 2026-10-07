@@ -119,7 +119,7 @@ class AdminRepository(private val context: Context) {
     /** 官方 API 读取：base64 解码；content 为空时走 download_url 下载大文件 */
     suspend fun ghReadText(path: String = CONFIG_PATH): Pair<String, String> =
         withContext(Dispatchers.IO) {
-            val cfg = config
+            val cfg = getConfig()
             val url = "https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/$path?ref=${cfg.branch}"
             val req = newRequest(url)
             client.newCall(req).execute().use { resp ->
@@ -149,7 +149,7 @@ class AdminRepository(private val context: Context) {
     /** 镜像链只读：8 节点 CDN 兜底（无 Token 可用），校验 HTML 劫持 + JSON 合法性 */
     suspend fun ghReadMirror(path: String = CONFIG_PATH): Pair<String, String> =
         withContext(Dispatchers.IO) {
-            val cfg = config
+            val cfg = getConfig()
             val cacheBust = SimpleDateFormat("yyyyMMddHHmm", Locale.US).format(Date())
             val mirrors = listOf(
                 "https://testingcf.jsdelivr.net/gh/${cfg.owner}/${cfg.repo}@${cfg.branch}/$path?v=$cacheBust",
@@ -186,8 +186,8 @@ class AdminRepository(private val context: Context) {
      * 返回写入后的新 sha。
      */
     suspend fun ghWriteText(path: String = CONFIG_PATH, content: String, sha: String, message: String): String {
-        if (token.isBlank()) throw IllegalStateException("请先在「系统设置」中配置 GitHub Token")
-        val cfg = config
+        if (getToken().isBlank()) throw IllegalStateException("请先在「系统设置」中配置 GitHub Token")
+        val cfg = getConfig()
         var currentSha = sha
         for (attempt in 0 until 5) {
             val url = "https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/$path"
@@ -199,7 +199,7 @@ class AdminRepository(private val context: Context) {
                 .url(url)
                 .header("Accept", "application/vnd.github+json")
                 .header("X-GitHub-Api-Version", "2022-11-28")
-                .header("Authorization", "Bearer ${token}")
+                .header("Authorization", "Bearer ${getToken()}")
                 .header("Content-Type", "application/json")
                 .put(payload.toString().toRequestBody())
                 .build()
@@ -235,8 +235,8 @@ class AdminRepository(private val context: Context) {
         customFileName: String? = null,
         subFolder: String = "dist/uploads",
     ): String = withContext(Dispatchers.IO) {
-        if (token.isBlank()) throw IllegalStateException("请先在「系统设置」中配置 GitHub Token")
-        val cfg = config
+        if (getToken().isBlank()) throw IllegalStateException("请先在「系统设置」中配置 GitHub Token")
+        val cfg = getConfig()
         // 读取文件字节
         val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
             ?: throw IllegalStateException("读取本地文件失败")
@@ -269,7 +269,7 @@ class AdminRepository(private val context: Context) {
             .url(url)
             .header("Accept", "application/vnd.github+json")
             .header("X-GitHub-Api-Version", "2022-11-28")
-            .header("Authorization", "Bearer ${token}")
+            .header("Authorization", "Bearer ${getToken()}")
             .header("Content-Type", "application/json")
             .put(payload.toString().toRequestBody())
             .build()
@@ -288,7 +288,7 @@ class AdminRepository(private val context: Context) {
 
     /** 刷新 jsDelivr CDN 缓存（写入后调用，本体秒级生效） */
     suspend fun purgeCdn(path: String = CONFIG_PATH): Boolean = withContext(Dispatchers.IO) {
-        val cfg = config
+        val cfg = getConfig()
         val url = "https://purge.jsdelivr.net/gh/${cfg.owner}/${cfg.repo}@${cfg.branch}/$path"
         try {
             client.newCall(Request.Builder().url(url).build()).execute().use { it.isSuccessful }
@@ -304,7 +304,7 @@ class AdminRepository(private val context: Context) {
             .url(url)
             .header("Accept", "application/vnd.github+json")
             .header("X-GitHub-Api-Version", "2022-11-28")
-        if (token.isNotBlank()) builder.header("Authorization", "Bearer $token")
+        if (getToken().isNotBlank()) builder.header("Authorization", "Bearer $token")
         return builder.build()
     }
 
