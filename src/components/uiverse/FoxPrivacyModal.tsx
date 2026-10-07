@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-
 export function FoxPrivacyModal({
   isOpen = true,
   onClose = () => {},
@@ -9,7 +7,6 @@ export function FoxPrivacyModal({
   onClose?: () => void;
   onAccept?: () => void;
 }) {
-  const [openOptions, setOpenOptions] = useState(false);
   if (!isOpen) return null;
 
   return (
