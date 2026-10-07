@@ -77,13 +77,46 @@ export function CardTableSection({
     setFormOpen(true);
   };
 
-  const handleSubmit = (_values: CardFormValues) => {
-    // mock 环境：仅提示，不持久化
-    void _values;
+  const handleSubmit = async (values: CardFormValues) => {
+    // 真实写入：保存到 admin-data.json 并同步（mode=content 不弹窗）
+    try {
+      const { api } = await import("@/lib/api");
+      if (editing) {
+        await api.saveCard({ ...editing, name: values.name, description: values.description });
+        toast.success(`已保存《${values.name}》并同步到本体`);
+      } else {
+        await api.saveCard({
+          id: `site_${Date.now()}`,
+          name: values.name,
+          description: values.description,
+          buttonType: "link",
+          size: "-",
+          downloads: 0,
+          status: "published",
+          updatedAt: "-",
+          category: values.category || "全部",
+        });
+        toast.success(`已新建《${values.name}》并同步到本体`);
+      }
+      setFormOpen(false);
+      void load();
+    } catch (e) {
+      toast.error(`保存失败：${(e as Error).message}`);
+    }
   };
 
-  const handleDelete = () => {
-    if (deleting) toast.success(`已删除《${deleting.name}》`);
+  const handleDelete = async () => {
+    if (deleting) {
+      try {
+        const { api } = await import("@/lib/api");
+        await api.deleteCard(deleting.id);
+        toast.success(`已删除《${deleting.name}》并同步到本体`);
+        setDeleting(null);
+        void load();
+      } catch (e) {
+        toast.error(`删除失败：${(e as Error).message}`);
+      }
+    }
   };
 
   return (
