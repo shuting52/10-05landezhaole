@@ -19,8 +19,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { categoryOptions } from "@/data/mockData";
+import { categoryOptions as mockCategoryOptions } from "@/data/mockData";
+import { getStore } from "@/lib/store";
 import type { ButtonType, CardStatus, ResourceCard } from "@/types";
+
+// 真实分类（从云端 admin-data 读取）；未连接时退回 mock
+function useRealCategoryOptions(): string[] {
+  const s = getStore();
+  const real = s.admin?.home?.categories?.map((c) => c.name).filter(Boolean) || [];
+  return real.length > 0 ? real : mockCategoryOptions;
+}
 
 interface CardFormDialogProps {
   open: boolean;
@@ -42,13 +50,14 @@ const emptyForm: CardFormValues = {
   description: "",
   buttonType: "download",
   status: "draft",
-  category: categoryOptions[0],
+  category: "",
 };
 
 export function CardFormDialog({ open, onOpenChange, card, onSubmit }: CardFormDialogProps) {
   const isEdit = Boolean(card);
   const [form, setForm] = useState<CardFormValues>(emptyForm);
   const [error, setError] = useState("");
+  const categoryOptions = useRealCategoryOptions();
 
   useEffect(() => {
     if (open) {
@@ -62,9 +71,10 @@ export function CardFormDialog({ open, onOpenChange, card, onSubmit }: CardFormD
               status: card.status,
               category: card.category,
             }
-          : emptyForm
+          : { ...emptyForm, category: categoryOptions[0] || "" }
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, card]);
 
   const handleSubmit = () => {
