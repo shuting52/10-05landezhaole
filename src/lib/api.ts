@@ -278,6 +278,17 @@ export const api = {
     await saveAdmin(admin, { message: `console: UI文本「${key}」更新` });
   },
 
+  /** 删除 UI 文本 */
+  async deleteText(key: string): Promise<void> {
+    const admin = await ensureAdmin();
+    if (admin.uiText && key in admin.uiText) {
+      delete admin.uiText[key];
+      await saveAdmin(admin, { message: `console: 删除 UI文本「${key}」` });
+      return;
+    }
+    throw new Error("文本不存在");
+  },
+
   /** 保存设置 */
   async saveSettings(settings: Record<string, unknown>): Promise<void> {
     const admin = await ensureAdmin();
