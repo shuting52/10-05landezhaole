@@ -45,7 +45,7 @@ import java.util.Locale
  *
  * 由 v2.1.0 APK 反编译的 AdminViewModel 重建为可读 Kotlin：
  * - 持有 admin-data.json 的 JSONObject（rootJson）作为唯一真相源
- * - 各 save*/delete* 方法修改 rootJson 后经 persistAndRefresh 写回 GitHub
+ * - 各 save / delete 方法修改 rootJson 后经 persistAndRefresh 写回 GitHub
  * - loadAdmin 支持 API / 镜像链双路径读取
  * - publishRelease 自动 bump 版本并同步 updateDialog（弹更新窗）
  */
