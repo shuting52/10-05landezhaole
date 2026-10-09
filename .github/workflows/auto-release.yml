@@ -56,9 +56,9 @@ jobs:
             cp signing/lzdz-release.keystore my-upload-key.jks
             echo "使用正式签名密钥"
           else
-            # 回退：拉取 landezhaole10-02 公开跟踪的 debug.keystore（与 1.3.x 系列签名一致）
+            # 回退：拉取 lzdz-console 公开跟踪的 debug.keystore（与 1.3.x 系列签名一致）
             curl -sL --retry 3 --retry-all-errors -o debug.keystore \
-              "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/debug.keystore"
+              "https://raw.githubusercontent.com/shuting52/lzdz-console/main/debug.keystore"
             ls -la debug.keystore && echo "使用 debug.keystore 签名"
           fi
 
