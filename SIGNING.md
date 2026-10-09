@@ -48,47 +48,32 @@ keytool -genkeypair -v \
   -keypass "lzdz2026!secure" \
   -dname "CN=Lzdz, OU=Mobile, O=Shuting52, L=Shenzhen, ST=GD, C=CN"
 
-# 控制台 APK keystore
-keytool -genkeypair -v \
-  -keystore signing/lzdz-console.keystore \
-  -alias lzdz-console \
-  -keyalg RSA -keysize 2048 \
-  -validity 20000 \
-  -storepass "lzdz123456" \
-  -keypass "lzdz123456" \
-  -dname "CN=Lzdz, OU=Console, O=Shuting52, L=Shenzhen, ST=GD, C=CN"
-
 # 让 app 模块使用 stdlib 作为签名密钥
 cp signing/lzdz-release.keystore my-upload-key.jks
 ```
 
-> ⚠️ **重要**：这两个 keystore 文件一旦丢失，所有已发布版本的覆盖安装链路会立刻失效（用户升级会失败）。请至少备份 2 处。
+> ⚠️ **重要**：这个 keystore 文件一旦丢失，所有已发布版本的覆盖安装链路会立刻失效（用户升级会失败）。请至少备份 2 处。
 
 ### 2. 构建 Release APK
 
 ```bash
-# 本体（com.landezhaole）
+# 本体（com.aistudio.landezhaole.lzdl）
 ./gradlew :app:assembleRelease
-
-# 控制台（com.yuntai）
-./gradlew :console-apk:assembleRelease
 ```
 
 产物路径：
 - `app/build/outputs/apk/release/app-release.apk`
-- `console-apk/app/build/outputs/apk/release/app-release.apk`
 
 ### 3. 重命名并上传
 
 ```bash
 # 上传到 GitHub 后通知本体 App
 mv app/build/outputs/apk/release/app-release.apk dist/apk/landezhao-v1.7.8-$(date +%s).apk
-mv console-apk/app/build/outputs/apk/release/app-release.apk dist/console/console-apk-v1.0.14-$(date +%s).apk
 
-git add dist/ && git commit -m "release: v1.7.8 / v1.0.14" && git push
+git add dist/ && git commit -m "release: v1.7.8" && git push
 ```
 
-更新 `admin-data.json` 中的 `version.apkUrl` 与 `console.apkUrl`，控制台「? 推送并触发本体更新弹窗」即可。
+更新 `admin-data.json` 中的 `version.apkUrl`，即可推送并触发本体更新弹窗。
 
 ---
 
@@ -101,17 +86,12 @@ git add dist/ && git commit -m "release: v1.7.8 / v1.0.14" && git push
 ```bash
 # 把 keystore 编码为 base64
 base64 -w0 signing/lzdz-release.keystore > /tmp/lzdz-release.b64
-base64 -w0 signing/lzdz-console.keystore > /tmp/lzdz-console.b64
 
 # 在 GitHub → Settings → Secrets and variables → Actions 增加：
 #   LZDZ_KEYSTORE_BASE64      = <lzdz-release.keystore 的 base64 内容>
 #   LZDZ_KEYSTORE_PASSWORD    = lzdz2026!secure
 #   LZDZ_KEY_ALIAS            = lzdz-release
 #   LZDZ_KEY_PASSWORD         = lzdz2026!secure
-#   CONSOLE_KEYSTORE_BASE64   = <lzdz-console.keystore 的 base64 内容>
-#   CONSOLE_KEYSTORE_PASSWORD = lzdz123456
-#   CONSOLE_KEY_ALIAS         = lzdz-console
-#   CONSOLE_KEY_PASSWORD      = lzdz123456
 ```
 
 ### 2. 触发工作流

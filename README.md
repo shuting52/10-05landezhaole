@@ -1,13 +1,12 @@
 # 懒得找了 (LanDeZhaoLe) · 云端驱动的 Android 全能资源导航与百宝箱
 
 <p align="center">
-  <b>GitHub 仓库即云端数据中枢 · 控制台秒级热同步 · 全站液态玻璃与动态环形视觉引擎 · 50+ 实用效率工具箱</b>
+  <b>GitHub 仓库即云端数据中枢 · 全站液态玻璃与动态环形视觉引擎 · 50+ 实用效率工具箱</b>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Android-Kotlin%20%2B%20Jetpack%20Compose-3DDC84?logo=android&logoColor=white" alt="Android Kotlin Compose" />
   <img src="https://img.shields.io/badge/App%20Version-v1.3.5%20(code%20140)-2563EB" alt="App Version" />
-  <img src="https://img.shields.io/badge/Console%20Version-v1.3.1%20(code%2055)-9333EA" alt="Console Version" />
   <img src="https://img.shields.io/badge/CI%2FCD-Auto%20Release-22C55E?logo=githubactions&logoColor=white" alt="Auto Release" />
 </p>
 
@@ -17,9 +16,8 @@
 
 **「懒得找了」** 是一款采用 **“GitHub 仓库即云端数据中枢（Git-as-a-Backend）”** 架构的 Android 全能资源导航与创意工具应用。
 
-项目由 **本体 App（`app/`）** 与 **云端总控台 App（`console-apk/`）** 双端协同组成：
-- **本体 App**：面向终端用户，集成了 **1000+ 精选站点导航（AI 行业、开发编程、设计创意、影视娱乐、云工具等）**、**50+ 离线/在线实用小工具箱**、**Prompt 提示词灵感中心**、**软件与 Skill 资源库**，并搭载 **全站液态玻璃（Liquid Glass）+ 10 款动态环形特效引擎**。
-- **控制台 App**：面向管理员与开发者，无需额外部署后端服务器，直接通过 GitHub API 与多级 CDN 镜像读写 `admin-data.json`，实现 **分类站点增删、UI 文案实时检索与配置、主题与弹窗下发、APK 发布与自动版本对齐**，本体 App 每 6 秒无感轮询，数秒内全网生效。
+项目以 **本体 App（`app/`）** 为核心：
+- **本体 App**：面向终端用户，集成了 **1000+ 精选站点导航（AI 行业、开发编程、设计创意、影视娱乐、云工具等）**、**50+ 离线/在线实用小工具箱**、**Prompt 提示词灵感中心**、**软件与 Skill 资源库**，并搭载 **全站液态玻璃（Liquid Glass）+ 10 款动态环形特效引擎**。数据由 `admin-data.json` 云端驱动，本体 App 每 6 秒无感轮询，数秒内全网生效。
 
 ---
 
@@ -30,10 +28,8 @@ GitHub 仓库（唯一真相源 Single Source of Truth）
 ├── admin-data.json                  ← 全站内容/配置/版本/UI文案/主题/跑马灯/IP监控/自动发布状态
 ├── dist/
 │   ├── apk/                         ← 本体 App 历次发布安装包（含真实版本号与时间戳）
-│   ├── console/                     ← 控制台 App 安装包
-│   └── uploads/                     ← 控制台上传的图片/视频/音频/文档素材
+│   └── uploads/                     ← 云端素材：图片/视频/音频/文档
 ├── app/                             ← 本体 Android 源码（Kotlin + Jetpack Compose + Room + Media3）
-├── console-apk/                     ← 控制台 Android 源码（原生 Java + 内嵌全功能管理台）
 ├── .github/
 │   ├── workflows/auto-release.yml   ← 自动发布流水线（源码 push 自动 bump 版本、构建、双仓同步、CDN 刷新）
 │   └── scripts/                     ← 自动发布检测与发布 Python 脚本
@@ -45,7 +41,7 @@ GitHub 仓库（唯一真相源 Single Source of Truth）
 ```
 
 ### 多通道高可用读取链（防劫持 + 多镜像兜底）
-本体 App 与控制台均内置 9 级高可用网络读取链路，自动执行 **HTML 网页劫持检测** 与超时毫秒级切换：
+本体 App 内置 9 级高可用网络读取链路，自动执行 **HTML 网页劫持检测** 与超时毫秒级切换：
 ```text
 GitHub API → jsdelivr-testingcf → jsdelivr-cdn → jsdelivr-fastly → jsdelivr-gcore
 → ghfast.top → ghproxy.net → raw.gitmirror.com → raw.githubusercontent.com
@@ -70,11 +66,6 @@ GitHub API → jsdelivr-testingcf → jsdelivr-cdn → jsdelivr-fastly → jsdel
 - **百鸟鸣（100 种鸟叫科普）**：内置 100 种鸟类纯离线合成/科普音频（`res/raw/bird_XXX.ogg`），支持搜索与即点即播。
 - **Prompt 提示词中心 & 资源上传中心**：内置 3D 渲染、赛博朋克、人像摄影、Sora 视频等提示词灵感库，支持一键复制与云端资源上传。
 
-### 4. 云端总控台（`console-apk`）与全量 UI 文本配置
-- **全模块可视化管理**：一站式管理首页分类/站点、软件库、Skill、开屏页、欢迎弹窗、更新弹窗、跑马灯公告、IP 监控挂件与主题工具箱。
-- **UI 文本搜索与实时过滤**：支持按关键字、键名或默认值实时过滤全站 UI 文本配置（顶栏、底栏、设置页、各类弹窗），支持「仅看已修改」一键筛选与分区增删。
-- **自动发布状态跟随**：自动读取云端 `autoRelease` 状态，实时展示最近自动发布的版本号、VersionCode、构建时间与 Commit SHA。
-
 ---
 
 ## 四、快速构建指南
@@ -88,12 +79,6 @@ GitHub API → jsdelivr-testingcf → jsdelivr-cdn → jsdelivr-fastly → jsdel
 ```bash
 ./gradlew :app:assembleRelease
 # 产物路径: app/build/outputs/apk/release/app-release.apk
-```
-
-### 2. 本地构建控制台 App
-```bash
-./gradlew -p console-apk :app:assembleRelease
-# 产物路径: console-apk/app/build/outputs/apk/release/app-release.apk
 ```
 
 ---
@@ -125,8 +110,8 @@ bash auto_release.sh --force  # 强制推进版本号并重新构建发布
 ## 六、项目核心规范（必读）
 
 任何人类开发者或 AgentAI 参与维护前，**必须先行阅读并遵守以下文档**：
-1. [`写死规则.md`](./写死规则.md)：项目宪法级规则（版本四要素严格对齐、控制台高可用连接、AgentAI 接口预留、站点只增不删去重、联系方式二维码锁定、定点开发白名单铁律）。
-2. [`AGENTS.md`](./AGENTS.md)：日常维护、版本发布、控制台升级、网络层约定的标准作业程序（SOP）。
+1. [`写死规则.md`](./写死规则.md)：项目宪法级规则（版本四要素严格对齐、云端数据同步、AgentAI 接口预留、站点只增不删去重、联系方式二维码锁定、定点开发白名单铁律）。
+2. [`AGENTS.md`](./AGENTS.md)：日常维护、版本发布、网络层约定的标准作业程序（SOP）。
 3. [`文件功能清单.md`](./文件功能清单.md)：定点开发前用于确定改动文件白名单的模块映射表。
 
 ---
@@ -134,4 +119,4 @@ bash auto_release.sh --force  # 强制推进版本号并重新构建发布
 ## 七、安全说明
 
 - **严禁硬编码密钥**：任何 `GITHUB_TOKEN`、`RELEASE_PAT` 或第三方 API Key 严禁写入源码、配置文件或提交历史。
-- **签名一致性**：本体与控制台升级包必须保持签名证书一致（详见 [`SIGNING.md`](./SIGNING.md)），确保老版本用户端内免卸载直接覆盖安装。
+- **签名一致性**：本体各版本升级包必须保持签名证书一致（详见 [`SIGNING.md`](./SIGNING.md)），确保老版本用户端内免卸载直接覆盖安装。

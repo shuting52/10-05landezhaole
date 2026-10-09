@@ -24,11 +24,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           # v1.1.13：大仓库（dist 含大量 APK）全量历史 fetch 触发服务器端 pack 打包错误（unresolved deltas），
-          # 改为浅克隆 + 稀疏检出：只拉构建所需的 app/console-apk/gradle/根配置，dist 无需检出（上传走 gh api）
+          # 改为浅克隆 + 稀疏检出：只拉构建所需的 app/gradle/根配置（控制台已移除）
           fetch-depth: 1
           sparse-checkout: |
             app
-            console-apk
             gradle
             .github
           sparse-checkout-cone-mode: true
@@ -58,19 +57,15 @@ jobs:
           LZDZ_KEYSTORE_PASSWORD: ${{ secrets.LZDZ_KEYSTORE_PASSWORD }}
           LZDZ_KEY_ALIAS: ${{ secrets.LZDZ_KEY_ALIAS }}
           LZDZ_KEY_PASSWORD: ${{ secrets.LZDZ_KEY_PASSWORD }}
-          CONSOLE_KEYSTORE_BASE64: ${{ secrets.CONSOLE_KEYSTORE_BASE64 }}
-          CONSOLE_KEYSTORE_PASSWORD: ${{ secrets.CONSOLE_KEYSTORE_PASSWORD }}
-          CONSOLE_KEY_ALIAS: ${{ secrets.CONSOLE_KEY_ALIAS }}
-          CONSOLE_KEY_PASSWORD: ${{ secrets.CONSOLE_KEY_PASSWORD }}
         run: |
           set -e
           mkdir -p signing
           # debug.keystore 回退：secrets 未配置时下载公开跟踪的 debug.keystore（与 auto-release.yml 一致，保证可出包）
           # 双源下载：raw 直链优先，jsDelivr CDN 兜底（raw 偶发网络抖动）
           curl -sL --retry 3 --retry-all-errors -o debug.keystore \
-            "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/debug.keystore" \
+            "https://raw.githubusercontent.com/shuting52/lzdz-console/main/debug.keystore" \
             || curl -sL --retry 3 --retry-all-errors -o debug.keystore \
-            "https://cdn.jsdelivr.net/gh/shuting52/landezhaole10-02@main/debug.keystore"
+            "https://cdn.jsdelivr.net/gh/shuting52/lzdz-console@main/debug.keystore"
           ls -la debug.keystore
           if [ -n "$LZDZ_KEYSTORE_BASE64" ]; then
             echo "==> 解密本体 keystore"
@@ -79,13 +74,6 @@ jobs:
             ls -la signing/ my-upload-key.jks
           else
             echo "::warning::未配置 LZDZ_KEYSTORE_BASE64，本体将回退 debug 签名"
-          fi
-          if [ -n "$CONSOLE_KEYSTORE_BASE64" ]; then
-            echo "==> 解密控制台 keystore"
-            echo "$CONSOLE_KEYSTORE_BASE64" | base64 -d > signing/lzdz-console.keystore
-            ls -la signing/
-          else
-            echo "::warning::未配置 CONSOLE_KEYSTORE_BASE64，控制台将回退 debug 签名"
           fi
 
       - name: Build 本体 (landezha)
@@ -99,17 +87,6 @@ jobs:
           ./gradlew :app:assembleRelease --no-daemon
         continue-on-error: true
 
-      - name: Build 控制台 (yuntai console)
-        env:
-          CONSOLE_KEYSTORE_PATH: ${{ github.workspace }}/signing/lzdz-console.keystore
-          CONSOLE_STORE_PASSWORD: ${{ secrets.CONSOLE_KEYSTORE_PASSWORD }}
-          CONSOLE_KEY_ALIAS: ${{ secrets.CONSOLE_KEY_ALIAS }}
-          CONSOLE_KEY_PASSWORD: ${{ secrets.CONSOLE_KEY_PASSWORD }}
-        run: |
-          set -e
-          # 控制台是独立 Gradle 项目，需用 -p 指定项目目录单独构建
-          ./gradlew -p console-apk :app:assembleRelease --no-daemon
-        continue-on-error: true
 
       - name: 收集 APK（规范命名）
         id: collect
@@ -118,15 +95,10 @@ jobs:
           mkdir -p dist-artifacts
           TS=$(date +%s)
           BODY_VERSION=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts || echo "unknown")
-          CONSOLE_VERSION=$(grep -oP 'versionName\s*=\s*"\K[^"]+' console-apk/app/build.gradle.kts || echo "unknown")
-          echo "本体版本: $BODY_VERSION | 控制台版本: $CONSOLE_VERSION"
+          echo "本体版本: $BODY_VERSION"
           if [ -f app/build/outputs/apk/release/app-release.apk ]; then
             cp app/build/outputs/apk/release/app-release.apk "dist-artifacts/landezhao-v${BODY_VERSION}-${TS}.apk"
             echo "收集到本体 APK"
-          fi
-          if [ -f console-apk/app/build/outputs/apk/release/app-release.apk ]; then
-            cp console-apk/app/build/outputs/apk/release/app-release.apk "dist-artifacts/console-apk-v${CONSOLE_VERSION}-${TS}.apk"
-            echo "收集到控制台 APK"
           fi
           echo "ARTIFACTS_DIR=dist-artifacts" >> $GITHUB_OUTPUT
           ls -la dist-artifacts/
@@ -137,7 +109,7 @@ jobs:
           name: android-apks
           path: dist-artifacts/
 
-      - name: 推送到 dist/apk 与 dist/console
+      - name: 推送到 dist/apk
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -162,11 +134,7 @@ jobs:
           }
           for f in dist-artifacts/*.apk; do
             [ -f "$f" ] || continue
-            if [[ "$f" == *"console"* ]]; then
-              upload_file "$f" "dist/console/$(basename $f)"
-            else
-              upload_file "$f" "dist/apk/$(basename $f)"
-            fi
+            upload_file "$f" "dist/apk/$(basename $f)"
           done
 
       - name: 创建 GitHub Release

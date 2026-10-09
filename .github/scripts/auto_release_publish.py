@@ -11,7 +11,7 @@ Auto Release · 发布（全 API 版，v2）
 3. 若配置 RELEASE_PAT → 同步 landezhaole10-02（App 实际读取源）
    admin-data.json + dist/apk，并 purge jsDelivr CDN
 
-v2 说明：不再使用 git commit/push 发布（会与控制台并发冲突），
+v2 说明：不再使用 git commit/push 发布（会与并发写冲突），
 全部走 GitHub API 更新，409 冲突时拉取最新 sha 重试，天然无冲突。
 """
 import base64
@@ -221,7 +221,7 @@ def main():
                         f"https://purge.jsdelivr.net/gh/{OWNER}/{OLD_REPO}@main/admin-data.json?v=20261004"], timeout=30)
         print("旧仓库同步 + CDN purge 完成")
     else:
-        print("==> 未配置 RELEASE_PAT，跳过旧仓库同步（本仓库已发布，可用控制台手动同步）")
+        print("==> 未配置 RELEASE_PAT，跳过旧仓库同步（本仓库已发布，可手动同步）")
 
     print(f"==> 发布完成: v{name} (code {code}) apkUrl={apk_url}")
 

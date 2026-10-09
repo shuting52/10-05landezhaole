@@ -24359,11 +24359,6 @@
     "defaultText": "欢迎使用懒得找了～海量白嫖资源等你探索，遇到问题请到官方群反馈！",
     "segments": []
   },
-  "console": {
-    "version": "1.0.15",
-    "code": 58,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/console/console-apk-v1.0.15-1791547109.apk"
-  },
   "ipMonitor": {
     "enabled": true,
     "url": "https://myip.ipip.net/"
