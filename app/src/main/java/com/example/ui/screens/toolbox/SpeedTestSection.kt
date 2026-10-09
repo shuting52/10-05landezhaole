@@ -34,6 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,12 +48,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ui.components.RealTimeLocationManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.InputStream
 import java.net.HttpURLConnection
+import java.util.Locale
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.URL
@@ -99,6 +102,7 @@ fun SpeedTestSection(modifier: Modifier = Modifier) {
     }
 
     fun locate() {
+        var foundGps = false
         try {
             val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             val loc: Location? = try {
@@ -106,15 +110,41 @@ fun SpeedTestSection(modifier: Modifier = Modifier) {
                     ?: lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
             } catch (_: Exception) { null }
             if (loc != null) {
-                val lat = String.format("%.2f", loc.latitude)
-                val lng = String.format("%.2f", loc.longitude)
+                val lat = String.format(Locale.US, "%.2f", loc.latitude)
+                val lng = String.format(Locale.US, "%.2f", loc.longitude)
                 locationText = "📍 纬度 $lat · 经度 $lng"
-                // 尝试反查城市名（简化：仅展示坐标，网络反查需要额外 API）
-                status = "定位成功"
-            } else {
-                locationText = "📍 暂未获取到位置，请开启手机定位后重试"
+                status = "GPS定位成功"
+                foundGps = true
             }
         } catch (_: Exception) {}
+
+        if (!foundGps) {
+            status = "正在实时同步网络定位…"
+            scope.launch {
+                val realLoc = withContext(Dispatchers.IO) {
+                    RealTimeLocationManager.getLocation(context)
+                }
+                if (realLoc != null) {
+                    val locParts = listOf(realLoc.country, realLoc.province, realLoc.city, realLoc.district)
+                        .filter { it.isNotBlank() && it != "N/A" && it != "--" && it != "0" }
+                        .distinct()
+                    val locStr = locParts.joinToString(" ").ifBlank { realLoc.ip }
+                    val coordStr = if (realLoc.latitude != null && realLoc.longitude != null && realLoc.latitude != 0.0) {
+                        String.format(Locale.US, " · %.2f,%.2f", realLoc.latitude, realLoc.longitude)
+                    } else ""
+                    val ispStr = if (realLoc.isp.isNotBlank() && realLoc.isp != "N/A") "（${realLoc.isp}）" else ""
+                    locationText = "📍 $locStr$coordStr $ispStr"
+                    status = "定位已实时同步（免开启GPS）"
+                } else {
+                    locationText = "📍 网络定位同步中，请点击刷新"
+                    status = "定位获取中"
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        locate()
     }
 
     fun runTest() {
@@ -239,7 +269,7 @@ fun SpeedTestSection(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            "测速通过 Cloudflare 全球节点真实下载文件计算；定位需开启手机定位服务并授权。",
+            "测速通过 Cloudflare 全球节点真实下载文件计算；定位支持实时高精度同步（无需开启手机GPS定位与VPN，自动解析真实网络位置）。",
             fontSize = 11.sp,
             color = Color(0xFF6A9893)
         )
