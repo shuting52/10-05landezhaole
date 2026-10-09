@@ -1,16 +1,15 @@
 {
   "version": {
-    "code": 155,
-    "name": "1.4.0",
+    "code": 156,
+    "name": "1.4.1",
     "changelog": [
-      "✨ v1.4.0 更新来啦～",
-      "fix: 签名配置兼容 debug.keystore 回退（修复 CI 构建失败 my-upload-key.jks 不存在）",
-      "feat: v1.4.0 升级资源版块，删除双Tab改为GitHub资源搜索，附带预览图展示与提示词一键复制"
+      "✨ v1.4.1 更新来啦～",
+      "本次更新包含多项优化与修复"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.0-1791544082.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.0-1791544082.apk",
-    "lastBuildSha": "74121e647ccd6d8af4b6faa1844b560629f263bb"
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.1-1791547503.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.1-1791547503.apk",
+    "lastBuildSha": "65ded49f026f8e41470a285e995ae6a86ea3e59d"
   },
   "home": {
     "categories": [
@@ -24344,11 +24343,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.4.0 已上线",
+    "title": "懒得找了 v1.4.1 已上线",
     "changelog": [
-      "✨ v1.4.0 更新来啦～",
-      "fix: 签名配置兼容 debug.keystore 回退（修复 CI 构建失败 my-upload-key.jks 不存在）",
-      "feat: v1.4.0 升级资源版块，删除双Tab改为GitHub资源搜索，附带预览图展示与提示词一键复制"
+      "✨ v1.4.1 更新来啦～",
+      "本次更新包含多项优化与修复"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24415,10 +24413,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.4.0",
-      "code": 155,
-      "at": "2026-10-09T11:08:10Z",
-      "sha": "74121e647ccd6d8af4b6faa1844b560629f263bb"
+      "version": "1.4.1",
+      "code": 156,
+      "at": "2026-10-09T12:05:10Z",
+      "sha": "65ded49f026f8e41470a285e995ae6a86ea3e59d"
     }
   },
   "_ai_notice": "内容由AI生成"
