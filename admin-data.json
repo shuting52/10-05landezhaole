@@ -1,14 +1,18 @@
 {
   "version": {
-    "code": 154,
-    "name": "1.3.19",
+    "code": 155,
+    "name": "1.4.0",
     "changelog": [
-      "✨ v1.3.19 更新来啦～",
-      "本次更新包含多项优化与修复"
+      "✨ v1.4.0 全新版本重磅上线！",
+      "1. 底部栏「Skill」全面升级为「资源」版块",
+      "2. 全新「资源搜索」功能，直接对接 GitHub 仓库",
+      "3. 支持按图片提示词、视频提示词等分类精准检索",
+      "4. 提示词卡片附带高清预览图展示呈现在下方区域，支持一键复制咒语",
+      "5. 优化云端数据同步与交互性能"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.3.19-1791531669.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.3.19-1791531669.apk",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.0.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.0.apk",
     "lastBuildSha": "2370910ad32cc299497457fef98aaed2f83624aa"
   },
   "home": {
@@ -24188,6 +24192,86 @@
       "mediaUrl": "",
       "iconUrl": "",
       "mode": "file"
+    },
+    {
+      "id": "pm_cyberpunk_city",
+      "type": "skill",
+      "promptType": "prompt_image",
+      "title": "未来赛博都市 · 霓虹飞车雨夜",
+      "desc": "赛博朋克立体都市雨夜全景，飞驰流光悬浮车与高耸全息霓虹招牌，电影质感光影与水汽倒影",
+      "prompt": "Cinematic shot of a sprawling futuristic cyberpunk mega city at midnight, flying vehicles with glowing neon trails, holographic billboards reflecting on wet rain streets, dense vertical architecture, ultra-detailed 8k resolution, volumetric atmospheric smoke, photorealistic octane render --ar 16:9 --v 6.1 --style raw",
+      "url": "https://midjourney.com",
+      "author": "CyberArt Lab",
+      "badge": "Midjourney v6.1",
+      "tags": "赛博朋克 / 8K渲染 / 电影质感",
+      "previewUrl": "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&auto=format&fit=crop&q=80",
+      "mediaUrl": "",
+      "iconUrl": "",
+      "mode": "url"
+    },
+    {
+      "id": "pm_hanfu_portrait",
+      "type": "skill",
+      "promptType": "prompt_image",
+      "title": "幽竹提灯 · 汉服古风唯美少女",
+      "desc": "江南竹林薄雾暮色，汉服少女手持莲花暖光花灯，流萤点点与柔和月色，大师级胶片人像质感",
+      "prompt": "A breathtakingly beautiful young Asian woman in exquisite ethereal flowing emerald Hanfu silk dress, holding a delicate glowing lotus lantern, standing in a misty twilight bamboo forest, floating golden fireflies, volumetric soft moonlight, 85mm portrait lens photography, hyperrealistic skin pores, masterpiece --ar 3:4 --steps 30",
+      "url": "https://flux1.art",
+      "author": "国风美学社",
+      "badge": "FLUX.1-dev",
+      "tags": "国风汉服 / 唯美写实 / 柔光胶片",
+      "previewUrl": "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80",
+      "mediaUrl": "",
+      "iconUrl": "",
+      "mode": "url"
+    },
+    {
+      "id": "pm_sora_dragon",
+      "type": "skill",
+      "promptType": "prompt_video",
+      "title": "Sora 电影级 · 金龙穿云越峰长镜头",
+      "desc": "【视频生成】Sora电影级镜头：万丈云海间东方金鳞神龙乘风掠过奇峰险峦，古刹悬阁隐于落日余晖中",
+      "prompt": "Cinematic drone tracking shot: A majestic oriental golden dragon with shimmering scales and flowing whiskers soars through sea of clouds above dramatic misty mountain peaks, ancient cliffside pagodas below, sunset golden hour rays penetrating mist, smooth epic cinematic motion, photorealistic 4k movie footage --motion 7 --fps 60 --duration 8s",
+      "url": "https://openai.com/sora",
+      "author": "Sora Visionary",
+      "badge": "Sora 4K",
+      "tags": "Sora / 电影运镜 / 东方神话",
+      "previewUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80",
+      "mediaUrl": "",
+      "iconUrl": "",
+      "mode": "url"
+    },
+    {
+      "id": "pm_3d_robot",
+      "type": "skill",
+      "promptType": "prompt_image",
+      "title": "可爱3D黏土宇航机甲 · IP潮玩设计",
+      "desc": "Q版赛博太空机甲小机器人，悬浮全息彩色数字水晶，磨砂黏土质感与柔光棚拍，3D潮玩盲盒风格",
+      "prompt": "Chibi cute futuristic astronaut robot mascot floating with colorful holographic data crystals, smooth matte clay texture, soft studio ambient occlusion lighting, clean pastel gradients, ray tracing, C4D and Blender 3D render, behance trending digital toy art --ar 1:1 --v 6.1",
+      "url": "https://midjourney.com",
+      "author": "潮玩三维实验室",
+      "badge": "C4D/Blender",
+      "tags": "3D潮玩 / 黏土渲染 / 盲盒设计",
+      "previewUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80",
+      "mediaUrl": "",
+      "iconUrl": "",
+      "mode": "url"
+    },
+    {
+      "id": "pm_kling_moto",
+      "type": "skill",
+      "promptType": "prompt_video",
+      "title": "可灵AI · 暴雨夜未来霓虹机车狂飙",
+      "desc": "【视频生成】快手可灵AI：暴雨霓虹高架未来超导机车极速破空狂飙，后轮水雾飞溅与低角度动态追焦",
+      "prompt": "Low-angle dynamic tracking camera chasing a futuristic sleek electric motorbike speeding through a neon-soaked cyberpunk highway in heavy rain, glowing wheels spraying water droplets, rear thruster flames, camera shaking with speed, realistic motion blur, 4K 60fps --mode high_performance --speed fast",
+      "url": "https://klingai.kuaishou.com",
+      "author": "Kling 动力流",
+      "badge": "快手可灵",
+      "tags": "可灵AI / 动态追焦 / 赛博狂飙",
+      "previewUrl": "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=800&auto=format&fit=crop&q=80",
+      "mediaUrl": "",
+      "iconUrl": "",
+      "mode": "url"
     }
   ],
   "settings": {
@@ -24324,7 +24408,8 @@
   "uiText": {
     "splashSub": "盛世华诞",
     "luckyTitle": "✨ 分类列表 · 今日宝藏",
-    "marqueeDefault": "盛世华诞～祝祖国母亲生日快乐～繁荣昌盛"
+    "marqueeDefault": "盛世华诞～祝祖国母亲生日快乐～繁荣昌盛",
+    "tabSkill": "资源"
   },
   "uiTextDefs": [],
   "autoRelease": {

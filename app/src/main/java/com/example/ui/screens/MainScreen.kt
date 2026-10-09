@@ -181,6 +181,7 @@ fun MainScreen(
     val uploadedSoftware by viewModel.uploadedSoftware.collectAsStateWithLifecycle()
     val uploadedSkills by viewModel.uploadedSkills.collectAsStateWithLifecycle()
     val uploadedPrompts by viewModel.uploadedPrompts.collectAsStateWithLifecycle()
+    val allUploadedResources by viewModel.allUploadedResources.collectAsStateWithLifecycle()
     val customSites by viewModel.customSites.collectAsStateWithLifecycle()
 
     val totalResourceCount = remember(uiState.categories, customSites) {
@@ -389,99 +390,12 @@ fun MainScreen(
                     )
                 }
                 AppBottomTab.SKILL -> {
-                    var skillSubTabIndex by remember { mutableIntStateOf(0) } // 0: 提示词区, 1: Skill 技能库
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues)
-                    ) {
-                        // Skill 顶部 Tab 采用精致液态玻璃拟态 + 流光微边框胶囊
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 14.dp, vertical = 6.dp)
-                                .clip(RoundedCornerShape(22.dp))
-                                .background(
-                                    Brush.linearGradient(
-                                        listOf(
-                                            Color.White.copy(alpha = 0.85f),
-                                            Color(0xFFFAF5FF).copy(alpha = 0.70f),
-                                            Color(0xFFFFF0F5).copy(alpha = 0.75f),
-                                            Color.White.copy(alpha = 0.90f)
-                                        )
-                                    )
-                                )
-                                .border(
-                                    width = 1.4.dp,
-                                    brush = Brush.linearGradient(
-                                        listOf(
-                                            Color(0xFFFF007A).copy(alpha = 0.40f),
-                                            Color(0xFF7928CA).copy(alpha = 0.45f),
-                                            Color(0xFF0070F3).copy(alpha = 0.40f),
-                                            Color(0xFFFF0080).copy(alpha = 0.35f)
-                                        )
-                                    ),
-                                    shape = RoundedCornerShape(22.dp)
-                                )
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(4.dp),
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
-                            ) {
-                                val promptLabel = uiState.cloudUiText?.promptTab?.ifBlank { "提示词区" } ?: "提示词区"
-                                val skillLabel = uiState.cloudUiText?.skillTab?.ifBlank { "Skill 技能库" } ?: "Skill 技能库"
-
-                                listOf(
-                                    0 to ("✨ $promptLabel"),
-                                    1 to ("⚡ $skillLabel")
-                                ).forEach { (tabIdx, title) ->
-                                    val isSelected = skillSubTabIndex == tabIdx
-                                    Surface(
-                                        onClick = { skillSubTabIndex = tabIdx },
-                                        shape = RoundedCornerShape(18.dp),
-                                        color = if (isSelected) Color(0xFF1E1B4B) else Color.Transparent,
-                                        shadowElevation = if (isSelected) 3.dp else 0.dp,
-                                        modifier = Modifier.weight(1f)
-                                    ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(vertical = 10.dp),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                text = title,
-                                                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.SemiBold,
-                                                fontSize = 13.sp,
-                                                color = if (isSelected) Color.White else Color(0xFF64748B)
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        if (skillSubTabIndex == 0) {
-                            PromptHubSubView(
-                                prompts = uploadedPrompts,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        } else {
-                            UploadHubScreen(
-                                title = "Skill · 技能库",
-                                subtitle = "Skill 技能包竖排列表 · 点击卡片查看详情（视频预览 / 下载 / 跳转）",
-                                resourceType = "skill",
-                                resources = uploadedSkills,
-                                onDelete = { id -> viewModel.deleteUploadedResource(id) },
-                                modifier = Modifier.fillMaxSize(),
-                                showDelete = false,
-                                // v1.0.5：软件版块统一“竖排改横排”，Skill 技能库也采用一排三个横排网格
-                                gridMode = true
-                            )
-                        }
-                    }
+                    ResourceScreen(
+                        resources = allUploadedResources,
+                        onRefreshCloud = { viewModel.triggerSyncFromCloud() },
+                        onDelete = { id -> viewModel.deleteUploadedResource(id) },
+                        modifier = Modifier.padding(paddingValues)
+                    )
                 }
                 AppBottomTab.TOOLBOX -> {
                     ToolboxScreen(

@@ -134,12 +134,12 @@ fun CustomRadioBottomNav(
         ),
         BottomNavTabItem(
             tab = AppBottomTab.SKILL,
-            title = uiText?.tabSkill?.ifBlank { "Skill" } ?: "Skill",
+            title = uiText?.tabSkill?.ifBlank { "资源" } ?: "资源",
             icon = Icons.Filled.Favorite,
             color = Color(0xFFF43F5E), // 甜心瑰红
             gradient = listOf(Color(0xFFFB7185), Color(0xFFE11D48)),
             petKaomoji = "(˶ᵔ ᵕ ᵔ˶) ♡",
-            petVoice = "送你小心心~ 💖"
+            petVoice = "探索海量精选资源喵~ ✨"
         ),
         BottomNavTabItem(
             tab = AppBottomTab.TOOLBOX,

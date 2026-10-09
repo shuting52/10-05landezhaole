@@ -55,7 +55,7 @@ import java.util.UUID
 enum class AppBottomTab(val title: String) {
     HOME("首页"),
     SOFTWARE("软件"),
-    SKILL("Skill"),
+    SKILL("资源"),
     TOOLBOX("工具箱"),
     SETTINGS("设置")
 }
@@ -148,6 +148,9 @@ class NavViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val uploadedPrompts: StateFlow<List<UploadedResourceEntity>> = repository.getUploadedPrompts()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allUploadedResources: StateFlow<List<UploadedResourceEntity>> = repository.getAllUploadedResourcesFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val customSites: StateFlow<List<UploadedResourceEntity>> = repository.getCustomSites()
@@ -371,7 +374,7 @@ class NavViewModel(
                     val isCloudType = local.type == "software" || local.type == "skill" ||
                         local.type == "prompt_image" || local.type == "prompt_video"
                     // 云端管理的条目：非用户本地上传（用户上传 id 以 res_ 开头、badge=作者投递）
-                    val isCloudManaged = isCloudType && !local.id.startsWith("res_")
+                    val isCloudManaged = isCloudType && !local.id.startsWith("res_") && !local.id.startsWith("init-")
                     val inCloud = when (local.type) {
                         "software" -> local.id in cloudSwIds
                         else -> local.id in cloudSkIds
@@ -458,8 +461,88 @@ class NavViewModel(
             )
         )
 
+        val defaultPrompts = listOf(
+            UploadedResourceEntity(
+                id = "init-pm-1",
+                type = "prompt_image",
+                title = "未来赛博都市 · 霓虹飞车雨夜",
+                desc = "赛博朋克立体都市雨夜全景，飞驰流光悬浮车与高耸全息霓虹招牌，电影质感光影与水汽倒影",
+                url = "https://midjourney.com",
+                author = "CyberArt Lab",
+                badge = "Midjourney v6.1",
+                tags = "赛博朋克 / 8K渲染 / 电影质感",
+                prompt = "Cinematic shot of a sprawling futuristic cyberpunk mega city at midnight, flying vehicles with glowing neon trails, holographic billboards reflecting on wet rain streets, dense vertical architecture, ultra-detailed 8k resolution, volumetric atmospheric smoke, photorealistic octane render --ar 16:9 --v 6.1 --style raw",
+                previewUrl = "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&auto=format&fit=crop&q=80",
+                mode = "url"
+            ),
+            UploadedResourceEntity(
+                id = "init-pm-2",
+                type = "prompt_image",
+                title = "幽竹提灯 · 汉服古风唯美少女",
+                desc = "江南竹林薄雾暮色，汉服少女手持莲花暖光花灯，流萤点点与柔和月色，大师级胶片人像质感",
+                url = "https://flux1.art",
+                author = "国风美学社",
+                badge = "FLUX.1-dev",
+                tags = "国风汉服 / 唯美写实 / 柔光胶片",
+                prompt = "A breathtakingly beautiful young Asian woman in exquisite ethereal flowing emerald Hanfu silk dress, holding a delicate glowing lotus lantern, standing in a misty twilight bamboo forest, floating golden fireflies, volumetric soft moonlight, 85mm portrait lens photography, hyperrealistic skin pores, masterpiece --ar 3:4 --steps 30",
+                previewUrl = "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80",
+                mode = "url"
+            ),
+            UploadedResourceEntity(
+                id = "init-pm-3",
+                type = "prompt_video",
+                title = "Sora 电影级 · 金龙穿云越峰长镜头",
+                desc = "【视频生成】Sora电影级镜头：万丈云海间东方金鳞神龙乘风掠过奇峰险峦，古刹悬阁隐于落日余晖中",
+                url = "https://openai.com/sora",
+                author = "Sora Visionary",
+                badge = "Sora 4K",
+                tags = "Sora / 电影运镜 / 东方神话",
+                prompt = "Cinematic drone tracking shot: A majestic oriental golden dragon with shimmering scales and flowing whiskers soars through sea of clouds above dramatic misty mountain peaks, ancient cliffside pagodas below, sunset golden hour rays penetrating mist, smooth epic cinematic motion, photorealistic 4k movie footage --motion 7 --fps 60 --duration 8s",
+                previewUrl = "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80",
+                mode = "url"
+            ),
+            UploadedResourceEntity(
+                id = "init-pm-4",
+                type = "prompt_image",
+                title = "可爱3D黏土宇航机甲 · IP潮玩设计",
+                desc = "Q版赛博太空机甲小机器人，悬浮全息彩色数字水晶，磨砂黏土质感与柔光棚拍，3D潮玩盲盒风格",
+                url = "https://midjourney.com",
+                author = "潮玩三维实验室",
+                badge = "C4D/Blender",
+                tags = "3D潮玩 / 黏土渲染 / 盲盒设计",
+                prompt = "Chibi cute futuristic astronaut robot mascot floating with colorful holographic data crystals, smooth matte clay texture, soft studio ambient occlusion lighting, clean pastel gradients, ray tracing, C4D and Blender 3D render, behance trending digital toy art --ar 1:1 --v 6.1",
+                previewUrl = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80",
+                mode = "url"
+            ),
+            UploadedResourceEntity(
+                id = "init-pm-5",
+                type = "prompt_video",
+                title = "可灵AI · 暴雨夜未来霓虹机车狂飙",
+                desc = "【视频生成】快手可灵AI：暴雨霓虹高架未来超导机车极速破空狂飙，后轮水雾飞溅与低角度动态追焦",
+                url = "https://klingai.kuaishou.com",
+                author = "Kling 动力流",
+                badge = "快手可灵",
+                tags = "可灵AI / 动态追焦 / 赛博狂飙",
+                prompt = "Low-angle dynamic tracking camera chasing a futuristic sleek electric motorbike speeding through a neon-soaked cyberpunk highway in heavy rain, glowing wheels spraying water droplets, rear thruster flames, camera shaking with speed, realistic motion blur, 4K 60fps --mode high_performance --speed fast",
+                previewUrl = "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=800&auto=format&fit=crop&q=80",
+                mode = "url"
+            )
+        )
+
         defaultSoftware.forEach { repository.saveUploadedResource(it) }
         defaultSkills.forEach { repository.saveUploadedResource(it) }
+        defaultPrompts.forEach { repository.saveUploadedResource(it) }
+    }
+
+    fun triggerSyncFromCloud(onComplete: ((Boolean) -> Unit)? = null) {
+        viewModelScope.launch {
+            try {
+                val (hasNew, ver) = refreshRemoteConfig()
+                onComplete?.invoke(true)
+            } catch (e: Exception) {
+                onComplete?.invoke(false)
+            }
+        }
     }
 
     fun switchTab(tab: AppBottomTab) {
