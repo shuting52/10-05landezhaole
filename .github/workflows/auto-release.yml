@@ -60,6 +60,11 @@ jobs:
             curl -sL --retry 3 --retry-all-errors -o debug.keystore \
               "https://raw.githubusercontent.com/shuting52/lzdz-console/main/debug.keystore"
             ls -la debug.keystore && echo "使用 debug.keystore 签名"
+            # 导出环境变量给 build.gradle.kts（v1.4.0 签名配置兼容 debug 密钥）
+            echo "KEYSTORE_PATH=${PWD}/debug.keystore" >> "$GITHUB_ENV"
+            echo "STORE_PASSWORD=android" >> "$GITHUB_ENV"
+            echo "KEY_ALIAS=androiddebugkey" >> "$GITHUB_ENV"
+            echo "KEY_PASSWORD=android" >> "$GITHUB_ENV"
           fi
 
       - name: Check release needed & bump version
