@@ -123,15 +123,19 @@ fun PeriodSection(modifier: Modifier = Modifier) {
         try {
             val s = dateFmt.parse(r.startDate)
             val e = dateFmt.parse(r.endDate)
-            ((e.time - s.time) / 86400000L).toInt().coerceAtLeast(1)
+            if (s != null && e != null) {
+                ((e.time - s.time) / 86400000L).toInt().coerceAtLeast(1)
+            } else null
         } catch (_: Exception) { null }
     }
     val nextDate = latest?.let { r ->
         try {
             val s = dateFmt.parse(r.startDate)
-            val cal = Calendar.getInstance().apply { time = s }
-            cal.add(Calendar.DAY_OF_MONTH, 28)
-            dateFmt.format(cal.time)
+            if (s != null) {
+                val cal = Calendar.getInstance().apply { time = s }
+                cal.add(Calendar.DAY_OF_MONTH, 28)
+                dateFmt.format(cal.time)
+            } else null
         } catch (_: Exception) { null }
     }
     val avgCycle = if (records.size >= 2) {
@@ -141,7 +145,9 @@ fun PeriodSection(modifier: Modifier = Modifier) {
             try {
                 val a = dateFmt.parse(records[i - 1].startDate)
                 val b = dateFmt.parse(records[i].startDate)
-                gaps.add((a.time - b.time) / 86400000L)
+                if (a != null && b != null) {
+                    gaps.add((a.time - b.time) / 86400000L)
+                }
             } catch (_: Exception) {}
         }
         if (gaps.isNotEmpty()) gaps.average().toInt() else null
@@ -171,7 +177,9 @@ fun PeriodSection(modifier: Modifier = Modifier) {
         val daysSinceStart = latest?.let { r ->
             try {
                 val s = dateFmt.parse(r.startDate)
-                ((System.currentTimeMillis() - s.time) / 86400000L).toInt().coerceAtLeast(0)
+                if (s != null) {
+                    ((System.currentTimeMillis() - s.time) / 86400000L).toInt().coerceAtLeast(0)
+                } else 0
             } catch (_: Exception) { 0 }
         } ?: 0
         val dayInCycle = daysSinceStart % cycleLen
@@ -533,6 +541,10 @@ private fun PeriodAddDialog(
                         try {
                             val s = dateFmt.parse(startDate)
                             val e = dateFmt.parse(endDate)
+                            if (s == null || e == null) {
+                                error = "日期解析失败"
+                                return@Button
+                            }
                             if (e.time < s.time) {
                                 error = "结束日期不能早于开始日期"
                                 return@Button

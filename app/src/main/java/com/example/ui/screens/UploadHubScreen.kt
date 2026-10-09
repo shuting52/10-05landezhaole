@@ -38,8 +38,30 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.OpenInNew
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.input.ImeAction
 import com.example.ui.components.streamingBorder
 import androidx.compose.material.icons.filled.PlayArrow
+import java.net.URLEncoder
+import java.util.Locale
+import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONObject
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -285,8 +307,439 @@ private fun AutoIconImage(
 }
 
 /**
+ * Appteka 开源应用市场 (https://github.com/solkin/appteka-android)
+ * 真实 APK 数据实体
+ */
+data class ApptekaAppItem(
+    val appId: String,
+    val label: String,
+    val packageName: String,
+    val verName: String,
+    val verCode: Int,
+    val size: Long,
+    val time: Long,
+    val downloads: Int,
+    val iconUrl: String,
+    val categoryName: String = "",
+    var directApkUrl: String? = null
+)
+
+/**
+ * 格式化文件大小
+ */
+private fun formatAppSize(bytes: Long): String {
+    if (bytes <= 0) return "未知大小"
+    val mb = bytes.toDouble() / (1024 * 1024)
+    return if (mb >= 1000) {
+        String.format(Locale.getDefault(), "%.1f GB", mb / 1024)
+    } else {
+        String.format(Locale.getDefault(), "%.1f MB", mb)
+    }
+}
+
+/**
+ * 异步搜索 Appteka 在线开源软件库 (基于 https://appteka.store/api/1/app/search)
+ */
+private suspend fun searchApptekaApps(query: String): List<ApptekaAppItem> = withContext(Dispatchers.IO) {
+    if (query.isBlank()) return@withContext emptyList()
+    try {
+        val encoded = URLEncoder.encode(query, "UTF-8")
+        val url = "https://appteka.store/api/1/app/search?query=$encoded&locale=zh"
+        val client = OkHttpClient.Builder()
+            .connectTimeout(8, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .build()
+        val request = Request.Builder()
+            .url(url)
+            .header("User-Agent", "Appteka/23.0 Android")
+            .build()
+        val response = client.newCall(request).execute()
+        if (response.isSuccessful) {
+            val body = response.body?.string() ?: return@withContext emptyList()
+            val json = JSONObject(body)
+            val result = json.optJSONObject("result") ?: return@withContext emptyList()
+            val entries = result.optJSONArray("entries") ?: return@withContext emptyList()
+            val list = mutableListOf<ApptekaAppItem>()
+            for (i in 0 until entries.length()) {
+                val obj = entries.optJSONObject(i) ?: continue
+                val appId = obj.optString("app_id", "")
+                val label = obj.optString("label", "")
+                if (appId.isBlank() || label.isBlank()) continue
+                val packageName = obj.optString("package", "")
+                val verName = obj.optString("ver_name", "")
+                val verCode = obj.optInt("ver_code", 0)
+                val size = obj.optLong("size", 0L)
+                val time = obj.optLong("time", 0L)
+                val downloads = obj.optInt("downloads", 0)
+                val icon = obj.optString("icon", "")
+                val categoryObj = obj.optJSONObject("category")
+                val categoryName = categoryObj?.optJSONObject("name")?.optString("zh", "") ?: ""
+                list.add(
+                    ApptekaAppItem(
+                        appId = appId,
+                        label = label,
+                        packageName = packageName,
+                        verName = verName,
+                        verCode = verCode,
+                        size = size,
+                        time = time,
+                        downloads = downloads,
+                        iconUrl = icon,
+                        categoryName = categoryName
+                    )
+                )
+            }
+            list
+        } else emptyList()
+    } catch (_: Exception) {
+        emptyList()
+    }
+}
+
+/**
+ * 实时获取 Appteka 真实 APK 下载直链 (基于 https://appteka.store/api/1/app/info)
+ */
+private suspend fun fetchApptekaDownloadUrl(appId: String): String? = withContext(Dispatchers.IO) {
+    try {
+        val encoded = URLEncoder.encode(appId, "UTF-8")
+        val url = "https://appteka.store/api/1/app/info?app_id=$encoded&locale=zh"
+        val client = OkHttpClient.Builder()
+            .connectTimeout(8, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .build()
+        val request = Request.Builder()
+            .url(url)
+            .header("User-Agent", "Appteka/23.0 Android")
+            .build()
+        val response = client.newCall(request).execute()
+        if (response.isSuccessful) {
+            val body = response.body?.string() ?: return@withContext null
+            val json = JSONObject(body)
+            val result = json.optJSONObject("result") ?: return@withContext null
+            val link = result.optString("link", "")
+            if (link.isNotBlank()) link else null
+        } else null
+    } catch (_: Exception) {
+        null
+    }
+}
+
+/**
+ * 下载 Appteka 真实 APK 到系统 Download 文件夹
+ */
+private fun downloadApptekaApk(
+    context: Context,
+    item: ApptekaAppItem,
+    onProgress: (Boolean) -> Unit = {}
+) {
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            withContext(Dispatchers.Main) { onProgress(true) }
+            val directUrl = item.directApkUrl ?: fetchApptekaDownloadUrl(item.appId)
+            item.directApkUrl = directUrl
+            withContext(Dispatchers.Main) {
+                onProgress(false)
+                if (directUrl.isNullOrBlank()) {
+                    Toast.makeText(context, "未能获取到下载直链，请稍后重试", Toast.LENGTH_SHORT).show()
+                    return@withContext
+                }
+                val safeVer = if (item.verName.isNotBlank()) "_${item.verName}" else ""
+                val safeName = "${item.label}${safeVer}.apk"
+                    .replace(" ", "_")
+                    .replace(Regex("[\\\\/:*?\"<>|]"), "_")
+                try {
+                    val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                    val request = DownloadManager.Request(Uri.parse(directUrl))
+                        .setTitle("懒得找了 · ${item.label}")
+                        .setDescription("正在下载 $safeName")
+                        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                        .setAllowedOverMetered(true)
+                        .setMimeType("application/vnd.android.package-archive")
+                        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, safeName)
+                    dm.enqueue(request)
+                    Toast.makeText(context, "已开始下载 ${item.label} 到「下载」文件夹", Toast.LENGTH_LONG).show()
+                } catch (e: Exception) {
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(directUrl)).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        context.startActivity(intent)
+                    } catch (e2: Exception) {
+                        Toast.makeText(context, "下载失败，请检查网络", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                onProgress(false)
+                Toast.makeText(context, "获取下载链接失败，请稍后重试", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+}
+
+/**
+ * 软件版块搜索输入栏
+ */
+@Composable
+private fun SoftwareSearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onSearch: () -> Unit,
+    placeholder: String = "搜索应用、软件或安装包..."
+) {
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        placeholder = {
+            Text(
+                text = placeholder,
+                fontSize = 12.5.sp,
+                maxLines = 1,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Filled.Search,
+                contentDescription = "搜索",
+                tint = Color(0xFF10B981),
+                modifier = Modifier.size(20.dp)
+            )
+        },
+        trailingIcon = {
+            if (query.isNotEmpty()) {
+                IconButton(onClick = { onQueryChange("") }) {
+                    Icon(
+                        imageVector = Icons.Filled.Clear,
+                        contentDescription = "清空",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+        },
+        singleLine = true,
+        shape = RoundedCornerShape(20.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Color(0xFF10B981).copy(alpha = 0.8f),
+            unfocusedBorderColor = Color(0xFF10B981).copy(alpha = 0.25f),
+            focusedContainerColor = Color.White.copy(alpha = 0.85f),
+            unfocusedContainerColor = Color.White.copy(alpha = 0.65f)
+        ),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = { onSearch() }),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("software_search_bar")
+    )
+}
+
+/**
+ * 真实 APK 卡片（液态玻璃风格）
+ */
+@Composable
+private fun ApptekaAppCard(
+    item: ApptekaAppItem,
+    index: Int = 0
+) {
+    val context = LocalContext.current
+    var isDownloading by remember(item.appId) { mutableStateOf(false) }
+
+    LiquidGlassCardBox(
+        modifier = Modifier.fillMaxWidth(),
+        cornerRadius = 18.dp,
+        accentColor = Color(0xFF10B981),
+        phaseSeed = item.appId.hashCode(),
+        onClick = {
+            downloadApptekaApk(context, item) { isDownloading = it }
+        }
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 10.dp)
+        ) {
+            // 左侧：App 图标
+            Box(
+                modifier = Modifier.size(44.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                if (item.iconUrl.startsWith("http", ignoreCase = true)) {
+                    coil.compose.AsyncImage(
+                        model = item.iconUrl,
+                        contentDescription = item.label,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(
+                                Brush.linearGradient(
+                                    listOf(
+                                        Color(0xFF10B981).copy(alpha = 0.25f),
+                                        Color(0xFF059669).copy(alpha = 0.35f)
+                                    )
+                                )
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = item.label.take(1).uppercase(Locale.getDefault()),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color(0xFF10B981)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            // 中间：标题 + 包名/版本 + 属性标签
+            Column(modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = item.label,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(Color(0xFF10B981).copy(alpha = 0.15f))
+                            .padding(horizontal = 4.dp, vertical = 1.dp)
+                    ) {
+                        Text(
+                            text = "安装包",
+                            fontSize = 8.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF059669)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(2.dp))
+
+                Text(
+                    text = "v${item.verName.ifBlank { "最新" }} · ${item.packageName}",
+                    fontSize = 9.5.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                // 下载 / 大小 / 下载量标签
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    // 安装/下载按钮
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color(0xFF10B981).copy(alpha = 0.15f))
+                            .clickable {
+                                downloadApptekaApk(context, item) { isDownloading = it }
+                            }
+                            .padding(horizontal = 7.dp, vertical = 3.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (isDownloading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(10.dp),
+                                    strokeWidth = 1.5.dp,
+                                    color = Color(0xFF10B981)
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Filled.Download,
+                                    contentDescription = null,
+                                    tint = Color(0xFF10B981),
+                                    modifier = Modifier.size(11.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(3.dp))
+                            Text(
+                                text = if (isDownloading) "解析中..." else "下载 APK",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF059669)
+                            )
+                        }
+                    }
+
+                    // 大小
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(Color(0xFF0284C7).copy(alpha = 0.12f))
+                            .padding(horizontal = 4.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = "大小: ${formatAppSize(item.size)}",
+                            fontSize = 8.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF0284C7)
+                        )
+                    }
+
+                    // 下载量
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(Color(0xFFEF4444).copy(alpha = 0.12f))
+                            .padding(horizontal = 4.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = "下载量: ${item.downloads}",
+                            fontSize = 8.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFDC2626)
+                        )
+                    }
+
+                    // 详情直达
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.10f))
+                            .clickable {
+                                try {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://appteka.store/app/${item.appId}"))
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    context.startActivity(intent)
+                                } catch (_: Exception) {}
+                            }
+                            .padding(horizontal = 4.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = "详情",
+                            fontSize = 8.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
  * 资源展示页（软件 / Skill）v1.8.7：
- * - 软件版块（gridMode=true）：三列一排网格 + 自动归类分组 + 自动识别 icon
+ * - 软件版块（gridMode=true）：三列一排网格 + 自动归类分组 + 自动识别 icon + Appteka 真实开源 APK 检索
  * - Skill 版块（gridMode=false）：保持原单列大卡片（含预览/视频）
  * - 内容完全由云端控制台同步；控制台删除 → 本体实时同步移除
  */
@@ -304,6 +757,13 @@ fun UploadHubScreen(
     favoriteUrls: Set<String> = emptySet()
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    // 搜索状态（接入 Appteka 开源软件源 https://github.com/solkin/appteka-android）
+    var searchQuery by remember { mutableStateOf("") }
+    var isSearchingAppteka by remember { mutableStateOf(false) }
+    var apptekaResults by remember { mutableStateOf<List<ApptekaAppItem>>(emptyList()) }
+    var searchJob by remember { mutableStateOf<Job?>(null) }
 
     // Skill 技能库：点击卡片弹独立详情（视频预览/提示词/下载/跳转）
     var skillDetail by remember { mutableStateOf<UploadedResourceEntity?>(null) }
@@ -331,6 +791,14 @@ fun UploadHubScreen(
                 displayResources.forEach { map.getOrPut(autoCategorize(it)) { mutableListOf() }.add(it) }
                 map.toList()
             }
+            // 搜索模式本地匹配过滤
+            val localMatches = remember(searchQuery, displayResources) {
+                if (searchQuery.isBlank()) emptyList()
+                else displayResources.filter {
+                    it.title.contains(searchQuery, ignoreCase = true) ||
+                    it.desc.contains(searchQuery, ignoreCase = true)
+                }
+            }
             // 主题色渐变（软件卡片专用，v1.0.9 主题升级）
             val themePrimary = MaterialTheme.colorScheme.primary
             val themeSecondary = MaterialTheme.colorScheme.secondary
@@ -340,67 +808,207 @@ fun UploadHubScreen(
                     .padding(horizontal = 12.dp, vertical = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // v1.0.18 软件版块 .u-tab：推荐 / 关注 / 热门（仅 software 显示）
+                // 软件版块顶部搜索栏（真实检索 Appteka 开源应用市场真实 APK）
                 if (resourceType == "software") {
                     item {
-                        UTabRow(
-                            tabs = softTabList,
-                            selectedIndex = softTabIndex,
-                            onSelect = { softTabIndex = it },
-                            modifier = Modifier.padding(bottom = 6.dp)
+                        SoftwareSearchBar(
+                            query = searchQuery,
+                            onQueryChange = { newQuery ->
+                                searchQuery = newQuery
+                                searchJob?.cancel()
+                                if (newQuery.isNotBlank()) {
+                                    searchJob = coroutineScope.launch {
+                                        delay(350)
+                                        isSearchingAppteka = true
+                                        val res = searchApptekaApps(newQuery.trim())
+                                        apptekaResults = res
+                                        isSearchingAppteka = false
+                                    }
+                                } else {
+                                    apptekaResults = emptyList()
+                                    isSearchingAppteka = false
+                                }
+                            },
+                            onSearch = {
+                                if (searchQuery.isNotBlank()) {
+                                    searchJob?.cancel()
+                                    searchJob = coroutineScope.launch {
+                                        isSearchingAppteka = true
+                                        val res = searchApptekaApps(searchQuery.trim())
+                                        apptekaResults = res
+                                        isSearchingAppteka = false
+                                    }
+                                }
+                            }
                         )
+                        Spacer(modifier = Modifier.height(2.dp))
                     }
                 }
-                // v1.1.12：删除软件库/Skill 页头横幅（用户要求，截图1）——不再显示标题/副标题/共X款横幅
-                if (resources.isEmpty()) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 40.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(
-                                    imageVector = Icons.Filled.Download,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                                    modifier = Modifier.size(44.dp)
-                                )
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Text(
-                                    text = "还未获取到任何资源哟 请联系作者",
-                                    fontSize = 13.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+
+                if (resourceType == "software" && searchQuery.isNotBlank()) {
+                    // ===== 搜索模式：本地匹配 + Appteka 真实开源库检索结果 =====
+                    if (isSearchingAppteka) {
+                        item {
+                            Surface(
+                                color = Color(0xFF10B981).copy(alpha = 0.08f),
+                                border = BorderStroke(1.dp, Color(0xFF10B981).copy(alpha = 0.25f)),
+                                shape = RoundedCornerShape(14.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp)
+                                ) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(16.dp),
+                                        strokeWidth = 2.dp,
+                                        color = Color(0xFF10B981)
+                                    )
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Text(
+                                        text = "正在检索「$searchQuery」相关的应用与安装包...",
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF047857),
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
                             }
                         }
                     }
-                } else if (resourceType == "skill") {
-                    // v1.1.4 软件/Skill 分支：Skill 技能库取消分类标签（不再显示 其他资源/AI/智能 等），直接平铺
-                    items(displayResources, key = { it.id }) { res ->
-                        SkillGridCard(
-                            res = res,
-                            onClick = { skillDetail = res },
-                            showDelete = showDelete,
-                            onDelete = {
-                                onDelete(res.id)
-                                Toast.makeText(context, "已删除（云端同步）", Toast.LENGTH_SHORT).show()
+
+                    if (localMatches.isNotEmpty()) {
+                        item {
+                            Text(
+                                text = "📦 常用应用 (${localMatches.size})",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 4.dp, bottom = 2.dp)
+                            )
+                        }
+                        itemsIndexed(localMatches, key = { _, it -> "loc_${it.id}" }) { index, res ->
+                            SoftwareGridCard(
+                                res = res,
+                                index = index,
+                                showDelete = showDelete,
+                                onDelete = {
+                                    onDelete(res.id)
+                                    Toast.makeText(context, "已删除（云端同步）", Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                        }
+                    }
+
+                    if (apptekaResults.isNotEmpty()) {
+                        item {
+                            Text(
+                                text = "🌐 搜索结果 (${apptekaResults.size} 款应用 · 点击直接下载)",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF059669),
+                                modifier = Modifier.padding(top = 8.dp, bottom = 2.dp)
+                            )
+                        }
+                        itemsIndexed(apptekaResults, key = { _, it -> "appteka_${it.appId}" }) { index, item ->
+                            ApptekaAppCard(
+                                item = item,
+                                index = index
+                            )
+                        }
+                    }
+
+                    if (!isSearchingAppteka && localMatches.isEmpty() && apptekaResults.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 40.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        text = "未找到与「$searchQuery」相关的应用",
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Text(
+                                        text = "建议尝试输入常用应用名称进行搜索",
+                                        fontSize = 11.sp,
+                                        color = MaterialTheme.colorScheme.outline
+                                    )
+                                }
                             }
-                        )
+                        }
                     }
                 } else {
-                    // v1.1.6 需求 2：软件版块去掉分类标签，直接平铺全部软件（自动识别 icon）
-                    itemsIndexed(displayResources, key = { _, it -> it.id }) { index, res ->
-                        SoftwareGridCard(
-                            res = res,
-                            index = index,
-                            showDelete = showDelete,
-                            onDelete = {
-                                onDelete(res.id)
-                                Toast.makeText(context, "已删除（云端同步）", Toast.LENGTH_SHORT).show()
+                    // ===== 常规模式：原标签栏与全部软件展示 =====
+                    // v1.0.18 软件版块 .u-tab：推荐 / 关注 / 热门（仅 software 显示）
+                    if (resourceType == "software") {
+                        item {
+                            UTabRow(
+                                tabs = softTabList,
+                                selectedIndex = softTabIndex,
+                                onSelect = { softTabIndex = it },
+                                modifier = Modifier.padding(bottom = 6.dp)
+                            )
+                        }
+                    }
+                    // v1.1.12：删除软件库/Skill 页头横幅（用户要求，截图1）——不再显示标题/副标题/共X款横幅
+                    if (resources.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 40.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Download,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                                        modifier = Modifier.size(44.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    Text(
+                                        text = "还未获取到任何资源哟 请联系作者",
+                                        fontSize = 13.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
-                        )
+                        }
+                    } else if (resourceType == "skill") {
+                        // v1.1.4 软件/Skill 分支：Skill 技能库取消分类标签（不再显示 其他资源/AI/智能 等），直接平铺
+                        items(displayResources, key = { it.id }) { res ->
+                            SkillGridCard(
+                                res = res,
+                                onClick = { skillDetail = res },
+                                showDelete = showDelete,
+                                onDelete = {
+                                    onDelete(res.id)
+                                    Toast.makeText(context, "已删除（云端同步）", Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                        }
+                    } else {
+                        // v1.1.6 需求 2：软件版块去掉分类标签，直接平铺全部软件（自动识别 icon）
+                        itemsIndexed(displayResources, key = { _, it -> it.id }) { index, res ->
+                            SoftwareGridCard(
+                                res = res,
+                                index = index,
+                                showDelete = showDelete,
+                                onDelete = {
+                                    onDelete(res.id)
+                                    Toast.makeText(context, "已删除（云端同步）", Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                        }
                     }
                 }
             }
