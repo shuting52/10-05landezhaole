@@ -612,12 +612,51 @@ fun KunBoxScreen(
                                 style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                                 color = Color(0xFF64748B)
                             )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Surface(
+                                color = Color(0xFF10B981).copy(alpha = 0.12f),
+                                shape = RoundedCornerShape(8.dp),
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Check,
+                                        contentDescription = null,
+                                        tint = Color(0xFF059669),
+                                        modifier = Modifier.size(13.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = "真实有效 · 切换后台不关闭即可真实访问国外软件",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color(0xFF059669)
+                                    )
+                                }
+                            }
                         } else {
                             Text(
                                 text = "点击按钮即可极速建立安全代理隧道",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = Color(0xFF94A3B8)
                             )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Surface(
+                                color = Color(0xFF6366F1).copy(alpha = 0.08f),
+                                shape = RoundedCornerShape(8.dp),
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            ) {
+                                Text(
+                                    text = "💡 真实有效：连接后将软件切换后台不关闭，即可真实访问国外软件",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color(0xFF4F46E5),
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                                )
+                            }
                         }
 
                         Spacer(modifier = Modifier.height(18.dp))

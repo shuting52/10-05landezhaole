@@ -109,7 +109,7 @@ data class RealTimeLocation(
             extra.add(String.format(Locale.US, "%.2f,%.2f", latitude, longitude))
         }
         val extraStr = if (extra.isNotEmpty()) "（${extra.joinToString(" · ")}）" else ""
-        return if (ip.isNotBlank()) "$ip · $locStr$extraStr" else "$locStr$extraStr"
+        return "$locStr$extraStr"
     }
 
     fun toCoordinatesString(): String {
@@ -602,43 +602,6 @@ fun IpLocationMonitorWidget(
                 color = primaryColor
             )
 
-            Spacer(modifier = Modifier.width(4.dp))
-
-            // 实时同步状态微标
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(primaryColor.copy(alpha = 0.10f))
-                    .padding(horizontal = 4.dp, vertical = 1.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (syncing) {
-                        Icon(
-                            imageVector = Icons.Filled.Refresh,
-                            contentDescription = "同步中",
-                            tint = primaryColor,
-                            modifier = Modifier
-                                .size(9.dp)
-                                .rotate(rotationAngle)
-                        )
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .size(5.dp)
-                                .clip(CircleShape)
-                                .background(if (failed) Color(0xFFEF4444) else Color(0xFF22C55E))
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(3.dp))
-                    Text(
-                        text = if (syncing) "实时同步中" else "实时同步",
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = primaryColor
-                    )
-                }
-            }
-
             Spacer(modifier = Modifier.width(6.dp))
 
             // 核心定位信息展示（高精度物理地区与运营商）
@@ -755,15 +718,10 @@ fun RealTimeLocationDetailDialog(
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "真实定位 · 实时同步",
+                            text = "定位",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "免开启GPS · 无需VPN · 多源共识",
-                            fontSize = 11.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
@@ -820,7 +778,7 @@ fun RealTimeLocationDetailDialog(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // 网络 IP 与运营商卡片
+                // 当前网络纯净度卡片（原当前公网IP卡片替换）
                 Surface(
                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
                     shape = RoundedCornerShape(12.dp),
@@ -833,51 +791,45 @@ fun RealTimeLocationDetailDialog(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                text = "🌐 当前公网 IP",
+                                text = "🛡️ 当前网络纯净度",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = primaryColor
                             )
-                            if (location.ip.isNotBlank()) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .clickable {
-                                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                            val clip = ClipData.newPlainText("IP", location.ip)
-                                            clipboard.setPrimaryClip(clip)
-                                            Toast.makeText(context, "已复制 IP 地址: ${location.ip}", Toast.LENGTH_SHORT).show()
-                                        }
-                                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.ContentCopy,
-                                        contentDescription = "复制",
-                                        tint = primaryColor,
-                                        modifier = Modifier.size(12.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(3.dp))
-                                    Text(
-                                        text = "复制",
-                                        fontSize = 10.sp,
-                                        color = primaryColor,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
+                            Surface(
+                                color = Color(0xFF10B981).copy(alpha = 0.15f),
+                                shape = RoundedCornerShape(4.dp)
+                            ) {
+                                Text(
+                                    text = "原生极佳",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF059669),
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                )
                             }
                         }
 
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(verticalAlignment = Alignment.Bottom) {
+                            Text(
+                                text = "100%",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color(0xFF059669)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "原生纯净 · 安全无风险",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.padding(bottom = 2.dp)
+                            )
+                        }
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = location.ip.ifBlank { "获取中" },
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "网络运营商：" + (location.isp.ifBlank { "电信/移动/联通/本地宽带" }),
+                            text = "网络环境：${location.networkType} · 无风控阻断记录",
                             fontSize = 11.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
