@@ -390,11 +390,9 @@ fun MainScreen(
                     )
                 }
                 AppBottomTab.SKILL -> {
-                    ResourceScreen(
-                        resources = allUploadedResources,
-                        onRefreshCloud = { viewModel.triggerSyncFromCloud() },
-                        onDelete = { id -> viewModel.deleteUploadedResource(id) },
-                        modifier = Modifier.padding(paddingValues)
+                    KunBoxScreen(
+                        modifier = Modifier.padding(paddingValues),
+                        onOpenSettings = { viewModel.switchTab(AppBottomTab.SETTINGS) }
                     )
                 }
                 AppBottomTab.TOOLBOX -> {

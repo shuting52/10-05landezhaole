@@ -40,6 +40,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Widgets
 import androidx.compose.material3.Icon
@@ -134,12 +135,12 @@ fun CustomRadioBottomNav(
         ),
         BottomNavTabItem(
             tab = AppBottomTab.SKILL,
-            title = uiText?.tabSkill?.ifBlank { "资源" } ?: "资源",
-            icon = Icons.Filled.Favorite,
-            color = Color(0xFFF43F5E), // 甜心瑰红
-            gradient = listOf(Color(0xFFFB7185), Color(0xFFE11D48)),
-            petKaomoji = "(˶ᵔ ᵕ ᵔ˶) ♡",
-            petVoice = "探索海量精选资源喵~ ✨"
+            title = if (uiText?.tabSkill.isNullOrBlank() || uiText?.tabSkill == "资源" || uiText?.tabSkill == "懒得KunBox") "懒得连了" else uiText!!.tabSkill,
+            icon = Icons.Filled.RocketLaunch,
+            color = Color(0xFF6366F1), // 极客幻紫
+            gradient = listOf(Color(0xFF818CF8), Color(0xFF4F46E5)),
+            petKaomoji = "(๑•̀ㅂ•́)و✧",
+            petVoice = "极速起飞加速中喵~ 🚀"
         ),
         BottomNavTabItem(
             tab = AppBottomTab.TOOLBOX,
