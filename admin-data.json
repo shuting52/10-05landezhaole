@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 157,
-    "name": "1.4.2",
+    "code": 158,
+    "name": "1.4.3",
     "changelog": [
-      "✨ v1.4.2 重磅更新：新增「懒得连了」网络代理中枢",
-      "集成 Sing-Box 核心多节点加速、实时网速测速与分流守护"
+      "✨ v1.4.3 更新来啦～",
+      "feat(懒得连了): 接入智能代理网络中枢 v1.4.2"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.2.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.2.apk",
-    "lastBuildSha": "65ded49f026f8e41470a285e995ae6a86ea3e59d"
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.3-1791607709.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.3-1791607709.apk",
+    "lastBuildSha": "ea533eb28bc8c4cc882592ecca9d73eb498b631c"
   },
   "home": {
     "categories": [
@@ -24343,10 +24343,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.4.2 已上线",
+    "title": "懒得找了 v1.4.3 已上线",
     "changelog": [
-      "✨ v1.4.2 重磅更新：新增「懒得连了」网络代理中枢",
-      "集成 Sing-Box 核心多节点加速、实时网速测速与分流守护"
+      "✨ v1.4.3 更新来啦～",
+      "feat(懒得连了): 接入智能代理网络中枢 v1.4.2"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24408,10 +24408,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.4.2",
-      "code": 157,
-      "at": "2026-10-10T04:30:00Z",
-      "sha": ""
+      "version": "1.4.3",
+      "code": 158,
+      "at": "2026-10-10T04:48:35Z",
+      "sha": "ea533eb28bc8c4cc882592ecca9d73eb498b631c"
     }
   },
   "_ai_notice": "内容由AI生成"
