@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 158,
-    "name": "1.4.3",
+    "code": 159,
+    "name": "1.4.4",
     "changelog": [
-      "✨ v1.4.3 更新来啦～",
-      "feat(懒得连了): 接入智能代理网络中枢 v1.4.2"
+      "✨ v1.4.4 更新来啦～",
+      "本次更新包含多项优化与修复"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.3-1791607709.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.3-1791607709.apk",
-    "lastBuildSha": "ea533eb28bc8c4cc882592ecca9d73eb498b631c"
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.4-1791610788.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.4-1791610788.apk",
+    "lastBuildSha": "417f9e81f66bc07ad2708504c12409067b6e7b83"
   },
   "home": {
     "categories": [
@@ -24343,10 +24343,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.4.3 已上线",
+    "title": "懒得找了 v1.4.4 已上线",
     "changelog": [
-      "✨ v1.4.3 更新来啦～",
-      "feat(懒得连了): 接入智能代理网络中枢 v1.4.2"
+      "✨ v1.4.4 更新来啦～",
+      "本次更新包含多项优化与修复"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24408,10 +24408,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.4.3",
-      "code": 158,
-      "at": "2026-10-10T04:48:35Z",
-      "sha": "ea533eb28bc8c4cc882592ecca9d73eb498b631c"
+      "version": "1.4.4",
+      "code": 159,
+      "at": "2026-10-10T05:39:56Z",
+      "sha": "417f9e81f66bc07ad2708504c12409067b6e7b83"
     }
   },
   "_ai_notice": "内容由AI生成"
