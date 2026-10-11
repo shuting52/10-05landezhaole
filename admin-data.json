@@ -3,14 +3,15 @@
     "code": 160,
     "name": "1.4.5",
     "changelog": [
-      "✨ v1.4.5 官方签名正式版发布～",
+      "✨ v1.4.5 正式版上线～",
+      "应用内部版本号更新为 v1.4.5（code 160）",
       "统一采用官方证书签名，彻底解决覆盖安装冲突问题",
       "移除应用卡片「详情」入口，精简界面交互",
       "多项细节体验优化与稳定性修复"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.5-1791684123.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.5-1791684123.apk",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.5-1791684606.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.5-1791684606.apk",
     "lastBuildSha": "417f9e81f66bc07ad2708504c12409067b6e7b83"
   },
   "home": {
@@ -24347,7 +24348,8 @@
   "updateDialog": {
     "title": "懒得找了 v1.4.5 已上线",
     "changelog": [
-      "✨ v1.4.5 官方签名正式版发布～",
+      "✨ v1.4.5 正式版上线～",
+      "应用内部版本号更新为 v1.4.5（code 160）",
       "统一采用官方证书签名，彻底解决覆盖安装冲突问题",
       "移除应用卡片「详情」入口，精简界面交互",
       "多项细节体验优化与稳定性修复"
@@ -24414,7 +24416,7 @@
     "lastRelease": {
       "version": "1.4.5",
       "code": 160,
-      "at": "2026-10-11T02:02:06Z"
+      "at": "2026-10-11T02:10:08Z"
     }
   },
   "_ai_notice": "内容由AI生成"
