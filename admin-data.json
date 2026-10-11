@@ -1,18 +1,18 @@
 {
   "version": {
-    "code": 160,
-    "name": "1.4.5",
+    "code": 161,
+    "name": "1.4.6",
     "changelog": [
-      "✨ v1.4.5 升级推出「AI前言」模块～",
-      "底部原「懒得连了」正式升级为「AI前言」：汇聚最新AI前沿动态速递",
-      "新增「最受欢迎AI个人助理」多维度排行榜单",
-      "呈现全网与多领域「AI霸榜第一」巅峰模型与战绩深度解读",
-      "纯本地高速驱动，零需配置 API Key，秒开即用",
-      "移除应用下载卡片「详情」入口，全面优化交互体验"
+      "✨ v1.4.6 官方签名正式版发布～",
+      "底部全新升级「AI前言」：汇聚最新AI前沿动态与快讯速递",
+      "最受欢迎AI个人助理榜：DeepSeek、ChatGPT、Claude、Kimi等全收录",
+      "荣耀王座：全领域AI霸榜第1模型与战绩深度解读",
+      "统一项目官方权威证书签名，覆盖升级丝滑无冲突",
+      "移除应用卡片「详情」入口，全面精简交互界面"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.5-1791689994.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.5-1791689994.apk",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.6-1791690662.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.6-1791690662.apk",
     "lastBuildSha": "417f9e81f66bc07ad2708504c12409067b6e7b83"
   },
   "home": {
@@ -24347,14 +24347,14 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.4.5 已上线",
+    "title": "懒得找了 v1.4.6 已上线",
     "changelog": [
-      "✨ v1.4.5 升级推出「AI前言」模块～",
-      "底部原「懒得连了」正式升级为「AI前言」：汇聚最新AI前沿动态速递",
-      "新增「最受欢迎AI个人助理」多维度排行榜单",
-      "呈现全网与多领域「AI霸榜第一」巅峰模型与战绩深度解读",
-      "纯本地高速驱动，零需配置 API Key，秒开即用",
-      "移除应用下载卡片「详情」入口，全面优化交互体验"
+      "✨ v1.4.6 官方签名正式版发布～",
+      "底部全新升级「AI前言」：汇聚最新AI前沿动态与快讯速递",
+      "最受欢迎AI个人助理榜：DeepSeek、ChatGPT、Claude、Kimi等全收录",
+      "荣耀王座：全领域AI霸榜第1模型与战绩深度解读",
+      "统一项目官方权威证书签名，覆盖升级丝滑无冲突",
+      "移除应用卡片「详情」入口，全面精简交互界面"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24416,9 +24416,9 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.4.5",
-      "code": 160,
-      "at": "2026-10-11T02:10:08Z"
+      "version": "1.4.6",
+      "code": 161,
+      "at": "2026-10-11T03:51:04Z"
     }
   },
   "_ai_notice": "内容由AI生成"
