@@ -182,6 +182,17 @@ fun KunBoxScreen(
     modifier: Modifier = Modifier,
     onOpenSettings: () -> Unit = {}
 ) {
+    AiFrontierScreen(
+        modifier = modifier,
+        onOpenSettings = onOpenSettings
+    )
+}
+
+@Composable
+private fun DeprecatedKunBoxContent(
+    modifier: Modifier = Modifier,
+    onOpenSettings: () -> Unit = {}
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 

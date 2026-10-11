@@ -37,6 +37,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
@@ -135,12 +136,12 @@ fun CustomRadioBottomNav(
         ),
         BottomNavTabItem(
             tab = AppBottomTab.SKILL,
-            title = if (uiText?.tabSkill.isNullOrBlank() || uiText?.tabSkill == "资源" || uiText?.tabSkill == "懒得KunBox") "懒得连了" else uiText!!.tabSkill,
-            icon = Icons.Filled.RocketLaunch,
+            title = if (uiText?.tabSkill.isNullOrBlank() || uiText?.tabSkill == "资源" || uiText?.tabSkill == "懒得KunBox" || uiText?.tabSkill == "懒得连了") "AI前言" else uiText!!.tabSkill,
+            icon = Icons.Filled.AutoAwesome,
             color = Color(0xFF6366F1), // 极客幻紫
             gradient = listOf(Color(0xFF818CF8), Color(0xFF4F46E5)),
             petKaomoji = "(๑•̀ㅂ•́)و✧",
-            petVoice = "极速起飞加速中喵~ 🚀"
+            petVoice = "探索前沿AI与最新榜单喵~ 🤖"
         ),
         BottomNavTabItem(
             tab = AppBottomTab.TOOLBOX,

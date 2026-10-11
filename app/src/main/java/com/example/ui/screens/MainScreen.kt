@@ -390,7 +390,7 @@ fun MainScreen(
                     )
                 }
                 AppBottomTab.SKILL -> {
-                    KunBoxScreen(
+                    AiFrontierScreen(
                         modifier = Modifier.padding(paddingValues),
                         onOpenSettings = { viewModel.switchTab(AppBottomTab.SETTINGS) }
                     )
