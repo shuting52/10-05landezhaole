@@ -85,7 +85,6 @@ jobs:
         run: |
           set -e
           ./gradlew :app:assembleRelease --no-daemon
-        continue-on-error: true
 
 
       - name: 收集 APK（规范命名）
