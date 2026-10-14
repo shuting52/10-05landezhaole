@@ -776,7 +776,7 @@ private fun DownVidHeader(onPasteClipboard: () -> Unit) {
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
-                        text = "DownVid 视频下载神器",
+                        text = "懒得找了去水印",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Black,
                         color = Color.White,

@@ -51,6 +51,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ui.theme.LocalThemeUiColors
+import com.example.ui.theme.DesignStyle
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.disk.DiskCache
@@ -699,24 +701,94 @@ fun SiteBrandIcon(
     val badgeSymbol = remember(title, fallbackText, url) { resolveSiteBadgeSymbol(title, fallbackText, url) }
     val currentTargetUrl = candidates.getOrNull(loadStage)
 
+    val designStyle = LocalThemeUiColors.current.designStyle
+    val iconShape = when (designStyle) {
+        DesignStyle.NEO_BRUTALISM -> RoundedCornerShape(4.dp)
+        DesignStyle.BRUTALISM -> RoundedCornerShape(0.dp)
+        DesignStyle.ANTI_DESIGN -> RoundedCornerShape(2.dp)
+        DesignStyle.FLAT_DESIGN -> RoundedCornerShape(3.dp)
+        DesignStyle.MATERIAL_DESIGN -> RoundedCornerShape(10.dp)
+        DesignStyle.CLAYMORPHISM -> RoundedCornerShape(14.dp)
+        DesignStyle.MINIMALISM -> RoundedCornerShape(4.dp)
+        DesignStyle.BAUHAUS -> RoundedCornerShape(2.dp)
+        DesignStyle.RETROFUTURISM -> RoundedCornerShape(6.dp)
+        DesignStyle.LIQUID_GLASS -> RoundedCornerShape(16.dp)
+        DesignStyle.GLASSMORPHISM -> RoundedCornerShape(12.dp)
+        DesignStyle.NEUMORPHISM -> RoundedCornerShape(12.dp)
+        DesignStyle.SKEUOMORPHISM -> RoundedCornerShape(8.dp)
+        DesignStyle.ACID_GRAPHICS -> RoundedCornerShape(6.dp)
+        else -> RoundedCornerShape(8.dp)
+    }
+
+    val iconBorderStroke = when (designStyle) {
+        DesignStyle.NEO_BRUTALISM -> 2.dp to Brush.linearGradient(listOf(Color.Black, Color.Black))
+        DesignStyle.BRUTALISM -> 1.8.dp to Brush.linearGradient(listOf(Color.Black, Color.Black))
+        DesignStyle.ANTI_DESIGN -> 2.dp to Brush.linearGradient(listOf(Color.Black, Color(0xFF00FF66)))
+        DesignStyle.RETROFUTURISM -> 1.5.dp to Brush.linearGradient(listOf(Color(0xFF00F0FF), Color(0xFFFF007F)))
+        DesignStyle.ACID_GRAPHICS -> 1.8.dp to Brush.sweepGradient(listOf(Color.White, Color(0xFFCCFF00), Color(0xFFB026FF), Color.White))
+        DesignStyle.SKEUOMORPHISM -> 1.4.dp to Brush.linearGradient(listOf(Color(0xFFD4AF37), Color(0xFF7A5424)))
+        DesignStyle.GLASSMORPHISM -> 1.2.dp to Brush.linearGradient(listOf(Color.White.copy(alpha = 0.85f), Color.White.copy(alpha = 0.25f)))
+        DesignStyle.LIQUID_GLASS -> 1.4.dp to Brush.sweepGradient(listOf(Color.White, Color(0xFF00C6FF), Color.White))
+        DesignStyle.CLAYMORPHISM -> 1.5.dp to Brush.linearGradient(listOf(Color.White.copy(alpha = 0.9f), Color(0xFFFF6584).copy(alpha = 0.6f)))
+        DesignStyle.NEUMORPHISM -> 1.3.dp to Brush.linearGradient(listOf(Color.White.copy(alpha = 0.85f), Color(0xFFA3B1C6).copy(alpha = 0.5f)))
+        DesignStyle.BAUHAUS -> 1.8.dp to Brush.linearGradient(listOf(Color.Black, Color(0xFFD62828)))
+        DesignStyle.MATERIAL_DESIGN -> 1.dp to Brush.linearGradient(listOf(Color(0xFF6750A4).copy(alpha = 0.5f), Color(0xFF6750A4).copy(alpha = 0.2f)))
+        DesignStyle.MINIMALISM -> 0.8.dp to Brush.linearGradient(listOf(Color(0xFF71717A).copy(alpha = 0.5f), Color(0xFF71717A).copy(alpha = 0.5f)))
+        DesignStyle.FLAT_DESIGN -> 0.dp to Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
+        else -> 0.8.dp to Brush.linearGradient(
+            listOf(
+                if (isGenuineIconLoaded) brandStart.copy(alpha = 0.25f) else Color.White.copy(alpha = 0.45f),
+                if (isGenuineIconLoaded) brandStart.copy(alpha = 0.25f) else Color.White.copy(alpha = 0.45f)
+            )
+        )
+    }
+
+    val iconElevation = when (designStyle) {
+        DesignStyle.FLAT_DESIGN, DesignStyle.BRUTALISM, DesignStyle.MINIMALISM -> 0.dp
+        DesignStyle.CLAYMORPHISM -> 4.5.dp
+        DesignStyle.SKEUOMORPHISM -> 3.5.dp
+        DesignStyle.NEO_BRUTALISM -> 3.5.dp
+        DesignStyle.MATERIAL_DESIGN -> 2.5.dp
+        DesignStyle.NEUMORPHISM -> 3.dp
+        DesignStyle.RETROFUTURISM -> 2.dp
+        DesignStyle.ACID_GRAPHICS -> 2.dp
+        DesignStyle.LIQUID_GLASS -> 2.dp
+        DesignStyle.GLASSMORPHISM -> 1.5.dp
+        else -> 1.5.dp
+    }
+
+    val iconBackgroundBrush = when (designStyle) {
+        DesignStyle.SKEUOMORPHISM -> Brush.radialGradient(listOf(Color(0xFFFBF7F0), Color(0xFFEADBCE), Color(0xFFCBB8A3)))
+        DesignStyle.FLAT_DESIGN -> Brush.linearGradient(listOf(brandStart, brandStart))
+        DesignStyle.MATERIAL_DESIGN -> Brush.linearGradient(listOf(Color(0xFFF3EDF7), Color(0xFFEADDFF)))
+        DesignStyle.NEUMORPHISM -> Brush.linearGradient(listOf(Color(0xFFE8EDF5), Color(0xFFDCE2EC)))
+        DesignStyle.GLASSMORPHISM -> Brush.linearGradient(listOf(Color.White.copy(alpha = 0.32f), Color.White.copy(alpha = 0.15f)))
+        DesignStyle.CLAYMORPHISM -> Brush.linearGradient(listOf(Color(0xFFFF8DA1), Color(0xFFFF6584)))
+        DesignStyle.LIQUID_GLASS -> Brush.verticalGradient(listOf(Color(0xCC00C6FF), Color(0xEE0072FF)))
+        DesignStyle.NEO_BRUTALISM -> Brush.linearGradient(listOf(Color(0xFFFFDE59), Color(0xFFFFDE59)))
+        DesignStyle.MINIMALISM -> Brush.linearGradient(listOf(Color(0xFFFAFAFA), Color(0xFFF4F4F5)))
+        DesignStyle.BAUHAUS -> Brush.linearGradient(listOf(Color(0xFFFDFBF7), Color(0xFFF6EEDC)))
+        DesignStyle.RETROFUTURISM -> Brush.linearGradient(listOf(Color(0xFF1B0B33), Color(0xFF2E0854)))
+        DesignStyle.BRUTALISM -> Brush.linearGradient(listOf(Color(0xFFDCDDDE), Color(0xFFC8C9CB)))
+        DesignStyle.ANTI_DESIGN -> Brush.linearGradient(listOf(Color(0xFF140024), Color(0xFF00FF66)))
+        DesignStyle.ACID_GRAPHICS -> Brush.sweepGradient(listOf(Color(0xFFB026FF), Color(0xFFCCFF00), Color(0xFF00F0FF), Color(0xFFB026FF)))
+        else -> if (isGenuineIconLoaded) {
+            Brush.linearGradient(listOf(Color.White, Color(0xFFF8FAFC)))
+        } else {
+            Brush.linearGradient(listOf(brandStart, brandEnd))
+        }
+    }
+
     Box(
         modifier = modifier
             .size(size)
-            .shadow(elevation = 1.5.dp, shape = RoundedCornerShape(8.dp))
-            .clip(RoundedCornerShape(8.dp))
-            .background(
-                brush = Brush.linearGradient(
-                    colors = if (isGenuineIconLoaded) {
-                        listOf(Color.White, Color(0xFFF8FAFC))
-                    } else {
-                        listOf(brandStart, brandEnd)
-                    }
-                )
-            )
+            .shadow(elevation = iconElevation, shape = iconShape)
+            .clip(iconShape)
+            .background(brush = iconBackgroundBrush)
             .border(
-                0.8.dp,
-                if (isGenuineIconLoaded) brandStart.copy(alpha = 0.25f) else Color.White.copy(alpha = 0.45f),
-                RoundedCornerShape(8.dp)
+                width = iconBorderStroke.first,
+                brush = iconBorderStroke.second,
+                shape = iconShape
             ),
         contentAlignment = Alignment.Center
     ) {
@@ -741,7 +813,14 @@ fun SiteBrandIcon(
             }
             Text(
                 text = badgeSymbol,
-                color = Color.White,
+                color = when (designStyle) {
+                    DesignStyle.NEO_BRUTALISM, DesignStyle.MINIMALISM, DesignStyle.BRUTALISM -> Color.Black
+                    DesignStyle.ANTI_DESIGN -> Color(0xFF00FF66)
+                    DesignStyle.RETROFUTURISM -> Color(0xFF00F0FF)
+                    DesignStyle.SKEUOMORPHISM -> Color(0xFF3E2723)
+                    DesignStyle.MATERIAL_DESIGN -> Color(0xFF21005D)
+                    else -> Color.White
+                },
                 fontSize = (size.value * 0.46f).sp,
                 fontWeight = FontWeight.ExtraBold,
                 textAlign = TextAlign.Center

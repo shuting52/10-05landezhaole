@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.unit.dp
 import com.example.ui.theme.LocalUiverseState
+import com.example.ui.theme.DesignStyle
 import com.example.ui.components.ComponentThemeResolver
 import com.example.ui.components.LocalComponentThemes
 import com.example.ui.uiverse.PatternStylePreset
@@ -70,6 +71,7 @@ fun GlobalWindBackground(
     // v1.2.0：渐变主题背景 + 动态效果主题
     themeGradientColors: List<Color> = emptyList(),
     dynamicEffect: DynamicEffectPreset = DynamicEffectPreset.NONE,
+    designStyle: DesignStyle = DesignStyle.DEFAULT,
     content: @Composable BoxScope.() -> Unit
 ) {
     val uiverse = LocalUiverseState.current
@@ -155,6 +157,21 @@ fun GlobalWindBackground(
                     glowPulse = glowPulse,
                     ringSpinPhase = ringSpinPhase,
                     amplitude = ringAmplitude,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            // 🎨 14大艺术与设计流派专属背景渲染（覆盖拟物/扁平/Material/新拟态/玻璃拟态/粘土拟态/液态玻璃/新粗野/极简/包豪斯/复古未来/粗野/反设计/酸性设计）
+            designStyle != DesignStyle.DEFAULT -> {
+                DesignStyleBackground(
+                    style = designStyle,
+                    baseColor = activeBg,
+                    primaryColor = activePrimary,
+                    secondaryColor = themePrimaryColor ?: Color(0xFF38BDF8),
+                    windShift = windShift,
+                    slay1Angle = slay1Angle,
+                    slay2Angle = slay2Angle,
+                    glowPulse = glowPulse,
+                    ringSpinPhase = ringSpinPhase,
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -1239,3 +1256,527 @@ private fun DynamicEffectBackground(
         }
     }
 }
+
+/**
+ * 🎨 14大艺术与设计流派全套背景渲染器
+ * 针对每种设计风格精细定制专属质感、光影、结构与动态效果
+ */
+@Composable
+private fun DesignStyleBackground(
+    style: DesignStyle,
+    baseColor: Color,
+    primaryColor: Color,
+    secondaryColor: Color,
+    windShift: Float,
+    slay1Angle: Float,
+    slay2Angle: Float,
+    glowPulse: Float,
+    ringSpinPhase: Float,
+    modifier: Modifier = Modifier
+) {
+    Canvas(modifier = modifier) {
+        val w = size.width
+        val h = size.height
+
+        when (style) {
+            DesignStyle.SKEUOMORPHISM -> {
+                // 1️⃣ 拟物化：逼真皮革米褐质感、精细缝线边缘、四角黄铜铆钉与温润写实质感光
+                drawRect(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color(0xFFF7F2EC), Color(0xFFEFE7DE), Color(0xFFE2D6CB)),
+                        center = Offset(w * 0.45f, h * 0.35f),
+                        radius = (w * 0.95f)
+                    )
+                )
+                // 四周边框精细双道缝线
+                val stitchPad = 14.dp.toPx()
+                val stitchColor = Color(0xFF8B5A2B).copy(alpha = 0.38f)
+                val stitchWidth = 1.4.dp.toPx()
+                // 顶部缝线
+                var sx = stitchPad + 18.dp.toPx()
+                while (sx < w - stitchPad - 18.dp.toPx()) {
+                    drawLine(stitchColor, Offset(sx, stitchPad), Offset(sx + 8.dp.toPx(), stitchPad), strokeWidth = stitchWidth)
+                    drawLine(stitchColor, Offset(sx, h - stitchPad), Offset(sx + 8.dp.toPx(), h - stitchPad), strokeWidth = stitchWidth)
+                    sx += 14.dp.toPx()
+                }
+                var sy = stitchPad + 18.dp.toPx()
+                while (sy < h - stitchPad - 18.dp.toPx()) {
+                    drawLine(stitchColor, Offset(stitchPad, sy), Offset(stitchPad, sy + 8.dp.toPx()), strokeWidth = stitchWidth)
+                    drawLine(stitchColor, Offset(w - stitchPad, sy), Offset(w - stitchPad, sy + 8.dp.toPx()), strokeWidth = stitchWidth)
+                    sy += 14.dp.toPx()
+                }
+                // 四角立体黄铜铆钉
+                val rivets = listOf(
+                    Offset(stitchPad + 6.dp.toPx(), stitchPad + 6.dp.toPx()),
+                    Offset(w - stitchPad - 6.dp.toPx(), stitchPad + 6.dp.toPx()),
+                    Offset(stitchPad + 6.dp.toPx(), h - stitchPad - 6.dp.toPx()),
+                    Offset(w - stitchPad - 6.dp.toPx(), h - stitchPad - 6.dp.toPx())
+                )
+                rivets.forEach { rivet ->
+                    // 阴影
+                    drawCircle(Color(0x33000000), radius = 6.5.dp.toPx(), center = rivet + Offset(1.5.dp.toPx(), 2.dp.toPx()))
+                    // 黄铜环
+                    drawCircle(
+                        brush = Brush.linearGradient(listOf(Color(0xFFD4AF37), Color(0xFF8B5A2B))),
+                        radius = 6.dp.toPx(),
+                        center = rivet
+                    )
+                    // 铆钉内芯凹凸
+                    drawCircle(Color(0xFF5C3A21), radius = 3.5.dp.toPx(), center = rivet)
+                    // 金属高光点
+                    drawCircle(Color.White.copy(alpha = 0.85f), radius = 1.2.dp.toPx(), center = rivet - Offset(1.5.dp.toPx(), 1.5.dp.toPx()))
+                }
+            }
+
+            DesignStyle.FLAT_DESIGN -> {
+                // 2️⃣ 扁平化：经典二维纯平色块、锐利斜向拼接、无阴影无渐变纯净色面
+                drawRect(Color(0xFFECF0F1))
+                val flatCyan = Color(0xFF16A085).copy(alpha = 0.12f)
+                val flatBlue = Color(0xFF2980B9).copy(alpha = 0.10f)
+                val flatOrange = Color(0xFFE67E22).copy(alpha = 0.08f)
+
+                val path1 = Path().apply {
+                    moveTo(0f, 0f)
+                    lineTo(w * 0.85f, 0f)
+                    lineTo(0f, h * 0.45f)
+                    close()
+                }
+                drawPath(path1, flatCyan)
+
+                val path2 = Path().apply {
+                    moveTo(w, h * 0.25f)
+                    lineTo(w, h * 0.90f)
+                    lineTo(w * 0.25f, h)
+                    lineTo(w * 0.55f, h * 0.35f)
+                    close()
+                }
+                drawPath(path2, flatBlue)
+
+                drawRect(
+                    color = flatOrange,
+                    topLeft = Offset(w * 0.10f, h * 0.58f),
+                    size = Size(w * 0.50f, 60.dp.toPx())
+                )
+            }
+
+            DesignStyle.MATERIAL_DESIGN -> {
+                // 3️⃣ 材质设计：Google M3纸张层级感、悬浮纸片海拔阴影、几何纸质平铺
+                drawRect(Color(0xFFFEF7FF))
+                // 纸张网格点
+                val dotSpacing = 28.dp.toPx()
+                var dy = 16.dp.toPx()
+                while (dy < h) {
+                    var dx = 16.dp.toPx()
+                    while (dx < w) {
+                        drawCircle(Color(0xFF6750A4).copy(alpha = 0.06f), radius = 1.5.dp.toPx(), center = Offset(dx, dy))
+                        dx += dotSpacing
+                    }
+                    dy += dotSpacing
+                }
+                // 漂浮的 Material 纸片 1（带柔和纸张落差投影）
+                val sheet1 = Offset(w * 0.15f, h * 0.18f + sin(windShift * 3.14f) * 10f)
+                drawRoundRect(
+                    color = Color(0x18000000),
+                    topLeft = sheet1 + Offset(0f, 8.dp.toPx()),
+                    size = Size(w * 0.70f, 130.dp.toPx()),
+                    cornerRadius = CornerRadius(20.dp.toPx(), 20.dp.toPx())
+                )
+                drawRoundRect(
+                    color = Color(0xFFF3EDF7).copy(alpha = 0.85f),
+                    topLeft = sheet1,
+                    size = Size(w * 0.70f, 130.dp.toPx()),
+                    cornerRadius = CornerRadius(20.dp.toPx(), 20.dp.toPx())
+                )
+                // 纸片 2
+                val sheet2 = Offset(w * 0.08f, h * 0.56f - cos(windShift * 3.14f) * 8f)
+                drawRoundRect(
+                    color = Color(0x12000000),
+                    topLeft = sheet2 + Offset(0f, 6.dp.toPx()),
+                    size = Size(w * 0.84f, 160.dp.toPx()),
+                    cornerRadius = CornerRadius(24.dp.toPx(), 24.dp.toPx())
+                )
+                drawRoundRect(
+                    color = Color(0xFFFFFFFF).copy(alpha = 0.90f),
+                    topLeft = sheet2,
+                    size = Size(w * 0.84f, 160.dp.toPx()),
+                    cornerRadius = CornerRadius(24.dp.toPx(), 24.dp.toPx())
+                )
+            }
+
+            DesignStyle.NEUMORPHISM -> {
+                // 4️⃣ 新拟态：柔和陶土底衬、双向凹凸浮雕光影（左上软白高光 + 右下深灰软影）
+                drawRect(Color(0xFFE0E5EC))
+                val neuDomes = listOf(
+                    Triple(Offset(w * 0.28f, h * 0.22f), 80.dp.toPx(), 160.dp.toPx()),
+                    Triple(Offset(w * 0.72f, h * 0.58f), 100.dp.toPx(), 190.dp.toPx()),
+                    Triple(Offset(w * 0.35f, h * 0.82f), 70.dp.toPx(), 130.dp.toPx())
+                )
+                neuDomes.forEach { (center, rw, rh) ->
+                    // 凸起深影（右下）
+                    drawRoundRect(
+                        color = Color(0xFFA3B1C6).copy(alpha = 0.45f * glowPulse),
+                        topLeft = Offset(center.x - rw / 2 + 10.dp.toPx(), center.y - rh / 2 + 10.dp.toPx()),
+                        size = Size(rw, rh),
+                        cornerRadius = CornerRadius(32.dp.toPx(), 32.dp.toPx())
+                    )
+                    // 凸起亮光（左上）
+                    drawRoundRect(
+                        color = Color.White.copy(alpha = 0.80f * glowPulse),
+                        topLeft = Offset(center.x - rw / 2 - 8.dp.toPx(), center.y - rh / 2 - 8.dp.toPx()),
+                        size = Size(rw, rh),
+                        cornerRadius = CornerRadius(32.dp.toPx(), 32.dp.toPx())
+                    )
+                    // 表面平滑过渡
+                    drawRoundRect(
+                        color = Color(0xFFE0E5EC),
+                        topLeft = Offset(center.x - rw / 2, center.y - rh / 2),
+                        size = Size(rw, rh),
+                        cornerRadius = CornerRadius(32.dp.toPx(), 32.dp.toPx())
+                    )
+                }
+            }
+
+            DesignStyle.GLASSMORPHISM -> {
+                // 5️⃣ 玻璃拟态：深邃星空底衬、多层大范围霓虹光斑发散、悬浮通透磨砂玻璃板
+                drawRect(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Color(0xFF0F172A), Color(0xFF1E1B4B), Color(0xFF090D16))
+                    )
+                )
+                // 弥散大光斑（青、紫、品红）
+                val orb1 = Offset(w * 0.25f + cos(ringSpinPhase) * 30f, h * 0.26f + sin(ringSpinPhase) * 30f)
+                val orb2 = Offset(w * 0.75f - sin(ringSpinPhase) * 35f, h * 0.62f + cos(ringSpinPhase) * 25f)
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color(0xFF06B6D4).copy(alpha = 0.45f), Color.Transparent),
+                        center = orb1,
+                        radius = 160.dp.toPx()
+                    ),
+                    radius = 160.dp.toPx(),
+                    center = orb1
+                )
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color(0xFF8B5CF6).copy(alpha = 0.50f), Color.Transparent),
+                        center = orb2,
+                        radius = 180.dp.toPx()
+                    ),
+                    radius = 180.dp.toPx(),
+                    center = orb2
+                )
+                // 悬浮磨砂玻璃板与1px镜面亮边
+                val glassPanel = Offset(w * 0.08f, h * 0.20f)
+                drawRoundRect(
+                    color = Color.White.copy(alpha = 0.08f),
+                    topLeft = glassPanel,
+                    size = Size(w * 0.84f, 180.dp.toPx()),
+                    cornerRadius = CornerRadius(24.dp.toPx(), 24.dp.toPx())
+                )
+                drawRoundRect(
+                    brush = Brush.linearGradient(
+                        listOf(Color.White.copy(alpha = 0.45f), Color.Transparent, Color.White.copy(alpha = 0.20f))
+                    ),
+                    topLeft = glassPanel,
+                    size = Size(w * 0.84f, 180.dp.toPx()),
+                    cornerRadius = CornerRadius(24.dp.toPx(), 24.dp.toPx()),
+                    style = Stroke(width = 1.2.dp.toPx())
+                )
+            }
+
+            DesignStyle.CLAYMORPHISM -> {
+                // 6️⃣ 粘土拟态：Q版3D糖果充气感、明亮圆润胖胶囊气泡、厚实质感软投影
+                drawRect(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Color(0xFFF0F4FD), Color(0xFFE8EEFC), Color(0xFFF5F8FF))
+                    )
+                )
+                val bubbles = listOf(
+                    Triple(Offset(w * 0.25f, h * 0.22f), 55.dp.toPx(), Color(0xFFFF8DA1)),
+                    Triple(Offset(w * 0.78f, h * 0.40f), 70.dp.toPx(), Color(0xFF8C82FF)),
+                    Triple(Offset(w * 0.32f, h * 0.68f), 65.dp.toPx(), Color(0xFF48D1CC)),
+                    Triple(Offset(w * 0.75f, h * 0.85f), 50.dp.toPx(), Color(0xFFFFB347))
+                )
+                bubbles.forEachIndexed { idx, (center, r, col) ->
+                    val dy = sin(ringSpinPhase + idx * 1.5f) * 12.dp.toPx()
+                    val pos = center + Offset(0f, dy)
+                    // 厚重软阴影
+                    drawCircle(Color(0xFFCBD5E1).copy(alpha = 0.55f), radius = r * 1.05f, center = pos + Offset(4.dp.toPx(), 8.dp.toPx()))
+                    // 粘土球体
+                    drawCircle(col.copy(alpha = 0.82f), radius = r, center = pos)
+                    // 顶部Q版高光
+                    drawCircle(
+                        Color.White.copy(alpha = 0.65f),
+                        radius = r * 0.35f,
+                        center = pos - Offset(r * 0.32f, r * 0.32f)
+                    )
+                }
+            }
+
+            DesignStyle.LIQUID_GLASS -> {
+                // 7️⃣ 液态玻璃：动态折射波纹、水滴流光折射焦散、彩色棱镜边缘光
+                drawRect(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Color(0xFFE8F6FC), Color(0xFFF2F9FD), Color(0xFFDCF0FA))
+                    )
+                )
+                // 动态液态高透光折射环（3 层水波纹扩散）
+                val center = Offset(w * 0.50f, h * 0.42f)
+                for (i in 1..4) {
+                    val waveR = ((40 + i * 45).dp.toPx() + sin(ringSpinPhase * 1.5f + i) * 16.dp.toPx()).coerceAtLeast(10f)
+                    drawCircle(
+                        brush = Brush.sweepGradient(
+                            listOf(
+                                Color(0xFF00C6FF).copy(alpha = 0.35f),
+                                Color(0xFFFF2D78).copy(alpha = 0.22f),
+                                Color(0xFF0072FF).copy(alpha = 0.30f),
+                                Color(0xFF00C6FF).copy(alpha = 0.35f)
+                            ),
+                            center = center
+                        ),
+                        radius = waveR,
+                        center = center,
+                        style = Stroke(width = 3.5.dp.toPx())
+                    )
+                }
+                // 游走的高光水珠
+                val dropPos = Offset(w * 0.70f + cos(ringSpinPhase) * 40f, h * 0.25f + sin(ringSpinPhase) * 25f)
+                drawCircle(Color.White.copy(alpha = 0.75f), radius = 16.dp.toPx(), center = dropPos)
+                drawCircle(Color(0xFF00C6FF).copy(alpha = 0.40f), radius = 16.dp.toPx(), center = dropPos, style = Stroke(2.dp.toPx()))
+            }
+
+            DesignStyle.NEO_BRUTALISM -> {
+                // 8️⃣ 新粗野主义：高能波普黄色底、3px纯黑粗边框、纯黑45°硬位移投影、波普半色调
+                drawRect(Color(0xFFFFFDE8))
+                // 点阵半色调
+                val dotGap = 22.dp.toPx()
+                var py = 12.dp.toPx()
+                while (py < h) {
+                    var px = 12.dp.toPx()
+                    while (px < w) {
+                        drawCircle(Color.Black.copy(alpha = 0.08f), radius = 1.8.dp.toPx(), center = Offset(px, py))
+                        px += dotGap
+                    }
+                    py += dotGap
+                }
+                // 粗野方块 1（带纯黑硬投影）
+                val box1 = Offset(w * 0.12f, h * 0.20f)
+                drawRoundRect(
+                    color = Color.Black,
+                    topLeft = box1 + Offset(6.dp.toPx(), 6.dp.toPx()),
+                    size = Size(w * 0.76f, 110.dp.toPx()),
+                    cornerRadius = CornerRadius(10.dp.toPx(), 10.dp.toPx())
+                )
+                drawRoundRect(
+                    color = Color(0xFFFFDE59),
+                    topLeft = box1,
+                    size = Size(w * 0.76f, 110.dp.toPx()),
+                    cornerRadius = CornerRadius(10.dp.toPx(), 10.dp.toPx())
+                )
+                drawRoundRect(
+                    color = Color.Black,
+                    topLeft = box1,
+                    size = Size(w * 0.76f, 110.dp.toPx()),
+                    cornerRadius = CornerRadius(10.dp.toPx(), 10.dp.toPx()),
+                    style = Stroke(width = 3.dp.toPx())
+                )
+            }
+
+            DesignStyle.MINIMALISM -> {
+                // 9️⃣ 极简主义：“少即是多”，极致留白、仅留优雅纤细的极细对齐线、纯粹灰度克制
+                drawRect(Color(0xFFFAFAFA))
+                // 极细微灰度坐标轴
+                val fineLineColor = Color(0xFF09090B).copy(alpha = 0.06f)
+                val lineSpacing = 48.dp.toPx()
+                var lx = lineSpacing
+                while (lx < w) {
+                    drawLine(fineLineColor, Offset(lx, 0f), Offset(lx, h), strokeWidth = 0.8.dp.toPx())
+                    lx += lineSpacing
+                }
+                var ly = lineSpacing
+                while (ly < h) {
+                    drawLine(fineLineColor, Offset(0f, ly), Offset(w, ly), strokeWidth = 0.8.dp.toPx())
+                    ly += lineSpacing
+                }
+                // 单个极其纤细的高雅同心圆（右上角）
+                drawCircle(
+                    color = Color(0xFF18181B).copy(alpha = 0.08f),
+                    radius = 90.dp.toPx(),
+                    center = Offset(w * 0.88f, h * 0.15f),
+                    style = Stroke(width = 1.dp.toPx())
+                )
+            }
+
+            DesignStyle.BAUHAUS -> {
+                // 🔟 包豪斯风格：红黄蓝三原色构图、经典正圆/正方/三角形绝对几何、形式服务于功能
+                drawRect(Color(0xFFFDFBF7))
+                // 蓝色正方大矩形
+                drawRect(
+                    color = Color(0xFF003049).copy(alpha = 0.88f),
+                    topLeft = Offset(w * 0.08f, h * 0.18f),
+                    size = Size(100.dp.toPx(), 100.dp.toPx())
+                )
+                // 黄色正圆形
+                drawCircle(
+                    color = Color(0xFFF4D03F).copy(alpha = 0.92f),
+                    radius = 60.dp.toPx(),
+                    center = Offset(w * 0.72f, h * 0.28f)
+                )
+                // 红色三角形
+                val triPath = Path().apply {
+                    moveTo(w * 0.50f, h * 0.60f)
+                    lineTo(w * 0.20f, h * 0.78f)
+                    lineTo(w * 0.80f, h * 0.78f)
+                    close()
+                }
+                drawPath(triPath, Color(0xFFD62828).copy(alpha = 0.88f))
+                // 包豪斯黑色结构梁
+                drawLine(
+                    color = Color.Black,
+                    start = Offset(0f, h * 0.48f),
+                    end = Offset(w, h * 0.52f),
+                    strokeWidth = 6.dp.toPx()
+                )
+            }
+
+            DesignStyle.RETROFUTURISM -> {
+                // 1️⃣1️⃣ 复古未来主义：80年代地平线网格（Synthwave）、激光扫描线、霓虹夕阳
+                drawRect(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Color(0xFF120826), Color(0xFF2A0845), Color(0xFF0D031A))
+                    )
+                )
+                // 远方数字霓虹夕阳
+                val sunCenter = Offset(w * 0.50f, h * 0.40f)
+                drawCircle(
+                    brush = Brush.verticalGradient(
+                        listOf(Color(0xFFFF007F), Color(0xFFFFD200)),
+                        startY = sunCenter.y - 70.dp.toPx(),
+                        endY = sunCenter.y + 70.dp.toPx()
+                    ),
+                    radius = 65.dp.toPx(),
+                    center = sunCenter
+                )
+                // 遮挡太阳的百叶窗条纹
+                for (i in 0..6) {
+                    val stripY = sunCenter.y - 10.dp.toPx() + i * 11.dp.toPx()
+                    drawLine(Color(0xFF2A0845), Offset(sunCenter.x - 70.dp.toPx(), stripY), Offset(sunCenter.x + 70.dp.toPx(), stripY), strokeWidth = (2 + i).dp.toPx())
+                }
+                // 地平线透视网格
+                val horizonY = h * 0.45f
+                drawLine(Color(0xFF00F0FF), Offset(0f, horizonY), Offset(w, horizonY), strokeWidth = 2.dp.toPx())
+                for (i in 0..12) {
+                    val gy = horizonY + (i * i * 3.5f).dp.toPx()
+                    if (gy <= h) {
+                        drawLine(Color(0xFF00F0FF).copy(alpha = 0.45f), Offset(0f, gy), Offset(w, gy), strokeWidth = 1.dp.toPx())
+                    }
+                }
+                // 透视纵向发射线
+                for (j in -6..6) {
+                    val bottomX = w * 0.50f + j * 45.dp.toPx()
+                    drawLine(Color(0xFFFF007F).copy(alpha = 0.38f), Offset(w * 0.50f, horizonY), Offset(bottomX, h), strokeWidth = 1.2.dp.toPx())
+                }
+            }
+
+            DesignStyle.BRUTALISM -> {
+                // 1️⃣2️⃣ 粗野主义：未修饰水泥灰板、裸露直角框架、等宽技术刻度、0dp无圆角
+                drawRect(Color(0xFFDCDDDE))
+                // 水泥粗颗粒
+                val concreteGrid = 32.dp.toPx()
+                var cy = 0f
+                while (cy < h) {
+                    var cx = 0f
+                    while (cx < w) {
+                        // 技术对齐十字标 (+)
+                        drawLine(Color(0xFF888888), Offset(cx - 3.dp.toPx(), cy), Offset(cx + 3.dp.toPx(), cy), strokeWidth = 1.dp.toPx())
+                        drawLine(Color(0xFF888888), Offset(cx, cy - 3.dp.toPx()), Offset(cx, cy + 3.dp.toPx()), strokeWidth = 1.dp.toPx())
+                        cx += concreteGrid
+                    }
+                    cy += concreteGrid
+                }
+                // 裸露结构工字框（直角无倒角）
+                drawRect(
+                    color = Color.Black,
+                    topLeft = Offset(w * 0.08f, h * 0.22f),
+                    size = Size(w * 0.84f, 150.dp.toPx()),
+                    style = Stroke(width = 2.5.dp.toPx())
+                )
+                // 建筑内部结构梁
+                drawLine(Color.Black, Offset(w * 0.08f, h * 0.22f + 40.dp.toPx()), Offset(w * 0.92f, h * 0.22f + 40.dp.toPx()), strokeWidth = 1.5.dp.toPx())
+            }
+
+            DesignStyle.ANTI_DESIGN -> {
+                // 1️⃣3️⃣ 反设计：反叛朋克倾斜构图、毒性荧光绿对撞高能紫、破坏秩序的不和谐色带
+                drawRect(Color(0xFF0A0014))
+                // 倾斜黄黑警戒色斑
+                rotate(-14f, pivot = Offset(w * 0.5f, h * 0.35f)) {
+                    drawRect(
+                        color = Color(0xFF00FF66),
+                        topLeft = Offset(-w * 0.2f, h * 0.28f),
+                        size = Size(w * 1.4f, 44.dp.toPx())
+                    )
+                    // 警示黑条
+                    for (i in 0..20) {
+                        val kx = -w * 0.2f + i * 36.dp.toPx()
+                        drawLine(Color.Black, Offset(kx, h * 0.28f), Offset(kx + 20.dp.toPx(), h * 0.28f + 44.dp.toPx()), strokeWidth = 10.dp.toPx())
+                    }
+                }
+                // 反叛朋克倾斜粉块
+                rotate(8f, pivot = Offset(w * 0.5f, h * 0.65f)) {
+                    drawRect(
+                        color = Color(0xFFFF0055).copy(alpha = 0.85f),
+                        topLeft = Offset(w * 0.15f, h * 0.62f),
+                        size = Size(w * 0.70f, 90.dp.toPx())
+                    )
+                    drawRect(
+                        color = Color(0xFF00FF66),
+                        topLeft = Offset(w * 0.15f, h * 0.62f),
+                        size = Size(w * 0.70f, 90.dp.toPx()),
+                        style = Stroke(width = 3.dp.toPx())
+                    )
+                }
+            }
+
+            DesignStyle.ACID_GRAPHICS -> {
+                // 1️⃣4️⃣ 酸性设计：迷幻液态金属铬光（Chrome Mercury）、高能波纹折射、彩虹水银流动
+                drawRect(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Color(0xFF0C071E), Color(0xFF1B0E38), Color(0xFF080414))
+                    )
+                )
+                // 液态铬水银池
+                val mercuryCenter = Offset(w * 0.50f, h * 0.38f)
+                val chromeBrush = Brush.sweepGradient(
+                    listOf(
+                        Color(0xFFFFFFFF),
+                        Color(0xFFB026FF),
+                        Color(0xFFCCFF00),
+                        Color(0xFF00F0FF),
+                        Color(0xFFFF007F),
+                        Color(0xFFE2E8F0),
+                        Color(0xFFFFFFFF)
+                    ),
+                    center = mercuryCenter
+                )
+                for (i in 1..3) {
+                    val mr = (50 + i * 40).dp.toPx() + sin(ringSpinPhase * 1.8f + i) * 14.dp.toPx()
+                    drawCircle(chromeBrush, radius = mr, center = mercuryCenter, style = Stroke(width = 4.dp.toPx()))
+                }
+                // 迷幻中心金属光球
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        listOf(Color.White, Color(0xFFCCFF00), Color(0xFFB026FF), Color.Transparent),
+                        center = mercuryCenter,
+                        radius = 45.dp.toPx()
+                    ),
+                    radius = 45.dp.toPx(),
+                    center = mercuryCenter
+                )
+            }
+
+            else -> {
+                drawRect(baseColor)
+            }
+        }
+    }
+}
+

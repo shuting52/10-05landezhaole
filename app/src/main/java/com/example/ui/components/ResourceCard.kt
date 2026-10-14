@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import com.example.ui.theme.DesignStyle
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -89,28 +90,50 @@ fun ResourceCard(
         else -> 50.dp
     }.let { if (cardCompStyle != null) cardCompStyle.cornerRadius else it }
 
-    val cardShape = when (uiverse.cardStyle) {
-        CardStylePreset.CYBERPUNK -> RoundedCornerShape(topStart = 0.dp, topEnd = 14.dp, bottomEnd = 0.dp, bottomStart = 14.dp)
-        CardStylePreset.GLASSMORPHISM -> RoundedCornerShape(16.dp)
-        CardStylePreset.NEUMORPHISM -> RoundedCornerShape(16.dp)
-        CardStylePreset.NEO_BRUTALISM -> RoundedCornerShape(6.dp)
-        CardStylePreset.RETRO_PIXEL -> RoundedCornerShape(2.dp)
-        CardStylePreset.HOLOGRAPHIC -> RoundedCornerShape(14.dp)
-        CardStylePreset.LUXURY_GOLD -> RoundedCornerShape(12.dp)
-        CardStylePreset.CUSTOM -> RoundedCornerShape(uiverse.customStyle?.cornerRadius ?: 50.dp)
-        // v1.1.6 需求 3：整个 UI 主题胶囊化——默认卡片改为大圆角胶囊
-        else -> RoundedCornerShape(50.dp)
-    }.let { if (cardCompStyle != null) RoundedCornerShape(cardCompStyle.cornerRadius) else it }
+    val designStyle = themeUi.designStyle
 
-    val cardElevation = when (uiverse.cardStyle) {
-        CardStylePreset.CYBERPUNK -> 4.dp
-        CardStylePreset.GLASSMORPHISM -> 6.dp
-        CardStylePreset.NEUMORPHISM -> 4.dp
-        CardStylePreset.NEO_BRUTALISM -> 4.dp
-        CardStylePreset.RETRO_PIXEL -> 3.dp
-        CardStylePreset.HOLOGRAPHIC -> 5.dp
-        CardStylePreset.LUXURY_GOLD -> 4.dp
-        CardStylePreset.CUSTOM -> uiverse.customStyle?.shadowElevation ?: 1.dp
+    val cardShape = when {
+        cardCompStyle != null -> RoundedCornerShape(cardCompStyle.cornerRadius)
+        designStyle == DesignStyle.NEO_BRUTALISM -> RoundedCornerShape(8.dp)
+        designStyle == DesignStyle.BRUTALISM -> RoundedCornerShape(0.dp)
+        designStyle == DesignStyle.ANTI_DESIGN -> RoundedCornerShape(3.dp)
+        designStyle == DesignStyle.FLAT_DESIGN -> RoundedCornerShape(4.dp)
+        designStyle == DesignStyle.MATERIAL_DESIGN -> RoundedCornerShape(16.dp)
+        designStyle == DesignStyle.CLAYMORPHISM -> RoundedCornerShape(22.dp)
+        designStyle == DesignStyle.MINIMALISM -> RoundedCornerShape(6.dp)
+        designStyle == DesignStyle.BAUHAUS -> RoundedCornerShape(4.dp)
+        designStyle == DesignStyle.RETROFUTURISM -> RoundedCornerShape(10.dp)
+        designStyle == DesignStyle.LIQUID_GLASS -> RoundedCornerShape(20.dp)
+        designStyle == DesignStyle.GLASSMORPHISM -> RoundedCornerShape(18.dp)
+        designStyle == DesignStyle.NEUMORPHISM -> RoundedCornerShape(16.dp)
+        designStyle == DesignStyle.SKEUOMORPHISM -> RoundedCornerShape(12.dp)
+        designStyle == DesignStyle.ACID_GRAPHICS -> RoundedCornerShape(8.dp)
+        uiverse.cardStyle == CardStylePreset.CYBERPUNK -> RoundedCornerShape(topStart = 0.dp, topEnd = 14.dp, bottomEnd = 0.dp, bottomStart = 14.dp)
+        uiverse.cardStyle == CardStylePreset.GLASSMORPHISM -> RoundedCornerShape(16.dp)
+        uiverse.cardStyle == CardStylePreset.NEUMORPHISM -> RoundedCornerShape(16.dp)
+        uiverse.cardStyle == CardStylePreset.NEO_BRUTALISM -> RoundedCornerShape(6.dp)
+        uiverse.cardStyle == CardStylePreset.RETRO_PIXEL -> RoundedCornerShape(2.dp)
+        uiverse.cardStyle == CardStylePreset.HOLOGRAPHIC -> RoundedCornerShape(14.dp)
+        uiverse.cardStyle == CardStylePreset.LUXURY_GOLD -> RoundedCornerShape(12.dp)
+        uiverse.cardStyle == CardStylePreset.CUSTOM -> RoundedCornerShape(uiverse.customStyle?.cornerRadius ?: 50.dp)
+        else -> RoundedCornerShape(50.dp)
+    }
+
+    val cardElevation = when {
+        designStyle == DesignStyle.FLAT_DESIGN || designStyle == DesignStyle.BRUTALISM || designStyle == DesignStyle.MINIMALISM -> 0.dp
+        designStyle == DesignStyle.CLAYMORPHISM -> 5.dp
+        designStyle == DesignStyle.NEO_BRUTALISM -> 4.dp
+        designStyle == DesignStyle.SKEUOMORPHISM -> 4.dp
+        designStyle == DesignStyle.MATERIAL_DESIGN || designStyle == DesignStyle.NEUMORPHISM -> 3.dp
+        designStyle == DesignStyle.LIQUID_GLASS || designStyle == DesignStyle.GLASSMORPHISM || designStyle == DesignStyle.RETROFUTURISM || designStyle == DesignStyle.ACID_GRAPHICS -> 2.dp
+        uiverse.cardStyle == CardStylePreset.CYBERPUNK -> 4.dp
+        uiverse.cardStyle == CardStylePreset.GLASSMORPHISM -> 6.dp
+        uiverse.cardStyle == CardStylePreset.NEUMORPHISM -> 4.dp
+        uiverse.cardStyle == CardStylePreset.NEO_BRUTALISM -> 4.dp
+        uiverse.cardStyle == CardStylePreset.RETRO_PIXEL -> 3.dp
+        uiverse.cardStyle == CardStylePreset.HOLOGRAPHIC -> 5.dp
+        uiverse.cardStyle == CardStylePreset.LUXURY_GOLD -> 4.dp
+        uiverse.cardStyle == CardStylePreset.CUSTOM -> uiverse.customStyle?.shadowElevation ?: 1.dp
         else -> 1.dp
     }
 
@@ -185,23 +208,37 @@ fun ResourceCard(
         )
     }.let { if (compBg != null) it.then(Modifier.background(compBg)) else it }
 
-    val cardBorderModifier: Modifier = when (uiverse.cardStyle) {
-        CardStylePreset.CYBERPUNK -> Modifier.border(1.5.dp, Color(0xFF00F0FF), cardShape)
-        CardStylePreset.GLASSMORPHISM -> Modifier.border(
+    val cardBorderModifier: Modifier = when {
+        designStyle == DesignStyle.NEO_BRUTALISM -> Modifier.border(2.5.dp, Color.Black, cardShape)
+        designStyle == DesignStyle.BRUTALISM -> Modifier.border(2.dp, Color.Black, cardShape)
+        designStyle == DesignStyle.ANTI_DESIGN -> Modifier.border(2.2.dp, Color(0xFF00FF66), cardShape)
+        designStyle == DesignStyle.FLAT_DESIGN -> Modifier
+        designStyle == DesignStyle.MATERIAL_DESIGN -> Modifier.border(1.dp, Color(0xFF6750A4).copy(alpha = 0.25f), cardShape)
+        designStyle == DesignStyle.CLAYMORPHISM -> Modifier.border(1.5.dp, Color.White.copy(alpha = 0.85f), cardShape)
+        designStyle == DesignStyle.MINIMALISM -> Modifier.border(0.8.dp, Color(0xFFE4E4E7), cardShape)
+        designStyle == DesignStyle.BAUHAUS -> Modifier.border(2.dp, Color.Black, cardShape)
+        designStyle == DesignStyle.RETROFUTURISM -> Modifier.border(1.5.dp, Brush.linearGradient(listOf(Color(0xFF00F0FF), Color(0xFFFF007F))), cardShape)
+        designStyle == DesignStyle.LIQUID_GLASS -> Modifier.border(1.4.dp, Brush.linearGradient(listOf(Color.White.copy(alpha = 0.95f), Color(0xFF00C6FF).copy(alpha = 0.5f))), cardShape)
+        designStyle == DesignStyle.GLASSMORPHISM -> Modifier.border(1.2.dp, Color.White.copy(alpha = 0.45f), cardShape)
+        designStyle == DesignStyle.NEUMORPHISM -> Modifier.border(1.2.dp, Brush.linearGradient(listOf(Color.White, Color(0xFFCBD5E1))), cardShape)
+        designStyle == DesignStyle.SKEUOMORPHISM -> Modifier.border(1.5.dp, Brush.linearGradient(listOf(Color(0xFFD4AF37), Color(0xFF8B5A2B))), cardShape)
+        designStyle == DesignStyle.ACID_GRAPHICS -> Modifier.border(1.8.dp, Brush.sweepGradient(listOf(Color(0xFFCCFF00), Color(0xFFB026FF), Color(0xFF00F0FF), Color(0xFFCCFF00))), cardShape)
+        uiverse.cardStyle == CardStylePreset.CYBERPUNK -> Modifier.border(1.5.dp, Color(0xFF00F0FF), cardShape)
+        uiverse.cardStyle == CardStylePreset.GLASSMORPHISM -> Modifier.border(
             1.2.dp,
             Brush.linearGradient(listOf(Color(0x88FFFFFF), Color(0x44A855F7), Color(0x336366F1))),
             cardShape
         )
-        CardStylePreset.NEUMORPHISM -> Modifier.border(1.dp, Color(0xFFCBD5E1), cardShape)
-        CardStylePreset.NEO_BRUTALISM -> Modifier.border(2.5.dp, Color(0xFF000000), cardShape)
-        CardStylePreset.RETRO_PIXEL -> Modifier.border(2.dp, Color(0xFFE94560), cardShape)
-        CardStylePreset.HOLOGRAPHIC -> Modifier.border(
+        uiverse.cardStyle == CardStylePreset.NEUMORPHISM -> Modifier.border(1.dp, Color(0xFFCBD5E1), cardShape)
+        uiverse.cardStyle == CardStylePreset.NEO_BRUTALISM -> Modifier.border(2.5.dp, Color(0xFF000000), cardShape)
+        uiverse.cardStyle == CardStylePreset.RETRO_PIXEL -> Modifier.border(2.dp, Color(0xFFE94560), cardShape)
+        uiverse.cardStyle == CardStylePreset.HOLOGRAPHIC -> Modifier.border(
             1.5.dp,
             Brush.linearGradient(listOf(Color(0xFFA855F7), Color(0xFF06B6D4))),
             cardShape
         )
-        CardStylePreset.LUXURY_GOLD -> Modifier.border(1.2.dp, Color(0xFFD4AF37), cardShape)
-        CardStylePreset.CUSTOM -> {
+        uiverse.cardStyle == CardStylePreset.LUXURY_GOLD -> Modifier.border(1.2.dp, Color(0xFFD4AF37), cardShape)
+        uiverse.cardStyle == CardStylePreset.CUSTOM -> {
             val custom = uiverse.customStyle
             val customBorder = custom?.borderColor
             val bColor = if (customBorder != null && customBorder != Color.Transparent) customBorder

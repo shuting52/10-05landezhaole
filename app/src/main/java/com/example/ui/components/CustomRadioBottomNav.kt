@@ -80,6 +80,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import com.example.ui.theme.LocalThemeUiColors
+import com.example.ui.theme.DesignStyle
 import com.example.ui.viewmodel.AppBottomTab
 import kotlinx.coroutines.launch
 import kotlin.math.cos
@@ -137,7 +138,7 @@ fun CustomRadioBottomNav(
         ),
         BottomNavTabItem(
             tab = AppBottomTab.SKILL,
-            title = if (uiText?.tabSkill.isNullOrBlank() || uiText?.tabSkill == "资源" || uiText?.tabSkill == "懒得KunBox" || uiText?.tabSkill == "懒得连了" || uiText?.tabSkill == "AI前言") "DownVid" else uiText!!.tabSkill,
+            title = if (uiText?.tabSkill.isNullOrBlank() || uiText?.tabSkill == "资源" || uiText?.tabSkill == "懒得KunBox" || uiText?.tabSkill == "懒得连了" || uiText?.tabSkill == "AI前言" || uiText?.tabSkill == "DownVid") "去水印" else uiText!!.tabSkill,
             icon = Icons.Filled.PlayArrow,
             color = Color(0xFF0284C7), // 晴空蔚蓝
             gradient = listOf(Color(0xFF38BDF8), Color(0xFF0284C7)),
@@ -569,7 +570,9 @@ fun CustomRadioBottomNav(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        // 绿色箭头需求：图标采用饱满鲜艳的颜色呈现，配以圆形轻彩晕背景
+                        // 🎨 必须是背景图标一起改变：图标容器与图标风格紧密跟随 14 大设计流派彻底变换
+                        val designStyle = LocalThemeUiColors.current.designStyle
+
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier
@@ -577,56 +580,388 @@ fun CustomRadioBottomNav(
                                 .graphicsLayer {
                                     scaleX = dynamicScale
                                     scaleY = dynamicScale
-                                    rotationZ = dynamicRotation
+                                    rotationZ = dynamicRotation + when (designStyle) {
+                                        DesignStyle.ANTI_DESIGN -> if (index % 2 == 0) -8f else 10f
+                                        else -> 0f
+                                    }
                                 }
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(30.dp)
-                                    .clip(CircleShape)
-                                    .background(
-                                        if (isSelected) {
-                                            Brush.radialGradient(
-                                                listOf(
-                                                    item.color.copy(alpha = 0.32f),
-                                                    item.color.copy(alpha = 0.10f)
+                            when (designStyle) {
+                                DesignStyle.SKEUOMORPHISM -> {
+                                    // 1️⃣ 拟物化图标：3D黄铜金属按压底座、凸凹倒角、皮革雕刻感
+                                    Box(
+                                        modifier = Modifier
+                                            .size(31.dp)
+                                            .shadow(if (isSelected) 4.dp else 2.dp, shape = RoundedCornerShape(8.dp))
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(
+                                                brush = Brush.radialGradient(
+                                                    listOf(Color(0xFFF7F0E6), Color(0xFFD4AF37), Color(0xFF7A5424))
                                                 )
                                             )
-                                        } else {
-                                            Brush.radialGradient(
-                                                listOf(
-                                                    item.color.copy(alpha = 0.18f),
-                                                    item.color.copy(alpha = 0.05f)
+                                            .border(
+                                                width = 1.2.dp,
+                                                brush = Brush.linearGradient(listOf(Color(0xFFFFECB3), Color(0xFF4E342E))),
+                                                shape = RoundedCornerShape(8.dp)
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = item.icon,
+                                            contentDescription = item.title,
+                                            tint = Color(0xFF3E2723),
+                                            modifier = Modifier.size(17.dp)
+                                        )
+                                    }
+                                }
+
+                                DesignStyle.FLAT_DESIGN -> {
+                                    // 2️⃣ 扁平化图标：纯二维平直色块、无阴影、无渐变纯色直角
+                                    Box(
+                                        modifier = Modifier
+                                            .size(28.dp)
+                                            .clip(RoundedCornerShape(4.dp))
+                                            .background(if (isSelected) item.color else item.color.copy(alpha = 0.85f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = item.icon,
+                                            contentDescription = item.title,
+                                            tint = Color.White,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                }
+
+                                DesignStyle.MATERIAL_DESIGN -> {
+                                    // 3️⃣ 材质设计图标：Google M3纸质圆角药丸底座、标准海拔落差阴影
+                                    Box(
+                                        modifier = Modifier
+                                            .size(30.dp)
+                                            .shadow(if (isSelected) 3.5.dp else 1.5.dp, shape = RoundedCornerShape(12.dp))
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .background(if (isSelected) Color(0xFFEADDFF) else Color(0xFFF3EDF7)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = item.icon,
+                                            contentDescription = item.title,
+                                            tint = if (isSelected) Color(0xFF21005D) else Color(0xFF49454F),
+                                            modifier = Modifier.size(17.dp)
+                                        )
+                                    }
+                                }
+
+                                DesignStyle.NEUMORPHISM -> {
+                                    // 4️⃣ 新拟态图标：柔和陶土双向微浮雕立体按键（左上软白 + 右下灰影）
+                                    Box(
+                                        modifier = Modifier
+                                            .size(31.dp)
+                                            .clip(CircleShape)
+                                            .background(Color(0xFFE0E5EC))
+                                            .border(
+                                                width = 1.4.dp,
+                                                brush = Brush.linearGradient(
+                                                    listOf(Color.White.copy(alpha = 0.90f), Color(0xFFA3B1C6).copy(alpha = 0.50f))
+                                                ),
+                                                shape = CircleShape
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = item.icon,
+                                            contentDescription = item.title,
+                                            tint = if (isSelected) Color(0xFF4F46E5) else Color(0xFF64748B),
+                                            modifier = Modifier.size(17.dp)
+                                        )
+                                    }
+                                }
+
+                                DesignStyle.GLASSMORPHISM -> {
+                                    // 5️⃣ 玻璃拟态图标：磨砂毛玻璃透光晶莹底座、细白光镜面边框
+                                    Box(
+                                        modifier = Modifier
+                                            .size(30.dp)
+                                            .clip(RoundedCornerShape(10.dp))
+                                            .background(Color.White.copy(alpha = if (isSelected) 0.30f else 0.15f))
+                                            .border(
+                                                width = 1.1.dp,
+                                                brush = Brush.linearGradient(
+                                                    listOf(Color.White.copy(alpha = 0.85f), Color.White.copy(alpha = 0.20f))
+                                                ),
+                                                shape = RoundedCornerShape(10.dp)
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = item.icon,
+                                            contentDescription = item.title,
+                                            tint = Color.White,
+                                            modifier = Modifier.size(17.dp)
+                                        )
+                                    }
+                                }
+
+                                DesignStyle.CLAYMORPHISM -> {
+                                    // 6️⃣ 粘土拟态图标：Q版3D糖果充气胖圆球、厚实软影玩具质感
+                                    Box(
+                                        modifier = Modifier
+                                            .size(32.dp)
+                                            .shadow(4.dp, shape = CircleShape)
+                                            .clip(CircleShape)
+                                            .background(
+                                                brush = Brush.linearGradient(
+                                                    listOf(Color(0xFFFF8DA1), Color(0xFFFF6584))
                                                 )
+                                            )
+                                            .border(1.2.dp, Color.White.copy(alpha = 0.65f), CircleShape),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = item.icon,
+                                            contentDescription = item.title,
+                                            tint = Color.White,
+                                            modifier = Modifier.size(17.dp)
+                                        )
+                                    }
+                                }
+
+                                DesignStyle.LIQUID_GLASS -> {
+                                    // 7️⃣ 液态玻璃图标：动态折射水珠气泡、弧形白色反光镜片
+                                    Box(
+                                        modifier = Modifier
+                                            .size(30.dp)
+                                            .clip(CircleShape)
+                                            .background(
+                                                brush = Brush.verticalGradient(
+                                                    listOf(Color(0xFF00C6FF).copy(alpha = 0.65f), Color(0xFF0072FF).copy(alpha = 0.85f))
+                                                )
+                                            )
+                                            .border(
+                                                1.2.dp,
+                                                Brush.sweepGradient(listOf(Color.White, Color(0xFF00C6FF), Color.White)),
+                                                CircleShape
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = item.icon,
+                                            contentDescription = item.title,
+                                            tint = Color.White,
+                                            modifier = Modifier.size(17.dp)
+                                        )
+                                    }
+                                }
+
+                                DesignStyle.NEO_BRUTALISM -> {
+                                    // 8️⃣ 新粗野主义图标：2.5px纯黑实线粗边框 + 纯黑硬位移平底阴影
+                                    Box(modifier = Modifier.size(31.dp)) {
+                                        // 纯黑硬位移阴影层
+                                        Box(
+                                            modifier = Modifier
+                                                .size(29.dp)
+                                                .offset(x = 2.5.dp, y = 2.5.dp)
+                                                .background(Color.Black, RoundedCornerShape(6.dp))
+                                        )
+                                        // 顶层鲜明高对比卡片
+                                        Box(
+                                            modifier = Modifier
+                                                .size(29.dp)
+                                                .clip(RoundedCornerShape(6.dp))
+                                                .background(if (isSelected) Color(0xFFFFDE59) else Color.White)
+                                                .border(2.2.dp, Color.Black, RoundedCornerShape(6.dp)),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                imageVector = item.icon,
+                                                contentDescription = item.title,
+                                                tint = Color.Black,
+                                                modifier = Modifier.size(16.dp)
                                             )
                                         }
-                                    )
-                                    .border(
-                                        width = if (isSelected) 1.4.dp else 0.8.dp,
-                                        brush = if (isSelected) {
-                                            Brush.linearGradient(item.gradient)
-                                        } else {
-                                            Brush.linearGradient(
-                                                listOf(
-                                                    item.color.copy(alpha = 0.45f),
-                                                    item.color.copy(alpha = 0.20f)
-                                                )
+                                    }
+                                }
+
+                                DesignStyle.MINIMALISM -> {
+                                    // 9️⃣ 极简主义图标：极致留白、仅留0.8px超细灰黑同心圆线条、极致克制
+                                    Box(
+                                        modifier = Modifier
+                                            .size(28.dp)
+                                            .clip(CircleShape)
+                                            .border(
+                                                width = if (isSelected) 1.2.dp else 0.7.dp,
+                                                color = if (isSelected) Color(0xFF18181B) else Color(0xFF71717A).copy(alpha = 0.40f),
+                                                shape = CircleShape
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = item.icon,
+                                            contentDescription = item.title,
+                                            tint = if (isSelected) Color(0xFF18181B) else Color(0xFF71717A),
+                                            modifier = Modifier.size(15.dp)
+                                        )
+                                    }
+                                }
+
+                                DesignStyle.BAUHAUS -> {
+                                    // 🔟 包豪斯风格图标：圆形/方形/三角形几何变换与红黄蓝三原色
+                                    val (bauhausShape, bauhausColor) = when (index % 3) {
+                                        0 -> RoundedCornerShape(14.dp) to Color(0xFFF4D03F) // 黄圆
+                                        1 -> RoundedCornerShape(2.dp) to Color(0xFF003049)  // 蓝方
+                                        else -> RoundedCornerShape(6.dp) to Color(0xFFD62828) // 红方圆
+                                    }
+                                    Box(
+                                        modifier = Modifier
+                                            .size(29.dp)
+                                            .clip(bauhausShape)
+                                            .background(bauhausColor)
+                                            .border(1.5.dp, Color.Black, bauhausShape),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = item.icon,
+                                            contentDescription = item.title,
+                                            tint = if (bauhausColor == Color(0xFFF4D03F)) Color.Black else Color.White,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                }
+
+                                DesignStyle.RETROFUTURISM -> {
+                                    // 1️⃣1️⃣ 复古未来主义图标：80s Arcade霓虹电青/洋红发光框、赛博激光
+                                    Box(
+                                        modifier = Modifier
+                                            .size(30.dp)
+                                            .clip(RoundedCornerShape(6.dp))
+                                            .background(Color(0xFF120826))
+                                            .border(
+                                                width = 1.4.dp,
+                                                brush = Brush.linearGradient(listOf(Color(0xFF00F0FF), Color(0xFFFF007F))),
+                                                shape = RoundedCornerShape(6.dp)
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = item.icon,
+                                            contentDescription = item.title,
+                                            tint = if (isSelected) Color(0xFF00F0FF) else Color(0xFFFF007F),
+                                            modifier = Modifier.size(17.dp)
+                                        )
+                                    }
+                                }
+
+                                DesignStyle.BRUTALISM -> {
+                                    // 1️⃣2️⃣ 粗野主义图标：0dp直角工业硬黑框、无圆角、无装饰原始工字感
+                                    Box(
+                                        modifier = Modifier
+                                            .size(28.dp)
+                                            .clip(RoundedCornerShape(0.dp))
+                                            .background(if (isSelected) Color(0xFF333333) else Color(0xFFDCDDDE))
+                                            .border(1.8.dp, Color.Black, RoundedCornerShape(0.dp)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = item.icon,
+                                            contentDescription = item.title,
+                                            tint = if (isSelected) Color.White else Color.Black,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                }
+
+                                DesignStyle.ANTI_DESIGN -> {
+                                    // 1️⃣3️⃣ 反设计图标：朋克无序歪斜徽章、毒性荧光绿对撞朋克粉
+                                    Box(
+                                        modifier = Modifier
+                                            .size(30.dp)
+                                            .clip(RoundedCornerShape(2.dp))
+                                            .background(if (isSelected) Color(0xFF00FF66) else Color(0xFFFF0055))
+                                            .border(2.dp, Color.Black, RoundedCornerShape(2.dp)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = item.icon,
+                                            contentDescription = item.title,
+                                            tint = if (isSelected) Color.Black else Color.White,
+                                            modifier = Modifier.size(17.dp)
+                                        )
+                                    }
+                                }
+
+                                DesignStyle.ACID_GRAPHICS -> {
+                                    // 1️⃣4️⃣ 酸性设计图标：水银金属铬色流光环、高能酸性荧光
+                                    Box(
+                                        modifier = Modifier
+                                            .size(31.dp)
+                                            .clip(CircleShape)
+                                            .background(Color(0xFF0C071E))
+                                            .border(
+                                                width = 1.8.dp,
+                                                brush = Brush.sweepGradient(
+                                                    listOf(
+                                                        Color.White,
+                                                        Color(0xFFCCFF00),
+                                                        Color(0xFFB026FF),
+                                                        Color(0xFF00F0FF),
+                                                        Color.White
+                                                    )
+                                                ),
+                                                shape = CircleShape
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = item.icon,
+                                            contentDescription = item.title,
+                                            tint = Color(0xFFCCFF00),
+                                            modifier = Modifier.size(17.dp)
+                                        )
+                                    }
+                                }
+
+                                else -> {
+                                    // 经典默认：饱满鲜艳色彩 + 圆形轻彩晕高透底座
+                                    Box(
+                                        modifier = Modifier
+                                            .size(30.dp)
+                                            .clip(CircleShape)
+                                            .background(
+                                                if (isSelected) {
+                                                    Brush.radialGradient(
+                                                        listOf(item.color.copy(alpha = 0.32f), item.color.copy(alpha = 0.10f))
+                                                    )
+                                                } else {
+                                                    Brush.radialGradient(
+                                                        listOf(item.color.copy(alpha = 0.18f), item.color.copy(alpha = 0.05f))
+                                                    )
+                                                }
                                             )
-                                        },
-                                        shape = CircleShape
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = item.icon,
-                                    contentDescription = item.title,
-                                    tint = if (isSelected) {
-                                        if (activeColor.luminance() > 0.65f) item.color else Color.White
-                                    } else {
-                                        item.color
-                                    },
-                                    modifier = Modifier.size(17.dp)
-                                )
+                                            .border(
+                                                width = if (isSelected) 1.4.dp else 0.8.dp,
+                                                brush = if (isSelected) {
+                                                    Brush.linearGradient(item.gradient)
+                                                } else {
+                                                    Brush.linearGradient(
+                                                        listOf(item.color.copy(alpha = 0.45f), item.color.copy(alpha = 0.20f))
+                                                    )
+                                                },
+                                                shape = CircleShape
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = item.icon,
+                                            contentDescription = item.title,
+                                            tint = if (isSelected) {
+                                                if (activeColor.luminance() > 0.65f) item.color else Color.White
+                                            } else {
+                                                item.color
+                                            },
+                                            modifier = Modifier.size(17.dp)
+                                        )
+                                    }
+                                }
                             }
                         }
 

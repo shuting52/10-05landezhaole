@@ -92,11 +92,12 @@ fun UiverseDialog(
     val allDarkThemes = ThemePresetsRepository.darkThemes
     val iosThemes = ThemePresetsRepository.iosThemes
     val neuThemes = ThemePresetsRepository.neuThemes
+    val designStyleThemes = ThemePresetsRepository.designStyleThemes
 
     LiquidGlassDialogShell(
         onDismissRequest = onClose,
         title = "主题切换",
-        subtitle = "液态高透玻璃质感 · 暗黑 / iOS / 新拟态风格",
+        subtitle = "液态高透玻璃质感 · 14大设计流派 · 暗黑 / iOS / 新拟态",
         centerTitle = true
     ) {
         Column(
@@ -105,7 +106,7 @@ fun UiverseDialog(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // 顶栏分类快速切换胶囊（全部 / 暗黑极客 / iOS风格 / 新拟态）- 液体玻璃高透半折射质感
+            // 顶栏分类快速切换胶囊（全部 / 14大流派 / 暗黑极客 / iOS风格 / 新拟态）- 液体玻璃高透半折射质感
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -136,6 +137,7 @@ fun UiverseDialog(
             ) {
                 listOf(
                     "ALL" to "全部精选",
+                    "STYLES" to "14大流派",
                     "DARK" to "暗黑极客",
                     "IOS" to "iOS风格",
                     "NEU" to "新拟态"
@@ -208,6 +210,33 @@ fun UiverseDialog(
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
+            }
+
+            // 🎨 14大艺术与设计流派（背景与图标全套深度定制，不要只变色）
+            if (selectedCategoryTab == "ALL" || selectedCategoryTab == "STYLES") {
+                Text(
+                    text = "🎨 14大艺术设计流派 (背景与图标全套深度定制)",
+                    fontSize = 11.5.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF7C3AED),
+                    modifier = Modifier.padding(start = 2.dp, top = 2.dp)
+                )
+
+                designStyleThemes.forEach { styleTheme ->
+                    DarkThemeButton(
+                        title = styleTheme.name,
+                        subtitle = styleTheme.description,
+                        accentColor = styleTheme.primaryColor,
+                        secondaryColor = styleTheme.secondaryColor,
+                        isSelected = activeGradientThemeId == styleTheme.id,
+                        onClick = {
+                            onApplyGradientTheme(styleTheme)
+                            Toast.makeText(context, "已开启「${styleTheme.name}」风格", Toast.LENGTH_SHORT).show()
+                            onClose()
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
 
             // 2. iOS 风格主题区
@@ -477,7 +506,8 @@ private fun DarkThemeButton(
                             text = subtitle,
                             fontSize = 10.5.sp,
                             color = if (isSelected) accentColor.copy(alpha = 0.85f) else Color(0xFF64748B),
-                            maxLines = 1
+                            maxLines = 2,
+                            lineHeight = 13.5.sp
                         )
                     }
                 }

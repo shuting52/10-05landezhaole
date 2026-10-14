@@ -218,7 +218,10 @@ fun MainScreen(
             bgMediaUrl = bgUrl,
             // v1.0.4：主题切换优化——背景跟随软件背景（主题背景色）同步
             themeBgColor = uiState.currentTheme.bgColor,
-            themePrimaryColor = uiState.currentTheme.primaryColor
+            themePrimaryColor = uiState.currentTheme.primaryColor,
+            themeGradientColors = uiState.currentTheme.gradientColors,
+            dynamicEffect = uiState.dynamicEffect,
+            designStyle = uiState.currentTheme.designStyle
         ) {
             // v1.8.7：背景媒体（图片/视频）激活时，全局白色 background/surface 自动转为半透明磨砂，
             // 让背景透出（设置页、卡片、各 Tab 均生效）；无背景媒体时保持原样
@@ -273,7 +276,7 @@ fun MainScreen(
                                 onTriggerSplash = { viewModel.showSplash() },
                                 cloudMarquee = uiState.cloudMarquee,
                                 cloudIpMonitor = uiState.cloudIpMonitor,
-                                cloudAppName = uiState.cloudUiText?.homeTitle?.ifBlank { uiState.cloudSettings?.appName?.ifBlank { "懒得找了" } ?: "懒得找了" } ?: uiState.cloudSettings?.appName?.ifBlank { "懒得找了" } ?: "懒得找了",
+                                cloudAppName = uiState.cloudUiText?.homeTitle?.ifBlank { uiState.cloudSettings?.appName?.ifBlank { "懒得找了去水印" } ?: "懒得找了去水印" } ?: uiState.cloudSettings?.appName?.ifBlank { "懒得找了去水印" } ?: "懒得找了去水印",
                                 cloudLogo = uiState.cloudSettings?.logoUrl.orEmpty(),
                                 componentThemes = uiState.activeUiverseState.componentThemes
                             )
@@ -781,7 +784,7 @@ private fun HeaderBrandSection(
     onTriggerSplash: () -> Unit,
     cloudMarquee: com.example.data.remote.MarqueeDto? = null,
     cloudIpMonitor: com.example.data.remote.IpMonitorDto? = null,
-    cloudAppName: String = "懒得找了",
+    cloudAppName: String = "懒得找了去水印",
     cloudLogo: String = "",
     // v1.1.4 主题分支：组件级定制（home_header）
     componentThemes: Map<String, String> = emptyMap()
@@ -865,10 +868,28 @@ private fun HeaderBrandSection(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // 右侧区域：迷你3D翻牌时钟（背景与软件实时同步）
-                HeaderMiniFlipClock(
-                    primaryColor = primaryColor
-                )
+                // 右侧区域：迷你3D翻牌时钟与主题快速切换按钮
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    HeaderMiniFlipClock(
+                        primaryColor = primaryColor
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(primaryColor.copy(alpha = 0.12f))
+                            .clickable { onOpenTheme() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ColorLens,
+                            contentDescription = "主题切换",
+                            tint = primaryColor,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -894,7 +915,7 @@ private fun HeaderBrandSection(
 @Composable
 fun AnimatedBrandTitle(
     modifier: Modifier = Modifier,
-    text: String = "懒得找了"
+    text: String = "懒得找了去水印"
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "brand_shimmer_transition")
     val shimmerOffset by infiniteTransition.animateFloat(

@@ -22,6 +22,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "懒得找了"
+rootProject.name = "懒得找了去水印"
 
 include(":app")
