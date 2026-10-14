@@ -1,17 +1,15 @@
 {
   "version": {
-    "code": 163,
-    "name": "1.4.8",
+    "code": 164,
+    "name": "1.4.9",
     "changelog": [
-      "✨ v1.4.8 重磅更新来啦～",
-      "新增「DownVid」全网无水印视频下载神器：支持抖音/快手/B站/YouTube/小红书等一键提取视频、音频与封面",
-      "UI 界面全站升级为「国风山水动态」主题：远山含黛、碧水烟波、动态飞鸟，启动页与全站视觉全部换新",
-      "全面下线国庆节相关文字与节日主题，优化启动开屏速度与内存占用，体验更轻盈流畅"
+      "✨ v1.4.9 更新来啦～",
+      "feat(v1.4.9): 版本推进 1.4.8→1.4.9，正式发布 DownVid 视频下载与国风山水动态主题"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.8.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.8.apk",
-    "lastBuildSha": ""
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.9-1791977093.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.9-1791977093.apk",
+    "lastBuildSha": "9a90ca739ecb1ec184905b8581e35a01c32640a3"
   },
   "home": {
     "categories": [
@@ -24345,12 +24343,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.4.8 已上线",
+    "title": "懒得找了 v1.4.9 已上线",
     "changelog": [
-      "✨ v1.4.8 重磅更新来啦～",
-      "新增「DownVid」全网无水印视频下载神器：支持抖音/快手/B站/YouTube/小红书等一键提取视频、音频与封面",
-      "UI 界面全站升级为「国风山水动态」主题：远山含黛、碧水烟波、动态飞鸟，启动页与全站视觉全部换新",
-      "全面下线国庆节相关文字与节日主题，优化启动开屏速度与内存占用，体验更轻盈流畅"
+      "✨ v1.4.9 更新来啦～",
+      "feat(v1.4.9): 版本推进 1.4.8→1.4.9，正式发布 DownVid 视频下载与国风山水动态主题"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24412,10 +24408,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.4.8",
-      "code": 163,
-      "at": "2026-10-14T04:40:00Z",
-      "sha": ""
+      "version": "1.4.9",
+      "code": 164,
+      "at": "2026-10-14T11:25:01Z",
+      "sha": "9a90ca739ecb1ec184905b8581e35a01c32640a3"
     }
   },
   "_ai_notice": "内容由AI生成"
