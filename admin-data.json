@@ -1,15 +1,16 @@
 {
   "version": {
-    "code": 164,
-    "name": "1.4.9",
+    "code": 165,
+    "name": "1.4.10",
     "changelog": [
-      "✨ v1.4.9 更新来啦～",
-      "feat(v1.4.9): 版本推进 1.4.8→1.4.9，正式发布 DownVid 视频下载与国风山水动态主题"
+      "✨ v1.4.10 更新来啦～",
+      "fix(signing): 恢复密钥智能选择兼容逻辑，修复 CI 无正式密钥时硬编码 upload alias 导致的构建失败",
+      "feat: 加入14大艺术设计风格主题(背景与图标联动)，底部Tab与应用名称更新为去水印/懒得找了去水印"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.9-1791977093.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.9-1791977093.apk",
-    "lastBuildSha": "9a90ca739ecb1ec184905b8581e35a01c32640a3"
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.10-1791983402.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.10-1791983402.apk",
+    "lastBuildSha": "2d815395955f488504e525972b0dffbe4c2d87f8"
   },
   "home": {
     "categories": [
@@ -24343,10 +24344,11 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.4.9 已上线",
+    "title": "懒得找了 v1.4.10 已上线",
     "changelog": [
-      "✨ v1.4.9 更新来啦～",
-      "feat(v1.4.9): 版本推进 1.4.8→1.4.9，正式发布 DownVid 视频下载与国风山水动态主题"
+      "✨ v1.4.10 更新来啦～",
+      "fix(signing): 恢复密钥智能选择兼容逻辑，修复 CI 无正式密钥时硬编码 upload alias 导致的构建失败",
+      "feat: 加入14大艺术设计风格主题(背景与图标联动)，底部Tab与应用名称更新为去水印/懒得找了去水印"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24408,10 +24410,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.4.9",
-      "code": 164,
-      "at": "2026-10-14T11:25:01Z",
-      "sha": "9a90ca739ecb1ec184905b8581e35a01c32640a3"
+      "version": "1.4.10",
+      "code": 165,
+      "at": "2026-10-14T13:10:10Z",
+      "sha": "2d815395955f488504e525972b0dffbe4c2d87f8"
     }
   },
   "_ai_notice": "内容由AI生成"
