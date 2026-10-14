@@ -231,13 +231,11 @@ fun SettingsScreen(
                     if (customBg != null) {
                         Brush.linearGradient(listOf(customBg, customBg))
                     } else {
+                        // v1.4.15：跟随主题卡片渐变
+                        val cardGrad = LocalThemeUiColors.current.cardGradient
                         Brush.linearGradient(
-                            listOf(
-                                Color.White.copy(alpha = 0.44f),
-                                Color(0xFFF6F0FF).copy(alpha = 0.28f),
-                                Color(0xFFFFEDF5).copy(alpha = 0.32f),
-                                Color.White.copy(alpha = 0.48f)
-                            )
+                            if (cardGrad.size >= 2) cardGrad
+                            else listOf(Color.White.copy(alpha = 0.44f), Color.White.copy(alpha = 0.48f))
                         )
                     }
                 )

@@ -1332,11 +1332,11 @@ private fun DesignStyleBackground(
             }
 
             DesignStyle.FLAT_DESIGN -> {
-                // 2️⃣ 扁平化：经典二维纯平色块、锐利斜向拼接、无阴影无渐变纯净色面
-                drawRect(Color(0xFFECF0F1))
-                val flatCyan = Color(0xFF16A085).copy(alpha = 0.12f)
-                val flatBlue = Color(0xFF2980B9).copy(alpha = 0.10f)
-                val flatOrange = Color(0xFFE67E22).copy(alpha = 0.08f)
+                // 2️⃣ 扁平化（v1.4.15修复：此前写死浅灰0xFFECF0F1，主题切换背景不变；现全从主题色派生）
+                drawRect(baseColor)
+                val flatCyan = primaryColor.copy(alpha = 0.12f)
+                val flatBlue = secondaryColor.copy(alpha = 0.10f)
+                val flatOrange = primaryColor.copy(alpha = 0.08f)
 
                 val path1 = Path().apply {
                     moveTo(0f, 0f)
@@ -1440,18 +1440,22 @@ private fun DesignStyleBackground(
             }
 
             DesignStyle.GLASSMORPHISM -> {
-                // 5️⃣ 玻璃拟态：深邃星空底衬、多层大范围霓虹光斑发散、悬浮通透磨砂玻璃板
+                // 5️⃣ 玻璃拟态（v1.4.15修复：此前写死深蓝星空底，主题切换背景不变；现全从主题色派生）
                 drawRect(
                     brush = Brush.verticalGradient(
-                        colors = listOf(Color(0xFF0F172A), Color(0xFF1E1B4B), Color(0xFF090D16))
+                        colors = listOf(
+                            lerp(baseColor, primaryColor, 0.08f),
+                            baseColor,
+                            lerp(baseColor, Color.Black, 0.06f)
+                        )
                     )
                 )
-                // 弥散大光斑（青、紫、品红）
+                // 弥散大光斑（主色、副色）
                 val orb1 = Offset(w * 0.25f + cos(ringSpinPhase) * 30f, h * 0.26f + sin(ringSpinPhase) * 30f)
                 val orb2 = Offset(w * 0.75f - sin(ringSpinPhase) * 35f, h * 0.62f + cos(ringSpinPhase) * 25f)
                 drawCircle(
                     brush = Brush.radialGradient(
-                        colors = listOf(Color(0xFF06B6D4).copy(alpha = 0.45f), Color.Transparent),
+                        colors = listOf(primaryColor.copy(alpha = 0.35f), Color.Transparent),
                         center = orb1,
                         radius = 160.dp.toPx()
                     ),
@@ -1460,7 +1464,7 @@ private fun DesignStyleBackground(
                 )
                 drawCircle(
                     brush = Brush.radialGradient(
-                        colors = listOf(Color(0xFF8B5CF6).copy(alpha = 0.50f), Color.Transparent),
+                        colors = listOf(secondaryColor.copy(alpha = 0.38f), Color.Transparent),
                         center = orb2,
                         radius = 180.dp.toPx()
                     ),
@@ -1487,23 +1491,27 @@ private fun DesignStyleBackground(
             }
 
             DesignStyle.CLAYMORPHISM -> {
-                // 6️⃣ 粘土拟态：Q版3D糖果充气感、明亮圆润胖胶囊气泡、厚实质感软投影
+                // 6️⃣ 粘土拟态（v1.4.15修复：此前写死蓝灰底+糖果泡泡，主题切换背景不变；现全从主题色派生）
                 drawRect(
                     brush = Brush.verticalGradient(
-                        colors = listOf(Color(0xFFF0F4FD), Color(0xFFE8EEFC), Color(0xFFF5F8FF))
+                        colors = listOf(
+                            lerp(baseColor, primaryColor, 0.06f),
+                            baseColor,
+                            lerp(baseColor, primaryColor, 0.03f)
+                        )
                     )
                 )
                 val bubbles = listOf(
-                    Triple(Offset(w * 0.25f, h * 0.22f), 55.dp.toPx(), Color(0xFFFF8DA1)),
-                    Triple(Offset(w * 0.78f, h * 0.40f), 70.dp.toPx(), Color(0xFF8C82FF)),
-                    Triple(Offset(w * 0.32f, h * 0.68f), 65.dp.toPx(), Color(0xFF48D1CC)),
-                    Triple(Offset(w * 0.75f, h * 0.85f), 50.dp.toPx(), Color(0xFFFFB347))
+                    Triple(Offset(w * 0.25f, h * 0.22f), 55.dp.toPx(), primaryColor),
+                    Triple(Offset(w * 0.78f, h * 0.40f), 70.dp.toPx(), secondaryColor),
+                    Triple(Offset(w * 0.32f, h * 0.68f), 65.dp.toPx(), primaryColor),
+                    Triple(Offset(w * 0.75f, h * 0.85f), 50.dp.toPx(), secondaryColor)
                 )
                 bubbles.forEachIndexed { idx, (center, r, col) ->
                     val dy = sin(ringSpinPhase + idx * 1.5f) * 12.dp.toPx()
                     val pos = center + Offset(0f, dy)
                     // 厚重软阴影
-                    drawCircle(Color(0xFFCBD5E1).copy(alpha = 0.55f), radius = r * 1.05f, center = pos + Offset(4.dp.toPx(), 8.dp.toPx()))
+                    drawCircle(lerp(baseColor, Color.Black, 0.18f).copy(alpha = 0.45f), radius = r * 1.05f, center = pos + Offset(4.dp.toPx(), 8.dp.toPx()))
                     // 粘土球体
                     drawCircle(col.copy(alpha = 0.82f), radius = r, center = pos)
                     // 顶部Q版高光
@@ -1516,10 +1524,14 @@ private fun DesignStyleBackground(
             }
 
             DesignStyle.LIQUID_GLASS -> {
-                // 7️⃣ 液态玻璃：动态折射波纹、水滴流光折射焦散、彩色棱镜边缘光
+                // 7️⃣ 液态玻璃（v1.4.15修复：此前写死浅蓝底，主题切换背景不变；现从主题色派生）
                 drawRect(
                     brush = Brush.verticalGradient(
-                        colors = listOf(Color(0xFFE8F6FC), Color(0xFFF2F9FD), Color(0xFFDCF0FA))
+                        colors = listOf(
+                            lerp(baseColor, secondaryColor, 0.10f),
+                            baseColor,
+                            lerp(baseColor, primaryColor, 0.06f)
+                        )
                     )
                 )
                 // 动态液态高透光折射环（3 层水波纹扩散）
@@ -1529,10 +1541,10 @@ private fun DesignStyleBackground(
                     drawCircle(
                         brush = Brush.sweepGradient(
                             listOf(
-                                Color(0xFF00C6FF).copy(alpha = 0.35f),
-                                Color(0xFFFF2D78).copy(alpha = 0.22f),
-                                Color(0xFF0072FF).copy(alpha = 0.30f),
-                                Color(0xFF00C6FF).copy(alpha = 0.35f)
+                                secondaryColor.copy(alpha = 0.35f),
+                                primaryColor.copy(alpha = 0.22f),
+                                secondaryColor.copy(alpha = 0.30f),
+                                secondaryColor.copy(alpha = 0.35f)
                             ),
                             center = center
                         ),
@@ -1544,7 +1556,7 @@ private fun DesignStyleBackground(
                 // 游走的高光水珠
                 val dropPos = Offset(w * 0.70f + cos(ringSpinPhase) * 40f, h * 0.25f + sin(ringSpinPhase) * 25f)
                 drawCircle(Color.White.copy(alpha = 0.75f), radius = 16.dp.toPx(), center = dropPos)
-                drawCircle(Color(0xFF00C6FF).copy(alpha = 0.40f), radius = 16.dp.toPx(), center = dropPos, style = Stroke(2.dp.toPx()))
+                drawCircle(secondaryColor.copy(alpha = 0.40f), radius = 16.dp.toPx(), center = dropPos, style = Stroke(2.dp.toPx()))
             }
 
             DesignStyle.NEO_BRUTALISM -> {
