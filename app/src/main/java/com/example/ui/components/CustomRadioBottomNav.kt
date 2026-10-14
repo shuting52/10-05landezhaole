@@ -41,6 +41,7 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Widgets
@@ -136,12 +137,12 @@ fun CustomRadioBottomNav(
         ),
         BottomNavTabItem(
             tab = AppBottomTab.SKILL,
-            title = if (uiText?.tabSkill.isNullOrBlank() || uiText?.tabSkill == "资源" || uiText?.tabSkill == "懒得KunBox" || uiText?.tabSkill == "懒得连了") "AI前言" else uiText!!.tabSkill,
-            icon = Icons.Filled.AutoAwesome,
-            color = Color(0xFF6366F1), // 极客幻紫
-            gradient = listOf(Color(0xFF818CF8), Color(0xFF4F46E5)),
-            petKaomoji = "(๑•̀ㅂ•́)و✧",
-            petVoice = "探索前沿AI与最新榜单喵~ 🤖"
+            title = if (uiText?.tabSkill.isNullOrBlank() || uiText?.tabSkill == "资源" || uiText?.tabSkill == "懒得KunBox" || uiText?.tabSkill == "懒得连了" || uiText?.tabSkill == "AI前言") "DownVid" else uiText!!.tabSkill,
+            icon = Icons.Filled.PlayArrow,
+            color = Color(0xFF0284C7), // 晴空蔚蓝
+            gradient = listOf(Color(0xFF38BDF8), Color(0xFF0284C7)),
+            petKaomoji = "(◕‿◕)b",
+            petVoice = "全网无水印视频一键解析下载喵~ 🎬"
         ),
         BottomNavTabItem(
             tab = AppBottomTab.TOOLBOX,

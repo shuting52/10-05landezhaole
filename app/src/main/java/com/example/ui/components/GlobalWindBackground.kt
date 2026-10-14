@@ -277,191 +277,180 @@ fun GlobalWindBackground(
                 Box(modifier = Modifier.fillMaxSize().background(uiverse.customStyle.backgroundColor))
             }
             else -> {
-                // 默认主题胶囊风背景（跟随当前主题色：如霓虹绿地图/国庆红/暖桃风）
-                val base = themeBgColor ?: WindPeach1
-                val accent = themePrimaryColor ?: WindPeach5
+                // 国风山水动态背景（远山如黛 · 层峦叠翠 · 烟波浩渺 · 竹影青鹤）
+                val base = themeBgColor ?: Color(0xFFF2F7F4)
+                val accent = themePrimaryColor ?: Color(0xFF1B4931)
+                val jadeGreen = Color(0xFF2D6A4F)
+                val goldGlint = Color(0xFFD4AF37)
 
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val width = size.width
                     val height = size.height
 
-                    // 1. 底衬渐变
-                    val startX = -width * 0.2f + windShift * width * 0.3f
-                    val startY = 0f + windShift * height * 0.1f
-                    val endX = width * 1.1f + windShift * width * 0.2f
+                    // 1. 山水底衬水墨晕染渐变
+                    val startX = -width * 0.1f + windShift * width * 0.2f
+                    val startY = 0f + windShift * height * 0.08f
+                    val endX = width * 1.1f
                     val endY = height * 1.0f
 
-                    if (themeBgColor != null) {
-                        drawRect(
-                            brush = Brush.linearGradient(
-                                colors = listOf(
-                                    base,
-                                    base.copy(alpha = 0.94f),
-                                    Color(
-                                        red = (base.red + accent.red) / 2f,
-                                        green = (base.green + accent.green) / 2f,
-                                        blue = (base.blue + accent.blue) / 2f
-                                    ).copy(alpha = 0.88f),
-                                    base
-                                ),
-                                start = Offset(startX, startY),
-                                end = Offset(endX, endY)
-                            )
+                    drawRect(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                base,
+                                Color(0xFFE8F1EC),
+                                Color(0xFFDEEDE5),
+                                base.copy(alpha = 0.95f)
+                            ),
+                            start = Offset(startX, startY),
+                            end = Offset(endX, endY)
                         )
-                    } else {
-                        drawRect(
-                            brush = Brush.linearGradient(
-                                colors = listOf(WindPeach1, WindPeach2, WindPeach3, WindPeach4, WindPeach5),
-                                start = Offset(startX, startY),
-                                end = Offset(endX, endY)
+                    )
+
+                    // 2. 远山如黛（层叠山脊 1：轻柔青墨远山，平缓起伏）
+                    val mtnShift1 = (windShift - 0.5f) * width * 0.04f
+                    val mtnPath1 = Path().apply {
+                        moveTo(-20f, height * 0.62f)
+                        cubicTo(
+                            width * 0.22f + mtnShift1, height * 0.48f,
+                            width * 0.42f + mtnShift1, height * 0.56f,
+                            width * 0.62f + mtnShift1, height * 0.46f
+                        )
+                        cubicTo(
+                            width * 0.78f + mtnShift1, height * 0.38f,
+                            width * 0.90f + mtnShift1, height * 0.52f,
+                            width + 20f, height * 0.50f
+                        )
+                        lineTo(width + 20f, height)
+                        lineTo(-20f, height)
+                        close()
+                    }
+                    drawPath(
+                        path = mtnPath1,
+                        brush = Brush.verticalGradient(
+                            listOf(
+                                accent.copy(alpha = 0.12f),
+                                jadeGreen.copy(alpha = 0.08f),
+                                Color.Transparent
+                            ),
+                            startY = height * 0.42f,
+                            endY = height * 0.85f
+                        )
+                    )
+
+                    // 3. 近峰叠翠（层叠山脊 2：苍翠奇峰，峰峦起伏）
+                    val mtnShift2 = -(windShift - 0.5f) * width * 0.06f
+                    val mtnPath2 = Path().apply {
+                        moveTo(-20f, height * 0.72f)
+                        cubicTo(
+                            width * 0.18f + mtnShift2, height * 0.60f,
+                            width * 0.36f + mtnShift2, height * 0.54f,
+                            width * 0.52f + mtnShift2, height * 0.65f
+                        )
+                        cubicTo(
+                            width * 0.70f + mtnShift2, height * 0.72f,
+                            width * 0.86f + mtnShift2, height * 0.58f,
+                            width + 20f, height * 0.66f
+                        )
+                        lineTo(width + 20f, height)
+                        lineTo(-20f, height)
+                        close()
+                    }
+                    drawPath(
+                        path = mtnPath2,
+                        brush = Brush.verticalGradient(
+                            listOf(
+                                jadeGreen.copy(alpha = 0.15f),
+                                accent.copy(alpha = 0.10f),
+                                Color.Transparent
+                            ),
+                            startY = height * 0.52f,
+                            endY = height * 0.95f
+                        )
+                    )
+
+                    // 4. 烟波浩渺（动态平滑水波微漾线）
+                    for (i in 0..2) {
+                        val waveBaseY = height * (0.80f + i * 0.07f)
+                        val wavePhase = (windShift + i * 0.33f) * (2f * Math.PI.toFloat())
+                        val wavePath = Path().apply {
+                            moveTo(0f, waveBaseY)
+                            val segments = 8
+                            for (s in 1..segments) {
+                                val x = width * (s.toFloat() / segments)
+                                val prevX = width * ((s - 1).toFloat() / segments)
+                                val midX = (prevX + x) / 2f
+                                val offsetY = kotlin.math.sin(wavePhase + s * 0.8f) * 6.dp.toPx()
+                                quadraticTo(midX, waveBaseY + offsetY, x, waveBaseY)
+                            }
+                        }
+                        drawPath(
+                            path = wavePath,
+                            color = jadeGreen.copy(alpha = 0.18f - i * 0.04f),
+                            style = Stroke(width = (1.5f - i * 0.2f).dp.toPx())
+                        )
+                    }
+
+                    // 5. 青鸟白鹤·飞鸟剪影（在山峦上空翱翔）
+                    val birdX1 = (width * 0.28f + (windShift - 0.5f) * width * 0.12f)
+                    val birdY1 = height * 0.22f + (slay1Angle * 0.4f)
+                    drawPath(
+                        path = Path().apply {
+                            moveTo(birdX1 - 14.dp.toPx(), birdY1 + 5.dp.toPx())
+                            quadraticTo(birdX1 - 6.dp.toPx(), birdY1 - 5.dp.toPx(), birdX1, birdY1)
+                            quadraticTo(birdX1 + 6.dp.toPx(), birdY1 - 5.dp.toPx(), birdX1 + 14.dp.toPx(), birdY1 + 5.dp.toPx())
+                        },
+                        color = accent.copy(alpha = 0.35f),
+                        style = Stroke(width = 1.8.dp.toPx())
+                    )
+                    val birdX2 = (width * 0.72f - (windShift - 0.5f) * width * 0.10f)
+                    val birdY2 = height * 0.28f - (slay2Angle * 0.3f)
+                    drawPath(
+                        path = Path().apply {
+                            moveTo(birdX2 - 10.dp.toPx(), birdY2 + 4.dp.toPx())
+                            quadraticTo(birdX2 - 4.dp.toPx(), birdY2 - 3.dp.toPx(), birdX2, birdY2)
+                            quadraticTo(birdX2 + 4.dp.toPx(), birdY2 - 3.dp.toPx(), birdX2 + 10.dp.toPx(), birdY2 + 4.dp.toPx())
+                        },
+                        color = accent.copy(alpha = 0.25f),
+                        style = Stroke(width = 1.4.dp.toPx())
+                    )
+
+                    // 6. 竹韵落叶与灵动微光（随风飘舞的竹叶粒子）
+                    val leaves = listOf(
+                        Triple(width * 0.15f, height * 0.32f + windShift * 24f, slay1Angle * 2.5f),
+                        Triple(width * 0.85f, height * 0.45f - windShift * 20f, -slay2Angle * 2f),
+                        Triple(width * 0.48f, height * 0.78f + windShift * 16f, slay1Angle * 1.8f),
+                        Triple(width * 0.92f, height * 0.88f - windShift * 14f, 15f)
+                    )
+                    leaves.forEach { (lx, ly, rot) ->
+                        drawCapsule(
+                            center = Offset(lx, ly),
+                            length = 28.dp.toPx(),
+                            thickness = 7.dp.toPx(),
+                            angleDegrees = rot,
+                            brush = Brush.horizontalGradient(
+                                listOf(jadeGreen.copy(alpha = 0.30f), goldGlint.copy(alpha = 0.25f))
                             )
                         )
                     }
 
-                    // 2. 大型核心流光胶囊 1（斜穿背景的主胶囊体）
-                    val capsule1Center = Offset(
-                        width * 0.50f + (windShift - 0.5f) * width * 0.08f,
-                        height * 0.36f + (windShift - 0.5f) * height * 0.06f
-                    )
-                    drawCapsule(
-                        center = capsule1Center,
-                        length = width * 0.98f,
-                        thickness = 175.dp.toPx() * glowPulse,
-                        angleDegrees = -22f + (windShift - 0.5f) * 6f,
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                accent.copy(alpha = 0.26f),
-                                accent.copy(alpha = 0.10f),
-                                Color.Transparent
-                            )
-                        )
-                    )
-                    // 核心胶囊的高光微边框
-                    drawCapsule(
-                        center = capsule1Center,
-                        length = width * 0.98f,
-                        thickness = 175.dp.toPx() * glowPulse,
-                        angleDegrees = -22f + (windShift - 0.5f) * 6f,
-                        color = accent.copy(alpha = 0.16f),
-                        style = Stroke(width = 1.5.dp.toPx())
-                    )
-
-                    // 3. 次级流动胶囊 2（右上方浮动胶囊）
-                    val capsule2Center = Offset(
-                        width * 0.82f - (windShift - 0.5f) * width * 0.10f,
-                        height * 0.18f + (windShift - 0.5f) * height * 0.04f
-                    )
-                    drawCapsule(
-                        center = capsule2Center,
-                        length = width * 0.70f,
-                        thickness = 115.dp.toPx(),
-                        angleDegrees = 26f - (windShift - 0.5f) * 8f,
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                accent.copy(alpha = 0.20f),
-                                Color.Transparent
-                            )
-                        )
-                    )
-                    drawCapsule(
-                        center = capsule2Center,
-                        length = width * 0.70f,
-                        thickness = 115.dp.toPx(),
-                        angleDegrees = 26f - (windShift - 0.5f) * 8f,
-                        color = accent.copy(alpha = 0.12f),
-                        style = Stroke(width = 1.2.dp.toPx())
-                    )
-
-                    // 4. 次级流动胶囊 3（左下方底座胶囊）
-                    val capsule3Center = Offset(
-                        width * 0.24f + (windShift - 0.5f) * width * 0.08f,
-                        height * 0.76f - (windShift - 0.5f) * height * 0.05f
-                    )
-                    drawCapsule(
-                        center = capsule3Center,
-                        length = width * 0.80f,
-                        thickness = 135.dp.toPx(),
-                        angleDegrees = -18f + (windShift - 0.5f) * 6f,
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                accent.copy(alpha = 0.18f),
-                                accent.copy(alpha = 0.06f)
-                            )
-                        )
-                    )
-
-                    // 5. 动感悬浮小胶囊微粒群（国潮红金·Floating Capsule Constellation）
-                    val goldGlint = Color(0xFFFFD700)
-                    // 胶囊粒子 A：左上微光悬浮 (华夏朱红 + 鎏金边)
-                    drawCapsule(
-                        center = Offset(width * 0.16f, height * 0.12f + windShift * 18f),
-                        length = 48.dp.toPx(),
-                        thickness = 16.dp.toPx(),
-                        angleDegrees = slay1Angle * 2.2f,
-                        brush = Brush.horizontalGradient(
-                            listOf(accent.copy(alpha = 0.45f), goldGlint.copy(alpha = 0.35f))
-                        )
-                    )
-                    drawCapsule(
-                        center = Offset(width * 0.16f, height * 0.12f + windShift * 18f),
-                        length = 48.dp.toPx(),
-                        thickness = 16.dp.toPx(),
-                        angleDegrees = slay1Angle * 2.2f,
-                        color = goldGlint.copy(alpha = 0.45f),
-                        style = Stroke(width = 1.2.dp.toPx())
-                    )
-
-                    // 胶囊粒子 B：右上发光胶囊环 (鎏金华彩)
-                    drawCapsule(
-                        center = Offset(width * 0.88f, height * 0.26f - windShift * 15f),
-                        length = 64.dp.toPx(),
-                        thickness = 20.dp.toPx(),
-                        angleDegrees = -32f + slay2Angle * 1.5f,
-                        brush = Brush.linearGradient(
-                            listOf(goldGlint.copy(alpha = 0.50f), accent.copy(alpha = 0.35f))
+                    // 7. 云雾流光柔晕（左上与右下呼吸光晕）
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            listOf(jadeGreen.copy(alpha = 0.14f * glowPulse), Color.Transparent),
+                            center = Offset(width * 0.15f, height * 0.20f),
+                            radius = 240.dp.toPx()
                         ),
-                        style = Stroke(width = 2.dp.toPx())
+                        center = Offset(width * 0.15f, height * 0.20f),
+                        radius = 240.dp.toPx()
                     )
-
-                    // 胶囊粒子 C：左侧居中漂浮小胶囊 (祥瑞锦红)
-                    drawCapsule(
-                        center = Offset(width * 0.10f, height * 0.48f + windShift * 22f),
-                        length = 42.dp.toPx(),
-                        thickness = 14.dp.toPx(),
-                        angleDegrees = 18f,
-                        color = accent.copy(alpha = 0.30f)
-                    )
-
-                    // 胶囊粒子 D：右侧居中细长胶囊 (金丝织带)
-                    drawCapsule(
-                        center = Offset(width * 0.92f, height * 0.58f - windShift * 20f),
-                        length = 58.dp.toPx(),
-                        thickness = 16.dp.toPx(),
-                        angleDegrees = -24f + slay1Angle,
-                        brush = Brush.horizontalGradient(
-                            listOf(accent.copy(alpha = 0.32f), goldGlint.copy(alpha = 0.30f))
-                        )
-                    )
-
-                    // 胶囊粒子 E：中下方横向微动胶囊 (赤金华缎)
-                    drawCapsule(
-                        center = Offset(width * 0.52f, height * 0.84f + windShift * 14f),
-                        length = 76.dp.toPx(),
-                        thickness = 22.dp.toPx(),
-                        angleDegrees = 10f - windShift * 5f,
-                        brush = Brush.horizontalGradient(
-                            listOf(accent.copy(alpha = 0.38f), goldGlint.copy(alpha = 0.25f))
-                        )
-                    )
-
-                    // 胶囊粒子 F：右下角小胶囊点缀
-                    drawCapsule(
-                        center = Offset(width * 0.82f, height * 0.92f),
-                        length = 36.dp.toPx(),
-                        thickness = 12.dp.toPx(),
-                        angleDegrees = -15f,
-                        color = goldGlint.copy(alpha = 0.30f)
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            listOf(goldGlint.copy(alpha = 0.10f * glowPulse), Color.Transparent),
+                            center = Offset(width * 0.82f, height * 0.75f),
+                            radius = 220.dp.toPx()
+                        ),
+                        center = Offset(width * 0.82f, height * 0.75f),
+                        radius = 220.dp.toPx()
                     )
                 }
             }

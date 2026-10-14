@@ -41,22 +41,24 @@ data class ThemePreset(
 )
 
 object ThemePresetsRepository {
-    // 经典默认主题：雅致国潮红金（赤红主色 + 暖金辅助 + 纯净米白底 + 雅致深褐字）
-    val shengshiTheme = ThemePreset(
-        id = "shengshi_huadan",
-        name = "雅致红金 (默认)",
-        style = "classic",
-        categoryName = "经典",
-        primaryColor = Color(0xFFDE2910),      // 赤红
-        secondaryColor = Color(0xFFE8A200),   // 暖金
-        bgColor = Color(0xFFFFF7EC),          // 暖米白
+    // 默认主题：国风山水动态（青山黛墨绿 + 苍翠碧玉 + 烟雨玉白底 + 雅墨深字）
+    val shanshuiTheme = ThemePreset(
+        id = "shanshui_dongtai",
+        name = "山水动态 (默认)",
+        style = "landscape",
+        categoryName = "国风山水",
+        primaryColor = Color(0xFF1B4931),      // 黛墨松绿
+        secondaryColor = Color(0xFF2D6A4F),    // 苍翠碧玉
+        bgColor = Color(0xFFF2F7F4),           // 烟雨玉白
         surfaceColor = Color(0xFFFFFFFF),
-        textColor = Color(0xFF3B1F1F),        // 深褐
-        atmosphereEffect = AtmosphereEffect.NONE,
-        cardGradientColors = listOf(Color(0xFFFFE4EC), Color(0xFFE9E4FF), Color(0xFFDCEBFF))
+        textColor = Color(0xFF132A13),         // 黛墨黑
+        atmosphereEffect = AtmosphereEffect.FIREFLIES,
+        gradientColors = listOf(Color(0xFFE2EFE7), Color(0xFFF2F7F4)),
+        cardGradientColors = listOf(Color(0xFFE2EFE7), Color(0xFFEBF5EE), Color(0xFFF2F7F4))
     )
 
-    val defaultTheme = shengshiTheme
+    val defaultTheme = shanshuiTheme
+    val shengshiTheme = shanshuiTheme
 
     // 经典皮肤（可选，保留供主题切换）
     val classicTheme = ThemePreset(
@@ -248,9 +250,9 @@ object ThemePresetsRepository {
     )
 
     val allThemes: List<ThemePreset> = listOf(
-        shengshiTheme,
+        shanshuiTheme,
         classicTheme
-    ) + iosThemes + neuThemes + darkThemes
+    ) + iosThemes + neuThemes + darkThemes + gradientThemes
 }
 
 val LocalUiverseState = staticCompositionLocalOf { ActiveUiverseState() }
@@ -261,16 +263,16 @@ val LocalUiverseState = staticCompositionLocalOf { ActiveUiverseState() }
 // 关键组件（卡片/底栏/按钮/标题）改为从此色板读色，切换主题时 UI 自动跟随变色。
 // ============================================================
 data class ThemeUiColors(
-    val primary: Color = Color(0xFFDE2910),
-    val secondary: Color = Color(0xFFE8A200),
-    val background: Color = Color(0xFFFFF7EC),
+    val primary: Color = Color(0xFF1B4931),        // 青山黛墨绿
+    val secondary: Color = Color(0xFF2D6A4F),      // 苍翠碧玉
+    val background: Color = Color(0xFFF2F7F4),     // 烟雨玉白
     val surface: Color = Color(0xFFFFFFFF),
-    val text: Color = Color(0xFF3B1F1F),
-    val textMuted: Color = Color(0xFF7A6A60),
-    val accent: Color = Color(0xFFDE2910),
-    val border: Color = Color(0xFFFFD700).copy(alpha = 0.55f),
-    // 卡片渐变（默认经典=浅粉→浅紫→浅蓝；渐变主题=跟随主题色）
-    val cardGradient: List<Color> = listOf(Color(0xFFFFE4EC), Color(0xFFE9E4FF), Color(0xFFDCEBFF))
+    val text: Color = Color(0xFF132A13),           // 黛墨黑
+    val textMuted: Color = Color(0xFF52796F),
+    val accent: Color = Color(0xFF1B4931),
+    val border: Color = Color(0xFF2D6A4F).copy(alpha = 0.35f),
+    // 卡片渐变（国风山水温润水玉渐变）
+    val cardGradient: List<Color> = listOf(Color(0xFFE2EFE7), Color(0xFFEBF5EE), Color(0xFFF2F7F4))
 )
 
 val LocalThemeUiColors = staticCompositionLocalOf { ThemeUiColors() }

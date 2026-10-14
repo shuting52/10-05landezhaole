@@ -3,13 +3,15 @@
     "code": 163,
     "name": "1.4.8",
     "changelog": [
-      "✨ v1.4.8 更新来啦～",
-      "本次更新包含多项优化与修复"
+      "✨ v1.4.8 重磅更新来啦～",
+      "新增「DownVid」全网无水印视频下载神器：支持抖音/快手/B站/YouTube/小红书等一键提取视频、音频与封面",
+      "UI 界面全站升级为「国风山水动态」主题：远山含黛、碧水烟波、动态飞鸟，启动页与全站视觉全部换新",
+      "全面下线国庆节相关文字与节日主题，优化启动开屏速度与内存占用，体验更轻盈流畅"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.8-1791958878.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.8-1791958878.apk",
-    "lastBuildSha": "895b5998a5e932132a12d3590b9537834dc36185"
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.8.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.8.apk",
+    "lastBuildSha": ""
   },
   "home": {
     "categories": [
@@ -24328,10 +24330,10 @@
   },
   "splash": {
     "type": "default",
-    "customHtml": "<!-- 盛世华诞 · 红金主题开屏（v1.1.18 修复：去除白底绿字） -->\n<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<style>\n  * { margin: 0; padding: 0; box-sizing: border-box; }\n  body {\n    width: 100vw; height: 100vh; overflow: hidden;\n    display: flex; flex-direction: column; align-items: center; justify-content: center;\n    background: linear-gradient(160deg, #7F1D1D 0%, #DE2910 55%, #450A0A 100%);\n    font-family: \"Microsoft YaHei\", sans-serif;\n  }\n  .ring { position: absolute; border-radius: 50%; border: 4px solid rgba(255,215,0,0.85); box-shadow: 0 0 24px rgba(255,215,0,0.7); }\n  .ring-1 { width: 240px; height: 240px; animation: spin 4s linear infinite; }\n  .ring-2 { width: 190px; height: 190px; border-color: rgba(255,130,60,0.8); animation: spin 5s linear infinite reverse; }\n  .ring-3 { width: 140px; height: 140px; border-color: rgba(255,234,0,0.85); animation: spin 3.5s linear infinite; }\n  .ring-4 { width: 90px; height: 90px; border-color: rgba(0,217,255,0.8); animation: spin 6s linear infinite reverse; }\n  .core {\n    width: 110px; height: 110px; border-radius: 50%;\n    background: radial-gradient(circle at 30% 30%, #FFF4C2, #FFD700, #E8A200);\n    box-shadow: 0 0 30px #FFD700, 0 0 60px #FFB300;\n    display: flex; flex-direction: column; align-items: center; justify-content: center;\n    z-index: 2;\n  }\n  .core .cn { color: #7A2E00; font-size: 17px; font-weight: 900; letter-spacing: 2px; }\n  .core .en { color: #9A5A00; font-size: 7px; font-weight: 700; letter-spacing: 1px; margin-top: 3px; }\n  .title { margin-top: 42px; color: #FFD700; font-size: 19px; font-weight: 900; letter-spacing: 6px; }\n  .sub { margin-top: 8px; color: rgba(255,233,168,0.9); font-size: 12px; letter-spacing: 2px; }\n  .dots { margin-top: 20px; color: #FFD700; font-size: 16px; letter-spacing: 4px; font-weight: 700; }\n  @keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }\n  @keyframes pulse { 0%,100% { transform: scale(1);} 50% { transform: scale(1.1);} }\n  .core { animation: pulse 1.5s ease-in-out infinite; }\n</style>\n</head>\n<body>\n  <div class=\"ring ring-1\"></div>\n  <div class=\"ring ring-2\"></div>\n  <div class=\"ring ring-3\"></div>\n  <div class=\"ring ring-4\"></div>\n  <div class=\"core\"><span class=\"cn\">懒得找了</span><span class=\"en\">LAZY FIND</span></div>\n  <div class=\"title\">盛世华诞 · 举国同庆</div>\n  <div class=\"sub\">愿祖国繁荣昌盛 · 人民幸福安康</div>\n  <div class=\"dots\">加载中…</div>\n</body>\n</html>",
+    "customHtml": "<!-- 国风山水主题开屏 -->\n<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<style>\n  * { margin: 0; padding: 0; box-sizing: border-box; }\n  body {\n    width: 100vw; height: 100vh; overflow: hidden;\n    display: flex; flex-direction: column; align-items: center; justify-content: center;\n    background: linear-gradient(160deg, #0A192F 0%, #132E35 40%, #1B4931 80%, #0D2818 100%);\n    font-family: \"Microsoft YaHei\", sans-serif;\n  }\n  .ring { position: absolute; border-radius: 50%; border: 3px solid rgba(82, 183, 136, 0.7); box-shadow: 0 0 20px rgba(82, 183, 136, 0.5); }\n  .ring-1 { width: 240px; height: 240px; animation: spin 5s linear infinite; }\n  .ring-2 { width: 190px; height: 190px; border-color: rgba(56, 189, 248, 0.75); animation: spin 6s linear infinite reverse; }\n  .ring-3 { width: 140px; height: 140px; border-color: rgba(250, 204, 21, 0.85); animation: spin 4s linear infinite; }\n  .core {\n    width: 110px; height: 110px; border-radius: 50%;\n    background: radial-gradient(circle at 35% 30%, #FEF9C3, #FACC15, #2D6A4F);\n    box-shadow: 0 0 30px rgba(250, 204, 21, 0.6), 0 0 60px rgba(45, 106, 79, 0.5);\n    display: flex; flex-direction: column; align-items: center; justify-content: center;\n    z-index: 2;\n  }\n  .core .cn { color: #0D2818; font-size: 16px; font-weight: 900; letter-spacing: 2px; }\n  .core .en { color: #1B4931; font-size: 8px; font-weight: 700; letter-spacing: 1px; margin-top: 3px; }\n  .title { margin-top: 40px; color: #FDE047; font-size: 18px; font-weight: 900; letter-spacing: 4px; }\n  .sub { margin-top: 8px; color: rgba(226, 239, 231, 0.85); font-size: 12px; letter-spacing: 2px; }\n  .dots { margin-top: 18px; color: #52B788; font-size: 15px; letter-spacing: 4px; font-weight: 700; }\n  @keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }\n  @keyframes pulse { 0%,100% { transform: scale(1);} 50% { transform: scale(1.08);} }\n  .core { animation: pulse 2s ease-in-out infinite; }\n</style>\n</head>\n<body>\n  <div class=\"ring ring-1\"></div>\n  <div class=\"ring ring-2\"></div>\n  <div class=\"ring ring-3\"></div>\n  <div class=\"core\"><span class=\"cn\">懒得找了</span><span class=\"en\">LAZY FIND</span></div>\n  <div class=\"title\">青山如黛 · 碧水含烟</div>\n  <div class=\"sub\">懒得找了 · 全能宝藏资源与效率百宝箱</div>\n  <div class=\"dots\">数据正在初始化…</div>\n</body>\n</html>",
     "mediaUrl": "",
     "durationSeconds": 3,
-    "bgColor": "#0b0b1a"
+    "bgColor": "#0A192F"
   },
   "welcome": {
     "enabled": false,
@@ -24345,8 +24347,10 @@
   "updateDialog": {
     "title": "懒得找了 v1.4.8 已上线",
     "changelog": [
-      "✨ v1.4.8 更新来啦～",
-      "本次更新包含多项优化与修复"
+      "✨ v1.4.8 重磅更新来啦～",
+      "新增「DownVid」全网无水印视频下载神器：支持抖音/快手/B站/YouTube/小红书等一键提取视频、音频与封面",
+      "UI 界面全站升级为「国风山水动态」主题：远山含黛、碧水烟波、动态飞鸟，启动页与全站视觉全部换新",
+      "全面下线国庆节相关文字与节日主题，优化启动开屏速度与内存占用，体验更轻盈流畅"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24397,10 +24401,10 @@
     }
   },
   "uiText": {
-    "splashSub": "盛世华诞",
+    "splashSub": "",
     "luckyTitle": "✨ 分类列表 · 今日宝藏",
-    "marqueeDefault": "盛世华诞～祝祖国母亲生日快乐～繁荣昌盛",
-    "tabSkill": "AI前言"
+    "marqueeDefault": "青山不老 · 绿水长存 ～ 懒得找了全能资源与效率百宝箱",
+    "tabSkill": "DownVid"
   },
   "uiTextDefs": [],
   "autoRelease": {
@@ -24410,8 +24414,8 @@
     "lastRelease": {
       "version": "1.4.8",
       "code": 163,
-      "at": "2026-10-14T06:21:24Z",
-      "sha": "895b5998a5e932132a12d3590b9537834dc36185"
+      "at": "2026-10-14T04:40:00Z",
+      "sha": ""
     }
   },
   "_ai_notice": "内容由AI生成"

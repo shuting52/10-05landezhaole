@@ -182,7 +182,7 @@ fun KunBoxScreen(
     modifier: Modifier = Modifier,
     onOpenSettings: () -> Unit = {}
 ) {
-    AiFrontierScreen(
+    DownVidScreen(
         modifier = modifier,
         onOpenSettings = onOpenSettings
     )

@@ -26,9 +26,6 @@ android {
   // and updating Android apps in AI Studio.
   signingConfigs {
     create("release") {
-      // 兼容三种密钥来源：显式 KEYSTORE_PATH（存在才用）→ 正式 my-upload-key.jks → 内置 debug.keystore。
-      // 修复「更新弹窗没反应」根因：CI 未配置正式密钥时回退 debug.keystore 并自动匹配 alias，
-      // 避免 validateSigningRelease 失败 → APK 未产出 → 云端 apkUrl 404。
       val envPath = System.getenv("KEYSTORE_PATH")?.takeIf { it.isNotBlank() }
       val envFile = envPath?.let { file(it) }
       val uploadKey = file("${rootDir}/my-upload-key.jks")
@@ -37,7 +34,7 @@ android {
         envFile != null && envFile.exists() -> envFile
         uploadKey.exists() -> uploadKey
         dbgKey.exists() -> dbgKey
-        else -> uploadKey
+        else -> dbgKey
       }
       val useDebug = chosen.name.contains("debug", ignoreCase = true)
       val envStorePass = System.getenv("STORE_PASSWORD")?.takeIf { it.isNotBlank() }
