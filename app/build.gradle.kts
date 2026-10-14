@@ -26,11 +26,27 @@ android {
   // and updating Android apps in AI Studio.
   signingConfigs {
     create("release") {
-      val keystorePath = System.getenv("KEYSTORE_PATH") ?: "${rootDir}/my-upload-key.jks"
-      storeFile = file(keystorePath)
-      storePassword = System.getenv("STORE_PASSWORD")
-      keyAlias = "upload"
-      keyPassword = System.getenv("KEY_PASSWORD")
+      // 兼容三种密钥来源：显式 KEYSTORE_PATH（存在才用）→ 正式 my-upload-key.jks → 内置 debug.keystore。
+      // 修复「CI 构建失败」根因：CI 无正式密钥时回退 debug.keystore 并自动匹配 alias（androiddebugkey），
+      // 避免硬编码 upload alias 导致 packageRelease 失败 → APK 未产出 → 自动发布中断。
+      val envPath = System.getenv("KEYSTORE_PATH")?.takeIf { it.isNotBlank() }
+      val envFile = envPath?.let { file(it) }
+      val uploadKey = file("${rootDir}/my-upload-key.jks")
+      val dbgKey = file("${rootDir}/debug.keystore")
+      val chosen = when {
+        envFile != null && envFile.exists() -> envFile
+        uploadKey.exists() -> uploadKey
+        dbgKey.exists() -> dbgKey
+        else -> dbgKey
+      }
+      val useDebug = chosen.name.contains("debug", ignoreCase = true)
+      val envStorePass = System.getenv("STORE_PASSWORD")?.takeIf { it.isNotBlank() }
+      val envKeyAlias = System.getenv("KEY_ALIAS")?.takeIf { it.isNotBlank() }
+      val envKeyPass = System.getenv("KEY_PASSWORD")?.takeIf { it.isNotBlank() }
+      storeFile = chosen
+      storePassword = envStorePass ?: if (useDebug) "android" else null
+      keyAlias = envKeyAlias ?: if (useDebug) "androiddebugkey" else "upload"
+      keyPassword = envKeyPass ?: if (useDebug) "android" else null
     }
     create("debugConfig") {
       storeFile = file("${rootDir}/debug.keystore")
