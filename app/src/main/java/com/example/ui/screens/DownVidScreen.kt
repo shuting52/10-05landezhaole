@@ -803,6 +803,7 @@ fun DownVidScreen(
 
 @Composable
 private fun DownVidHeader(onPasteClipboard: () -> Unit) {
+    val themeColors = LocalThemeUiColors.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -866,6 +867,7 @@ private fun DownVidHeader(onPasteClipboard: () -> Unit) {
 
 @Composable
 private fun PlatformPillCard(platform: DownVidPlatform, onClick: () -> Unit) {
+    val themeColors = LocalThemeUiColors.current
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(12.dp),
@@ -893,6 +895,7 @@ private fun PlatformPillCard(platform: DownVidPlatform, onClick: () -> Unit) {
 
 @Composable
 private fun TipStepRow(step: String, text: String) {
+    val themeColors = LocalThemeUiColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()

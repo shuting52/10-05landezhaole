@@ -63,7 +63,7 @@ object VideoLinkParser {
                     val finalUrl = resp.request.url.toString()
                     val html = resp.body?.string() ?: return@withContext MediaParseResult()
                     // 落地页本身是直链（极少数情况）
-                    val ct = resp.header("Content-Type", "").lowercase()
+                    val ct = (resp.header("Content-Type", "") ?: "").lowercase()
                     if (ct.contains("video/") || finalUrl.substringBefore('?').lowercase().endsWith(".mp4")) {
                         return@withContext MediaParseResult(videoUrls = listOf(finalUrl))
                     }
