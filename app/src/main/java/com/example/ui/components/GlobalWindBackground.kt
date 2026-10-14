@@ -29,6 +29,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Fill
@@ -297,8 +298,10 @@ fun GlobalWindBackground(
                 // 国风山水动态背景（远山如黛 · 层峦叠翠 · 烟波浩渺 · 竹影青鹤）
                 val base = themeBgColor ?: Color(0xFFF2F7F4)
                 val accent = themePrimaryColor ?: Color(0xFF1B4931)
-                val jadeGreen = Color(0xFF2D6A4F)
-                val goldGlint = Color(0xFFD4AF37)
+                // v1.4.11 修复：主题切换背景跟随——此前 jadeGreen/goldGlint/底衬渐变写死国风绿，
+                // 无渐变主题（如经典科技蓝）切换后背景仍显示绿色山水。现全部从主题色派生。
+                val jadeGreen = accent
+                val goldGlint = accent
 
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val width = size.width
@@ -314,8 +317,8 @@ fun GlobalWindBackground(
                         brush = Brush.linearGradient(
                             colors = listOf(
                                 base,
-                                Color(0xFFE8F1EC),
-                                Color(0xFFDEEDE5),
+                                lerp(base, accent, 0.07f),
+                                lerp(base, accent, 0.04f),
                                 base.copy(alpha = 0.95f)
                             ),
                             start = Offset(startX, startY),

@@ -74,7 +74,7 @@ import androidx.compose.runtime.withFrameNanos
  * 1. 五圈不规则波浪环（红/橙/金/绿/青）各自反向不同速度旋转，外发光呼吸
  * 2. 环绕轨道四颗光点公转，中心金色核心「懒得找了」流光标题
  * 3. 底部「加载中」点点动画 + 盛世华诞红金渐变背景
- * 4. 右上角「跳过」倒计时按钮（默认 3 秒，云端可覆盖），倒计时结束自动进入首页
+ * 4. 右上角「跳过」倒计时按钮（默认 5 秒，云端可覆盖），倒计时结束自动进入首页
  *
  * 云端 type=html/media 分支保留：控制台可切换到 WebView 网页开屏 / 视频开屏 / 图片开屏。
  */
@@ -88,8 +88,8 @@ fun SplashScreenOverlay(
     uiText: com.example.data.remote.UiTextDto? = null
 ) {
     var countdownSeconds by remember(splash?.durationSeconds) {
-        // v1.1.18：默认 3 秒；云端控制台配置了展示时长则严格跟随后台设定
-        mutableIntStateOf((splash?.durationSeconds ?: 3).coerceIn(1, 15))
+        // v1.4.11：默认 5 秒；云端控制台配置了展示时长则严格跟随后台设定
+        mutableIntStateOf((splash?.durationSeconds ?: 5).coerceIn(1, 15))
     }
 
     val entryScale = remember { Animatable(0.7f) }
