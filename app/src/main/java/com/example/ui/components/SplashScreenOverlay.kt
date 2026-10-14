@@ -7,6 +7,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -22,8 +23,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
@@ -45,8 +48,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -177,16 +184,27 @@ private fun ShengshiWaveSplashContent(
     entryAlpha: Animatable<Float, *>,
     uiText: com.example.data.remote.UiTextDto? = null
 ) {
+    // v1.4.14：图2风格重写 —— 清新 pastel 可爱风启动页（动态漂浮团子 + 俏皮文案）
+    val infinite = rememberInfiniteTransition(label = "splash_float")
+    val float1 by infinite.animateFloat(0f, 14f, infiniteRepeatable(tween(2200, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "f1")
+    val float2 by infinite.animateFloat(0f, -12f, infiniteRepeatable(tween(2600, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "f2")
+    val float3 by infinite.animateFloat(0f, 10f, infiniteRepeatable(tween(1900, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "f3")
+    val bubblePop by infinite.animateFloat(0.92f, 1.06f, infiniteRepeatable(tween(1400, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "pop")
+    // 眨眼动画
+    val blink by infinite.animateFloat(1f, 1f, infiniteRepeatable(
+        keyframes { durationMillis = 3600; 1f at 0; 1f at 3300; 0.12f at 3400; 1f at 3500 },
+        RepeatMode.Restart
+    ), label = "blink")
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
                     listOf(
-                        Color(0xFF0A192F), // 黛墨夜色
-                        Color(0xFF132E35), // 苍山暮霭
-                        Color(0xFF1B4931), // 远山翠微
-                        Color(0xFF0D2818)  // 碧水深潭
+                        Color(0xFFFFF8E7), // 奶油白
+                        Color(0xFFFFF1DC), // 蜜桃
+                        Color(0xFFFFE8D6)  // 柔粉
                     )
                 )
             )
@@ -195,102 +213,49 @@ private fun ShengshiWaveSplashContent(
                 indication = null
             ) { onDismiss() }
     ) {
-        // ---- 国风山水：山峦剪影与水波烟雨 Canvas ----
+        // ---- 背景漂浮团子 Canvas ----
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val w = size.width
-            val h = size.height
-
-            // 远山如黛 (山脊线 1)
-            val mtnPath1 = Path().apply {
-                moveTo(0f, h * 0.72f)
-                cubicTo(w * 0.25f, h * 0.60f, w * 0.45f, h * 0.68f, w * 0.65f, h * 0.58f)
-                cubicTo(w * 0.82f, h * 0.50f, w * 0.92f, h * 0.64f, w, h * 0.62f)
-                lineTo(w, h)
-                lineTo(0f, h)
-                close()
-            }
-            drawPath(
-                path = mtnPath1,
-                brush = Brush.verticalGradient(
-                    listOf(Color(0xFF1B4931).copy(alpha = 0.45f), Color(0xFF0F303B).copy(alpha = 0.65f)),
-                    startY = h * 0.55f, endY = h
-                )
+            val w = size.width; val h = size.height
+            // 粉色圆团子（左上）
+            drawKawaiiBlob(
+                center = Offset(w * 0.22f, h * 0.30f + float1 * 2),
+                r = w * 0.13f,
+                color = Color(0xFFF8A8C8),
+                eyeScaleY = blink
             )
-
-            // 中景重山叠嶂 (山脊线 2)
-            val mtnPath2 = Path().apply {
-                moveTo(0f, h * 0.82f)
-                cubicTo(w * 0.20f, h * 0.75f, w * 0.38f, h * 0.70f, w * 0.55f, h * 0.78f)
-                cubicTo(w * 0.72f, h * 0.84f, w * 0.88f, h * 0.72f, w, h * 0.80f)
-                lineTo(w, h)
-                lineTo(0f, h)
-                close()
-            }
-            drawPath(
-                path = mtnPath2,
-                brush = Brush.verticalGradient(
-                    listOf(Color(0xFF2D6A4F).copy(alpha = 0.55f), Color(0xFF0D2818).copy(alpha = 0.85f)),
-                    startY = h * 0.70f, endY = h
-                )
+            // 蓝色圆角团子（中央偏下）
+            drawKawaiiBlob(
+                center = Offset(w * 0.52f, h * 0.62f + float2 * 2),
+                r = w * 0.20f,
+                color = Color(0xFF8FD0F0),
+                eyeScaleY = blink,
+                roundRect = true
             )
-
-            // 底部烟波水纹线 (3 条轻盈波浪曲线)
-            for (i in 0..2) {
-                val waveY = h * (0.88f + i * 0.04f)
-                val wavePath = Path().apply {
-                    moveTo(0f, waveY)
-                    cubicTo(w * 0.3f, waveY - 8f, w * 0.7f, waveY + 8f, w, waveY)
-                }
-                drawPath(
-                    path = wavePath,
-                    color = Color(0xFF52B788).copy(alpha = 0.25f - i * 0.05f),
-                    style = Stroke(width = 2.dp.toPx())
-                )
-            }
+            // 黄色团子（右下）
+            drawKawaiiBlob(
+                center = Offset(w * 0.78f, h * 0.72f + float3 * 2),
+                r = w * 0.15f,
+                color = Color(0xFFFFD93D),
+                eyeScaleY = blink
+            )
+            // 橙色小团子（右上点缀）
+            drawKawaiiBlob(
+                center = Offset(w * 0.85f, h * 0.22f + float2),
+                r = w * 0.09f,
+                color = Color(0xFFFF9A3D),
+                eyeScaleY = blink
+            )
+            // 星星点缀
+            val starY = h * 0.18f + float3
+            drawStar(center = Offset(w * 0.15f, starY), r = 14.dp.toPx(), color = Color(0xFFFFD93D))
+            drawStar(center = Offset(w * 0.68f, h * 0.14f + float1), r = 10.dp.toPx(), color = Color(0xFFF8A8C8))
         }
 
-        // ---- 两团柔光山月光晕（左上碧玉光晕 / 右下流金雾霭，漂浮呼吸）----
-        val floatT by rememberInfiniteTransition(label = "glow_float").animateFloat(
-            initialValue = 0f,
-            targetValue = 1f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(4000, easing = FastOutSlowInEasing),
-                repeatMode = RepeatMode.Reverse
-            ),
-            label = "floatT"
-        )
-        Box(
-            modifier = Modifier
-                .size(420.dp)
-                .align(Alignment.TopStart)
-                .offset(y = (floatT * 40f).dp)
-                .graphicsLayer { alpha = 0.20f }
-                .background(
-                    Brush.radialGradient(
-                        listOf(Color(0xFF34D399), Color.Transparent)
-                    ),
-                    shape = CircleShape
-                )
-        )
-        Box(
-            modifier = Modifier
-                .size(420.dp)
-                .align(Alignment.BottomEnd)
-                .offset(y = (-floatT * 40f).dp)
-                .graphicsLayer { alpha = 0.16f }
-                .background(
-                    Brush.radialGradient(
-                        listOf(Color(0xFFFDE047), Color.Transparent)
-                    ),
-                    shape = CircleShape
-                )
-        )
-
-        // ---- 右上角「跳过 3s」按钮 ----
+        // ---- 右上角跳过按钮（奶白 pill） ----
         Surface(
             shape = RoundedCornerShape(20.dp),
-            color = Color(0xFF0A192F).copy(alpha = 0.65f),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFD4AF37).copy(alpha = 0.75f)),
+            color = Color.White.copy(alpha = 0.85f),
+            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE8590C).copy(alpha = 0.35f)),
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = 44.dp, end = 20.dp)
@@ -300,104 +265,161 @@ private fun ShengshiWaveSplashContent(
                 text = "跳过 $countdownSeconds s",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                color = SsGold,
+                color = Color(0xFFE8590C),
                 modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
             )
         }
 
-        // ---- 中央加载器 ----
+        // ---- 中央文案区 ----
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .align(Alignment.Center)
+                .offset(y = (-40).dp)
                 .scale(entryScale.value)
                 .graphicsLayer { alpha = entryAlpha.value }
+                .padding(horizontal = 32.dp)
         ) {
+            // Hi~ 气泡
             Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.size(280.dp)
+                modifier = Modifier
+                    .scale(bubblePop)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Color(0xFF2B2B2B))
+                    .padding(horizontal = 14.dp, vertical = 6.dp)
             ) {
-                // 五圈波浪环（各自旋转，方向交替）
-                val rings = remember {
-                    listOf(
-                        RingSpec(252f, 4000, false, floatArrayOf(42f, 58f, 70f, 30f)),
-                        RingSpec(207f, 5000, true, floatArrayOf(60f, 40f, 30f, 70f)),
-                        RingSpec(162f, 3500, false, floatArrayOf(30f, 70f, 70f, 30f)),
-                        RingSpec(117f, 6000, true, floatArrayOf(70f, 30f, 50f, 50f)),
-                        RingSpec(72f, 4500, false, floatArrayOf(50f, 50f, 30f, 70f))
-                    )
-                }
-                rings.forEachIndexed { i, spec ->
-                    WaveRing(spec = spec, index = i, color = RingColors[i])
-                }
-
-                // 环绕轨道四颗光点（公转）
-                val orbitAngle by rememberInfiniteTransition(label = "orbit").animateFloat(
-                    initialValue = 0f,
-                    targetValue = 360f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(3000, easing = LinearEasing),
-                        repeatMode = RepeatMode.Restart
-                    ),
-                    label = "orbitAngle"
-                )
-                OrbitDots(angle = orbitAngle)
-
-                // 中心金色核心：「懒得找了」流光标题
-                val corePulse by rememberInfiniteTransition(label = "core_pulse").animateFloat(
-                    initialValue = 1f,
-                    targetValue = 1.12f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(1500, easing = FastOutSlowInEasing),
-                        repeatMode = RepeatMode.Reverse
-                    ),
-                    label = "corePulse"
-                )
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .size(108.dp)
-                        .scale(corePulse)
-                        .clip(CircleShape)
-                        .background(
-                            Brush.radialGradient(
-                                listOf(Color(0xFFFEF9C3), Color(0xFFFACC15), Color(0xFF2D6A4F))
-                            )
-                        )
-                        .shadow(24.dp, CircleShape, ambientColor = Color(0xFFFACC15), spotColor = Color(0xFF2D6A4F))
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "懒得找了",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Black,
-                            color = Color(0xFF0D2818),
-                            letterSpacing = 1.sp
-                        )
-                    }
-                }
+                Text("Hi~", fontSize = 15.sp, fontWeight = FontWeight.Black, color = Color.White)
             }
-
-            Spacer(modifier = Modifier.height(26.dp))
-
-            // 开屏加载文字：「数据正在初始化...」（已按要求彻底删除盛世华诞文案）
-            var dotCount by remember { mutableIntStateOf(0) }
-            LaunchedEffect(Unit) {
-                while (true) {
-                    dotCount = (dotCount + 1) % 4
-                    delay(400)
-                }
-            }
+            Spacer(modifier = Modifier.height(10.dp))
+            // 主标题：懒得找了
             Text(
-                text = (uiText?.splashLoading?.ifBlank { "数据正在初始化" } ?: "数据正在初始化") + ".".repeat(dotCount),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = SsGold,
-                letterSpacing = 4.sp
+                text = "懒得找了",
+                fontSize = 52.sp,
+                fontWeight = FontWeight.Black,
+                color = Color(0xFF2B2B2B),
+                letterSpacing = 2.sp
             )
+            // 波浪装饰线
+            Canvas(modifier = Modifier.fillMaxWidth(0.7f).height(12.dp)) {
+                val w = size.width; val h = size.height
+                val path = Path().apply {
+                    moveTo(0f, h * 0.6f)
+                    cubicTo(w * 0.25f, h * 0.1f, w * 0.35f, h * 1.1f, w * 0.5f, h * 0.6f)
+                    cubicTo(w * 0.65f, h * 0.1f, w * 0.75f, h * 1.1f, w, h * 0.6f)
+                }
+                drawPath(path, Color(0xFFFF9A3D), style = Stroke(width = 5.dp.toPx(), cap = StrokeCap.Round))
+            }
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = "全网视频 · 一键直达",
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF8A6A4A),
+                letterSpacing = 3.sp
+            )
+            Spacer(modifier = Modifier.height(14.dp))
+            // 求分享气泡
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.White.copy(alpha = 0.9f))
+                        .border(1.5.dp, Color(0xFF8FD0F0), RoundedCornerShape(12.dp))
+                        .padding(horizontal = 12.dp, vertical = 5.dp)
+                ) {
+                    Text("无水印~", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E9BD6))
+                }
+                Box(
+                    modifier = Modifier
+                        .scale(bubblePop)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0xFFFFD93D))
+                        .padding(horizontal = 12.dp, vertical = 5.dp)
+                ) {
+                    Text("YEAH!", fontSize = 12.sp, fontWeight = FontWeight.Black, color = Color(0xFF2B2B2B))
+                }
+            }
         }
+
+        // ---- 底部加载点点 ----
+        var dotCount by remember { mutableIntStateOf(0) }
+        LaunchedEffect(Unit) {
+            while (true) {
+                dotCount = (dotCount + 1) % 4
+                delay(400)
+            }
+        }
+        Text(
+            text = (uiText?.splashLoading?.ifBlank { "正在为你准备" } ?: "正在为你准备") + ".".repeat(dotCount),
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFFB08968),
+            letterSpacing = 2.sp,
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 64.dp)
+        )
     }
+}
+
+/** 可爱团子绘制（含笑脸，eyeScaleY 控制眨眼） */
+private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawKawaiiBlob(
+    center: Offset,
+    r: Float,
+    color: Color,
+    eyeScaleY: Float,
+    roundRect: Boolean = false
+) {
+    // 身体
+    if (roundRect) {
+        drawRoundRect(
+            color = color,
+            topLeft = Offset(center.x - r, center.y - r * 1.15f),
+            size = Size(r * 2, r * 2.3f),
+            cornerRadius = CornerRadius(r * 0.7f, r * 0.7f)
+        )
+    } else {
+        drawCircle(color = color, radius = r, center = center)
+    }
+    // 高光
+    drawCircle(
+        color = Color.White.copy(alpha = 0.35f),
+        radius = r * 0.28f,
+        center = Offset(center.x - r * 0.35f, center.y - r * 0.4f)
+    )
+    val faceColor = Color(0xFF2B2B2B)
+    val eyeY = center.y - r * 0.05f
+    val eyeDX = r * 0.32f
+    val eyeH = r * 0.16f * eyeScaleY.coerceAtLeast(0.12f)
+    // 眼睛（椭圆，眨眼时压扁）
+    drawOval(faceColor, topLeft = Offset(center.x - eyeDX - r * 0.09f, eyeY - eyeH), size = Size(r * 0.18f, eyeH * 2))
+    drawOval(faceColor, topLeft = Offset(center.x + eyeDX - r * 0.09f, eyeY - eyeH), size = Size(r * 0.18f, eyeH * 2))
+    // 微笑嘴
+    val mouthPath = Path().apply {
+        moveTo(center.x - r * 0.16f, center.y + r * 0.22f)
+        quadraticTo(center.x, center.y + r * 0.38f, center.x + r * 0.16f, center.y + r * 0.22f)
+    }
+    drawPath(mouthPath, faceColor, style = Stroke(width = r * 0.07f, cap = StrokeCap.Round))
+    // 腮红
+    drawCircle(Color(0xFFFF6B8A).copy(alpha = 0.45f), r * 0.12f, Offset(center.x - r * 0.52f, center.y + r * 0.18f))
+    drawCircle(Color(0xFFFF6B8A).copy(alpha = 0.45f), r * 0.12f, Offset(center.x + r * 0.52f, center.y + r * 0.18f))
+}
+
+/** 小星星 */
+private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawStar(
+    center: Offset,
+    r: Float,
+    color: Color
+) {
+    val path = Path().apply {
+        for (i in 0 until 10) {
+            val ang = Math.PI / 5 * i - Math.PI / 2
+            val rad = if (i % 2 == 0) r else r * 0.45f
+            val x = center.x + (rad * kotlin.math.cos(ang)).toFloat()
+            val y = center.y + (rad * kotlin.math.sin(ang)).toFloat()
+            if (i == 0) moveTo(x, y) else lineTo(x, y)
+        }
+        close()
+    }
+    drawPath(path, color)
 }
 
 /** 单圈波浪环（独立组合函数，内部持有自己的旋转/呼吸动画） */
