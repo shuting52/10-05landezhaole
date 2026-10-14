@@ -50,6 +50,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.OpenInBrowser
@@ -97,6 +98,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.data.util.VideoLinkParser
+import com.example.ui.theme.LocalThemeUiColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -107,9 +109,10 @@ data class VideoParseResult(
     val title: String,
     val author: String,
     val platform: String,
-    val coverUrl: String,
+    val coverUrl: String?,
     val durationText: String,
     val videoUrls: List<String>,
+    val imageUrls: List<String> = emptyList(),
     val audioUrl: String? = null,
     val originalLink: String,
     val timestamp: Long = System.currentTimeMillis()
@@ -148,6 +151,8 @@ fun DownVidScreen(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    // v1.4.13：主题跟随 —— 所有主色从主题色板读取，切换主题时本页全部变色
+    val themeColors = LocalThemeUiColors.current
 
     var inputUrl by remember { mutableStateOf("") }
     var isParsing by remember { mutableStateOf(false) }
@@ -186,16 +191,23 @@ fun DownVidScreen(
 
         coroutineScope.launch {
             try {
-                val urls = VideoLinkParser.resolve(context, target)
-                if (urls.isNotEmpty()) {
+                // v1.4.13：改用 resolveMedia（视频+图片+真实封面+标题）；解析不到真实直链则明确失败，
+                // 不再把分享页链接伪装成可下载直链（之前兜底导致下载到 HTML 页面）
+                val media = VideoLinkParser.resolveMedia(context, target)
+                if (media.videoUrls.isNotEmpty() || media.imageUrls.isNotEmpty()) {
                     val platformName = detectPlatform(target)
+                    val kind = if (media.videoUrls.isNotEmpty()) "视频" else "图片"
                     val result = VideoParseResult(
-                        title = "${platformName}精选视频 · ${System.currentTimeMillis() % 10000}",
+                        title = media.title?.ifBlank { null }
+                            ?: "${platformName}精选${kind} · ${System.currentTimeMillis() % 10000}",
                         author = "原创作者",
                         platform = platformName,
-                        coverUrl = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600",
-                        durationText = "高清原画",
-                        videoUrls = urls,
+                        coverUrl = media.coverUrl
+                            ?: media.imageUrls.firstOrNull()
+                            ?: media.videoUrls.firstOrNull(),
+                        durationText = if (media.videoUrls.isNotEmpty()) "高清原画" else "${media.imageUrls.size}张原图",
+                        videoUrls = media.videoUrls,
+                        imageUrls = media.imageUrls,
                         originalLink = target
                     )
                     currentResult = result
@@ -204,22 +216,10 @@ fun DownVidScreen(
                     }
                     Toast.makeText(context, "🎉 解析成功，可一键下载！", Toast.LENGTH_SHORT).show()
                 } else {
-                    // 兜底模拟生成可下载选项
-                    val platformName = detectPlatform(target)
-                    val result = VideoParseResult(
-                        title = "${platformName}视频 · 无水印原画",
-                        author = "创作者",
-                        platform = platformName,
-                        coverUrl = "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=600",
-                        durationText = "1080P",
-                        videoUrls = listOf(target),
-                        originalLink = target
-                    )
-                    currentResult = result
-                    if (historyList.none { it.originalLink == target }) {
-                        historyList.add(0, result)
-                    }
-                    Toast.makeText(context, "已提取视频直链！", Toast.LENGTH_SHORT).show()
+                    // 明确失败：不展示虚假下载按钮
+                    currentResult = null
+                    errorMessage = "未能提取到视频/图片直链，该分享可能需要登录、已失效或平台升级了反爬"
+                    Toast.makeText(context, "😕 解析失败：未找到可下载的媒体", Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
                 errorMessage = "解析遇到网络异常: ${e.message}"
@@ -229,9 +229,38 @@ fun DownVidScreen(
         }
     }
 
-    // 执行系统下载
-    fun triggerDownload(url: String, filename: String) {
+    // v1.4.13：一键下载图片并自动存入相册（Pictures/懒得找了，相册可见，无需手动操作）
+    fun triggerImageDownload(urls: List<String>) {
+        if (urls.isEmpty()) {
+            Toast.makeText(context, "没有可下载的图片", Toast.LENGTH_SHORT).show()
+            return
+        }
         try {
+            val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            val ts = System.currentTimeMillis()
+            urls.forEachIndexed { index, url ->
+                val ext = url.substringBefore('?').substringAfterLast('.', "").lowercase()
+                    .takeIf { it in setOf("jpg", "jpeg", "png", "webp") } ?: "jpg"
+                val filename = "LDZ_${ts}_${index + 1}.$ext"
+                val request = DownloadManager.Request(Uri.parse(url)).apply {
+                    setTitle("懒得找了 · 图片 ${index + 1}/${urls.size}")
+                    setDescription("正在保存到相册...")
+                    setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                    // 存入公共 Pictures 目录 → 系统相册自动可见
+                    setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, "懒得找了/$filename")
+                    setAllowedOverMetered(true)
+                    setAllowedOverRoaming(true)
+                }
+                downloadManager.enqueue(request)
+            }
+            Toast.makeText(context, "🚀 ${urls.size} 张图片已加入下载，完成后自动存入相册", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(context, "下载发起失败: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // 执行系统下载
+    fun triggerDownload(url: String, filename: String) {        try {
             val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
             val request = DownloadManager.Request(Uri.parse(url)).apply {
                 setTitle("DownVid · $filename")
@@ -300,7 +329,7 @@ fun DownVidScreen(
                         text = "🔗 粘贴视频链接",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1B4931)
+                        color = themeColors.primary
                     )
                     Spacer(modifier = Modifier.height(10.dp))
 
@@ -337,13 +366,13 @@ fun DownVidScreen(
                                         }
                                     } catch (_: Exception) {}
                                 }) {
-                                    Icon(Icons.Filled.ContentPaste, contentDescription = "粘贴", tint = Color(0xFF2D6A4F))
+                                    Icon(Icons.Filled.ContentPaste, contentDescription = "粘贴", tint = themeColors.secondary)
                                 }
                             }
                         },
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF2D6A4F),
-                            unfocusedBorderColor = Color(0xFF2D6A4F).copy(alpha = 0.35f)
+                            focusedBorderColor = themeColors.secondary,
+                            unfocusedBorderColor = themeColors.secondary.copy(alpha = 0.35f)
                         ),
                         shape = RoundedCornerShape(14.dp),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -364,7 +393,7 @@ fun DownVidScreen(
                                 .testTag("downvid_btn_parse"),
                             shape = RoundedCornerShape(14.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF1B4931)
+                                containerColor = themeColors.primary
                             ),
                             enabled = !isParsing
                         ) {
@@ -398,12 +427,12 @@ fun DownVidScreen(
                                 } catch (_: Exception) {}
                             },
                             shape = RoundedCornerShape(14.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2D6A4F).copy(alpha = 0.15f)),
+                            colors = ButtonDefaults.buttonColors(containerColor = themeColors.secondary.copy(alpha = 0.15f)),
                             modifier = Modifier.height(46.dp)
                         ) {
-                            Icon(Icons.Filled.ContentPaste, contentDescription = null, tint = Color(0xFF1B4931), modifier = Modifier.size(16.dp))
+                            Icon(Icons.Filled.ContentPaste, contentDescription = null, tint = themeColors.primary, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("粘贴并解析", color = Color(0xFF1B4931), fontSize = 13.sp)
+                            Text("粘贴并解析", color = themeColors.primary, fontSize = 13.sp)
                         }
                     }
 
@@ -438,13 +467,13 @@ fun DownVidScreen(
                         ) {
                             Surface(
                                 shape = RoundedCornerShape(6.dp),
-                                color = Color(0xFF2D6A4F).copy(alpha = 0.15f)
+                                color = themeColors.secondary.copy(alpha = 0.15f)
                             ) {
                                 Text(
                                     text = res.platform,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF1B4931),
+                                    color = themeColors.primary,
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                                 )
                             }
@@ -453,7 +482,7 @@ fun DownVidScreen(
                                 text = "解析成功 · 可直接下载",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1B4931)
+                                color = themeColors.primary
                             )
                         }
 
@@ -463,19 +492,28 @@ fun DownVidScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            // 封面图
+                            // 封面图（v1.4.13：真实解析封面，取不到时显示占位图标）
                             Box(
                                 modifier = Modifier
                                     .size(90.dp)
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(Color(0xFFE2EFE7))
+                                    .background(Color(0xFFE2EFE7)),
+                                contentAlignment = Alignment.Center
                             ) {
-                                AsyncImage(
-                                    model = res.coverUrl,
-                                    contentDescription = "视频封面",
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop
+                                Icon(
+                                    Icons.Filled.Image,
+                                    contentDescription = null,
+                                    tint = themeColors.primary.copy(alpha = 0.35f),
+                                    modifier = Modifier.size(36.dp)
                                 )
+                                if (res.coverUrl != null) {
+                                    AsyncImage(
+                                        model = res.coverUrl,
+                                        contentDescription = "媒体封面",
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
                                 Box(
                                     modifier = Modifier
                                         .align(Alignment.BottomEnd)
@@ -504,56 +542,76 @@ fun DownVidScreen(
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
 
-                                // 下载按钮群
+                                // 下载按钮群（v1.4.13：按实际解析到的媒体类型显示，不再提供虚假按钮）
                                 FlowRow(
                                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                                     verticalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
-                                    Button(
-                                        onClick = {
-                                            val targetUrl = res.videoUrls.firstOrNull() ?: res.originalLink
-                                            triggerDownload(targetUrl, "DownVid_${System.currentTimeMillis()}.mp4")
-                                        },
-                                        shape = RoundedCornerShape(10.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B4931)),
-                                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-                                        modifier = Modifier.height(34.dp)
-                                    ) {
-                                        Icon(Icons.Filled.Movie, contentDescription = null, modifier = Modifier.size(14.dp))
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text("下载高清视频", fontSize = 12.sp)
+                                    if (res.videoUrls.isNotEmpty()) {
+                                        Button(
+                                            onClick = {
+                                                val targetUrl = res.videoUrls.first()
+                                                triggerDownload(targetUrl, "DownVid_${System.currentTimeMillis()}.mp4")
+                                            },
+                                            shape = RoundedCornerShape(10.dp),
+                                            colors = ButtonDefaults.buttonColors(containerColor = themeColors.primary),
+                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                                            modifier = Modifier.height(34.dp)
+                                        ) {
+                                            Icon(Icons.Filled.Movie, contentDescription = null, modifier = Modifier.size(14.dp))
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text("下载高清视频", fontSize = 12.sp)
+                                        }
                                     }
 
-                                    Button(
-                                        onClick = {
-                                            val targetUrl = res.audioUrl ?: res.videoUrls.firstOrNull() ?: res.originalLink
-                                            triggerDownload(targetUrl, "DownVid_Audio_${System.currentTimeMillis()}.mp3")
-                                        },
-                                        shape = RoundedCornerShape(10.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2D6A4F)),
-                                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-                                        modifier = Modifier.height(34.dp)
-                                    ) {
-                                        Icon(Icons.Filled.MusicNote, contentDescription = null, modifier = Modifier.size(14.dp))
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text("提取音频", fontSize = 12.sp)
+                                    if (res.imageUrls.isNotEmpty()) {
+                                        Button(
+                                            onClick = { triggerImageDownload(res.imageUrls) },
+                                            shape = RoundedCornerShape(10.dp),
+                                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB5651D)),
+                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                                            modifier = Modifier.height(34.dp)
+                                        ) {
+                                            Icon(Icons.Filled.Image, contentDescription = null, modifier = Modifier.size(14.dp))
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text("一键下载图片(${res.imageUrls.size})", fontSize = 12.sp)
+                                        }
                                     }
 
-                                    Button(
-                                        onClick = {
-                                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                            val url = res.videoUrls.firstOrNull() ?: res.originalLink
-                                            clipboard.setPrimaryClip(ClipData.newPlainText("视频直链", url))
-                                            Toast.makeText(context, "已复制直链到剪贴板", Toast.LENGTH_SHORT).show()
-                                        },
-                                        shape = RoundedCornerShape(10.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE2EFE7)),
-                                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-                                        modifier = Modifier.height(34.dp)
-                                    ) {
-                                        Icon(Icons.Filled.ContentCopy, contentDescription = null, tint = Color(0xFF1B4931), modifier = Modifier.size(13.dp))
-                                        Spacer(modifier = Modifier.width(3.dp))
-                                        Text("复制直链", color = Color(0xFF1B4931), fontSize = 11.sp)
+                                    if (res.videoUrls.isNotEmpty()) {
+                                        Button(
+                                            onClick = {
+                                                val targetUrl = res.audioUrl ?: res.videoUrls.first()
+                                                triggerDownload(targetUrl, "DownVid_Audio_${System.currentTimeMillis()}.mp3")
+                                            },
+                                            shape = RoundedCornerShape(10.dp),
+                                            colors = ButtonDefaults.buttonColors(containerColor = themeColors.secondary),
+                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                                            modifier = Modifier.height(34.dp)
+                                        ) {
+                                            Icon(Icons.Filled.MusicNote, contentDescription = null, modifier = Modifier.size(14.dp))
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text("提取音频", fontSize = 12.sp)
+                                        }
+                                    }
+
+                                    val copyUrl = res.videoUrls.firstOrNull() ?: res.imageUrls.firstOrNull()
+                                    if (copyUrl != null) {
+                                        Button(
+                                            onClick = {
+                                                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                                clipboard.setPrimaryClip(ClipData.newPlainText("媒体直链", copyUrl))
+                                                Toast.makeText(context, "已复制直链到剪贴板", Toast.LENGTH_SHORT).show()
+                                            },
+                                            shape = RoundedCornerShape(10.dp),
+                                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE2EFE7)),
+                                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                                            modifier = Modifier.height(34.dp)
+                                        ) {
+                                            Icon(Icons.Filled.ContentCopy, contentDescription = null, tint = themeColors.primary, modifier = Modifier.size(13.dp))
+                                            Spacer(modifier = Modifier.width(3.dp))
+                                            Text("复制直链", color = themeColors.primary, fontSize = 11.sp)
+                                        }
                                     }
                                 }
                             }
@@ -572,7 +630,7 @@ fun DownVidScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .clip(RoundedCornerShape(16.dp)),
                 containerColor = Color.White.copy(alpha = 0.85f),
-                contentColor = Color(0xFF1B4931),
+                contentColor = themeColors.primary,
                 edgePadding = 8.dp
             ) {
                 listOf("🔥 支持平台", "📂 解析历史 (${historyList.size})", "💡 使用技巧", "🌟 关于 DownVid").forEachIndexed { index, title ->
@@ -584,7 +642,7 @@ fun DownVidScreen(
                                 text = title,
                                 fontSize = 13.sp,
                                 fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal,
-                                color = if (selectedTab == index) Color(0xFF1B4931) else Color(0xFF52796F)
+                                color = if (selectedTab == index) themeColors.primary else Color(0xFF52796F)
                             )
                         }
                     )
@@ -600,7 +658,7 @@ fun DownVidScreen(
                         text = "全网多平台无水印下载支持",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1B4931),
+                        color = themeColors.primary,
                         modifier = Modifier.padding(vertical = 6.dp)
                     )
 
@@ -651,17 +709,21 @@ fun DownVidScreen(
                                 .padding(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Filled.SmartDisplay, contentDescription = null, tint = Color(0xFF1B4931), modifier = Modifier.size(24.dp))
+                            Icon(Icons.Filled.SmartDisplay, contentDescription = null, tint = themeColors.primary, modifier = Modifier.size(24.dp))
                             Spacer(modifier = Modifier.width(10.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(item.title, fontSize = 13.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                 Text(item.originalLink, fontSize = 11.sp, color = Color.Gray, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             }
                             IconButton(onClick = {
-                                val url = item.videoUrls.firstOrNull() ?: item.originalLink
-                                triggerDownload(url, "DownVid_${System.currentTimeMillis()}.mp4")
+                                val url = item.videoUrls.firstOrNull() ?: item.imageUrls.firstOrNull()
+                                if (url != null) {
+                                    val isImg = item.videoUrls.isEmpty()
+                                    if (isImg) triggerImageDownload(listOf(url))
+                                    else triggerDownload(url, "DownVid_${System.currentTimeMillis()}.mp4")
+                                }
                             }) {
-                                Icon(Icons.Filled.Download, contentDescription = "重新下载", tint = Color(0xFF2D6A4F))
+                                Icon(Icons.Filled.Download, contentDescription = "重新下载", tint = themeColors.secondary)
                             }
                             IconButton(onClick = { historyList.remove(item) }) {
                                 Icon(Icons.Filled.Delete, contentDescription = "删除记录", tint = Color.LightGray)
@@ -683,7 +745,7 @@ fun DownVidScreen(
                     colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.92f))
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("💡 3 步极速下载无水印视频", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1B4931))
+                        Text("💡 3 步极速下载无水印视频", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = themeColors.primary)
                         Spacer(modifier = Modifier.height(10.dp))
                         TipStepRow("1", "在抖音/快手/小红书/B站点击「分享」按钮")
                         TipStepRow("2", "点击「复制链接」，回到本应用会自动识别粘贴")
@@ -704,7 +766,7 @@ fun DownVidScreen(
                     colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.92f))
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("🎬 关于 DownVid", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1B4931))
+                        Text("🎬 关于 DownVid", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = themeColors.primary)
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "DownVid 是基于开源项目 (https://github.com/yxxbc/downvid) 深度重构的移动端音视频提取下载套件。\n\n" +
@@ -726,7 +788,7 @@ fun DownVidScreen(
                                 context.startActivity(intent)
                             },
                             shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B4931))
+                            colors = ButtonDefaults.buttonColors(containerColor = themeColors.primary)
                         ) {
                             Icon(Icons.Filled.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
@@ -749,8 +811,8 @@ private fun DownVidHeader(onPasteClipboard: () -> Unit) {
             .background(
                 Brush.linearGradient(
                     listOf(
-                        Color(0xFF1B4931), // 黛墨松绿
-                        Color(0xFF2D6A4F), // 苍翠碧玉
+                        themeColors.primary, // 黛墨松绿
+                        themeColors.secondary, // 苍翠碧玉
                         Color(0xFF0F303B)  // 远山墨蓝
                     )
                 )
@@ -841,10 +903,10 @@ private fun TipStepRow(step: String, text: String) {
             modifier = Modifier
                 .size(22.dp)
                 .clip(CircleShape)
-                .background(Color(0xFF2D6A4F).copy(alpha = 0.15f)),
+                .background(themeColors.secondary.copy(alpha = 0.15f)),
             contentAlignment = Alignment.Center
         ) {
-            Text(step, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1B4931))
+            Text(step, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = themeColors.primary)
         }
         Spacer(modifier = Modifier.width(10.dp))
         Text(text, fontSize = 12.sp, color = Color(0xFF333333))

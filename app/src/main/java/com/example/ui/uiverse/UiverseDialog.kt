@@ -89,15 +89,10 @@ fun UiverseDialog(
     val context = LocalContext.current
     var selectedCategoryTab by remember { mutableStateOf("ALL") }
 
-    val allDarkThemes = ThemePresetsRepository.darkThemes
-    val iosThemes = ThemePresetsRepository.iosThemes
-    val neuThemes = ThemePresetsRepository.neuThemes
-    val designStyleThemes = ThemePresetsRepository.designStyleThemes
-
     LiquidGlassDialogShell(
         onDismissRequest = onClose,
         title = "主题切换",
-        subtitle = "液态高透玻璃质感 · 14大设计流派 · 暗黑 / iOS / 新拟态",
+        subtitle = "黏土拟态 · 磨砂玻璃 · 液态玻璃 · iOS风格",
         centerTitle = true
     ) {
         Column(
@@ -106,233 +101,165 @@ fun UiverseDialog(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // 顶栏分类快速切换胶囊（全部 / 14大流派 / 暗黑极客 / iOS风格 / 新拟态）- 液体玻璃高透半折射质感
+            // v1.4.13：黏土风分类胶囊（全部 / 黏土拟态 / 玻璃拟态 / iOS风格）
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(
-                        brush = Brush.linearGradient(
-                            listOf(
-                                Color.White.copy(alpha = 0.60f),
-                                Color(0xFFF1F5F9).copy(alpha = 0.38f),
-                                Color(0xFFF8FAFC).copy(alpha = 0.48f),
-                                Color.White.copy(alpha = 0.68f)
-                            )
-                        )
-                    )
-                    .border(
-                        width = 1.1.dp,
-                        brush = Brush.linearGradient(
-                            listOf(
-                                Color.White.copy(alpha = 0.95f),
-                                Color(0xFFCBD5E1).copy(alpha = 0.50f),
-                                Color.White.copy(alpha = 0.90f)
-                            )
-                        ),
-                        shape = RoundedCornerShape(14.dp)
-                    )
-                    .padding(4.dp),
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(Color(0xFFFFF6EC))
+                    .border(1.5.dp, Color(0xFFE8590C).copy(alpha = 0.25f), RoundedCornerShape(20.dp))
+                    .padding(5.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 listOf(
-                    "ALL" to "全部精选",
-                    "STYLES" to "14大流派",
-                    "DARK" to "暗黑极客",
-                    "IOS" to "iOS风格",
-                    "NEU" to "新拟态"
+                    "ALL" to "全部",
+                    "CLAY" to "黏土",
+                    "GLASS" to "玻璃",
+                    "IOS" to "iOS"
                 ).forEach { (tabKey, tabTitle) ->
                     val isTabSelected = selectedCategoryTab == tabKey
-                    val tabModifier = if (isTabSelected) {
-                        Modifier
-                            .background(
-                                brush = Brush.linearGradient(listOf(Color(0xFF8B5CF6), Color(0xFF38BDF8))),
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                            .border(1.dp, Color.White.copy(alpha = 0.8f), RoundedCornerShape(10.dp))
-                    } else {
-                        Modifier.background(
-                            color = Color.Transparent,
-                            shape = RoundedCornerShape(10.dp)
-                        )
-                    }
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .clip(RoundedCornerShape(10.dp))
-                            .then(tabModifier)
+                            .clip(RoundedCornerShape(15.dp))
+                            .background(
+                                if (isTabSelected) Color(0xFFE8590C)
+                                else Color.Transparent
+                            )
+                            // 黏土立体感：选中时底部厚阴影
+                            .then(
+                                if (isTabSelected) Modifier.shadow(4.dp, RoundedCornerShape(15.dp), ambientColor = Color(0xFFE8590C).copy(alpha = 0.4f))
+                                else Modifier
+                            )
                             .clickable { selectedCategoryTab = tabKey }
-                            .padding(vertical = 7.dp),
+                            .padding(vertical = 9.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = tabTitle,
-                            fontSize = 11.5.sp,
-                            fontWeight = if (isTabSelected) FontWeight.Black else FontWeight.SemiBold,
-                            color = if (isTabSelected) Color.White else Color(0xFF475569)
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isTabSelected) Color.White else Color(0xFF8A6A4A)
                         )
                     }
                 }
             }
 
-            // 1. 经典默认与科技蓝
-            if (selectedCategoryTab == "ALL") {
-                Text(
-                    text = "系统经典预设",
-                    fontSize = 11.5.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF64748B),
-                    modifier = Modifier.padding(start = 2.dp, top = 2.dp)
-                )
-
-                DarkThemeButton(
-                    title = "雅致红金 (默认)",
-                    subtitle = "经典赤金 · 雅致纯粹 · 官方默认主题",
-                    accentColor = Color(0xFFDE2910),
-                    isSelected = activeGradientThemeId == ThemePresetsRepository.shengshiTheme.id || activeGradientThemeId.isEmpty(),
-                    onClick = {
-                        onResetDefault()
-                        onApplyGradientTheme(ThemePresetsRepository.shengshiTheme)
-                        Toast.makeText(context, "已切换为「雅致红金」默认皮肤", Toast.LENGTH_SHORT).show()
-                        onClose()
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                DarkThemeButton(
-                    title = "经典科技蓝",
-                    subtitle = "纯净明亮 · 极简冷冽 · 科技护眼",
-                    accentColor = Color(0xFF2196F3),
-                    isSelected = activeGradientThemeId == ThemePresetsRepository.classicTheme.id,
-                    onClick = {
-                        onApplyGradientTheme(ThemePresetsRepository.classicTheme)
-                        Toast.makeText(context, "已切换为「经典科技蓝」皮肤", Toast.LENGTH_SHORT).show()
-                        onClose()
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            // 🎨 14大艺术与设计流派（背景与图标全套深度定制，不要只变色）
-            if (selectedCategoryTab == "ALL" || selectedCategoryTab == "STYLES") {
-                Text(
-                    text = "🎨 14大艺术设计流派 (背景与图标全套深度定制)",
-                    fontSize = 11.5.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF7C3AED),
-                    modifier = Modifier.padding(start = 2.dp, top = 2.dp)
-                )
-
-                designStyleThemes.forEach { styleTheme ->
-                    DarkThemeButton(
-                        title = styleTheme.name,
-                        subtitle = styleTheme.description,
-                        accentColor = styleTheme.primaryColor,
-                        secondaryColor = styleTheme.secondaryColor,
-                        isSelected = activeGradientThemeId == styleTheme.id,
-                        onClick = {
-                            onApplyGradientTheme(styleTheme)
-                            Toast.makeText(context, "已开启「${styleTheme.name}」风格", Toast.LENGTH_SHORT).show()
+            // v1.4.13：黏土风主题卡片网格（2列，3D黏土质感）
+            @Composable
+            fun clayThemeCard(theme: ThemePreset) {
+                val isSelected = activeGradientThemeId == theme.id || (activeGradientThemeId.isEmpty() && theme.id == ThemePresetsRepository.defaultTheme.id)
+                // 黏土效果：双层背景模拟厚度 + 选中时内压
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(22.dp))
+                        .background(theme.secondaryColor.copy(alpha = 0.55f)) // 底部厚度层
+                        .padding(bottom = if (isSelected) 2.dp else 5.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(
+                            brush = Brush.verticalGradient(
+                                listOf(theme.surfaceColor, theme.bgColor)
+                            )
+                        )
+                        .border(
+                            width = if (isSelected) 2.5.dp else 1.dp,
+                            color = if (isSelected) theme.primaryColor else theme.primaryColor.copy(alpha = 0.25f),
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                        .clickable {
+                            onApplyGradientTheme(theme)
+                            Toast.makeText(context, "已切换为「${theme.name}」", Toast.LENGTH_SHORT).show()
                             onClose()
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                        }
+                        .padding(12.dp)
+                ) {
+                    Column {
+                        // 迷你预览：三色圆点 + 渐变条
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(34.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        brush = Brush.linearGradient(
+                                            listOf(theme.primaryColor, theme.secondaryColor)
+                                        )
+                                    )
+                                    .border(2.dp, Color.White.copy(alpha = 0.7f), CircleShape)
+                            )
+                            Column {
+                                Text(
+                                    text = theme.name,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = theme.textColor
+                                )
+                                Text(
+                                    text = theme.categoryName,
+                                    fontSize = 10.sp,
+                                    color = theme.textColor.copy(alpha = 0.6f)
+                                )
+                            }
+                            Spacer(modifier = Modifier.weight(1f))
+                            if (isSelected) {
+                                Icon(
+                                    Icons.Filled.CheckCircle,
+                                    contentDescription = "已选中",
+                                    tint = theme.primaryColor,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        // 渐变预览条
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(26.dp)
+                                .clip(RoundedCornerShape(13.dp))
+                                .background(
+                                    brush = Brush.horizontalGradient(
+                                        if (theme.gradientColors.size >= 2) theme.gradientColors
+                                        else listOf(theme.bgColor, theme.surfaceColor)
+                                    )
+                                )
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = theme.description,
+                            fontSize = 10.sp,
+                            color = theme.textColor.copy(alpha = 0.55f),
+                            maxLines = 1
+                        )
+                    }
                 }
             }
 
-            // 2. iOS 风格主题区
-            if (selectedCategoryTab == "ALL" || selectedCategoryTab == "IOS") {
-                Text(
-                    text = "🍏 iOS 磨砂轻奢与纯白灵动",
-                    fontSize = 11.5.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF007AFF),
-                    modifier = Modifier.padding(start = 2.dp, top = 2.dp)
-                )
-
-                iosThemes.forEach { iosTheme ->
-                    DarkThemeButton(
-                        title = iosTheme.name,
-                        subtitle = when (iosTheme.id) {
-                            "ios_frost_glass" -> "苹果经典毛玻璃质感 · 动态微透冷白"
-                            "ios_dynamic_white" -> "清新纯净绿水灵动 · 极简圆润界面"
-                            "ios_space_gray" -> "iOS 专属深空夜影 · 旗舰暗色质感"
-                            else -> "iOS 顶级工业设计美学"
-                        },
-                        accentColor = iosTheme.primaryColor,
-                        secondaryColor = iosTheme.secondaryColor,
-                        isSelected = activeGradientThemeId == iosTheme.id,
-                        onClick = {
-                            onApplyGradientTheme(iosTheme)
-                            Toast.makeText(context, "已开启「${iosTheme.name}」", Toast.LENGTH_SHORT).show()
-                            onClose()
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+            val visibleThemes = when (selectedCategoryTab) {
+                "CLAY" -> ThemePresetsRepository.clayThemes
+                "GLASS" -> ThemePresetsRepository.glassThemes
+                "IOS" -> ThemePresetsRepository.iosThemes
+                else -> ThemePresetsRepository.allThemes
             }
 
-            // 3. 新拟态 Neumorphism 风格主题区
-            if (selectedCategoryTab == "ALL" || selectedCategoryTab == "NEU") {
-                Text(
-                    text = "🔮 新拟态浮雕光影 (Neumorphism)",
-                    fontSize = 11.5.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF6366F1),
-                    modifier = Modifier.padding(start = 2.dp, top = 2.dp)
-                )
-
-                neuThemes.forEach { neuTheme ->
-                    DarkThemeButton(
-                        title = neuTheme.name,
-                        subtitle = when (neuTheme.id) {
-                            "neu_soft_cream" -> "奶油微凸柔和浮雕 · 空间凹凸光影"
-                            "neu_clay_slate" -> "冷灰粘土拟物微浮 · 平滑微阴影"
-                            "neu_dark_relief" -> "暗夜神秘浮雕光影 · 紫青双束泛光"
-                            else -> "极简新拟态空间立体感"
-                        },
-                        accentColor = neuTheme.primaryColor,
-                        secondaryColor = neuTheme.secondaryColor,
-                        isSelected = activeGradientThemeId == neuTheme.id,
-                        onClick = {
-                            onApplyGradientTheme(neuTheme)
-                            Toast.makeText(context, "已开启「${neuTheme.name}」", Toast.LENGTH_SHORT).show()
-                            onClose()
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
-
-            // 4. 暗黑极客风格主题区
-            if (selectedCategoryTab == "ALL" || selectedCategoryTab == "DARK") {
-                Text(
-                    text = "🌌 暗黑极客质感矩阵",
-                    fontSize = 11.5.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFFA855F7),
-                    modifier = Modifier.padding(start = 2.dp, top = 2.dp)
-                )
-
-                allDarkThemes.forEach { darkTheme ->
-                    DarkThemeButton(
-                        title = darkTheme.name,
-                        subtitle = when (darkTheme.id) {
-                            "dark_obsidian" -> "曜石紫金流光 · 极客深邃黑"
-                            "dark_midnight" -> "极夜深蓝星空 · 沉稳冷峻"
-                            "dark_cyberpunk" -> "赛博霓虹电光 · 炫彩粉青"
-                            "dark_emerald" -> "暗夜翡翠幽绿 · 柔光护眼"
-                            else -> "高级暗黑格调质感"
-                        },
-                        accentColor = darkTheme.primaryColor,
-                        secondaryColor = darkTheme.secondaryColor,
-                        isSelected = activeGradientThemeId == darkTheme.id,
-                        onClick = {
-                            onApplyGradientTheme(darkTheme)
-                            Toast.makeText(context, "已开启暗黑模式「${darkTheme.name}」", Toast.LENGTH_SHORT).show()
-                            onClose()
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+            // 2列网格
+            visibleThemes.chunked(2).forEach { rowThemes ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    rowThemes.forEach { theme ->
+                        Box(modifier = Modifier.weight(1f)) {
+                            clayThemeCard(theme)
+                        }
+                    }
+                    // 奇数时补齐
+                    if (rowThemes.size == 1) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
                 }
             }
 
@@ -346,8 +273,8 @@ fun UiverseDialog(
                 OutlinedButton(
                     onClick = {
                         onResetDefault()
-                        onApplyGradientTheme(ThemePresetsRepository.shengshiTheme)
-                        Toast.makeText(context, "已重置为系统默认皮肤", Toast.LENGTH_SHORT).show()
+                        onApplyGradientTheme(ThemePresetsRepository.defaultTheme)
+                        Toast.makeText(context, "已重置为「橙子汽水」默认皮肤", Toast.LENGTH_SHORT).show()
                         onClose()
                     },
                     shape = RoundedCornerShape(14.dp),

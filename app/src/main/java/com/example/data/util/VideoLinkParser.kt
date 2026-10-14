@@ -8,23 +8,23 @@ import okhttp3.Request
 import java.util.concurrent.TimeUnit
 
 /**
- * 视频分享链接 → 直链解析器（v1.9.1 工具箱「即存下载」内置实现用）
+ * 分享链接 → 媒体直链解析器（v1.4.13 去水印模块重构）
  *
- * 背景：之前「即存」只能外链引导用户去下载独立的即存 App；
- * 现在把「复制链接 → 解析 → 下载视频」能力内置到本体软件，无需安装任何额外 App。
- *
- * 解析原理（轻量、无第三方密钥）：
- * 1. 用带移动端浏览器 UA 的请求访问分享短链（抖音/快手/小红书/B 站等），自动跟随重定向；
- * 2. 拿到 H5 落地页 HTML 后，依次尝试提取视频直链：
- *    - og:video / og:video:url / og:video:secure_url 社交分享标签
- *    - 页面 JSON 中的 playAddr / play_addr / playUrl / videoUrl 等字段
- *    - 通用 http(s) .mp4 / .m3u8 / .webm / .mov 直链
- *    - 相对路径视频并补全为绝对地址
- * 3. 返回候选直链列表（按优先级排序，UI 取第一个交给 DownloadManager 下载）。
- *
- * 说明：部分平台（如抖音）对分享页做加密/校验，静态 HTML 提取不一定 100% 成功，
- * 失败时 UI 会提示「安装即存 App 备用」，保证功能可用性兜底。
+ * v1.4.13 修复/新增：
+ * 1. 修复「解析成功但无预览图」：封面不再写死 Unsplash，优先取 og:image / twitter:image，
+ *    取不到则返回 null 由 UI 显示本地占位。
+ * 2. 修复「下载下来的是 HTML 不是 mp4」：resolve() 解析不到真实直链时返回空，
+ *    UI 不再把分享页链接伪装成视频直链（之前兜底 listOf(target) 导致下载到 HTML 页面）。
+ * 3. 新增小红书 window.__INITIAL_STATE__ 提取：视频 masterUrl、图文 imageList。
+ * 4. 新增图片直链提取（小红书图文/各平台 og:image 组图），供「一键下载图片存相册」。
  */
+data class MediaParseResult(
+    val videoUrls: List<String> = emptyList(),
+    val imageUrls: List<String> = emptyList(),
+    val coverUrl: String? = null,
+    val title: String? = null
+)
+
 object VideoLinkParser {
 
     private const val UA =
@@ -41,90 +41,120 @@ object VideoLinkParser {
     }
 
     /**
-     * 解析分享链接，返回按优先级排序的视频直链候选列表；解析不到返回空列表。
+     * 解析分享链接，返回视频/图片直链 + 封面 + 标题。
+     * 什么都没解析到时返回空结果（videoUrls/imageUrls 均为空），调用方应提示解析失败，
+     * 禁止把原始分享链接当作可下载直链。
      */
-    suspend fun resolve(context: Context, shareUrl: String): List<String> = withContext(Dispatchers.IO) {
-        val url = shareUrl.trim()
-        if (url.isBlank()) return@withContext emptyList()
-        val candidates = mutableListOf<String>()
-        try {
-            val request = Request.Builder()
-                .url(url)
-                .header("User-Agent", UA)
-                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
-                .header("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
-                .header("Referer", url)
-                .get()
-                .build()
-            client.newCall(request).execute().use { resp ->
-                if (!resp.isSuccessful) return@withContext emptyList()
-                val finalUrl = resp.request.url.toString()
-                val html = resp.body?.string() ?: return@withContext emptyList()
-                candidates.addAll(extractVideos(html, finalUrl))
-            }
-        } catch (_: Exception) {
-            // 网络异常/解析失败统一返回空，由 UI 提示兜底
-        }
-        candidates
-            .map { it.replace("${'\\'}u002F", "/").replace("${'\\'}/", "/").trim() }
-            .filter { it.isNotBlank() && it.length > 12 }
-            .distinct()
-            .take(5)
-    }
-
-    /** 从落地页 HTML 中提取视频直链候选（按提取优先级排序） */
-    private fun extractVideos(html: String, pageUrl: String): List<String> {
-        if (html.isBlank()) return emptyList()
-        val out = mutableListOf<String>()
-
-        // 1. og:video 系列社交分享标签（最标准）
-        Regex(
-            """(?i)(?:property|name)\s*=\s*["']og:video(?::url|:secure_url|:type)?["']\s+content\s*=\s*["']([^"']+)["']"""
-        ).findAll(html).forEach { match ->
-            val v = match.groupValues[1].trim()
-            if (isVideoUrl(v)) out.add(v)
-        }
-
-        // 2. 页面 JSON 内嵌字段：playAddr / play_addr / playUrl / downloadAddr / videoUrl
-        Regex(
-            """(?i)["'](?:playAddr|play_addr|playAddrV2|playUrl|downloadAddr|download_addr|videoUrl|video_url|url_list)["']\s*:\s*["']([^"']+)["']"""
-        ).findAll(html).forEach { match ->
-            val v = match.groupValues[1].trim()
-            // url_list 有时是数组元素 ["..."]，长度足够且含 http 才收
-            if (v.startsWith("http") || v.contains("http")) {
-                val clean = v.trimStart('"', '[').trimEnd('"', ']', ',').trim()
-                if (isVideoUrl(clean) || clean.contains("http")) out.add(clean.ifBlank { v })
-            }
-        }
-
-        // 3. 通用直链：http(s) 结尾 mp4 / m3u8 / webm / mov
-        Regex(
-            """https?://[^\s"'<>\\]+?\.(?:mp4|m3u8|webm|mov)(?:\?[^\s"'<>\\]*)?|https?://[^\s"'<>\\]*?/(?:play|down)[^\s"'<>\\]*\.(?:mp4|m3u8|webm|mov)(?:\?[^\s"'<>\\]*)?""",
-            RegexOption.IGNORE_CASE
-        ).findAll(html).forEach { match ->
-            val v = match.value.trim()
-            if (isVideoUrl(v)) out.add(v)
-        }
-
-        // 4. 相对路径视频（前面必须非字母/数字，避免抓到 JS 变量）
-        Regex(
-            """(?<![A-Za-z0-9_/])/(?:[A-Za-z0-9_\-./]+?)\.(?:mp4|webm|mov)(?:\?[^\s"'<>]*)?(?![A-Za-z0-9])""",
-            RegexOption.IGNORE_CASE
-        ).findAll(html).forEach { match ->
-            val rel = match.value.trim()
-            if (rel.startsWith("/") && !rel.startsWith("//")) {
-                runCatching {
-                    val u = java.net.URI(pageUrl)
-                    if (u.scheme != null && u.host != null) {
-                        val abs = u.scheme + "://" + u.host + rel
-                        if (isVideoUrl(abs)) out.add(abs)
+    suspend fun resolveMedia(context: Context, shareUrl: String): MediaParseResult =
+        withContext(Dispatchers.IO) {
+            val url = shareUrl.trim()
+            if (url.isBlank()) return@withContext MediaParseResult()
+            try {
+                val request = Request.Builder()
+                    .url(url)
+                    .header("User-Agent", UA)
+                    .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
+                    .header("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
+                    .header("Referer", url)
+                    .get()
+                    .build()
+                client.newCall(request).execute().use { resp ->
+                    if (!resp.isSuccessful) return@withContext MediaParseResult()
+                    val finalUrl = resp.request.url.toString()
+                    val html = resp.body?.string() ?: return@withContext MediaParseResult()
+                    // 落地页本身是直链（极少数情况）
+                    val ct = resp.header("Content-Type", "").lowercase()
+                    if (ct.contains("video/") || finalUrl.substringBefore('?').lowercase().endsWith(".mp4")) {
+                        return@withContext MediaParseResult(videoUrls = listOf(finalUrl))
                     }
+                    return@withContext extractMedia(html, finalUrl)
+                }
+            } catch (_: Exception) {
+                MediaParseResult()
+            }
+        }
+
+    /** 兼容旧接口：只取视频直链 */
+    suspend fun resolve(context: Context, shareUrl: String): List<String> =
+        resolveMedia(context, shareUrl).videoUrls
+
+    /** 从 HTML 提取视频/图片/封面/标题 */
+    private fun extractMedia(html: String, pageUrl: String): MediaParseResult {
+        if (html.isBlank()) return MediaParseResult()
+        val videos = mutableListOf<String>()
+        val images = mutableListOf<String>()
+
+        // ---- 0. 小红书 __INITIAL_STATE__（视频 masterUrl / 图文原图） ----
+        Regex("""window\.__INITIAL_STATE__\s*=\s*(\{.*?\})\s*</script>""", RegexOption.DOT_MATCHES_ALL)
+            .find(html)?.groupValues?.get(1)?.let { state ->
+                // 视频直链
+                Regex(""""masterUrl"\s*:\s*"([^"]+)"""").findAll(state).forEach { m ->
+                    val v = unescapeUrl(m.groupValues[1])
+                    if (v.startsWith("http")) videos.add(v)
+                }
+                Regex(""""url"\s*:\s*"([^"]*?/[^"]*?\.(?:mp4)(?:[^"]*)?)"""").findAll(state).forEach { m ->
+                    val v = unescapeUrl(m.groupValues[1])
+                    if (v.startsWith("http") && isVideoUrl(v)) videos.add(v)
+                }
+                // 图文原图（sns-img / xhscdn）
+                Regex(""""url"\s*:\s*"(https?://[^"]*?(?:sns-img|xhscdn|xiaohongshu)[^"]*?\.(?:jpg|jpeg|png|webp)[^"]*?)"""")
+                    .findAll(state).forEach { m ->
+                        val v = unescapeUrl(m.groupValues[1])
+                        if (isImageUrl(v)) images.add(v)
+                    }
+            }
+
+        // ---- 1. og:video 社交标签 ----
+        Regex("""(?i)(?:property|name)\s*=\s*["']og:video(?::url|:secure_url)?["']\s+content\s*=\s*["']([^"']+)["']""")
+            .findAll(html).forEach { m ->
+                val v = m.groupValues[1].trim()
+                if (isVideoUrl(v)) videos.add(v)
+            }
+
+        // ---- 2. 页面 JSON 内嵌视频字段 ----
+        Regex("""(?i)["'](?:playAddr|play_addr|playAddrV2|playUrl|downloadAddr|download_addr|videoUrl|video_url|url_list)["']\s*:\s*["']([^"']+)["']""")
+            .findAll(html).forEach { m ->
+                val v = m.groupValues[1].trim()
+                if (v.contains("http")) {
+                    val clean = unescapeUrl(v.trimStart('"', '[').trimEnd('"', ']', ',').trim())
+                    if (isVideoUrl(clean) || clean.contains("http")) videos.add(clean.ifBlank { v })
                 }
             }
+
+        // ---- 3. 通用视频直链 ----
+        Regex(
+            """https?://[^\s"'<>\\]+?\.(?:mp4|m3u8|webm|mov)(?:\?[^\s"'<>\\]*)?""",
+            RegexOption.IGNORE_CASE
+        ).findAll(html).forEach { m ->
+            val v = m.value.trim()
+            if (isVideoUrl(v)) videos.add(v)
         }
 
-        return out
+        // ---- 4. 封面：og:image / twitter:image ----
+        val cover = Regex("""(?i)(?:property|name)\s*=\s*["'](?:og:image|twitter:image)(?::url|:secure_url)?["']\s+content\s*=\s*["']([^"']+)["']""")
+            .find(html)?.groupValues?.get(1)?.trim()?.takeIf { it.startsWith("http") }
+
+        // ---- 5. 标题：og:title ----
+        val title = Regex("""(?i)(?:property|name)\s*=\s*["']og:title["']\s+content\s*=\s*["']([^"']+)["']""")
+            .find(html)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotBlank() }
+
+        // ---- 6. 图片：og:image 全组（部分平台有多张） ----
+        Regex("""(?i)(?:property|name)\s*=\s*["']og:image(?::url|:secure_url)?["']\s+content\s*=\s*["']([^"']+)["']""")
+            .findAll(html).forEach { m ->
+                val v = m.groupValues[1].trim()
+                if (isImageUrl(v)) images.add(v)
+            }
+
+        return MediaParseResult(
+            videoUrls = videos.map(::unescapeUrl).filter { it.isNotBlank() }.distinct().take(5),
+            imageUrls = images.map(::unescapeUrl).filter { it.isNotBlank() }.distinct().take(20),
+            coverUrl = cover,
+            title = title
+        )
     }
+
+    private fun unescapeUrl(u: String): String =
+        u.replace("\\u002F", "/").replace("\\/", "/").replace("\\u0026", "&").trim()
 
     /** 粗校验：看起来像可下载的视频地址 */
     private fun isVideoUrl(url: String): Boolean {
@@ -139,5 +169,13 @@ object VideoLinkParser {
             url.contains("play_addr") ||
             url.contains("video/") ||
             clean.contains("video")
+    }
+
+    private fun isImageUrl(url: String): Boolean {
+        if (!url.startsWith("http")) return false
+        val clean = url.substringBefore('?').lowercase()
+        return clean.endsWith(".jpg") || clean.endsWith(".jpeg") ||
+            clean.endsWith(".png") || clean.endsWith(".webp") ||
+            url.contains("sns-img") || url.contains("xhscdn")
     }
 }
