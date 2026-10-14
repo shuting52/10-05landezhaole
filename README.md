@@ -6,7 +6,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Android-Kotlin%20%2B%20Jetpack%20Compose-3DDC84?logo=android&logoColor=white" alt="Android Kotlin Compose" />
-  <a href="https://github.com/shuting52/10-05landezhaole/releases/latest"><img src="https://img.shields.io/badge/Download-v1.4.9%20APK-22C55E?logo=github&logoColor=white" alt="Download v1.4.9" /></a>
+  <a href="https://github.com/shuting52/10-05landezhaole/releases/latest"><img src="https://img.shields.io/github/v/release/shuting52/10-05landezhaole?label=Download&color=22C55E&logo=github&logoColor=white" alt="Download latest APK" /></a>
+  <a href="https://github.com/shuting52/10-05landezhaole/releases"><img src="https://img.shields.io/github/downloads/shuting52/10-05landezhaole/total?label=Downloads&color=2563EB&logo=github&logoColor=white" alt="Total Downloads" /></a>
   <img src="https://img.shields.io/badge/App%20Version-v1.4.9%20(code%20164)-2563EB" alt="App Version" />
   <img src="https://img.shields.io/badge/CI%2FCD-Auto%20Release-22C55E?logo=githubactions&logoColor=white" alt="Auto Release" />
 </p>
