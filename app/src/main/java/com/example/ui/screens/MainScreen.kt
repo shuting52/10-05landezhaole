@@ -276,7 +276,7 @@ fun MainScreen(
                                 onTriggerSplash = { viewModel.showSplash() },
                                 cloudMarquee = uiState.cloudMarquee,
                                 cloudIpMonitor = uiState.cloudIpMonitor,
-                                cloudAppName = uiState.cloudUiText?.homeTitle?.ifBlank { uiState.cloudSettings?.appName?.ifBlank { "懒得找了去水印" } ?: "懒得找了去水印" } ?: uiState.cloudSettings?.appName?.ifBlank { "懒得找了去水印" } ?: "懒得找了去水印",
+                                cloudAppName = uiState.cloudUiText?.homeTitle?.ifBlank { uiState.cloudSettings?.appName?.ifBlank { "懒得找了" } ?: "懒得找了" } ?: uiState.cloudSettings?.appName?.ifBlank { "懒得找了" } ?: "懒得找了",
                                 cloudLogo = uiState.cloudSettings?.logoUrl.orEmpty(),
                                 componentThemes = uiState.activeUiverseState.componentThemes
                             )
@@ -784,7 +784,7 @@ private fun HeaderBrandSection(
     onTriggerSplash: () -> Unit,
     cloudMarquee: com.example.data.remote.MarqueeDto? = null,
     cloudIpMonitor: com.example.data.remote.IpMonitorDto? = null,
-    cloudAppName: String = "懒得找了去水印",
+    cloudAppName: String = "懒得找了",
     cloudLogo: String = "",
     // v1.1.4 主题分支：组件级定制（home_header）
     componentThemes: Map<String, String> = emptyMap()
@@ -915,7 +915,7 @@ private fun HeaderBrandSection(
 @Composable
 fun AnimatedBrandTitle(
     modifier: Modifier = Modifier,
-    text: String = "懒得找了去水印"
+    text: String = "懒得找了"
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "brand_shimmer_transition")
     val shimmerOffset by infiniteTransition.animateFloat(
