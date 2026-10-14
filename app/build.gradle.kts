@@ -16,8 +16,8 @@ android {
     applicationId = "com.aistudio.landezhaole.lzdl"
     minSdk = 24
     targetSdk = 36
-    versionCode = 165
-    versionName = "1.4.10"
+    versionCode = 166
+    versionName = "1.4.11"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
