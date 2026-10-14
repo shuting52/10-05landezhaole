@@ -1,17 +1,15 @@
 {
   "version": {
-    "code": 162,
-    "name": "1.4.7",
+    "code": 163,
+    "name": "1.4.8",
     "changelog": [
-      "✨ v1.4.7 更新来啦～",
-      "修复「立即更新」点击后无响应、无法下载安装包的问题，升级链路已全面打通",
-      "「AI前言」全新上线：最新 AI 前沿动态速递 · 个人助理榜 · 霸榜第一模型",
-      "统一官方证书签名，老版本可直接覆盖安装，升级丝滑无冲突"
+      "✨ v1.4.8 更新来啦～",
+      "本次更新包含多项优化与修复"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.7-1791771043.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.7-1791771043.apk",
-    "lastBuildSha": "988355ab48748ec2eca939f374f90778562cc224"
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.8-1791958878.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.8-1791958878.apk",
+    "lastBuildSha": "895b5998a5e932132a12d3590b9537834dc36185"
   },
   "home": {
     "categories": [
@@ -24345,12 +24343,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.4.7 已上线",
+    "title": "懒得找了 v1.4.8 已上线",
     "changelog": [
-      "✨ v1.4.7 更新来啦～",
-      "修复「立即更新」点击后无响应、无法下载安装包的问题，升级链路已全面打通",
-      "「AI前言」全新上线：最新 AI 前沿动态速递 · 个人助理榜 · 霸榜第一模型",
-      "统一官方证书签名，老版本可直接覆盖安装，升级丝滑无冲突"
+      "✨ v1.4.8 更新来啦～",
+      "本次更新包含多项优化与修复"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24412,10 +24408,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.4.7",
-      "code": 162,
-      "at": "2026-10-12T02:10:50Z",
-      "sha": "988355ab48748ec2eca939f374f90778562cc224"
+      "version": "1.4.8",
+      "code": 163,
+      "at": "2026-10-14T06:21:24Z",
+      "sha": "895b5998a5e932132a12d3590b9537834dc36185"
     }
   },
   "_ai_notice": "内容由AI生成"
