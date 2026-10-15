@@ -42,6 +42,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -79,6 +80,20 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 
+/**
+ * 车型数据（v1.4.26 新增）
+ * 每个品牌旗下的主力车型：名称/类型/动力/价格/智能驾驶/优缺点
+ */
+data class CarModel(
+    val name: String,           // 车型名，如：星越L
+    val type: String,           // SUV / 轿车 / MPV / 跑车
+    val power: String,          // 燃油 / 混动 / 纯电 / 增程
+    val price: String,          // 价格区间
+    val smartDrive: Boolean,    // 是否支持智能驾驶辅助（含自动避障/主动刹车等）
+    val pros: String,           // 优点（简短）
+    val cons: String            // 缺点（简短）
+)
+
 data class CarBrand(
     val id: String,
     val nameZh: String,
@@ -91,7 +106,8 @@ data class CarBrand(
     val headquarters: String,
     val priceRange: String,
     val logoDescription: String,
-    val logoUrl: String = "" // 网络真实官方车标高清图片
+    val logoUrl: String = "", // 网络真实官方车标高清图片
+    val models: List<CarModel> = emptyList() // v1.4.26：旗下主力车型
 )
 
 val CAR_BRANDS_DATABASE = listOf(
@@ -783,6 +799,87 @@ fun CarBrandSection(
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
+
+                        // v1.4.26：旗下主力车型
+                        val brandModels = try { CAR_MODELS_MAP[brand.id] } catch (_: Exception) { null } ?: brand.models
+                        if (brandModels.isNotEmpty()) {
+                            Card(
+                                colors = CardDefaults.cardColors(containerColor = Color(0xFFF0FDF4)),
+                                shape = RoundedCornerShape(14.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Column(modifier = Modifier.padding(12.dp)) {
+                                    Text(
+                                        text = "🚗 旗下主力车型（${brandModels.size} 款）",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF166534)
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    brandModels.forEach { model ->
+                                        Column(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 6.dp)
+                                        ) {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier.fillMaxWidth()
+                                            ) {
+                                                Text(
+                                                    text = model.name,
+                                                    fontSize = 13.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = Color(0xFF14532D),
+                                                    modifier = Modifier.weight(1f)
+                                                )
+                                                if (model.smartDrive) {
+                                                    Text(
+                                                        text = "智能驾驶",
+                                                        fontSize = 10.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                        color = Color.White,
+                                                        modifier = Modifier
+                                                            .clip(RoundedCornerShape(6.dp))
+                                                            .background(Color(0xFF16A34A))
+                                                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                                                    )
+                                                }
+                                            }
+                                            Text(
+                                                text = "${model.type} · ${model.power} · ${model.price}",
+                                                fontSize = 11.sp,
+                                                color = Color(0xFF4D7C0F)
+                                            )
+                                            Text(
+                                                text = "✅ ${model.pros}",
+                                                fontSize = 11.sp,
+                                                color = Color(0xFF365314),
+                                                lineHeight = 16.sp
+                                            )
+                                            Text(
+                                                text = "⚠️ ${model.cons}",
+                                                fontSize = 11.sp,
+                                                color = Color(0xFF92400E),
+                                                lineHeight = 16.sp
+                                            )
+                                        }
+                                        HorizontalDivider(
+                                            color = Color(0xFFBBF7D0),
+                                            thickness = 0.5.dp,
+                                            modifier = Modifier.padding(vertical = 2.dp)
+                                        )
+                                    }
+                                    Text(
+                                        text = "💡 带「智能驾驶」标签的车型支持 L2 级辅助驾驶（含自动避障/主动刹车）",
+                                        fontSize = 10.5.sp,
+                                        color = Color(0xFF65A30D),
+                                        lineHeight = 15.sp
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(12.dp))
+                        }
 
                         Button(
                             onClick = { selectedBrandForDetail = null },

@@ -6,6 +6,7 @@ import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,7 +29,10 @@ import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.RepeatOne
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.Button
@@ -210,10 +214,24 @@ fun MusicPlayerSection() {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // 播放模式：顺序 / 随机 / 单曲循环
+                IconButton(onClick = { state.cyclePlayMode() }) {
+                    val modeIcon = when (state.playMode) {
+                        MusicPlayerState.PlayMode.SHUFFLE -> Icons.Filled.Shuffle
+                        MusicPlayerState.PlayMode.REPEAT_ONE -> Icons.Filled.RepeatOne
+                        else -> Icons.Filled.Repeat
+                    }
+                    val modeDesc = when (state.playMode) {
+                        MusicPlayerState.PlayMode.SHUFFLE -> "随机播放"
+                        MusicPlayerState.PlayMode.REPEAT_ONE -> "单曲循环"
+                        else -> "顺序播放"
+                    }
+                    Icon(modeIcon, contentDescription = modeDesc, tint = themeColors.primary, modifier = Modifier.size(28.dp))
+                }
                 IconButton(onClick = { state.playPrev(context) }) {
                     Icon(Icons.Filled.SkipPrevious, contentDescription = "上一首", tint = themeColors.primary, modifier = Modifier.size(36.dp))
                 }
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(8.dp))
                 IconButton(onClick = { state.togglePlayPause(context) }) {
                     Icon(
                         if (state.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
@@ -221,10 +239,41 @@ fun MusicPlayerSection() {
                         tint = themeColors.primary, modifier = Modifier.size(48.dp)
                     )
                 }
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(8.dp))
                 IconButton(onClick = { state.playNext(context) }) {
                     Icon(Icons.Filled.SkipNext, contentDescription = "下一首", tint = themeColors.primary, modifier = Modifier.size(36.dp))
                 }
+            }
+            // 当前播放模式文字提示
+            Text(
+                when (state.playMode) {
+                    MusicPlayerState.PlayMode.SHUFFLE -> "随机播放"
+                    MusicPlayerState.PlayMode.REPEAT_ONE -> "单曲循环"
+                    else -> "顺序播放"
+                },
+                fontSize = 11.sp, color = themeColors.textMuted,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            // ===== 歌词 =====
+            if (state.currentLyrics.isNotBlank()) {
+                Text("歌词", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = themeColors.text)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(themeColors.surface.copy(alpha = 0.6f))
+                        .padding(10.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(
+                        state.currentLyrics,
+                        fontSize = 12.sp, color = themeColors.text,
+                        lineHeight = 20.sp
+                    )
+                }
+            } else if (current.isLocal) {
+                Text("暂无内嵌歌词", fontSize = 11.sp, color = themeColors.textMuted)
             }
         } else {
             Text("还没有播放内容，先搜索试听或扫描本地歌曲", fontSize = 13.sp, color = themeColors.textMuted)

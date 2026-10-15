@@ -32,6 +32,18 @@ object MusicPlayerState {
     var isLoading by mutableStateOf(false)
     var errorMsg by mutableStateOf("")
 
+    /** 播放模式：顺序 / 随机 / 单曲循环 */
+    enum class PlayMode { SEQUENTIAL, SHUFFLE, REPEAT_ONE }
+    var playMode by mutableStateOf(PlayMode.SEQUENTIAL)
+
+    fun cyclePlayMode() {
+        playMode = when (playMode) {
+            PlayMode.SEQUENTIAL -> PlayMode.SHUFFLE
+            PlayMode.SHUFFLE -> PlayMode.REPEAT_ONE
+            PlayMode.REPEAT_ONE -> PlayMode.SEQUENTIAL
+        }
+    }
+
     private var player: MediaPlayer? = null
 
     val currentTrack: Track?
@@ -45,6 +57,13 @@ object MusicPlayerState {
             val track = playlist[index]
             isLoading = true
             errorMsg = ""
+            currentLyrics = ""
+            // 异步加载歌词（不阻塞播放）
+            try {
+                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                    loadLyrics(context, track)
+                }
+            } catch (_: Exception) {}
             player = MediaPlayer().apply {
                 // v1.4.25 修复：本地 content:// URI 必须用 setDataSource(Context, Uri)，
                 // 用 String 版本会被当成文件路径导致播放失败
@@ -60,12 +79,31 @@ object MusicPlayerState {
                     MusicPlayerState.currentIndex = index
                 }
                 setOnCompletionListener {
-                    // 自动下一首
-                    val next = MusicPlayerState.currentIndex + 1
-                    if (next in MusicPlayerState.playlist.indices) {
-                        MusicPlayerState.playAt(next, context)
-                    } else {
-                        MusicPlayerState.isPlaying = false
+                    // 按播放模式决定下一首
+                    when (MusicPlayerState.playMode) {
+                        PlayMode.REPEAT_ONE -> {
+                            MusicPlayerState.playAt(MusicPlayerState.currentIndex, context)
+                        }
+                        PlayMode.SHUFFLE -> {
+                            val size = MusicPlayerState.playlist.size
+                            if (size > 1) {
+                                var next: Int
+                                do {
+                                    next = (0 until size).random()
+                                } while (next == MusicPlayerState.currentIndex)
+                                MusicPlayerState.playAt(next, context)
+                            } else if (size == 1) {
+                                MusicPlayerState.playAt(0, context)
+                            }
+                        }
+                        PlayMode.SEQUENTIAL -> {
+                            val next = MusicPlayerState.currentIndex + 1
+                            if (next in MusicPlayerState.playlist.indices) {
+                                MusicPlayerState.playAt(next, context)
+                            } else {
+                                MusicPlayerState.isPlaying = false
+                            }
+                        }
                     }
                 }
                 setOnErrorListener { _, _, _ ->
@@ -103,7 +141,12 @@ object MusicPlayerState {
 
     fun playNext(context: Context) {
         if (playlist.isEmpty()) return
-        val next = if (currentIndex + 1 in playlist.indices) currentIndex + 1 else 0
+        // 随机模式下手动下一首也随机
+        val next = if (playMode == PlayMode.SHUFFLE && playlist.size > 1) {
+            var n: Int
+            do { n = (0 until playlist.size).random() } while (n == currentIndex)
+            n
+        } else if (currentIndex + 1 in playlist.indices) currentIndex + 1 else 0
         playAt(next, context)
     }
 
@@ -192,5 +235,39 @@ object MusicPlayerState {
         } catch (_: Exception) {}
         player = null
         isPlaying = false
+    }
+
+    /**
+     * 提取内嵌歌词（MediaMetadataRetriever）
+     * 部分 MP3/M4A 文件内嵌了 USLT 歌词；没有则返回空
+     */
+    var currentLyrics by mutableStateOf("")
+
+    fun loadLyrics(context: Context, track: Track) {
+        currentLyrics = ""
+        if (!track.isLocal) return // 在线试听无歌词
+        try {
+            val retriever = android.media.MediaMetadataRetriever()
+            try {
+                retriever.setDataSource(context, Uri.parse(track.uri))
+                // 先尝试标准歌词键
+                var lyrics = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_LYRICS)
+                // 部分文件歌词藏在标题/注释里（带时间轴的 LRC 文本）
+                if (lyrics.isNullOrBlank()) {
+                    val title = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_TITLE)
+                    if (title != null && title.contains("[") && title.contains("]")) lyrics = title
+                }
+                if (!lyrics.isNullOrBlank()) {
+                    // 清理 LRC 时间标签，保留纯文本
+                    currentLyrics = lyrics.lines()
+                        .map { it.replace(Regex("\\[\\d+:\\d+\\.\\d+\\]"), "").trim() }
+                        .filter { it.isNotBlank() }
+                        .joinToString("\n")
+                        .ifBlank { lyrics.trim() }
+                }
+            } finally {
+                try { retriever.release() } catch (_: Exception) {}
+            }
+        } catch (_: Exception) {}
     }
 }
