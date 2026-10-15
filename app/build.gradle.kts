@@ -10,14 +10,14 @@ plugins {
 
 android {
   namespace = "com.example"
-  compileSdk { version = release(36) { minorApiLevel = 1 } }
+  compileSdk = 36
 
   defaultConfig {
     applicationId = "com.landezhaole.Android"
     minSdk = 24
     targetSdk = 36
-    versionCode = 187
-    versionName = "1.4.32"
+    versionCode = 188
+    versionName = "1.4.33"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }

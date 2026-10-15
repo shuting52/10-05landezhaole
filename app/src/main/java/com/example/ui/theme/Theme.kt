@@ -122,6 +122,24 @@ object ThemePresetsRepository {
         description = "奶油黄底 · 鸭黄点缀 · 手绘治愈"
     )
 
+    /** 雾屿蓝 —— 清爽现代风（v1.4.33 新增：冷色调干净利落，与手绘暖阳形成对比） */
+    val mistIsle = ThemePreset(
+        id = "mist_isle",
+        name = "雾屿蓝",
+        style = "fresh",
+        categoryName = "清爽",
+        primaryColor = Color(0xFF2F7DE1),      // 晴空蓝
+        secondaryColor = Color(0xFF8FB8EC),    // 雾蓝
+        bgColor = Color(0xFFE9EFF3),           // 浅雾蓝灰
+        surfaceColor = Color(0xFFFFFFFF),      // 纯白卡片
+        textColor = Color(0xFF1C2B3A),         // 深岩灰蓝
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFF2F5F9), Color(0xFFE9EFF3)),
+        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFF4F7FB), Color(0xFFE9EFF3)),
+        designStyle = DesignStyle.DEFAULT,
+        description = "雾蓝灰底 · 晴空蓝点缀 · 干净利落"
+    )
+
     /** 磨砂玻璃 —— 玻璃拟态（浅） */
     val frostGlass = ThemePreset(
         id = "frost_glass",
@@ -475,6 +493,8 @@ object ThemePresetsRepository {
     val clayThemes: List<ThemePreset> = listOf(creamDango, clayOrange, clayChoco)
     // v1.4.31：手绘风分类
     val handDrawnThemes: List<ThemePreset> = listOf(handDrawnSunny)
+    // v1.4.33：清爽分类
+    val freshThemes: List<ThemePreset> = listOf(mistIsle)
     val glassThemes: List<ThemePreset> = listOf(
         frostGlass, liquidGlass,
         glassOcean, glassSunset, glassAurora, glassSakura, glassMint,
@@ -497,7 +517,7 @@ object ThemePresetsRepository {
     val gradientThemes: List<ThemePreset> = listOf(liquidGlass, frostGlass)
 
     val allThemes: List<ThemePreset> = listOf(
-        creamDango, clayOrange, clayChoco, handDrawnSunny, frostGlass, liquidGlass, iosFresh, iosDark,
+        creamDango, clayOrange, clayChoco, handDrawnSunny, mistIsle, frostGlass, liquidGlass, iosFresh, iosDark,
         minimalPaper, minimalInk, minimalOat, minimalMist, minimalMint,
         minimalSakura, minimalLemon, minimalLavender, minimalCeladon, minimalStone,
         neuCream, neuMist, neuPeach, neuSky, neuMint,

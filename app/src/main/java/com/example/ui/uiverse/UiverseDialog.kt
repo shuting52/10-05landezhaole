@@ -119,6 +119,7 @@ fun UiverseDialog(
                     "ALL" to "全部",
                     "CLAY" to "黏土",
                     "HANDDRAWN" to "手绘",
+                    "FRESH" to "清爽",
                     "MINIMAL" to "极简",
                     "NEU" to "新拟态",
                     "GLASS" to "玻璃",
@@ -248,6 +249,7 @@ fun UiverseDialog(
             val visibleThemes = when (selectedCategoryTab) {
                 "CLAY" -> ThemePresetsRepository.clayThemes
                 "HANDDRAWN" -> ThemePresetsRepository.handDrawnThemes
+                "FRESH" -> ThemePresetsRepository.freshThemes
                 "MINIMAL" -> ThemePresetsRepository.minimalThemes
                 "NEU" -> ThemePresetsRepository.neuThemes
                 "GLASS" -> ThemePresetsRepository.glassThemes

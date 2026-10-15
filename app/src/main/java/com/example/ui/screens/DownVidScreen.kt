@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,9 +48,18 @@ import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
+import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.DoneAll
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.RocketLaunch
+import androidx.compose.material.icons.filled.TouchApp
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Movie
@@ -173,6 +183,31 @@ fun DownVidScreen(
 
     val historyList = remember { mutableStateListOf<VideoParseResult>() }
 
+    // v1.4.33：新版三卡片布局状态 —— 图片多选 / 卡片折叠（随解析结果重置）
+    var selectedImageIdx by remember(currentResult) { mutableStateOf(setOf<Int>()) }
+    var mediaExpanded by remember(currentResult) { mutableStateOf(true) }
+    var descExpanded by remember { mutableStateOf(false) }
+
+    // v1.4.33：粘贴辅助（输入卡片「粘贴」按钮共用）
+    fun doPaste() {
+        try {
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = clipboard.primaryClip
+            if (clip != null && clip.itemCount > 0) {
+                val text = clip.getItemAt(0).text?.toString() ?: ""
+                val extracted = extractUrl(text)
+                if (extracted.isNotBlank()) {
+                    inputUrl = extracted
+                    Toast.makeText(context, "已粘贴链接", Toast.LENGTH_SHORT).show()
+                } else {
+                    inputUrl = text
+                }
+            } else {
+                Toast.makeText(context, "剪贴板为空", Toast.LENGTH_SHORT).show()
+            }
+        } catch (_: Exception) {}
+    }
+
     // 自动读取剪贴板有效链接
     LaunchedEffect(Unit) {
         try {
@@ -192,8 +227,8 @@ fun DownVidScreen(
     fun startParsing() {
         val target = extractUrl(inputUrl).trim()
         if (target.isBlank() || (!target.startsWith("http://") && !target.startsWith("https://"))) {
-            errorMessage = "请输入或粘贴合法的视频分享链接"
-            Toast.makeText(context, "请输入合法的视频链接", Toast.LENGTH_SHORT).show()
+            errorMessage = "请输入或粘贴合法的视频/图文分享链接"
+            Toast.makeText(context, "请输入合法的分享链接", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -305,46 +340,101 @@ fun DownVidScreen(
             .testTag("downvid_screen"),
         contentPadding = PaddingValues(bottom = 96.dp)
     ) {
-        // ---- 顶部 Hero 横幅 ----
+        // ---- 顶部标题（v1.4.33：对标参考图，简洁大标题替代 Hero 横幅） ----
         item {
-            DownVidHeader(
-                onPasteClipboard = {
-                    try {
-                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        val clip = clipboard.primaryClip
-                        if (clip != null && clip.itemCount > 0) {
-                            val text = clip.getItemAt(0).text?.toString() ?: ""
-                            val extracted = extractUrl(text)
-                            if (extracted.isNotBlank()) {
-                                inputUrl = extracted
-                                Toast.makeText(context, "已粘贴链接", Toast.LENGTH_SHORT).show()
-                            } else {
-                                inputUrl = text
-                            }
-                        }
-                    } catch (_: Exception) {}
-                }
+            Text(
+                text = "解析",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Black,
+                color = themeColors.text,
+                modifier = Modifier.padding(start = 20.dp, top = 14.dp, bottom = 6.dp)
             )
         }
 
-        // ---- 输入区域卡片 ----
+        // ---- 卡片1：粘贴链接（v1.4.33：对标参考图） ----
         item {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.92f)),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = themeColors.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "🔗 粘贴视频链接",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = themeColors.primary
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(44.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(themeColors.primary.copy(alpha = 0.12f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Filled.Link,
+                                contentDescription = null,
+                                tint = themeColors.primary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "粘贴链接",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = themeColors.text
+                            )
+                            Text(
+                                text = "粘贴平台分享链接",
+                                fontSize = 12.sp,
+                                color = themeColors.textMuted
+                            )
+                        }
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(themeColors.primary.copy(alpha = 0.14f))
+                                    .clickable { doPaste() }
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        Icons.Filled.ContentPaste,
+                                        contentDescription = null,
+                                        tint = themeColors.primary,
+                                        modifier = Modifier.size(15.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text("粘贴", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = themeColors.primary)
+                                }
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(Color(0xFFE8EDF2))
+                                    .clickable { inputUrl = ""; errorMessage = null }
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        Icons.Filled.Clear,
+                                        contentDescription = null,
+                                        tint = themeColors.textMuted,
+                                        modifier = Modifier.size(15.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text("清空", fontSize = 13.sp, color = themeColors.textMuted)
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     OutlinedTextField(
                         value = inputUrl,
@@ -357,95 +447,55 @@ fun DownVidScreen(
                             .testTag("downvid_input_url"),
                         placeholder = {
                             Text(
-                                "支持抖音/快手/B站/YouTube/小红书/微博分享链接...",
+                                "粘贴视频/图文分享链接...",
                                 fontSize = 13.sp,
                                 color = Color.Gray
                             )
                         },
                         maxLines = 3,
-                        trailingIcon = {
-                            if (inputUrl.isNotBlank()) {
-                                IconButton(onClick = { inputUrl = "" }) {
-                                    Icon(Icons.Filled.Clear, contentDescription = "清空", tint = Color.Gray)
-                                }
-                            } else {
-                                IconButton(onClick = {
-                                    try {
-                                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                        val clip = clipboard.primaryClip
-                                        if (clip != null && clip.itemCount > 0) {
-                                            val text = clip.getItemAt(0).text?.toString() ?: ""
-                                            inputUrl = extractUrl(text).ifBlank { text }
-                                        }
-                                    } catch (_: Exception) {}
-                                }) {
-                                    Icon(Icons.Filled.ContentPaste, contentDescription = "粘贴", tint = themeColors.secondary)
-                                }
-                            }
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = themeColors.secondary,
-                            unfocusedBorderColor = themeColors.secondary.copy(alpha = 0.35f)
-                        ),
                         shape = RoundedCornerShape(14.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = Color(0xFFF0F3F6),
+                            unfocusedContainerColor = Color(0xFFF0F3F6),
+                            disabledContainerColor = Color(0xFFF0F3F6),
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent
+                        ),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(onDone = { startParsing() })
                     )
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    Button(
+                        onClick = { startParsing() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .testTag("downvid_btn_parse"),
+                        shape = RoundedCornerShape(25.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = themeColors.primary,
+                            disabledContainerColor = Color(0xFFD5DCE3)
+                        ),
+                        enabled = !isParsing
                     ) {
-                        Button(
-                            onClick = { startParsing() },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(46.dp)
-                                .testTag("downvid_btn_parse"),
-                            shape = RoundedCornerShape(14.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = themeColors.primary
-                            ),
-                            enabled = !isParsing
-                        ) {
-                            if (isParsing) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(20.dp),
-                                    color = Color.White,
-                                    strokeWidth = 2.dp
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("正在提取原画...", fontSize = 14.sp)
-                            } else {
-                                Icon(Icons.Filled.CloudDownload, contentDescription = null, modifier = Modifier.size(18.dp))
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text("一键提取下载", fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                            }
-                        }
-
-                        Button(
-                            onClick = {
-                                try {
-                                    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                    val clip = clipboard.primaryClip
-                                    if (clip != null && clip.itemCount > 0) {
-                                        val text = clip.getItemAt(0).text?.toString() ?: ""
-                                        inputUrl = extractUrl(text).ifBlank { text }
-                                        startParsing()
-                                    } else {
-                                        Toast.makeText(context, "剪贴板为空", Toast.LENGTH_SHORT).show()
-                                    }
-                                } catch (_: Exception) {}
-                            },
-                            shape = RoundedCornerShape(14.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = themeColors.secondary.copy(alpha = 0.15f)),
-                            modifier = Modifier.height(46.dp)
-                        ) {
-                            Icon(Icons.Filled.ContentPaste, contentDescription = null, tint = themeColors.primary, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("粘贴并解析", color = themeColors.primary, fontSize = 13.sp)
+                        if (isParsing) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = Color.White,
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("正在解析...", fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                        } else {
+                            Icon(
+                                Icons.Filled.RocketLaunch,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("完成解析", fontSize = 15.sp, fontWeight = FontWeight.Bold)
                         }
                     }
 
@@ -461,107 +511,272 @@ fun DownVidScreen(
             }
         }
 
-        // ---- 解析成功卡片展示 ----
+        // ---- 卡片2：媒体预览（v1.4.33：对标参考图；图片多选下载 + 视频画质能力保留） ----
         if (currentResult != null) {
             val res = currentResult!!
+            val isImagePost = res.videoUrls.isEmpty() && res.imageUrls.isNotEmpty()
             item {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = themeColors.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { mediaExpanded = !mediaExpanded },
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Surface(
-                                shape = RoundedCornerShape(6.dp),
-                                color = themeColors.secondary.copy(alpha = 0.15f)
-                            ) {
-                                Text(
-                                    text = res.platform,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = themeColors.primary,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "解析成功 · 可直接下载",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = themeColors.primary
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            // 封面图（v1.4.13：真实解析封面，取不到时显示占位图标）
                             Box(
                                 modifier = Modifier
-                                    .size(90.dp)
+                                    .size(44.dp)
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(Color(0xFFE2EFE7)),
+                                    .background(themeColors.primary.copy(alpha = 0.12f)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    Icons.Filled.Image,
+                                    if (isImagePost) Icons.Filled.Collections else Icons.Filled.Movie,
                                     contentDescription = null,
-                                    tint = themeColors.primary.copy(alpha = 0.35f),
-                                    modifier = Modifier.size(36.dp)
+                                    tint = themeColors.primary,
+                                    modifier = Modifier.size(24.dp)
                                 )
-                                if (res.coverUrl != null) {
-                                    AsyncImage(
-                                        model = res.coverUrl,
-                                        contentDescription = "媒体封面",
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentScale = ContentScale.Crop
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Surface(
+                                        shape = RoundedCornerShape(6.dp),
+                                        color = themeColors.primary.copy(alpha = 0.12f)
+                                    ) {
+                                        Text(
+                                            text = res.platform,
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = themeColors.primary,
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = if (isImagePost) "图集预览" else "视频预览",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = themeColors.text
                                     )
                                 }
-                                Box(
-                                    modifier = Modifier
-                                        .align(Alignment.BottomEnd)
-                                        .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(topStart = 6.dp))
-                                        .padding(horizontal = 4.dp, vertical = 1.dp)
-                                ) {
-                                    Text(res.durationText, fontSize = 9.sp, color = Color.White)
-                                }
+                                Text(
+                                    text = if (isImagePost) "图片列表与缩略图" else "无水印直链 · 点选画质下载",
+                                    fontSize = 12.sp,
+                                    color = themeColors.textMuted
+                                )
                             }
+                            Icon(
+                                if (mediaExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                                contentDescription = if (mediaExpanded) "收起" else "展开",
+                                tint = themeColors.textMuted
+                            )
+                        }
 
-                            // 标题与下载动作
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = res.title,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = Color(0xFF132A13)
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = "直链已提取 · 无水印高清格式",
-                                    fontSize = 11.sp,
-                                    color = Color(0xFF52796F)
-                                )
+                        if (mediaExpanded) {
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            if (isImagePost) {
+                                // ---- 图集模式：横向缩略图多选 ----
+                                LazyRow(
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    items(res.imageUrls.size) { idx ->
+                                        val url = res.imageUrls[idx]
+                                        val selected = selectedImageIdx.contains(idx)
+                                        Box(
+                                            modifier = Modifier
+                                                .size(96.dp)
+                                                .clip(RoundedCornerShape(14.dp))
+                                                .background(Color(0xFFF0F3F6))
+                                                .then(
+                                                    if (selected) Modifier.border(
+                                                        2.5.dp,
+                                                        themeColors.primary,
+                                                        RoundedCornerShape(14.dp)
+                                                    ) else Modifier
+                                                )
+                                                .clickable {
+                                                    selectedImageIdx =
+                                                        if (selected) selectedImageIdx - idx
+                                                        else selectedImageIdx + idx
+                                                }
+                                        ) {
+                                            AsyncImage(
+                                                model = url,
+                                                contentDescription = "图片 ${idx + 1}",
+                                                modifier = Modifier.fillMaxSize(),
+                                                contentScale = ContentScale.Crop
+                                            )
+                                            Box(
+                                                modifier = Modifier
+                                                    .align(Alignment.BottomEnd)
+                                                    .padding(6.dp)
+                                                    .size(24.dp)
+                                                    .clip(CircleShape)
+                                                    .background(
+                                                        if (selected) themeColors.primary
+                                                        else Color.Black.copy(alpha = 0.55f)
+                                                    ),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    if (selected) Icons.Filled.DoneAll else Icons.Filled.Visibility,
+                                                    contentDescription = if (selected) "已选中" else "预览",
+                                                    tint = Color.White,
+                                                    modifier = Modifier.size(14.dp)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+
                                 Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "共 ${res.imageUrls.size} 张" +
+                                        if (selectedImageIdx.isNotEmpty()) " · 已选 ${selectedImageIdx.size} 张" else "",
+                                    fontSize = 13.sp,
+                                    color = themeColors.textMuted
+                                )
+                                Spacer(modifier = Modifier.height(10.dp))
 
-                                // 下载按钮群（v1.4.13：按实际解析到的媒体类型显示，不再提供虚假按钮）
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    val allSelected = selectedImageIdx.size == res.imageUrls.size
+                                    Button(
+                                        onClick = {
+                                            selectedImageIdx =
+                                                if (allSelected) emptySet()
+                                                else res.imageUrls.indices.toSet()
+                                        },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(48.dp),
+                                        shape = RoundedCornerShape(24.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = themeColors.primary.copy(alpha = 0.14f)
+                                        )
+                                    ) {
+                                        Icon(
+                                            Icons.Filled.TouchApp,
+                                            contentDescription = null,
+                                            tint = themeColors.primary,
+                                            modifier = Modifier.size(17.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            if (allSelected) "取消全选" else "全选媒体",
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = themeColors.primary
+                                        )
+                                    }
+                                    val hasSelection = selectedImageIdx.isNotEmpty()
+                                    Button(
+                                        onClick = {
+                                            val urls = selectedImageIdx.sorted()
+                                                .map { res.imageUrls[it] }
+                                            triggerImageDownload(urls)
+                                        },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(48.dp),
+                                        shape = RoundedCornerShape(24.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = if (hasSelection) themeColors.primary
+                                            else Color(0xFFD5DCE3),
+                                            disabledContainerColor = Color(0xFFD5DCE3)
+                                        ),
+                                        enabled = hasSelection
+                                    ) {
+                                        Icon(
+                                            Icons.Filled.Download,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(17.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            "下载媒体" + if (hasSelection) "(${selectedImageIdx.size})" else "",
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                            } else {
+                                // ---- 视频模式：封面 + 画质下载（v1.4.32 能力完整保留） ----
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(96.dp)
+                                            .clip(RoundedCornerShape(14.dp))
+                                            .background(Color(0xFFF0F3F6)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            Icons.Filled.Image,
+                                            contentDescription = null,
+                                            tint = themeColors.primary.copy(alpha = 0.3f),
+                                            modifier = Modifier.size(36.dp)
+                                        )
+                                        if (res.coverUrl != null) {
+                                            AsyncImage(
+                                                model = res.coverUrl,
+                                                contentDescription = "视频封面",
+                                                modifier = Modifier.fillMaxSize(),
+                                                contentScale = ContentScale.Crop
+                                            )
+                                        }
+                                        Box(
+                                            modifier = Modifier
+                                                .align(Alignment.BottomEnd)
+                                                .background(
+                                                    Color.Black.copy(alpha = 0.6f),
+                                                    RoundedCornerShape(topStart = 6.dp)
+                                                )
+                                                .padding(horizontal = 5.dp, vertical = 2.dp)
+                                        ) {
+                                            Text(res.durationText, fontSize = 9.sp, color = Color.White)
+                                        }
+                                    }
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = res.title,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Medium,
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis,
+                                            color = themeColors.text
+                                        )
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Text(
+                                            text = "直链已提取 · 无水印",
+                                            fontSize = 11.sp,
+                                            color = themeColors.textMuted
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
                                 FlowRow(
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     if (res.videoUrls.isNotEmpty()) {
-                                        // v1.4.31：画质选择（有多个画质时显示选择器）
                                         val qualities = res.qualityOptions.ifEmpty {
                                             listOf("原画" to res.videoUrls.first())
                                         }
@@ -570,21 +785,30 @@ fun DownVidScreen(
                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                             Button(
                                                 onClick = {
-                                                    triggerDownload(selectedQuality.second, "DownVid_${System.currentTimeMillis()}.mp4")
+                                                    triggerDownload(
+                                                        selectedQuality.second,
+                                                        "DownVid_${System.currentTimeMillis()}.mp4"
+                                                    )
                                                 },
-                                                shape = RoundedCornerShape(10.dp),
-                                                colors = ButtonDefaults.buttonColors(containerColor = themeColors.primary),
-                                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-                                                modifier = Modifier.height(34.dp)
+                                                shape = RoundedCornerShape(12.dp),
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = themeColors.primary
+                                                ),
+                                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                                modifier = Modifier.height(38.dp)
                                             ) {
-                                                Icon(Icons.Filled.Movie, contentDescription = null, modifier = Modifier.size(14.dp))
+                                                Icon(Icons.Filled.Movie, contentDescription = null, modifier = Modifier.size(15.dp))
                                                 Spacer(modifier = Modifier.width(4.dp))
-                                                Text("下载${selectedQuality.first}视频", fontSize = 12.sp)
+                                                Text("下载${selectedQuality.first}视频", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                                             }
                                             if (qualities.size > 1) {
                                                 Box {
                                                     IconButton(onClick = { showQualityMenu = true }) {
-                                                        Icon(Icons.Filled.ArrowDropDown, contentDescription = "选择画质", tint = themeColors.primary)
+                                                        Icon(
+                                                            Icons.Filled.ArrowDropDown,
+                                                            contentDescription = "选择画质",
+                                                            tint = themeColors.primary
+                                                        )
                                                     }
                                                     DropdownMenu(
                                                         expanded = showQualityMenu,
@@ -605,17 +829,29 @@ fun DownVidScreen(
                                         }
                                     }
 
+                                    // v1.4.33：视频贴文若附带图片，保留旧版一键下载图片能力
                                     if (res.imageUrls.isNotEmpty()) {
                                         Button(
                                             onClick = { triggerImageDownload(res.imageUrls) },
-                                            shape = RoundedCornerShape(10.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB5651D)),
-                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-                                            modifier = Modifier.height(34.dp)
+                                            shape = RoundedCornerShape(12.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = themeColors.primary.copy(alpha = 0.14f)
+                                            ),
+                                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                            modifier = Modifier.height(38.dp)
                                         ) {
-                                            Icon(Icons.Filled.Image, contentDescription = null, modifier = Modifier.size(14.dp))
+                                            Icon(
+                                                Icons.Filled.Image,
+                                                contentDescription = null,
+                                                tint = themeColors.primary,
+                                                modifier = Modifier.size(15.dp)
+                                            )
                                             Spacer(modifier = Modifier.width(4.dp))
-                                            Text("一键下载图片(${res.imageUrls.size})", fontSize = 12.sp)
+                                            Text(
+                                                "下载图片(${res.imageUrls.size})",
+                                                fontSize = 13.sp,
+                                                color = themeColors.primary
+                                            )
                                         }
                                     }
 
@@ -625,14 +861,14 @@ fun DownVidScreen(
                                                 val targetUrl = res.audioUrl ?: res.videoUrls.first()
                                                 triggerDownload(targetUrl, "DownVid_Audio_${System.currentTimeMillis()}.mp3")
                                             },
-                                            shape = RoundedCornerShape(10.dp),
+                                            shape = RoundedCornerShape(12.dp),
                                             colors = ButtonDefaults.buttonColors(containerColor = themeColors.secondary),
-                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-                                            modifier = Modifier.height(34.dp)
+                                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                            modifier = Modifier.height(38.dp)
                                         ) {
-                                            Icon(Icons.Filled.MusicNote, contentDescription = null, modifier = Modifier.size(14.dp))
+                                            Icon(Icons.Filled.MusicNote, contentDescription = null, modifier = Modifier.size(15.dp))
                                             Spacer(modifier = Modifier.width(4.dp))
-                                            Text("提取音频", fontSize = 12.sp)
+                                            Text("提取音频", fontSize = 13.sp)
                                         }
                                     }
 
@@ -644,16 +880,146 @@ fun DownVidScreen(
                                                 clipboard.setPrimaryClip(ClipData.newPlainText("媒体直链", copyUrl))
                                                 Toast.makeText(context, "已复制直链到剪贴板", Toast.LENGTH_SHORT).show()
                                             },
-                                            shape = RoundedCornerShape(10.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE2EFE7)),
-                                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-                                            modifier = Modifier.height(34.dp)
+                                            shape = RoundedCornerShape(12.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = themeColors.primary.copy(alpha = 0.12f)
+                                            ),
+                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
+                                            modifier = Modifier.height(38.dp)
                                         ) {
-                                            Icon(Icons.Filled.ContentCopy, contentDescription = null, tint = themeColors.primary, modifier = Modifier.size(13.dp))
-                                            Spacer(modifier = Modifier.width(3.dp))
-                                            Text("复制直链", color = themeColors.primary, fontSize = 11.sp)
+                                            Icon(
+                                                Icons.Filled.ContentCopy,
+                                                contentDescription = null,
+                                                tint = themeColors.primary,
+                                                modifier = Modifier.size(14.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text("复制直链", color = themeColors.primary, fontSize = 12.sp)
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ---- 卡片3：文案预览（v1.4.33：对标参考图） ----
+        if (currentResult != null) {
+            val res = currentResult!!
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = themeColors.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { descExpanded = !descExpanded },
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(themeColors.primary.copy(alpha = 0.12f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Filled.Description,
+                                    contentDescription = null,
+                                    tint = themeColors.text,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "文案预览",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = themeColors.text
+                                )
+                                Text(
+                                    text = "描述文案",
+                                    fontSize = 12.sp,
+                                    color = themeColors.textMuted
+                                )
+                            }
+                            Text(
+                                text = "已解析",
+                                fontSize = 13.sp,
+                                color = themeColors.textMuted
+                            )
+                            Icon(
+                                if (descExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                                contentDescription = if (descExpanded) "收起" else "展开",
+                                tint = themeColors.textMuted
+                            )
+                        }
+
+                        if (descExpanded) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color(0xFFF0F3F6))
+                                    .padding(12.dp)
+                            ) {
+                                Column {
+                                    Text(
+                                        text = res.title,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = themeColors.text
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Text(
+                                        text = "作者：${res.author} · 平台：${res.platform}",
+                                        fontSize = 12.sp,
+                                        color = themeColors.textMuted
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Text(
+                                        text = res.originalLink,
+                                        fontSize = 11.sp,
+                                        color = themeColors.textMuted.copy(alpha = 0.7f),
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .background(themeColors.primary.copy(alpha = 0.12f))
+                                        .clickable {
+                                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                            clipboard.setPrimaryClip(
+                                                ClipData.newPlainText("文案", "${res.title}\n${res.originalLink}")
+                                            )
+                                            Toast.makeText(context, "文案已复制", Toast.LENGTH_SHORT).show()
+                                        }
+                                        .padding(horizontal = 14.dp, vertical = 7.dp)
+                                ) {
+                                    Text(
+                                        "复制文案",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = themeColors.primary
+                                    )
                                 }
                             }
                         }
