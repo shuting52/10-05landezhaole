@@ -178,12 +178,13 @@ fun CustomRadioBottomNav(
             .fillMaxWidth()
             // v1.4.19：系统导航栏安全边距，避免底部 Tab 与手机导航键重叠
             .navigationBarsPadding()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .shadow(8.dp, RoundedCornerShape(22.dp), ambientColor = Color.Black.copy(alpha = 0.08f))
-            .clip(RoundedCornerShape(22.dp))
+            // v1.4.20：整体缩小一号
+            .padding(horizontal = 24.dp, vertical = 6.dp)
+            .shadow(6.dp, RoundedCornerShape(18.dp), ambientColor = Color.Black.copy(alpha = 0.08f))
+            .clip(RoundedCornerShape(18.dp))
             .background(themeColors.surface)
-            .border(1.dp, themeColors.primary.copy(alpha = 0.18f), RoundedCornerShape(22.dp))
-            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .border(1.dp, themeColors.primary.copy(alpha = 0.18f), RoundedCornerShape(18.dp))
+            .padding(horizontal = 6.dp, vertical = 5.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -201,22 +202,22 @@ fun CustomRadioBottomNav(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(pillColor)
                         .clickable { onTabSelected(item.tab) }
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = 5.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
                         imageVector = item.icon,
                         contentDescription = item.title,
                         tint = if (isSelected) selectedTextColor else unselectedColor,
-                        modifier = Modifier.size(22.dp)
+                        modifier = Modifier.size(18.dp)
                     )
-                    Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.height(1.dp))
                     Text(
                         text = item.title,
-                        fontSize = 11.sp,
+                        fontSize = 10.sp,
                         fontWeight = if (isSelected) FontWeight.Black else FontWeight.Medium,
                         color = if (isSelected) selectedTextColor else unselectedColor,
                         maxLines = 1

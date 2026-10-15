@@ -226,12 +226,12 @@ enum class ToolboxTab(
         icon = Icons.Filled.DirectionsCar,
         desc = "网络真实知名车标库(大众/宝马/迈巴赫等) · 品牌档案 · 拍照/图片车标智能识别"
     ),
-    // v1.4.18：ChatGPT做图指令大全（46 分类 / 356 条，一键复制）
+    // v1.4.18：ChatGPT做图指令大全（v1.4.20 扩展至 160 分类 / 1496 条，全域覆盖）
     IMAGE_PROMPTS(
         title = "做图指令 · ChatGPT指令大全",
         shortLabel = "做图指令",
         icon = Icons.Filled.AutoAwesome,
-        desc = "46 分类 356 条做图指令 · 修图/字体/电商/艺术风格 · 一键复制"
+        desc = "160 分类 1496 条做图指令 · 修图/字体/电商/摄影/艺术全域 · 一键复制"
     )
 }
 
@@ -756,13 +756,13 @@ private val RING_MENU_GROUPS: List<RingMenuGroup> = listOf(
         id = "image_prompts",
         entryLabel = "做图指令",
         sheetTitle = "做图指令大全",
-        sheetSub = "46 分类 356 条 · 一键复制",
+        sheetSub = "160 分类 1496 条 · 全域覆盖 · 一键复制",
         icon = ToolboxTab.IMAGE_PROMPTS.icon,
         options = listOf(
             RingMenuOption(
                 tab = ToolboxTab.IMAGE_PROMPTS,
                 name = "做图指令",
-                desc = "46 分类 356 条做图指令 · 一键复制"
+                desc = "160 分类 1496 条做图指令 · 全域覆盖 · 一键复制"
             )
         )
     )
