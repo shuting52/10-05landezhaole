@@ -383,8 +383,8 @@ fun AppUpdateDialog(
         coroutineScope.launch {
             isUpdating = true
             statusLabel = "正在下载更新…"
-            progress = 6f
-            downloadedBytes = (totalBytes * 0.06f).toLong()
+            progress = 0f
+            downloadedBytes = 0L
 
             // v1.1.23：源顺序调整为「国内镜像优先，raw 最后」——raw.githubusercontent.com 国内直连极慢
             // 会导致进度条卡在 8% 等待超时；先走 ghfast/ghproxy/jsdmir/jsdelivr 等加速通道
@@ -421,8 +421,8 @@ fun AppUpdateDialog(
                 while (attempt < 2 && !success) {
                     attempt++
                     try {
-                        progress = 8f
-                        downloadedBytes = (totalBytes * 0.08f).toLong()
+                        progress = 0f
+                        downloadedBytes = 0L
                         statusLabel = if (attempt == 1) {
                             "正在极速下载 ${formatSizeMb(downloadedBytes)} / ${formatSizeMb(totalBytes)}"
                         } else {
@@ -436,7 +436,7 @@ fun AppUpdateDialog(
                         }
                         val file = downloadWithProgress(candidate) { p, dlBytes, totBytes, speedBps ->
                             totalBytes = totBytes
-                            progress = (8f + p * 92f).coerceIn(8f, 100f)
+                            progress = (p * 100f).coerceIn(0f, 100f)
                             // 让显示的已下载大小跟随进度条丝滑同步变化
                             downloadedBytes = if (p >= 0.99f) totBytes else maxOf(dlBytes, (totBytes * (progress / 100f)).toLong()).coerceAtMost(totBytes)
                             statusLabel = "正在下载 ${formatSizeMb(downloadedBytes)} / ${formatSizeMb(totalBytes)} · ${formatSpeed(speedBps)}"

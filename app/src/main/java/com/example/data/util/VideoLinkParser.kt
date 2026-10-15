@@ -27,7 +27,8 @@ data class MediaParseResult(
     val coverUrl: String? = null,
     val title: String? = null,
     val author: String? = null,          // v1.4.21：真实作者昵称
-    val platform: String? = null         // v1.4.21：平台名
+    val platform: String? = null,        // v1.4.21：平台名
+    val qualityOptions: List<Pair<String, String>> = emptyList() // v1.4.31：画质选项（标签 to 直链）
 )
 
 object VideoLinkParser {
@@ -561,13 +562,19 @@ object VideoLinkParser {
             val videoUrl = hdPlay ?: play ?: wmPlay ?: return null
             val coverUrl = data.optString("cover", "").takeIf { it.startsWith("http") }
                 ?: data.optString("origin_cover", "").takeIf { it.startsWith("http") }
+            // v1.4.31：画质选项
+            val qualities = mutableListOf<Pair<String, String>>()
+            hdPlay?.let { qualities.add("高清" to it) }
+            play?.let { qualities.add("标清" to it) }
+            wmPlay?.let { if (qualities.isEmpty()) qualities.add("原画" to it) }
             MediaParseResult(
                 videoUrls = listOf(videoUrl),
                 coverUrl = coverUrl,
                 title = data.optString("title", "").takeIf { it.isNotBlank() },
                 author = data.optJSONObject("author")?.optString("nickname")?.takeIf { it.isNotBlank() }
                     ?: data.optString("author", "").takeIf { it.isNotBlank() },
-                platform = "TikTok"
+                platform = "TikTok",
+                qualityOptions = qualities
             )
         } catch (_: Exception) { null }
     }
@@ -612,10 +619,35 @@ object VideoLinkParser {
             // 提取标题
             val title = Regex("""<title[^>]*>([^<]+)</title>""").find(html)?.groupValues?.get(1)?.trim()
                 ?.replace(" / X", "")?.takeIf { it.isNotBlank() }
+            // 提取封面图：og:image 或 pbs.twimg.com 图片
+            var coverUrl: String? = null
+            Regex("""(?i)(?:property|name)\s*=\s*["']og:image["']\s+content\s*=\s*["']([^"']+)["']""")
+                .find(html)?.let { coverUrl = unescapeUrl(it.groupValues[1]).takeIf { u -> u.startsWith("http") } }
+            if (coverUrl == null) {
+                Regex("""https://pbs\.twimg\.com/[^"'\\\s]+\.(jpg|jpeg|png)[^"'\\\s]*""").find(html)?.let {
+                    coverUrl = unescapeUrl(it.groupValues[0]).takeIf { u -> u.startsWith("http") }
+                }
+            }
+            // v1.4.31：画质选项（按分辨率标注）
+            val qualities = sorted.take(3).map { url ->
+                val res = Regex("""(\d+)x(\d+)""").find(url)
+                val label = if (res != null) {
+                    val h = res.groupValues[2].toIntOrNull() ?: 0
+                    when {
+                        h >= 1080 -> "1080P"
+                        h >= 720 -> "720P"
+                        h >= 480 -> "480P"
+                        else -> "标清"
+                    }
+                } else "原画"
+                label to url
+            }
             MediaParseResult(
                 videoUrls = sorted.take(3),
                 platform = "X",
-                title = title
+                title = title,
+                coverUrl = coverUrl,
+                qualityOptions = qualities
             )
         } catch (_: Exception) { null }
     }

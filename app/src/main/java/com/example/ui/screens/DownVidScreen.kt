@@ -44,6 +44,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.CloudDownload
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Delete
@@ -65,6 +66,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -556,19 +559,47 @@ fun DownVidScreen(
                                     verticalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
                                     if (res.videoUrls.isNotEmpty()) {
-                                        Button(
-                                            onClick = {
-                                                val targetUrl = res.videoUrls.first()
-                                                triggerDownload(targetUrl, "DownVid_${System.currentTimeMillis()}.mp4")
-                                            },
-                                            shape = RoundedCornerShape(10.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = themeColors.primary),
-                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-                                            modifier = Modifier.height(34.dp)
-                                        ) {
-                                            Icon(Icons.Filled.Movie, contentDescription = null, modifier = Modifier.size(14.dp))
-                                            Spacer(modifier = Modifier.width(4.dp))
-                                            Text("下载高清视频", fontSize = 12.sp)
+                                        // v1.4.31：画质选择（有多个画质时显示选择器）
+                                        val qualities = res.qualityOptions.ifEmpty {
+                                            listOf("原画" to res.videoUrls.first())
+                                        }
+                                        var selectedQuality by remember(res) { mutableStateOf(qualities.first()) }
+                                        var showQualityMenu by remember { mutableStateOf(false) }
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Button(
+                                                onClick = {
+                                                    triggerDownload(selectedQuality.second, "DownVid_${System.currentTimeMillis()}.mp4")
+                                                },
+                                                shape = RoundedCornerShape(10.dp),
+                                                colors = ButtonDefaults.buttonColors(containerColor = themeColors.primary),
+                                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                                                modifier = Modifier.height(34.dp)
+                                            ) {
+                                                Icon(Icons.Filled.Movie, contentDescription = null, modifier = Modifier.size(14.dp))
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Text("下载${selectedQuality.first}视频", fontSize = 12.sp)
+                                            }
+                                            if (qualities.size > 1) {
+                                                Box {
+                                                    IconButton(onClick = { showQualityMenu = true }) {
+                                                        Icon(Icons.Filled.ArrowDropDown, contentDescription = "选择画质", tint = themeColors.primary)
+                                                    }
+                                                    DropdownMenu(
+                                                        expanded = showQualityMenu,
+                                                        onDismissRequest = { showQualityMenu = false }
+                                                    ) {
+                                                        qualities.forEach { q ->
+                                                            DropdownMenuItem(
+                                                                text = { Text(q.first) },
+                                                                onClick = {
+                                                                    selectedQuality = q
+                                                                    showQualityMenu = false
+                                                                }
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
 
