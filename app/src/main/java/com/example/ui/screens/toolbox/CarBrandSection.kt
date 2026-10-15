@@ -1095,8 +1095,21 @@ fun RealCarLogoDrawer(
     modifier: Modifier = Modifier,
     logoUrl: String = ""
 ) {
-    val targetUrl = logoUrl.ifBlank {
-        CAR_BRANDS_DATABASE.firstOrNull { it.logoType == logoType || it.id == logoType }?.logoUrl ?: ""
+    val context = LocalContext.current
+    // v1.4.27：优先从 App 本地 assets 加载车标（不依赖网络，杜绝"车标变了"问题）
+    val brand = CAR_BRANDS_DATABASE.firstOrNull { it.logoType == logoType || it.id == logoType }
+    val localAssetUrl = brand?.let { "file:///android_asset/car_logos/${it.id}.png" } ?: ""
+    // 检查本地 asset 是否存在
+    val localAssetExists = remember(localAssetUrl, brand) {
+        if (brand == null) false else try {
+            context.assets.open("car_logos/${brand.id}.png").close()
+            true
+        } catch (_: Exception) { false }
+    }
+    val targetUrl = when {
+        localAssetExists -> localAssetUrl
+        logoUrl.isNotBlank() -> logoUrl
+        else -> brand?.logoUrl ?: ""
     }
     var imageLoadFailed by remember(targetUrl) { mutableStateOf(false) }
 
