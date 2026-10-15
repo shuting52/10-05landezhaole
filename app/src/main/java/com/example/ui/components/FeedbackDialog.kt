@@ -198,8 +198,20 @@ fun FeedbackDialog(
                         val sp = context.getSharedPreferences("feedback_records", Context.MODE_PRIVATE)
                         val prev = sp.getString("history", "") ?: ""
                         sp.edit().putString("history", "$fullReport\n---\n$prev").apply()
+                        // v1.4.24：记录已通过 FormSubmit 提交过（用于判断是否需要提示激活）
+                        val activated = sp.getBoolean("formsubmit_activated", false)
+                        if (!activated) {
+                            // 首次提交：FormSubmit 会给新邮箱发激活邮件，必须点击后才能真正收信
+                            sp.edit().putBoolean("formsubmit_first_sent", true).apply()
+                        }
                     } catch (_: Exception) {}
-                    Toast.makeText(context, "✅ 反馈已送达官方邮箱（$email），感谢您的宝贵建议", Toast.LENGTH_LONG).show()
+                    val sp2 = context.getSharedPreferences("feedback_records", Context.MODE_PRIVATE)
+                    val activated = try { sp2.getBoolean("formsubmit_activated", false) } catch (_: Exception) { false }
+                    if (activated) {
+                        Toast.makeText(context, "✅ 反馈已发送至官方邮箱，感谢您的宝贵建议", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(context, "已提交！请去 307779523@qq.com 查收 FormSubmit 激活邮件（含垃圾箱），点击确认链接后才能正常接收反馈", Toast.LENGTH_LONG).show()
+                    }
                     onDismiss()
                 } else {
                     // v1.0.4 修复收不到反馈：失败时先复制到剪贴板保证不丢失，再尝试邮件客户端代发
@@ -327,7 +339,69 @@ fun FeedbackDialog(
     // 反馈内容输入区（横屏右栏 / 竖屏下方共用）
     @Composable
     fun FeedbackForm() {
+        // v1.4.24：FormSubmit 激活状态提示
+        val spCheck = remember {
+            try {
+                context.getSharedPreferences("feedback_records", Context.MODE_PRIVATE)
+                    .getBoolean("formsubmit_activated", false)
+            } catch (_: Exception) { false }
+        }
+        var showActivatedHint by remember { mutableStateOf(spCheck) }
         Column(modifier = Modifier.fillMaxWidth()) {
+            if (!showActivatedHint) {
+                // 激活提示卡片
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color(0xFFFFF8E1))
+                        .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Filled.Email, contentDescription = null, tint = Color(0xFFF9A825), modifier = Modifier.size(20.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            "首次使用请先激活邮箱",
+                            fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFFE65100)
+                        )
+                        Text(
+                            "提交后请去 307779523@qq.com 查收 FormSubmit 激活邮件（含垃圾箱），点击确认链接后才能正常接收",
+                            fontSize = 11.sp, color = Color(0xFF6D4C41), lineHeight = 15.sp
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable {
+                            showActivatedHint = true
+                            try {
+                                context.getSharedPreferences("feedback_records", Context.MODE_PRIVATE)
+                                    .edit().putBoolean("formsubmit_activated", true).apply()
+                            } catch (_: Exception) {}
+                            Toast.makeText(context, "已标记为激活，之后不再提示", Toast.LENGTH_SHORT).show()
+                        }
+                        .padding(vertical = 4.dp, horizontal = 2.dp)
+                ) {
+                    Checkbox(
+                        checked = false,
+                        onCheckedChange = {
+                            showActivatedHint = true
+                            try {
+                                context.getSharedPreferences("feedback_records", Context.MODE_PRIVATE)
+                                    .edit().putBoolean("formsubmit_activated", true).apply()
+                            } catch (_: Exception) {}
+                        },
+                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("我已点击激活链接，不再提示", fontSize = 11.5.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+            }
             Text(
                 text = "反馈内容 *",
                 fontSize = 12.5.sp,

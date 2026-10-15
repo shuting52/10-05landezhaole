@@ -73,6 +73,10 @@ import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.MonitorWeight
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Paid
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.QrCode2
@@ -1442,7 +1446,8 @@ private fun LiquidGlassSingleRing(
             )
         }
 
-        // 圆孔中央：「懒 得 找 了」液态玻璃按钮（既可点击打开设置，也可按住拖动整个圆环随手指移动）
+        // 圆孔中央：迷你音乐播放器（v1.4.24：替换原「懒得找了」文字）
+        // 手势：拖动移动圆环 / 点播放按钮控制 / 点标题打开完整播放器 / 长按打开情感语录
         val holeInteraction = remember { MutableInteractionSource() }
         val isHolePressed by holeInteraction.collectIsPressedAsState()
         val holeScale by animateFloatAsState(
@@ -1450,6 +1455,7 @@ private fun LiquidGlassSingleRing(
             animationSpec = spring(dampingRatio = 0.50f, stiffness = 400f),
             label = "hole_scale_$ringIndex"
         )
+        val miniPlayerContext = LocalContext.current
 
         Box(
             modifier = Modifier
@@ -1472,11 +1478,23 @@ private fun LiquidGlassSingleRing(
                 )
                 .pointerInput(ringIndex) {
                     var totalDrag = 0f
+                    var downTime = 0L
+                    var longPressFired = false
                     awaitPointerEventScope {
                         while (true) {
                             val ev = awaitPointerEvent()
                             val ch = ev.changes.firstOrNull() ?: continue
                             if (ch.pressed) {
+                                if (downTime == 0L) {
+                                    downTime = System.currentTimeMillis()
+                                    longPressFired = false
+                                }
+                                // 长按 500ms 打开情感语录（原中心点击功能）
+                                if (!longPressFired && !isRingDragging &&
+                                    System.currentTimeMillis() - downTime > 500 && totalDrag < 8f) {
+                                    longPressFired = true
+                                    onOpenSettings()
+                                }
                                 val delta = ch.position - ch.previousPosition
                                 val dist = delta.getDistance()
                                 if (dist > 0.5f) {
@@ -1509,29 +1527,80 @@ private fun LiquidGlassSingleRing(
                                             )
                                         }
                                     }
-                                } else if (totalDrag in 0f..8f && ch.changedToUpIgnoreConsumed()) {
-                                    onOpenSettings()
+                                } else if (!longPressFired && totalDrag in 0f..8f && ch.changedToUpIgnoreConsumed()) {
+                                    // 轻触中心空白处：打开完整音乐播放器
+                                    onDirectOpenTool(ToolboxTab.MUSIC_PLAYER)
                                 }
                                 totalDrag = 0f
+                                downTime = 0L
+                                longPressFired = false
                             }
                         }
                     }
                 }
-                .clickable(
-                    interactionSource = holeInteraction,
-                    indication = null,
-                    onClick = onOpenSettings
-                )
-                .testTag(if (ringIndex == 0) "ring_center_settings_btn" else "ring_center_settings_btn_$ringIndex"),
+                .testTag(if (ringIndex == 0) "ring_center_music_btn" else "ring_center_music_btn_$ringIndex"),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "懒 得 找 了",
-                fontSize = 11.5.sp,
-                letterSpacing = 1.sp,
-                color = if (isHolePressed || isRingDragging) rmAccent else rmText.copy(alpha = 0.85f),
-                fontWeight = FontWeight.Bold
-            )
+            // 迷你播放器 UI
+            val miniTrack = com.example.ui.screens.toolbox.MusicPlayerState.currentTrack
+            val miniPlaying = com.example.ui.screens.toolbox.MusicPlayerState.isPlaying
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(horizontal = 6.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        Icons.Filled.MusicNote,
+                        contentDescription = null,
+                        tint = if (isHolePressed || isRingDragging) rmAccent else rmText.copy(alpha = 0.7f),
+                        modifier = Modifier.size(12.dp)
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
+                    Text(
+                        text = miniTrack?.title ?: "音乐播放器",
+                        fontSize = 9.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = if (isHolePressed || isRingDragging) rmAccent else rmText.copy(alpha = 0.85f),
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
+                }
+                Spacer(modifier = Modifier.height(2.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    IconButton(
+                        onClick = { com.example.ui.screens.toolbox.MusicPlayerState.playPrev(miniPlayerContext) },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(Icons.Filled.SkipPrevious, contentDescription = "上一首", tint = rmText.copy(alpha = 0.8f), modifier = Modifier.size(18.dp))
+                    }
+                    IconButton(
+                        onClick = { com.example.ui.screens.toolbox.MusicPlayerState.togglePlayPause(miniPlayerContext) },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            if (miniPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                            contentDescription = "播放/暂停",
+                            tint = rmAccent,
+                            modifier = Modifier.size(26.dp)
+                        )
+                    }
+                    IconButton(
+                        onClick = { com.example.ui.screens.toolbox.MusicPlayerState.playNext(miniPlayerContext) },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(Icons.Filled.SkipNext, contentDescription = "下一首", tint = rmText.copy(alpha = 0.8f), modifier = Modifier.size(18.dp))
+                    }
+                }
+            }
         }
 
         // 环形入口按钮（支持：1. 轻触直接打开对应功能窗口；2. 按住不放随手指自由移动 + 液态磁吸连线 + 拨动圆环旋转）

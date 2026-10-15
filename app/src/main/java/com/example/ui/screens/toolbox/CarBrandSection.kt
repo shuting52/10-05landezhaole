@@ -107,7 +107,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "德国 下萨克森州 沃尔夫斯堡",
         priceRange = "8万 - 65万元",
         logoDescription = "圆环中上下排列的“V”与“W”字母，代表德语 Volks (人民) 与 Wagen (汽车)，象征人民的汽车。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Volkswagen_logo_2019.svg/512px-Volkswagen_logo_2019.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/volkswagen.png"
     ),
     CarBrand(
         id = "bmw",
@@ -121,7 +121,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "德国 巴伐利亚州 慕尼黑",
         priceRange = "20万 - 260万元",
         logoDescription = "经典的黑环圆盘内嵌蓝白四等分扇形，源自巴伐利亚自由邦州旗色彩，亦形似旋转的蓝天白云飞机螺旋桨。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/BMW.svg/512px-BMW.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/bmw.png"
     ),
     CarBrand(
         id = "maybach",
@@ -135,7 +135,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "德国 斯图加特",
         priceRange = "140万 - 500万元以上",
         logoDescription = "两个交错相叠的大写“M”字母（Maybach Motorenbau），镶嵌于三角形曲面圆弧盾形之中，代表顶级尊贵与奢华旗舰。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Maybach-Logo.svg/512px-Maybach-Logo.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/maybach.png"
     ),
     CarBrand(
         id = "benz",
@@ -149,7 +149,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "德国 斯图加特",
         priceRange = "25万 - 350万元",
         logoDescription = "银色圆环内嵌立体的三叉星徽，象征着向陆、海、空三大维度的机械全能征服与开拓。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Mercedes-Logo.svg/512px-Mercedes-Logo.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/mercedes-benz.png"
     ),
     CarBrand(
         id = "audi",
@@ -163,7 +163,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "德国 巴伐利亚州 因戈尔施塔特",
         priceRange = "18万 - 230万元",
         logoDescription = "著名的四环相扣，代表1932年合并组建汽车联盟的四家传奇历史汽车公司（小奇迹、霍希、奥迪、漫游者）。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Audi-Logo_2016.svg/512px-Audi-Logo_2016.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/audi.png"
     ),
     CarBrand(
         id = "porsche",
@@ -177,7 +177,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "德国 斯图加特",
         priceRange = "55万 - 300万元以上",
         logoDescription = "金黄盾牌上方的“PORSCHE”字样、符腾堡州红黑条纹与鹿角、中央为斯图加特跃马，底蕴浓郁。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Porsche_logo.svg/512px-Porsche_logo.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/porsche.png"
     ),
     CarBrand(
         id = "ferrari",
@@ -191,7 +191,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "意大利 马拉内罗",
         priceRange = "280万 - 800万元以上",
         logoDescription = "金黄盾牌底色取自摩德纳市市旗，中央为传奇的一战空战英雄跃马（Cavallino Rampante），顶部为意大利三色旗条纹。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Ferrari-Logo.svg/512px-Ferrari-Logo.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/ferrari.png"
     ),
     CarBrand(
         id = "lamborghini",
@@ -205,7 +205,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "意大利 圣亚加塔·波隆尼",
         priceRange = "260万 - 900万元以上",
         logoDescription = "黑色盾牌金边内嵌一头蓄势待发、肌肉喷张的金色狂怒公牛，象征不甘示弱与狂暴马力。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Lamborghini_Logo.svg/512px-Lamborghini_Logo.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/lamborghini.png"
     ),
     CarBrand(
         id = "rolls_royce",
@@ -219,7 +219,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "英国 西萨塞克斯郡 古德伍德",
         priceRange = "500万 - 1500万元以上",
         logoDescription = "立式矩形徽标内的重叠重影“RR”双字，配合车头傲立的欢庆女神（Spirit of Ecstasy）立标。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Rolls-Royce_Motor_Cars_logo.svg/512px-Rolls-Royce_Motor_Cars_logo.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/rolls-royce.png"
     ),
     CarBrand(
         id = "bentley",
@@ -233,7 +233,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "英国 柴郡 克鲁",
         priceRange = "250万 - 600万元",
         logoDescription = "雄鹰展翅飞翔的银色双翼中央镶嵌醒目的字母“B”，展现出速度、力量与英伦贵族格调。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Bentley_Motors_logo.svg/512px-Bentley_Motors_logo.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/bentley.png"
     ),
     CarBrand(
         id = "tesla",
@@ -247,7 +247,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "美国 得克萨斯州 奥斯汀",
         priceRange = "23万 - 95万元",
         logoDescription = "极具未来科技感的大写字母“T”，设计灵感来自电动交流感应电机的横截面构造。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Tesla_logo.png/512px-Tesla_logo.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/tesla.png"
     ),
     CarBrand(
         id = "byd",
@@ -261,7 +261,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "中国 广东省 深圳市",
         priceRange = "7万 - 110万元",
         logoDescription = "现代流线扁平化无框“BYD”字母，线条如行云流水般流畅，代表开放、灵动与技术为王。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/BYD_Auto_2022_logo.svg/512px-BYD_Auto_2022_logo.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/byd.png"
     ),
     CarBrand(
         id = "nio",
@@ -275,7 +275,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "中国 上海市",
         priceRange = "29万 - 80万元",
         logoDescription = "上方半弧代表仰望天空与憧憬，下方半弧代表向前延伸的大道与地平线，寓意纯净未来。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/NIO_logo.svg/512px-NIO_logo.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/nio.png"
     ),
     CarBrand(
         id = "xiaomi",
@@ -289,7 +289,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "中国 北京市 亦庄",
         priceRange = "21.59万 - 29.99万元",
         logoDescription = "银质立体方圆盾标内嵌经典“MI”标志，寓意移动互联网（Mobile Internet）与不可能完成的任务（Mission Impossible）。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Xiaomi_logo_%282021-%29.svg/512px-Xiaomi_logo_%282021-%29.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/xiaomi.png"
     ),
     CarBrand(
         id = "toyota",
@@ -303,7 +303,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "日本 爱知县 丰田市",
         priceRange = "8万 - 90万元",
         logoDescription = "三个椭圆组成，大椭圆代表地球，两个互相垂直交叉的小椭圆代表客户与企业心心相印。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Toyota.svg/512px-Toyota.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/toyota.png"
     ),
     CarBrand(
         id = "volvo",
@@ -317,7 +317,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "瑞典 哥德堡",
         priceRange = "25万 - 65万元",
         logoDescription = "银色圆环右上角带有斜向上的箭矛符号，源自古罗马战神玛尔斯铁符号，象征坚不可摧的钢铁安全。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Volvo_logo.svg/512px-Volvo_logo.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/volvo.png"
     ),
     CarBrand(
         id = "hongqi",
@@ -331,7 +331,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "中国 吉林省 长春市",
         priceRange = "15万 - 700万元以上",
         logoDescription = "经典的垂直红色中线经纬车标与飞翼立体红旗旗帜，象征中流砥柱、昂扬向上的东方尊贵气度。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Hongqi_logo.svg/512px-Hongqi_logo.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/hongqi.png"
     ),
     CarBrand(
         id = "lexus",
@@ -345,7 +345,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "日本 爱知县 名古屋市",
         priceRange = "28万 - 180万元",
         logoDescription = "圆润椭圆内嵌精细倾斜大写字母“L”，线条优雅流畅，诠释极致工艺与东方匠人静谧之美。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Lexus_logo.svg/512px-Lexus_logo.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/lexus.png"
     ),
     CarBrand(
         id = "li_auto",
@@ -359,7 +359,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "中国 北京市 顺义区",
         priceRange = "24万 - 56万元",
         logoDescription = "两个现代硬朗笔画组成的字母“LI”，形如稳固通达的未来建筑框架，象征科技守护家庭出行。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Li_Auto_logo.svg/512px-Li_Auto_logo.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/li-auto.png"
     ),
     CarBrand(
         id = "maserati",
@@ -373,7 +373,7 @@ val CAR_BRANDS_DATABASE = listOf(
         headquarters = "意大利 摩德纳",
         priceRange = "70万 - 350万元以上",
         logoDescription = "取自博洛尼亚马焦雷广场海神波塞冬手持的威武三叉戟，象征无穷动力、海洋神威与狂暴竞速灵魂。",
-        logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Maserati_logo.svg/512px-Maserati_logo.svg.png"
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/maserati.png"
     )
 )
 
