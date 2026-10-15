@@ -284,7 +284,9 @@ private fun currentPhase(records: List<PeriodRecord>, fc: PeriodForecast, today:
         if (d in 1..7) return PhaseBefore(d)
     }
     fc.ovulation?.let { if (fmtDate(it) == t) return PhaseOvulation() }
-    if (fc.fertileStart != null && fc.fertileEnd != null && !today.before(fc.fertileStart) && !today.after(fc.fertileEnd)) {
+    val fs = fc.fertileStart
+    val fe = fc.fertileEnd
+    if (fs != null && fe != null && !today.before(fs) && !today.after(fe)) {
         return PhaseFertile()
     }
     return PhaseSafe()
@@ -589,8 +591,10 @@ private fun PeriodCalendarCard(
         repeat(3) { ovulationDays.add(fmtDate(cur)); cur = addDays(cur, forecast.cycleLen) }
     }
     val fertileDays = mutableSetOf<String>()
-    if (forecast.fertileStart != null && forecast.fertileEnd != null) {
-        var baseS = forecast.fertileStart; var baseE = forecast.fertileEnd
+    val fertileStart = forecast.fertileStart
+    val fertileEnd = forecast.fertileEnd
+    if (fertileStart != null && fertileEnd != null) {
+        var baseS = fertileStart; var baseE = fertileEnd
         repeat(3) {
             var d = baseS
             while (!d.after(baseE)) { fertileDays.add(fmtDate(d)); d = addDays(d, 1) }
