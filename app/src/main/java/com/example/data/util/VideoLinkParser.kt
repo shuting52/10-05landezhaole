@@ -74,6 +74,7 @@ object VideoLinkParser {
                     "weishi.qq.com" in lower -> parseWeishi(url)
                     "pipixia.com" in lower -> parseDouyin(url) // 皮皮虾与抖音同源 _ROUTER_DATA
                     "x.com" in lower || "twitter.com" in lower -> parseX(url) // v1.4.29：X 视频直链
+                    "tiktok.com" in lower || "vt.tiktok" in lower || "vm.tiktok" in lower -> parseTikTok(url) // v1.4.30：TikTok 无水印
                     else -> null
                 }
                 if (specific != null && (specific.videoUrls.isNotEmpty() || specific.imageUrls.isNotEmpty())) {
@@ -525,6 +526,65 @@ object VideoLinkParser {
             }
             if (videos.isEmpty()) return null
             MediaParseResult(videoUrls = videos.distinct().take(5), platform = "微视")
+        } catch (_: Exception) { null }
+    }
+
+    /**
+     * TikTok（海外版抖音）视频解析（v1.4.30 新增）
+     * TikTok 官方反爬极严，直接解析网页不可靠，改用免费第三方 API：
+     * 1. tikwm.com（主）：https://www.tikwm.com/api/?url=...，返回 play（无水印）/hdplay（高清无水印）
+     * 2. slbjs workers（备）：https://tdownv4.sl-bjs.workers.dev/?down=...
+     * 两个都是免费、无需 key 的公开 API
+     */
+    private fun parseTikTok(shareUrl: String): MediaParseResult? {
+        return try {
+            // 主：tikwm
+            var result = parseTikTokViaTikwm(shareUrl)
+            // 备：slbjs workers
+            if (result == null) {
+                result = parseTikTokViaSlbjs(shareUrl)
+            }
+            result
+        } catch (_: Exception) { null }
+    }
+
+    private fun parseTikTokViaTikwm(shareUrl: String): MediaParseResult? {
+        return try {
+            val api = "https://www.tikwm.com/api/?url=" + java.net.URLEncoder.encode(shareUrl, "UTF-8")
+            val j = getJson(api) ?: return null
+            if (j.optInt("code", -1) != 0) return null
+            val data = j.optJSONObject("data") ?: return null
+            // play=无水印，hdplay=高清无水印，wmplay=带水印（备用）
+            val hdPlay = data.optString("hdplay", "").takeIf { it.startsWith("http") }
+            val play = data.optString("play", "").takeIf { it.startsWith("http") }
+            val wmPlay = data.optString("wmplay", "").takeIf { it.startsWith("http") }
+            val videoUrl = hdPlay ?: play ?: wmPlay ?: return null
+            val coverUrl = data.optString("cover", "").takeIf { it.startsWith("http") }
+                ?: data.optString("origin_cover", "").takeIf { it.startsWith("http") }
+            MediaParseResult(
+                videoUrls = listOf(videoUrl),
+                coverUrl = coverUrl,
+                title = data.optString("title", "").takeIf { it.isNotBlank() },
+                author = data.optJSONObject("author")?.optString("nickname")?.takeIf { it.isNotBlank() }
+                    ?: data.optString("author", "").takeIf { it.isNotBlank() },
+                platform = "TikTok"
+            )
+        } catch (_: Exception) { null }
+    }
+
+    private fun parseTikTokViaSlbjs(shareUrl: String): MediaParseResult? {
+        return try {
+            val api = "https://tdownv4.sl-bjs.workers.dev/?down=" + java.net.URLEncoder.encode(shareUrl, "UTF-8")
+            val j = getJson(api) ?: return null
+            val downloadUrl = j.optString("download_url", "").takeIf { it.startsWith("http") } ?: return null
+            val author = j.optJSONObject("author")
+            MediaParseResult(
+                videoUrls = listOf(downloadUrl),
+                title = j.optString("title", "").takeIf { it.isNotBlank() },
+                author = author?.optString("nickname")?.takeIf { it.isNotBlank() }
+                    ?: author?.optString("username")?.takeIf { it.isNotBlank() },
+                platform = "TikTok"
+            )
         } catch (_: Exception) { null }
     }
 
