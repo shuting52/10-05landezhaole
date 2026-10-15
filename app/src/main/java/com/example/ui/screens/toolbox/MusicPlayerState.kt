@@ -48,29 +48,29 @@ object MusicPlayerState {
             player = MediaPlayer().apply {
                 setDataSource(track.uri)
                 setOnPreparedListener {
-                    isLoading = false
+                    MusicPlayerState.isLoading = false
                     start()
-                    isPlaying = true
-                    currentIndex = index
+                    MusicPlayerState.isPlaying = true
+                    MusicPlayerState.currentIndex = index
                 }
                 setOnCompletionListener {
                     // 自动下一首
-                    val next = currentIndex + 1
-                    if (next in playlist.indices) {
-                        playAt(next, context)
+                    val next = MusicPlayerState.currentIndex + 1
+                    if (next in MusicPlayerState.playlist.indices) {
+                        MusicPlayerState.playAt(next, context)
                     } else {
-                        isPlaying = false
+                        MusicPlayerState.isPlaying = false
                     }
                 }
                 setOnErrorListener { _, _, _ ->
-                    isLoading = false
-                    isPlaying = false
-                    errorMsg = "播放失败，试试下一首"
+                    MusicPlayerState.isLoading = false
+                    MusicPlayerState.isPlaying = false
+                    MusicPlayerState.errorMsg = "播放失败，试试下一首"
                     context?.let {
                         Toast.makeText(it, "播放失败，已跳过", Toast.LENGTH_SHORT).show()
                     }
-                    val next = currentIndex + 1
-                    if (next in playlist.indices) playAt(next, context)
+                    val next = MusicPlayerState.currentIndex + 1
+                    if (next in MusicPlayerState.playlist.indices) MusicPlayerState.playAt(next, context)
                     true
                 }
                 prepareAsync()
