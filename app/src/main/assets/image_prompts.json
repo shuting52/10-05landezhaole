@@ -1,0 +1,1756 @@
+{
+ "meta": {
+  "name": "ChatGPT做图指令大全",
+  "version": "1.0",
+  "updated": "2026-10-15",
+  "total": 356
+ },
+ "categories": [
+  {
+   "id": "dual_image",
+   "name": "双图玩法",
+   "icon": "images",
+   "prompts": [
+    {
+     "key": "Colorgrade1to2",
+     "desc": "搬调色——图1色彩氛围套给图2"
+    },
+    {
+     "key": "Transferpose1to2",
+     "desc": "搬姿势——图1人物姿势应用到图2"
+    },
+    {
+     "key": "Transfercameraangle1to2",
+     "desc": "搬机位——参考图1拍摄角度重新呈现图2"
+    },
+    {
+     "key": "Transferbg1to2",
+     "desc": "搬背景——图1背景环境应用到图2"
+    },
+    {
+     "key": "Transferoutfit1to2",
+     "desc": "搬衣服——图2人物穿上图1的服装"
+    }
+   ]
+  },
+  {
+   "id": "basic_edit",
+   "name": "基础修图",
+   "icon": "edit",
+   "prompts": [
+    {
+     "key": "restore",
+     "desc": "老照片修复，去划痕和模糊"
+    },
+    {
+     "key": "colorize",
+     "desc": "黑白照片智能上色"
+    },
+    {
+     "key": "upscale",
+     "desc": "提升图片分辨率与细节"
+    },
+    {
+     "key": "removebg",
+     "desc": "去除背景，保留主体"
+    },
+    {
+     "key": "removeobject",
+     "desc": "去掉画面中不需要的物体"
+    }
+   ]
+  },
+  {
+   "id": "scene_convert",
+   "name": "场景转换",
+   "icon": "swap",
+   "prompts": [
+    {
+     "key": "day2night",
+     "desc": "白天变夜晚，调整整体光影"
+    },
+    {
+     "key": "night2day",
+     "desc": "夜晚变白天，重建日间氛围"
+    },
+    {
+     "key": "relight",
+     "desc": "重新调整光源、方向和氛围"
+    },
+    {
+     "key": "extend",
+     "desc": "向画面外扩展场景，补全构图"
+    },
+    {
+     "key": "droneview",
+     "desc": "转换为无人机俯拍视角"
+    },
+    {
+     "key": "newbg",
+     "desc": "为图片更换一个新背景"
+    }
+   ]
+  },
+  {
+   "id": "char_transform",
+   "name": "人物改造",
+   "icon": "face",
+   "prompts": [
+    {
+     "key": "formal",
+     "desc": "日常穿搭变商务正装"
+    },
+    {
+     "key": "headshot",
+     "desc": "生成专业头像或肖像照"
+    },
+    {
+     "key": "cartoonize",
+     "desc": "转换为卡通插画"
+    },
+    {
+     "key": "sketch",
+     "desc": "转换为手绘素描"
+    },
+    {
+     "key": "claystyle",
+     "desc": "转换为黏土艺术风格"
+    }
+   ]
+  },
+  {
+   "id": "identity_transform",
+   "name": "身份/风格转换",
+   "icon": "person",
+   "prompts": [
+    {
+     "key": "transform",
+     "desc": "同一照片变多种风格身份"
+    },
+    {
+     "key": "qversion",
+     "desc": "转Q版萌系大头"
+    },
+    {
+     "key": "exaggeratedcartoon",
+     "desc": "夸张卡通表情包风"
+    },
+    {
+     "key": "mecha",
+     "desc": "科幻机甲角色"
+    },
+    {
+     "key": "magicalgirl",
+     "desc": "魔法少女风"
+    },
+    {
+     "key": "europeancourt",
+     "desc": "欧式宫廷风"
+    },
+    {
+     "key": "mascot",
+     "desc": "变成可爱萌宠"
+    }
+   ]
+  },
+  {
+   "id": "portrait_pro",
+   "name": "人像大头照进阶",
+   "icon": "photo",
+   "prompts": [
+    {
+     "key": "casualshot",
+     "desc": "自然窗光、轻松亲切的个人照"
+    },
+    {
+     "key": "founderportrait",
+     "desc": "媒体专访风格创办人肖像"
+    },
+    {
+     "key": "actorheadshot",
+     "desc": "干净有眼神交流的Casting人像"
+    },
+    {
+     "key": "teamphoto",
+     "desc": "统一风格的团队形象照"
+    },
+    {
+     "key": "bwportrait",
+     "desc": "经典黑白底片人像"
+    },
+    {
+     "key": "goldenhourportrait",
+     "desc": "黄金时刻暖光人像"
+    },
+    {
+     "key": "speakerphoto",
+     "desc": "大型研讨会演讲场景"
+    }
+   ]
+  },
+  {
+   "id": "photo_style",
+   "name": "摄影风格",
+   "icon": "camera",
+   "prompts": [
+    {
+     "key": "selfie",
+     "desc": "自拍风"
+    },
+    {
+     "key": "rawphoto",
+     "desc": "自然真实质感"
+    },
+    {
+     "key": "macro",
+     "desc": "超近距离微距细节"
+    },
+    {
+     "key": "nightphoto",
+     "desc": "夜景氛围"
+    },
+    {
+     "key": "flash",
+     "desc": "闪光灯抓拍风"
+    },
+    {
+     "key": "goldenhour",
+     "desc": "黄金时刻暖光"
+    },
+    {
+     "key": "moody",
+     "desc": "情绪氛围感"
+    },
+    {
+     "key": "foodphoto",
+     "desc": "美食摄影"
+    },
+    {
+     "key": "flatlay",
+     "desc": "俯拍平铺"
+    },
+    {
+     "key": "workspace",
+     "desc": "办公场景"
+    }
+   ]
+  },
+  {
+   "id": "photo_param",
+   "name": "摄影参数控制",
+   "icon": "tune",
+   "prompts": [
+    {
+     "key": "50mm",
+     "desc": "50mm标准镜头质感"
+    },
+    {
+     "key": "85mm",
+     "desc": "85mm人像镜头虚化"
+    },
+    {
+     "key": "wideangle",
+     "desc": "广角镜头张力"
+    },
+    {
+     "key": "telephoto",
+     "desc": "长焦压缩感"
+    },
+    {
+     "key": "f1.4",
+     "desc": "F1.4大光圈虚化"
+    },
+    {
+     "key": "naturallight",
+     "desc": "自然光白平衡5500K"
+    },
+    {
+     "key": "studiolight",
+     "desc": "专业影棚布光"
+    },
+    {
+     "key": "backlight",
+     "desc": "逆光剪影氛围"
+    }
+   ]
+  },
+  {
+   "id": "art_style",
+   "name": "艺术风格",
+   "icon": "palette",
+   "prompts": [
+    {
+     "key": "watercolor",
+     "desc": "水彩画风格"
+    },
+    {
+     "key": "comic",
+     "desc": "漫画风"
+    },
+    {
+     "key": "anime",
+     "desc": "动漫风"
+    },
+    {
+     "key": "sticker",
+     "desc": "贴纸风"
+    },
+    {
+     "key": "minimal",
+     "desc": "极简风"
+    },
+    {
+     "key": "fashion",
+     "desc": "时尚大片"
+    },
+    {
+     "key": "storybook",
+     "desc": "儿童绘本风插画"
+    },
+    {
+     "key": "collage",
+     "desc": "拼贴风格，多层材质混合"
+    }
+   ]
+  },
+  {
+   "id": "brand_font",
+   "name": "品牌/Logo字体",
+   "icon": "font",
+   "prompts": [
+    {
+     "key": "logotype",
+     "desc": "品牌专属字体设计，字母一体化"
+    },
+    {
+     "key": "brandwordmark",
+     "desc": "纯文字品牌Logo，高端大气"
+    },
+    {
+     "key": "customlettering",
+     "desc": "手写定制字母设计"
+    },
+    {
+     "key": "monogramlogo",
+     "desc": "字母缩写组合Logo（如LV、YSL风格）"
+    },
+    {
+     "key": "vintagelogotype",
+     "desc": "复古风格品牌字标"
+    },
+    {
+     "key": "neonlogo",
+     "desc": "霓虹灯管效果字体Logo"
+    },
+    {
+     "key": "serifluxury",
+     "desc": "衬线体高端品牌字标"
+    },
+    {
+     "key": "sansmodern",
+     "desc": "无衬线现代品牌字标"
+    }
+   ]
+  },
+  {
+   "id": "3d_font",
+   "name": "3D立体字",
+   "icon": "3d",
+   "prompts": [
+    {
+     "key": "3dbubbletext",
+     "desc": "3D气泡立体字，圆润膨胀感"
+    },
+    {
+     "key": "3dchrome",
+     "desc": "液态金属铬质感3D字"
+    },
+    {
+     "key": "3dinflatable",
+     "desc": "充气气球质感立体字"
+    },
+    {
+     "key": "3dclay",
+     "desc": "黏土/陶泥质感动漫风3D字"
+    },
+    {
+     "key": "3dplastic",
+     "desc": "塑料质感3D字，高饱和色彩"
+    },
+    {
+     "key": "3dglass",
+     "desc": "透明玻璃质感动漫风3D字"
+    },
+    {
+     "key": "3dwood",
+     "desc": "木纹质感3D立体字"
+    },
+    {
+     "key": "3dstone",
+     "desc": "石材/大理石质感3D字"
+    },
+    {
+     "key": "3dgold",
+     "desc": "黄金质感3D立体字"
+    },
+    {
+     "key": "3dneon",
+     "desc": "霓虹灯管3D发光字"
+    },
+    {
+     "key": "3dfloat",
+     "desc": "轻质气泡/棉花糖质感漂浮3D字"
+    },
+    {
+     "key": "3djelly",
+     "desc": "果冻质感半透明3D字"
+    }
+   ]
+  },
+  {
+   "id": "poster_font",
+   "name": "海报/标题字体",
+   "icon": "poster",
+   "prompts": [
+    {
+     "key": "postertype",
+     "desc": "海报标题字设计，大胆夸张"
+    },
+    {
+     "key": "cinematype",
+     "desc": "电影标题字，史诗感/悬疑感"
+    },
+    {
+     "key": "editorialtype",
+     "desc": "杂志封面标题字"
+    },
+    {
+     "key": "gigposter",
+     "desc": "演出/音乐节海报字体"
+    },
+    {
+     "key": "newstype",
+     "desc": "报纸杂志经典标题字"
+    },
+    {
+     "key": "tabloid",
+     "desc": "小报冲击感标题字"
+    },
+    {
+     "key": "manifesto",
+     "desc": "宣言式排版大字"
+    }
+   ]
+  },
+  {
+   "id": "decorative_font",
+   "name": "艺术字/装饰字体",
+   "icon": "brush",
+   "prompts": [
+    {
+     "key": "floraltype",
+     "desc": "花卉藤蔓缠绕装饰字体"
+    },
+    {
+     "key": "artnouveau",
+     "desc": "新艺术运动风格装饰字"
+    },
+    {
+     "key": "blackletter",
+     "desc": "哥特式/花体字"
+    },
+    {
+     "key": "calligraphy",
+     "desc": "书法/毛笔字风格"
+    },
+    {
+     "key": "chinesecalligraphy",
+     "desc": "中国书法风格毛笔字"
+    },
+    {
+     "key": "graffiti",
+     "desc": "街头涂鸦风格字体"
+    },
+    {
+     "key": "psychedelic",
+     "desc": "迷幻风格扭曲字体"
+    },
+    {
+     "key": "stainedglass",
+     "desc": "彩色玻璃镶嵌效果字体"
+    },
+    {
+     "key": "mosaic",
+     "desc": "马赛克拼接字体"
+    },
+    {
+     "key": "origamitype",
+     "desc": "折纸质感立体字"
+    },
+    {
+     "key": "papercut",
+     "desc": "剪纸/镂空字体"
+    },
+    {
+     "key": "feathertype",
+     "desc": "羽毛质感装饰字体"
+    }
+   ]
+  },
+  {
+   "id": "material_font",
+   "name": "材质特效字体",
+   "icon": "texture",
+   "prompts": [
+    {
+     "key": "frostedglass",
+     "desc": "磨砂玻璃质感字"
+    },
+    {
+     "key": "liquidmetal",
+     "desc": "液态流动金属字"
+    },
+    {
+     "key": "meltedplastic",
+     "desc": "融化滴落塑料字"
+    },
+    {
+     "key": "icytype",
+     "desc": "冰霜/冰冻质感字"
+    },
+    {
+     "key": "firetype",
+     "desc": "火焰燃烧效果字"
+    },
+    {
+     "key": "watertype",
+     "desc": "水流/波浪质感字"
+    },
+    {
+     "key": "smoketype",
+     "desc": "烟雾缭绕效果字"
+    },
+    {
+     "key": "cloudtype",
+     "desc": "云朵蓬松质感字"
+    },
+    {
+     "key": "rockcandytype",
+     "desc": "水晶糖/冰糖质感字"
+    },
+    {
+     "key": "leathertype",
+     "desc": "皮革缝线质感字"
+    },
+    {
+     "key": "denimtype",
+     "desc": "牛仔布纹质感字"
+    },
+    {
+     "key": "woolyarn",
+     "desc": "毛线编织质感字"
+    }
+   ]
+  },
+  {
+   "id": "scifi_font",
+   "name": "动态/科幻字体",
+   "icon": "science",
+   "prompts": [
+    {
+     "key": "cybertype",
+     "desc": "赛博朋克风格荧光字"
+    },
+    {
+     "key": "glitchtype",
+     "desc": "故障/信号干扰效果字"
+    },
+    {
+     "key": "hologramtype",
+     "desc": "全息投影效果字"
+    },
+    {
+     "key": "circuittype",
+     "desc": "电路板纹理字体"
+    },
+    {
+     "key": "spacefont",
+     "desc": "太空/星际风格字体"
+    },
+    {
+     "key": "robotic",
+     "desc": "机械工业风字体"
+    },
+    {
+     "key": "liquidcrystal",
+     "desc": "液晶流动效果字"
+    }
+   ]
+  },
+  {
+   "id": "cute_font",
+   "name": "可爱/卡通字体",
+   "icon": "smile",
+   "prompts": [
+    {
+     "key": "bubbletype",
+     "desc": "圆润气泡字，可爱风"
+    },
+    {
+     "key": "kawaii",
+     "desc": "日系可爱风字体带表情装饰"
+    },
+    {
+     "key": "cartoontype",
+     "desc": "卡通动画风格字体"
+    },
+    {
+     "key": "candytype",
+     "desc": "糖果/棒棒糖质感字"
+    },
+    {
+     "key": "marshmallow",
+     "desc": "棉花糖蓬松质感字"
+    },
+    {
+     "key": "puffy",
+     "desc": "胖乎乎软萌立体字"
+    },
+    {
+     "key": "marble",
+     "desc": "弹珠/弹球质感字"
+    }
+   ]
+  },
+  {
+   "id": "env_font",
+   "name": "环境融合字体",
+   "icon": "landscape",
+   "prompts": [
+    {
+     "key": "neoncity",
+     "desc": "赛博城市霓虹招牌字"
+    },
+    {
+     "key": "foresttype",
+     "desc": "森林苔藓自然生长字"
+    },
+    {
+     "key": "sandtype",
+     "desc": "沙漠沙子书写效果"
+    },
+    {
+     "key": "snowtype",
+     "desc": "雪地踩踏/雕刻效果字"
+    },
+    {
+     "key": "watertype3d",
+     "desc": "水面倒影浮动字"
+    },
+    {
+     "key": "cloudsky",
+     "desc": "天空中云朵组成的字"
+    },
+    {
+     "key": "chalkboard",
+     "desc": "粉笔手写黑板字"
+    },
+    {
+     "key": "chalkground",
+     "desc": "地面粉笔书写效果"
+    },
+    {
+     "key": "skywriting",
+     "desc": "飞机拉烟空中写字效果"
+    },
+    {
+     "key": "gardentype",
+     "desc": "花园植物修剪造型字"
+    }
+   ]
+  },
+  {
+   "id": "layout_font",
+   "name": "排版/版式设计",
+   "icon": "grid",
+   "prompts": [
+    {
+     "key": "kinetictype",
+     "desc": "动势排版，拉伸扭曲动感"
+    },
+    {
+     "key": "stackedtype",
+     "desc": "字母堆叠错落排版"
+    },
+    {
+     "key": "textmask",
+     "desc": "文字遮罩图片排版"
+    },
+    {
+     "key": "typeposter",
+     "desc": "纯文字构成海报"
+    },
+    {
+     "key": "gridtype",
+     "desc": "网格系统排版设计"
+    },
+    {
+     "key": "asymmetrictype",
+     "desc": "不对称张力排版"
+    },
+    {
+     "key": "typographyart",
+     "desc": "文字构成的图形艺术"
+    },
+    {
+     "key": "verticalchinese",
+     "desc": "中文竖排版，宋体大字+极小无衬线英文混排"
+    },
+    {
+     "key": "architecturalgrid",
+     "desc": "建筑展览排版，理性网格+大量留白"
+    },
+    {
+     "key": "indiemusic",
+     "desc": "独立音乐青年文化排版，大粗字+错位"
+    },
+    {
+     "key": "lifestyleminimal",
+     "desc": "生活方式品牌排版，衬线字体+暖白底"
+    },
+    {
+     "key": "academicforum",
+     "desc": "学术论坛排版，干净克制"
+    },
+    {
+     "key": "designannual",
+     "desc": "设计年鉴实验排版，超大英文+裁切+错位"
+    }
+   ]
+  },
+  {
+   "id": "creative_font",
+   "name": "创意合成玩法",
+   "icon": "magic",
+   "prompts": [
+    {
+     "key": "typecollide",
+     "desc": "字体与物体碰撞/融合"
+    },
+    {
+     "key": "typeeats",
+     "desc": "字体被生物吃掉"
+    },
+    {
+     "key": "typegrows",
+     "desc": "字体从物体中生长出来"
+    },
+    {
+     "key": "typefloats",
+     "desc": "字体漂浮在饮品等物品中"
+    },
+    {
+     "key": "typemelting",
+     "desc": "字体融化滴落"
+    },
+    {
+     "key": "typeexplodes",
+     "desc": "字体爆炸碎片化"
+    },
+    {
+     "key": "typemorph",
+     "desc": "字体形状渐变过渡"
+    },
+    {
+     "key": "typewarp",
+     "desc": "字体空间扭曲变形"
+    }
+   ]
+  },
+  {
+   "id": "cn_fashion_font",
+   "name": "时尚风格中文字体",
+   "icon": "style",
+   "prompts": [
+    {
+     "key": "fashiontype",
+     "desc": "时尚体，字形前卫线条简洁，适合潮流品牌"
+    },
+    {
+     "key": "editorialserif",
+     "desc": "杂志衬线体，字形修长，适合高端杂志封面"
+    },
+    {
+     "key": "luxurycover",
+     "desc": "轻奢封面字，高挑纤长，适合珠宝/香水/高定品牌"
+    },
+    {
+     "key": "urbanmodern",
+     "desc": "都市潮流字，宽扁低重心，适合潮流视觉"
+    },
+    {
+     "key": "avantgarde",
+     "desc": "先锋设计字，结构大胆重组，适合实验性设计"
+    }
+   ]
+  },
+  {
+   "id": "cn_hand_font",
+   "name": "极简手写中文字体",
+   "icon": "hand",
+   "prompts": [
+    {
+     "key": "freshhand",
+     "desc": "清新手迹体，像中性笔随手写下"
+    },
+    {
+     "key": "growthnote",
+     "desc": "成长笔记体，像笔记本里认真手写的标题"
+    },
+    {
+     "key": "signatures",
+     "desc": "个人签名体，字形连贯，适合个人品牌"
+    },
+    {
+     "key": "emotionhand",
+     "desc": "情绪手写字，轻微倾斜带速度感"
+    },
+    {
+     "key": "outlinesketch",
+     "desc": "轮廓手绘体，边缘带不规则抖动"
+    },
+    {
+     "key": "illustradecorate",
+     "desc": "插画装饰体，笔画像小插画，适合儿童绘本封面"
+    }
+   ]
+  },
+  {
+   "id": "selfref_font",
+   "name": "自指字体设计",
+   "icon": "self",
+   "prompts": [
+    {
+     "key": "selfrefire",
+     "desc": "火的自指字，笔画像火焰燃烧，暖色发光"
+    },
+    {
+     "key": "selfrefwater",
+     "desc": "水的自指字，笔画呈现流动波纹"
+    },
+    {
+     "key": "selfrefmountain",
+     "desc": "山的自指字，笔画呈层叠山峰结构"
+    },
+    {
+     "key": "selfrefcloud",
+     "desc": "云的自指字，笔画蓬松柔软，蓝白渐变"
+    },
+    {
+     "key": "selfrefflower",
+     "desc": "花的自指字，笔画由花瓣藤蔓组成"
+    },
+    {
+     "key": "selfrefmoon",
+     "desc": "月的自指字，笔画呈弯月形态，深蓝夜空"
+    }
+   ]
+  },
+  {
+   "id": "material_texture_font",
+   "name": "拟物质感字体",
+   "icon": "material",
+   "prompts": [
+    {
+     "key": "puffyinflated",
+     "desc": "膨胀字体，充气羽绒服样式"
+    },
+    {
+     "key": "bubbleglass",
+     "desc": "气泡字体，清透幻彩光泽"
+    },
+    {
+     "key": "embroiderydenim",
+     "desc": "牛仔刺绣字体，缝线肌理复古"
+    },
+    {
+     "key": "jellyliquid",
+     "desc": "液态果冻字体，果酱浓稠半透明"
+    },
+    {
+     "key": "bakerybread",
+     "desc": "烘焙面包字体，食物肌理温暖"
+    },
+    {
+     "key": "clayplaydoh",
+     "desc": "彩色黏土字体，手工泥塑质感"
+    }
+   ]
+  },
+  {
+   "id": "game_title_font",
+   "name": "游戏章节标题",
+   "icon": "game",
+   "prompts": [
+    {
+     "key": "animegamechapter",
+     "desc": "二次元游戏章节标题，厚涂油画质感"
+    },
+    {
+     "key": "scifiminimal",
+     "desc": "科幻极简标题，锋利衬线+几何线条"
+    },
+    {
+     "key": "goticdark",
+     "desc": "暗黑哥特标题，深紫金属质感+尖刺"
+    },
+    {
+     "key": "cyberneon",
+     "desc": "赛博霓虹标题，紫蓝镭射金属立体字"
+    }
+   ]
+  },
+  {
+   "id": "golden_font",
+   "name": "鎏金立体字",
+   "icon": "gold",
+   "prompts": [
+    {
+     "key": "goldenglow",
+     "desc": "鎏金立体字，弧形变形+多层反光+蓝带描边"
+    },
+    {
+     "key": "goldengradient",
+     "desc": "金色渐变立体字，流畅婉转+白光切边"
+    },
+    {
+     "key": "goldenbrush",
+     "desc": "金色拉丝立体字，手写笔触感"
+    },
+    {
+     "key": "goldengeometric",
+     "desc": "金色几何切割立体字，边缘锐利有棱角"
+    }
+   ]
+  },
+  {
+   "id": "commercial",
+   "name": "商业产品",
+   "icon": "store",
+   "prompts": [
+    {
+     "key": "productshot",
+     "desc": "白底棚拍商品照"
+    },
+    {
+     "key": "lifestyleshot",
+     "desc": "商品放进生活场景"
+    },
+    {
+     "key": "handheld",
+     "desc": "真人手持商品，体现尺寸感"
+    },
+    {
+     "key": "heroimage",
+     "desc": "官网首页大型主视觉"
+    },
+    {
+     "key": "podiumshot",
+     "desc": "高级展示台商品摄影"
+    },
+    {
+     "key": "glassreflection",
+     "desc": "玻璃表面镜面反射效果"
+    },
+    {
+     "key": "splashshot",
+     "desc": "水花或液体飞溅瞬间"
+    },
+    {
+     "key": "macroshot",
+     "desc": "材质纹理与细节特写"
+    },
+    {
+     "key": "luxuryshot",
+     "desc": "精品Editorial风商品照"
+    },
+    {
+     "key": "onmodel",
+     "desc": "服装穿到AI模特身上"
+    },
+    {
+     "key": "floatingproduct",
+     "desc": "悬浮产品广告，适合电商主图"
+    },
+    {
+     "key": "amazonready",
+     "desc": "白底电商商品主图"
+    }
+   ]
+  },
+  {
+   "id": "ecommerce_detail",
+   "name": "电商细分品类",
+   "icon": "bag",
+   "prompts": [
+    {
+     "key": "jewelry",
+     "desc": "珠宝/手镯/手表，暗色绒布背景"
+    },
+    {
+     "key": "cosmetic",
+     "desc": "美妆/口红/精华，丝滑高级质感"
+    },
+    {
+     "key": "tech",
+     "desc": "数码/耳机/音箱，极简科技风"
+    },
+    {
+     "key": "food",
+     "desc": "食品/零食/饮品，暖调食欲感"
+    },
+    {
+     "key": "home",
+     "desc": "家居/日用/收纳，整洁居家风"
+    },
+    {
+     "key": "baby",
+     "desc": "母婴/婴儿用品，柔软温馨"
+    },
+    {
+     "key": "sport",
+     "desc": "运动/户外/装备，动感活力"
+    }
+   ]
+  },
+  {
+   "id": "poster_layout",
+   "name": "海报/排版",
+   "icon": "layout",
+   "prompts": [
+    {
+     "key": "editorial",
+     "desc": "杂志风文章配图"
+    },
+    {
+     "key": "editorialposter",
+     "desc": "杂志感艺术海报"
+    },
+    {
+     "key": "verticalposter",
+     "desc": "竖版宣传海报"
+    },
+    {
+     "key": "announcementposter",
+     "desc": "活动宣传海报"
+    },
+    {
+     "key": "instagramstory",
+     "desc": "Instagram Story竖版素材"
+    },
+    {
+     "key": "productcomparison",
+     "desc": "商品前后对比展示"
+    }
+   ]
+  },
+  {
+   "id": "ui_app",
+   "name": "UI/界面",
+   "icon": "phone",
+   "prompts": [
+    {
+     "key": "phonemockup",
+     "desc": "手机外壳包裹App截图"
+    },
+    {
+     "key": "appstore",
+     "desc": "App Store宣传截图"
+    },
+    {
+     "key": "dashboard",
+     "desc": "后台管理面板数据可视化"
+    },
+    {
+     "key": "saaslanding",
+     "desc": "SaaS官网落地页首屏"
+    },
+    {
+     "key": "landingpage",
+     "desc": "产品落地页完整长图"
+    },
+    {
+     "key": "browermockup",
+     "desc": "浏览器窗口展示网页设计"
+    }
+   ]
+  },
+  {
+   "id": "3d_render",
+   "name": "3D渲染/CGI",
+   "icon": "cube",
+   "prompts": [
+    {
+     "key": "c4drender",
+     "desc": "Cinema 4D风格3D渲染"
+    },
+    {
+     "key": "octanerender",
+     "desc": "Octane渲染，照片级写实光影"
+    },
+    {
+     "key": "unrealengine",
+     "desc": "虚幻引擎质感，次世代游戏级画面"
+    },
+    {
+     "key": "isometric3d",
+     "desc": "等距3D视角，适合产品设计展示"
+    },
+    {
+     "key": "lowsphere",
+     "desc": "低多边形风格3D，几何感强"
+    }
+   ]
+  },
+  {
+   "id": "ai_video",
+   "name": "AI生视频",
+   "icon": "video",
+   "prompts": [
+    {
+     "key": "cinemagraph",
+     "desc": "静图局部微动（水波/烛光）"
+    },
+    {
+     "key": "timelapse",
+     "desc": "延时摄影感"
+    },
+    {
+     "key": "slowmo",
+     "desc": "慢动作特写"
+    },
+    {
+     "key": "parallax",
+     "desc": "2.5D视差效果"
+    },
+    {
+     "key": "loopable",
+     "desc": "无缝循环短视频"
+    }
+   ]
+  },
+  {
+   "id": "arch_space",
+   "name": "建筑/室内/空间",
+   "icon": "building",
+   "prompts": [
+    {
+     "key": "archviz",
+     "desc": "建筑外观渲染图"
+    },
+    {
+     "key": "interiorrender",
+     "desc": "室内空间效果图"
+    },
+    {
+     "key": "floorplan3d",
+     "desc": "3D户型图"
+    },
+    {
+     "key": "isometricroom",
+     "desc": "等距房间切面图"
+    },
+    {
+     "key": "cozyroom",
+     "desc": "温馨房间一角"
+    },
+    {
+     "key": "cafeinterior",
+     "desc": "咖啡店室内设计"
+    }
+   ]
+  },
+  {
+   "id": "season_festival",
+   "name": "季节/节日/氛围",
+   "icon": "party",
+   "prompts": [
+    {
+     "key": "christmascozy",
+     "desc": "圣诞温馨场景"
+    },
+    {
+     "key": "halloween",
+     "desc": "万圣节氛围"
+    },
+    {
+     "key": "hanabi",
+     "desc": "夏日花火大会"
+    },
+    {
+     "key": "cherryblossom",
+     "desc": "春日樱花场景"
+    },
+    {
+     "key": "autumnleaves",
+     "desc": "秋日落叶"
+    },
+    {
+     "key": "rainyday",
+     "desc": "雨天窗景"
+    },
+    {
+     "key": "snowfall",
+     "desc": "冬日雪景"
+    }
+   ]
+  },
+  {
+   "id": "fantasy_concept",
+   "name": "幻想/超现实/概念",
+   "icon": "fantasy",
+   "prompts": [
+    {
+     "key": "surrealist",
+     "desc": "超现实主义"
+    },
+    {
+     "key": "dreamscape",
+     "desc": "梦境场景"
+    },
+    {
+     "key": "solarpunk",
+     "desc": "太阳能朋克"
+    },
+    {
+     "key": "steampunk",
+     "desc": "蒸汽朋克"
+    },
+    {
+     "key": "biopunk",
+     "desc": "生物朋克"
+    },
+    {
+     "key": "cosmichorror",
+     "desc": "宇宙恐怖"
+    }
+   ]
+  },
+  {
+   "id": "data_edu",
+   "name": "数据/教育/知识",
+   "icon": "school",
+   "prompts": [
+    {
+     "key": "infographic",
+     "desc": "信息图"
+    },
+    {
+     "key": "flowchart",
+     "desc": "流程/决策树图"
+    },
+    {
+     "key": "timeline",
+     "desc": "时间轴/里程碑图"
+    },
+    {
+     "key": "heatmap",
+     "desc": "热力图风格"
+    },
+    {
+     "key": "mindmap",
+     "desc": "思维导图视觉化"
+    },
+    {
+     "key": "roadmap",
+     "desc": "路线图/进阶图"
+    },
+    {
+     "key": "carousel",
+     "desc": "社交媒体轮播图"
+    },
+    {
+     "key": "explainer",
+     "desc": "解释性插图"
+    }
+   ]
+  },
+  {
+   "id": "advanced",
+   "name": "高级/通用",
+   "icon": "more",
+   "prompts": [
+    {
+     "key": "series",
+     "desc": "同一角色生成多套系列图"
+    },
+    {
+     "key": "referencecard",
+     "desc": "生成角色参考板"
+    },
+    {
+     "key": "fivewayview",
+     "desc": "五视图锁定人物"
+    },
+    {
+     "key": "consistent",
+     "desc": "角色一致性约束模式"
+    },
+    {
+     "key": "finish",
+     "desc": "去AI味收尾，阴影柔和颜色沉稳"
+    },
+    {
+     "key": "refine",
+     "desc": "微调细节"
+    },
+    {
+     "key": "naturalize",
+     "desc": "让颜色自然"
+    },
+    {
+     "key": "stylegrid",
+     "desc": "同一主体4种风格并排"
+    },
+    {
+     "key": "keepchange1",
+     "desc": "保持构图不变，只换光线"
+    },
+    {
+     "key": "moreofthis",
+     "desc": "保持感觉再生成变体"
+    }
+   ]
+  },
+  {
+   "id": "pet_animal",
+   "name": "宠物/动物",
+   "icon": "pets",
+   "prompts": [
+    {
+     "key": "petportrait",
+     "desc": "宠物肖像照，影棚柔光+纯色背景"
+    },
+    {
+     "key": "petoilpainting",
+     "desc": "宠物油画风，印象派笔触+野花田背景"
+    },
+    {
+     "key": "actionpet",
+     "desc": "宠物奔跑/跳跃抓拍，动态模糊背景"
+    },
+    {
+     "key": "petsleepy",
+     "desc": "宠物睡眠特写，暖光+毛茸茸质感"
+    },
+    {
+     "key": "petwithowner",
+     "desc": "主人与宠物合照，户外自然光"
+    },
+    {
+     "key": "wildlifemacro",
+     "desc": "野生动物微距，眼睛+毛发极致细节"
+    },
+    {
+     "key": "birdinflight",
+     "desc": "飞鸟展翅，天空背景+运动定格"
+    },
+    {
+     "key": "aquarium",
+     "desc": "水族箱/水下摄影，蓝色调+光线折射"
+    },
+    {
+     "key": "bigcatportrait",
+     "desc": "大型猫科动物肖像，霸气凝视"
+    },
+    {
+     "key": "horses",
+     "desc": "马匹写真，草原+逆光+鬃毛飞扬"
+    }
+   ]
+  },
+  {
+   "id": "sports_action",
+   "name": "体育/运动",
+   "icon": "sports",
+   "prompts": [
+    {
+     "key": "actionshot",
+     "desc": "运动瞬间抓拍，高速快门凝固动作"
+    },
+    {
+     "key": "stadium",
+     "desc": "体育场/赛场全景，观众+灯光氛围"
+    },
+    {
+     "key": "yogapeaceful",
+     "desc": "瑜伽/冥想场景，清晨自然光+宁静"
+    },
+    {
+     "key": "boxingring",
+     "desc": "拳击擂台，聚光灯+汗水果感"
+    },
+    {
+     "key": "skatepark",
+     "desc": "滑板公园，鱼眼广角+街头感"
+    },
+    {
+     "key": "runningtrack",
+     "desc": "跑道起跑瞬间，低角度仰拍"
+    },
+    {
+     "key": "swimmingpool",
+     "desc": "泳池水下拍摄，光影波纹+动感"
+    },
+    {
+     "key": "basketballdunk",
+     "desc": "篮球扣篮瞬间，低角度+力量感"
+    },
+    {
+     "key": "soccerkick",
+     "desc": "足球射门瞬间，草皮飞溅+动感模糊"
+    },
+    {
+     "key": "mountainbiking",
+     "desc": "山地骑行，林道+泥土飞溅"
+    }
+   ]
+  },
+  {
+   "id": "beauty_skincare",
+   "name": "美妆/护肤",
+   "icon": "spa",
+   "prompts": [
+    {
+     "key": "skincareflatlay",
+     "desc": "护肤品平铺摆拍，大理石台面+绿植"
+    },
+    {
+     "key": "lipstickswatch",
+     "desc": "口红试色，手臂/嘴唇多色对比"
+    },
+    {
+     "key": "makeuptransformation",
+     "desc": "妆前妆后对比，同一人不同角度"
+    },
+    {
+     "key": "perfumeart",
+     "desc": "香水瓶艺术摄影，光影折射+烟雾"
+    },
+    {
+     "key": "nailartmacro",
+     "desc": "美甲微距，细节纹理+光泽"
+    },
+    {
+     "key": "haircare",
+     "desc": "护发产品+秀发质感，光泽柔顺"
+    },
+    {
+     "key": "spamassage",
+     "desc": "SPA/按摩场景，暗调+蜡烛+精油"
+    },
+    {
+     "key": "modelwithproduct",
+     "desc": "模特手持美妆产品，商业广告大片"
+    },
+    {
+     "key": "eyeshadowpalette",
+     "desc": "眼影盘特写，粉质纹理+色彩饱满"
+    },
+    {
+     "key": "skintexture",
+     "desc": "皮肤质感特写，水光肌/哑光肌对比"
+    }
+   ]
+  },
+  {
+   "id": "jewelry_luxury",
+   "name": "珠宝/腕表/奢侈品",
+   "icon": "diamond",
+   "prompts": [
+    {
+     "key": "diamondmacro",
+     "desc": "钻石/宝石微距，火彩折射极致细节"
+    },
+    {
+     "key": "wristwatchlux",
+     "desc": "腕表上手特写，皮质表带+金属光泽"
+    },
+    {
+     "key": "jewelryonvelvet",
+     "desc": "珠宝放丝绒托盘，暗调高级感"
+    },
+    {
+     "key": "necklacedrape",
+     "desc": "项链垂坠展示，锁骨线条衬托"
+    },
+    {
+     "key": "earringshoot",
+     "desc": "耳环/耳饰模特佩戴展示"
+    },
+    {
+     "key": "luxurybag",
+     "desc": "奢侈品包袋，皮革纹理+金属件细节"
+    },
+    {
+     "key": "proposalring",
+     "desc": "求婚钻戒盒场景，双手捧+柔光"
+    },
+    {
+     "key": "goldbar",
+     "desc": "金条/金砖，沉甸甸的质感+反光"
+    },
+    {
+     "key": "pearlnecklace",
+     "desc": "珍珠项链，柔和光泽+肤色衬托"
+    },
+    {
+     "key": "fantasyjewelry",
+     "desc": "幻想风珠宝，枯木+兰花+星光渲染"
+    }
+   ]
+  },
+  {
+   "id": "auto_vehicle",
+   "name": "汽车/交通工具",
+   "icon": "car",
+   "prompts": [
+    {
+     "key": "carexterior",
+     "desc": "汽车外观，黄昏暖光+湿路面倒影"
+    },
+    {
+     "key": "carinterior",
+     "desc": "汽车内饰，真皮+仪表盘+氛围灯"
+    },
+    {
+     "key": "motorcycleside",
+     "desc": "摩托车侧面，车库暗调+轮廓光"
+    },
+    {
+     "key": "vintagecar",
+     "desc": "老式经典车，复古色调+怀旧氛围"
+    },
+    {
+     "key": "sportsconvertible",
+     "desc": "敞篷跑车海岸公路，婚礼/情侣场景"
+    },
+    {
+     "key": "airplanecockpit",
+     "desc": "飞机驾驶舱视角，仪表+窗外云海"
+    },
+    {
+     "key": "carspeedmotion",
+     "desc": "高速行驶动感，运动模糊+160mph氛围"
+    },
+    {
+     "key": "offroad4x4",
+     "desc": "越野场景，泥泞+飞溅+硬派"
+    }
+   ]
+  },
+  {
+   "id": "wedding_event",
+   "name": "婚礼/活动/仪式",
+   "icon": "celebration",
+   "prompts": [
+    {
+     "key": "weddingceremony",
+     "desc": "婚礼仪式现场，自然光+花艺布置"
+    },
+    {
+     "key": "bridalportrait",
+     "desc": "新娘肖像，头纱+柔光+情绪感"
+    },
+    {
+     "key": "weddingrings",
+     "desc": "婚戒特写，丝绒/花瓣上摆放"
+    },
+    {
+     "key": "receptiontable",
+     "desc": "婚宴桌景，烛光+花艺+餐具"
+    },
+    {
+     "key": "graduationceremony",
+     "desc": "毕业典礼，学位帽+抛帽瞬间"
+    },
+    {
+     "key": "awardshow",
+     "desc": "颁奖典礼，红毯+聚光灯+观众席"
+    },
+    {
+     "key": "weddingvenue",
+     "desc": "婚礼宴会厅效果图，香槟金+花艺+镜面T台"
+    },
+    {
+     "key": "balloonarch",
+     "desc": "气球拱门装饰，派对场景"
+    }
+   ]
+  },
+  {
+   "id": "music_performance",
+   "name": "音乐/现场表演",
+   "icon": "music",
+   "prompts": [
+    {
+     "key": "concertstage",
+     "desc": "演唱会舞台，光束+烟雾"
+    },
+    {
+     "key": "guitarhero",
+     "desc": "吉他手演奏，舞台侧光"
+    },
+    {
+     "key": "pianosolo",
+     "desc": "钢琴独奏，音乐厅+黑白调"
+    },
+    {
+     "key": "djbooth",
+     "desc": "DJ台，霓虹+烟雾"
+    },
+    {
+     "key": "orchestra",
+     "desc": "交响乐团，金色大厅"
+    },
+    {
+     "key": "musicfestival",
+     "desc": "音乐节户外，草地+人群"
+    },
+    {
+     "key": "violinist",
+     "desc": "小提琴独奏，侧光弦乐"
+    },
+    {
+     "key": "streetbusker",
+     "desc": "街头艺人，黄昏路灯下"
+    }
+   ]
+  },
+  {
+   "id": "science_medical",
+   "name": "科学/医学/显微",
+   "icon": "biotech",
+   "prompts": [
+    {
+     "key": "microscopic",
+     "desc": "显微镜视角，细胞染色"
+    },
+    {
+     "key": "dnahelix",
+     "desc": "DNA双螺旋，3D发光"
+    },
+    {
+     "key": "atomstructure",
+     "desc": "原子结构，电子云"
+    },
+    {
+     "key": "brainneuron",
+     "desc": "神经元网络，发光突触"
+    },
+    {
+     "key": "solarsystem",
+     "desc": "太阳系行星，写实"
+    },
+    {
+     "key": "humanheart3d",
+     "desc": "心脏3D医学图谱剖面"
+    },
+    {
+     "key": "biomedchart",
+     "desc": "学术期刊生物材料图"
+    },
+    {
+     "key": "redbloodcell",
+     "desc": "红细胞科普海报3D"
+    }
+   ]
+  },
+  {
+   "id": "food_beverage",
+   "name": "美食/餐饮进阶",
+   "icon": "restaurant",
+   "prompts": [
+    {
+     "key": "platingshot",
+     "desc": "摆盘精美，暗调餐厅风"
+    },
+    {
+     "key": "burgercross",
+     "desc": "汉堡切面，食材层次"
+    },
+    {
+     "key": "pourshot",
+     "desc": "液体倾倒瞬间"
+    },
+    {
+     "key": "ramenbowl",
+     "desc": "拉面俯拍，热气+配料"
+    },
+    {
+     "key": "bakerydisplay",
+     "desc": "面包店展示柜，暖调"
+    },
+    {
+     "key": "cocktailglass",
+     "desc": "鸡尾酒杯特写"
+    },
+    {
+     "key": "dessertmacro",
+     "desc": "甜点微距，巧克力淋面"
+    },
+    {
+     "key": "tablefeast",
+     "desc": "满桌宴席俯拍"
+    },
+    {
+     "key": "steamrising",
+     "desc": "热气中餐，锅气十足"
+    },
+    {
+     "key": "sushiplatter",
+     "desc": "寿司拼盘，日式极简"
+    }
+   ]
+  },
+  {
+   "id": "negative_prompts",
+   "name": "负面词/排除词",
+   "icon": "block",
+   "prompts": [
+    {
+     "key": "noaifinish",
+     "desc": "去AI味+去塑料感+去过度饱和"
+    },
+    {
+     "key": "nocartoon",
+     "desc": "排除卡通/动漫质感"
+    },
+    {
+     "key": "norealistic",
+     "desc": "排除写实感（插画用）"
+    },
+    {
+     "key": "notext",
+     "desc": "排除画面中的文字/水印"
+    },
+    {
+     "key": "nocrowd",
+     "desc": "排除人群/杂乱背景"
+    },
+    {
+     "key": "lowdetail",
+     "desc": "排除低细节/模糊/噪点"
+    },
+    {
+     "key": "nocropped",
+     "desc": "排除裁切不当/主体不全"
+    },
+    {
+     "key": "nooverexposed",
+     "desc": "排除过曝/欠曝"
+    }
+   ]
+  }
+ ]
+}
