@@ -22,10 +22,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Devices
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.TouchApp
+import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -93,7 +96,7 @@ fun UiverseDialog(
     LiquidGlassDialogShell(
         onDismissRequest = onClose,
         title = "主题切换",
-        subtitle = "黏土拟态 · 磨砂玻璃 · 液态玻璃 · iOS风格",
+        subtitle = "黏土拟态 · 极简主义 · 新拟态 · 玻璃拟态 · iOS风格",
         centerTitle = true
     ) {
         Column(
@@ -102,7 +105,7 @@ fun UiverseDialog(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // v1.4.13：黏土风分类胶囊（全部 / 黏土拟态 / 玻璃拟态 / iOS风格）
+            // v1.4.13：黏土风分类胶囊（v1.4.22 新增：极简 / 新拟态）
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -115,6 +118,8 @@ fun UiverseDialog(
                 listOf(
                     "ALL" to "全部",
                     "CLAY" to "黏土",
+                    "MINIMAL" to "极简",
+                    "NEU" to "新拟态",
                     "GLASS" to "玻璃",
                     "IOS" to "iOS"
                 ).forEach { (tabKey, tabTitle) ->
@@ -241,6 +246,8 @@ fun UiverseDialog(
 
             val visibleThemes = when (selectedCategoryTab) {
                 "CLAY" -> ThemePresetsRepository.clayThemes
+                "MINIMAL" -> ThemePresetsRepository.minimalThemes
+                "NEU" -> ThemePresetsRepository.neuThemes
                 "GLASS" -> ThemePresetsRepository.glassThemes
                 "IOS" -> ThemePresetsRepository.iosThemes
                 else -> ThemePresetsRepository.allThemes
@@ -266,6 +273,75 @@ fun UiverseDialog(
 
             Spacer(modifier = Modifier.height(4.dp))
 
+            // v1.4.22：自定义背景 —— 用户上传图片/视频作为软件背景
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(Color.White.copy(alpha = 0.75f))
+                    .border(1.dp, Color(0xFFE8590C).copy(alpha = 0.2f), RoundedCornerShape(18.dp))
+                    .padding(14.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Filled.Image, contentDescription = null, tint = Color(0xFFE8590C), modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("自定义背景", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF4A2C12))
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = when (localBgMediaType) {
+                            "image" -> "已设置图片"
+                            "video" -> "已设置视频"
+                            else -> "未设置"
+                        },
+                        fontSize = 11.sp,
+                        color = if (localBgMediaType == "none") Color(0xFF8A6A4A) else Color(0xFFE8590C),
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    "上传本地图片或视频作为全软件背景（自动循环播放），不影响主题配色",
+                    fontSize = 10.5.sp, color = Color(0xFF8A6A4A), lineHeight = 14.sp
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = onPickLocalImage,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Filled.Image, contentDescription = null, modifier = Modifier.size(15.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("上传图片", fontSize = 12.sp)
+                    }
+                    OutlinedButton(
+                        onClick = onPickLocalVideo,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Filled.Videocam, contentDescription = null, modifier = Modifier.size(15.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("上传视频", fontSize = 12.sp)
+                    }
+                    if (localBgMediaType != "none") {
+                        OutlinedButton(
+                            onClick = onClearLocalBgMedia,
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(Icons.Filled.DeleteOutline, contentDescription = null, modifier = Modifier.size(15.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("清除", fontSize = 12.sp)
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
             // 底部操作栏
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -275,7 +351,7 @@ fun UiverseDialog(
                     onClick = {
                         onResetDefault()
                         onApplyGradientTheme(ThemePresetsRepository.defaultTheme)
-                        Toast.makeText(context, "已重置为「橙子汽水」默认皮肤", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "已重置为「奶油团子」默认皮肤", Toast.LENGTH_SHORT).show()
                         onClose()
                     },
                     shape = RoundedCornerShape(14.dp),

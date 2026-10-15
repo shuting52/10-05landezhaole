@@ -641,7 +641,7 @@ fun DownVidScreen(
                 contentColor = themeColors.primary,
                 edgePadding = 8.dp
             ) {
-                listOf("🔥 支持平台", "📂 解析历史 (${historyList.size})", "💡 使用技巧", "🌟 关于 DownVid").forEachIndexed { index, title ->
+                listOf("🔥 支持平台", "📂 解析历史 (${historyList.size})", "💡 使用技巧").forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTab == index,
                         onClick = { selectedTab = index },
@@ -763,53 +763,6 @@ fun DownVidScreen(
             }
         }
 
-        // ---- Tab 3: 关于 ----
-        if (selectedTab == 3) {
-            item {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.92f))
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("🎬 关于 DownVid", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = themeColors.primary)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "DownVid 是基于开源项目深度重构的移动端音视频提取下载套件。\n" +
-                                    "解析引擎 v2 移植自 GitHub 开源项目：\n" +
-                                    "• parse-video-py (MIT)：抖音/快手/微博/西瓜/好看\n" +
-                                    "• f2 (Apache-2.0)：抖音无水印思路\n" +
-                                    "• yxxbc/downvid：初代解析框架\n\n" +
-                                    "特点：\n" +
-                                    "• 纯本地无广告，无需登录授权\n" +
-                                    "• 各平台专用解析器：无水印直链 + 真实作者标题\n" +
-                                    "• 解析失败自动回退通用提取，绝不给假链接\n" +
-                                    "• 系统原生 DownloadManager 高速并行下载",
-                            fontSize = 12.sp,
-                            color = Color(0xFF26303C),
-                            lineHeight = 18.sp
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Button(
-                            onClick = {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/yxxbc/downvid")).apply {
-                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                }
-                                context.startActivity(intent)
-                            },
-                            shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = themeColors.primary)
-                        ) {
-                            Icon(Icons.Filled.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("访问开源仓库项目", fontSize = 12.sp)
-                        }
-                    }
-                }
-            }
-        }
     }
 }
 

@@ -123,8 +123,9 @@ fun FeedbackDialog(
 
     // v1.0.4：官方反馈邮箱 = 控制台 settings.feedbackEmail（优先），未配置则回退内置邮箱
     // v1.0.12：默认接收邮箱更新为 chenshuting0923@gmail.com
+    // v1.4.22：默认接收邮箱更新为 307779523@qq.com（用户要求反馈直达QQ邮箱）
     val feedbackEmail = remember(cloudSettings) {
-        cloudSettings?.feedbackEmail?.trim()?.takeIf { it.isNotBlank() } ?: "chenshuting0923@gmail.com"
+        cloudSettings?.feedbackEmail?.trim()?.takeIf { it.isNotBlank() } ?: "307779523@qq.com"
     }
 
     val deviceInfoSummary = remember {

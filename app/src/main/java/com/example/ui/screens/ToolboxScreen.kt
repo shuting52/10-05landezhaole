@@ -60,21 +60,27 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.EventNote
+import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.MonitorWeight
 import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Public
+import androidx.compose.material.icons.filled.QrCode2
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.SentimentSatisfied
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.HorizontalDivider
@@ -233,6 +239,43 @@ enum class ToolboxTab(
         shortLabel = "做图指令",
         icon = Icons.Filled.AutoAwesome,
         desc = "160 分类 1496 条做图指令 · 修图/字体/电商/摄影/艺术全域 · 一键复制"
+    ),
+    // v1.4.22 新增实用工具
+    QR_GENERATOR(
+        title = "二维码生成 · 文本链接转码",
+        shortLabel = "二维码生成",
+        icon = Icons.Filled.QrCode2,
+        desc = "文本/链接一键生成高清二维码 · 长按截图保存"
+    ),
+    PASSWORD_GEN(
+        title = "密码生成器 · 随机强密码",
+        shortLabel = "密码生成",
+        icon = Icons.Filled.Key,
+        desc = "长度可调 · 大小写数字符号自由组合 · 本地生成不上传"
+    ),
+    UNIT_CONVERT(
+        title = "单位换算 · 长度重量温度",
+        shortLabel = "单位换算",
+        icon = Icons.Filled.SwapHoriz,
+        desc = "长度/重量/温度双向换算 · 常用单位全覆盖"
+    ),
+    BMI_CALC(
+        title = "BMI计算 · 健康指数",
+        shortLabel = "BMI计算",
+        icon = Icons.Filled.MonitorWeight,
+        desc = "身高体重算 BMI · 健康分级与建议"
+    ),
+    COUNTDOWN(
+        title = "倒数日 · 纪念日",
+        shortLabel = "倒数日",
+        icon = Icons.Filled.Event,
+        desc = "生日考试纪念日 · 自动算剩余天数 · 本地保存"
+    ),
+    RANDOM_DRAW(
+        title = "随机抽签 · 帮你做决定",
+        shortLabel = "随机抽签",
+        icon = Icons.Filled.Casino,
+        desc = "随机数/抛硬币/掷骰子/名单抽取 · 选择困难症救星"
     )
 }
 
@@ -502,6 +545,12 @@ fun ToolboxScreen(
                     ToolboxTab.LOCATION_MOCK -> com.example.ui.screens.toolbox.LocationMockSection()
                     ToolboxTab.CAR_BRAND -> com.example.ui.screens.toolbox.CarBrandSection()
                     ToolboxTab.IMAGE_PROMPTS -> com.example.ui.screens.toolbox.ImagePromptsSection()
+                    ToolboxTab.QR_GENERATOR -> com.example.ui.screens.toolbox.QrGeneratorSection()
+                    ToolboxTab.PASSWORD_GEN -> com.example.ui.screens.toolbox.PasswordGeneratorSection()
+                    ToolboxTab.UNIT_CONVERT -> com.example.ui.screens.toolbox.UnitConverterSection()
+                    ToolboxTab.BMI_CALC -> com.example.ui.screens.toolbox.BmiSection()
+                    ToolboxTab.COUNTDOWN -> com.example.ui.screens.toolbox.CountdownSection()
+                    ToolboxTab.RANDOM_DRAW -> com.example.ui.screens.toolbox.RandomDrawSection()
                 }
             }
         }

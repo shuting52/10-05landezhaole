@@ -133,6 +133,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import com.example.data.local.NavData
 import com.example.data.local.db.UserItemRecord
 import com.example.data.model.BadgeType
@@ -203,6 +205,44 @@ fun MainScreen(
         if (type != "none" && path.isNotBlank()) {
             viewModel.setLocalBgMedia(type, "file://$path")
         }
+    }
+
+    // v1.4.22：用户自定义上传图片/视频作为软件背景
+    fun saveCustomBackground(type: String, sourceUri: android.net.Uri) {
+        try {
+            val dir = java.io.File(context.filesDir, "custom_bg").apply { mkdirs() }
+            // 先清掉旧文件
+            dir.listFiles()?.forEach { it.delete() }
+            val ext = if (type == "video") "mp4" else "jpg"
+            val dest = java.io.File(dir, "bg.$ext")
+            context.contentResolver.openInputStream(sourceUri)?.use { input ->
+                dest.outputStream().use { output -> input.copyTo(output) }
+            }
+            val prefs = context.getSharedPreferences("lzdz_bg_prefs", Context.MODE_PRIVATE)
+            prefs.edit()
+                .putString("bg_type", type)
+                .putString("bg_path", dest.absolutePath)
+                .apply()
+            viewModel.setLocalBgMedia(type, "file://${dest.absolutePath}")
+            android.widget.Toast.makeText(context, "自定义背景已生效", android.widget.Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            android.widget.Toast.makeText(context, "背景设置失败：${e.message}", android.widget.Toast.LENGTH_LONG).show()
+        }
+    }
+    val pickBgImageLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri -> if (uri != null) saveCustomBackground("image", uri) }
+    val pickBgVideoLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri -> if (uri != null) saveCustomBackground("video", uri) }
+    fun clearCustomBackground() {
+        try {
+            java.io.File(context.filesDir, "custom_bg").listFiles()?.forEach { it.delete() }
+            context.getSharedPreferences("lzdz_bg_prefs", Context.MODE_PRIVATE)
+                .edit().putString("bg_type", "none").putString("bg_path", "").apply()
+        } catch (_: Exception) {}
+        viewModel.clearLocalBgMedia()
+        android.widget.Toast.makeText(context, "已恢复主题默认背景", android.widget.Toast.LENGTH_SHORT).show()
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -753,7 +793,12 @@ fun MainScreen(
                 onApplyGradientTheme = { theme ->
                     viewModel.setTheme(theme)
                 },
-                activeGradientThemeId = uiState.currentTheme.id
+                activeGradientThemeId = uiState.currentTheme.id,
+                // v1.4.22：自定义背景上传入口
+                localBgMediaType = uiState.localBgMediaType,
+                onPickLocalImage = { pickBgImageLauncher.launch("image/*") },
+                onPickLocalVideo = { pickBgVideoLauncher.launch("video/*") },
+                onClearLocalBgMedia = { clearCustomBackground() }
             )
         }
 
