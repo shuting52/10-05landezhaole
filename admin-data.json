@@ -1,16 +1,17 @@
 {
   "version": {
-    "code": 186,
-    "name": "1.4.31",
+    "code": 187,
+    "name": "1.4.32",
     "changelog": [
-      "✨ v1.4.31 更新来啦～",
-      "feat: v1.4.31 新增手绘风主题「手绘暖阳」"
+      "✨ v1.4.32 更新来啦～",
+      "fix: v1.4.32 修复 qualityOptions 未传递到 UI 层",
+      "feat: v1.4.32 去水印预览/画质/更新进度条优化"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.31-1792073980.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.31-1792073980.apk",
-    "lastBuildSha": "7738e0b832ec715ddf9a729a47708278e5952e39",
-    "apkSize": 23980324
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.32-1792075286.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.32-1792075286.apk",
+    "lastBuildSha": "74c9ccba37bba8076ed28cb435403656eee7bf90",
+    "apkSize": 23996708
   },
   "home": {
     "categories": [
@@ -24344,10 +24345,11 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.4.31 已上线",
+    "title": "懒得找了 v1.4.32 已上线",
     "changelog": [
-      "✨ v1.4.31 更新来啦～",
-      "feat: v1.4.31 新增手绘风主题「手绘暖阳」"
+      "✨ v1.4.32 更新来啦～",
+      "fix: v1.4.32 修复 qualityOptions 未传递到 UI 层",
+      "feat: v1.4.32 去水印预览/画质/更新进度条优化"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24409,10 +24411,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.4.31",
-      "code": 186,
-      "at": "2026-10-15T14:19:47Z",
-      "sha": "7738e0b832ec715ddf9a729a47708278e5952e39"
+      "version": "1.4.32",
+      "code": 187,
+      "at": "2026-10-15T14:41:32Z",
+      "sha": "74c9ccba37bba8076ed28cb435403656eee7bf90"
     }
   },
   "_ai_notice": "内容由AI生成"
