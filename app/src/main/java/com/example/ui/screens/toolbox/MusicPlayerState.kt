@@ -37,7 +37,7 @@ object MusicPlayerState {
     val currentTrack: Track?
         get() = playlist.getOrNull(currentIndex)
 
-    fun playAt(index: Int, context: Context? = null) {
+    fun playAt(index: Int, context: Context) {
         if (index !in playlist.indices) return
         try {
             player?.release()
@@ -46,7 +46,13 @@ object MusicPlayerState {
             isLoading = true
             errorMsg = ""
             player = MediaPlayer().apply {
-                setDataSource(track.uri)
+                // v1.4.25 修复：本地 content:// URI 必须用 setDataSource(Context, Uri)，
+                // 用 String 版本会被当成文件路径导致播放失败
+                if (track.isLocal) {
+                    setDataSource(context, Uri.parse(track.uri))
+                } else {
+                    setDataSource(track.uri)
+                }
                 setOnPreparedListener {
                     MusicPlayerState.isLoading = false
                     start()
@@ -66,9 +72,7 @@ object MusicPlayerState {
                     MusicPlayerState.isLoading = false
                     MusicPlayerState.isPlaying = false
                     MusicPlayerState.errorMsg = "播放失败，试试下一首"
-                    context?.let {
-                        Toast.makeText(it, "播放失败，已跳过", Toast.LENGTH_SHORT).show()
-                    }
+                    Toast.makeText(context, "播放失败，已跳过", Toast.LENGTH_SHORT).show()
                     val next = MusicPlayerState.currentIndex + 1
                     if (next in MusicPlayerState.playlist.indices) MusicPlayerState.playAt(next, context)
                     true
@@ -81,11 +85,11 @@ object MusicPlayerState {
         }
     }
 
-    fun togglePlayPause(context: Context? = null) {
+    fun togglePlayPause(context: Context) {
         val p = player
         if (p == null) {
             // 没有播放器时从头播放
-            if (playlist.isNotEmpty()) playAt(0.coerceAtMost(playlist.size - 1).let { if (currentIndex >= 0) currentIndex else 0 }, context)
+            if (playlist.isNotEmpty()) playAt(if (currentIndex >= 0) currentIndex else 0, context)
             return
         }
         if (p.isPlaying) {
@@ -97,13 +101,13 @@ object MusicPlayerState {
         }
     }
 
-    fun playNext(context: Context? = null) {
+    fun playNext(context: Context) {
         if (playlist.isEmpty()) return
         val next = if (currentIndex + 1 in playlist.indices) currentIndex + 1 else 0
         playAt(next, context)
     }
 
-    fun playPrev(context: Context? = null) {
+    fun playPrev(context: Context) {
         if (playlist.isEmpty()) return
         val prev = if (currentIndex - 1 >= 0) currentIndex - 1 else playlist.size - 1
         playAt(prev, context)

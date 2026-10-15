@@ -374,6 +374,49 @@ val CAR_BRANDS_DATABASE = listOf(
         priceRange = "70万 - 350万元以上",
         logoDescription = "取自博洛尼亚马焦雷广场海神波塞冬手持的威武三叉戟，象征无穷动力、海洋神威与狂暴竞速灵魂。",
         logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/maserati.png"
+    ),
+    // v1.4.25 新增：中国品牌
+    CarBrand(
+        id = "geely",
+        nameZh = "吉利",
+        nameEn = "Geely",
+        country = "中国 🇨🇳",
+        category = "中国品牌",
+        logoType = "GEELY",
+        foundingYear = "1986年",
+        slogan = "造每个人的精品车",
+        headquarters = "浙江 杭州",
+        priceRange = "5万 - 30万元",
+        logoDescription = "盾形徽标内六块宝石菱形，象征吉利聚焦战略与品牌使命，蓝色代表天空与梦想。",
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/geely.png"
+    ),
+    CarBrand(
+        id = "greatwall",
+        nameZh = "长城",
+        nameEn = "Great Wall / GWM",
+        country = "中国 🇨🇳",
+        category = "中国品牌",
+        logoType = "GREATWALL",
+        foundingYear = "1984年",
+        slogan = "专注、专业、专家",
+        headquarters = "河北 保定",
+        priceRange = "7万 - 35万元",
+        logoDescription = "烽火台造型徽标，取自万里长城烽火台意象，象征坚固可靠与中国力量。",
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/great-wall.png"
+    ),
+    CarBrand(
+        id = "chery",
+        nameZh = "奇瑞",
+        nameEn = "Chery",
+        country = "中国 🇨🇳",
+        category = "中国品牌",
+        logoType = "CHERY",
+        foundingYear = "1997年",
+        slogan = "技术奇瑞",
+        headquarters = "安徽 芜湖",
+        priceRange = "5万 - 25万元",
+        logoDescription = "椭圆环绕的\"CAC\"变形字母，中间\"A\"如支撑的人字，寓意奇瑞公司团结奋进。",
+        logoUrl = "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/car_logos/chery.png"
     )
 )
 
@@ -391,7 +434,7 @@ fun CarBrandSection(
     var selectedBrandForDetail by remember { mutableStateOf<CarBrand?>(null) }
     var showAiRecognitionDialog by remember { mutableStateOf(false) }
 
-    val categories = listOf("全部", "德系名车", "超豪华车", "新能源车", "国产豪华", "日系经典", "欧系名车")
+    val categories = listOf("全部", "德系名车", "超豪华车", "新能源车", "国产豪华", "日系经典", "欧系名车", "中国品牌")
 
     val filteredBrands = remember(searchQuery, selectedCategory) {
         CAR_BRANDS_DATABASE.filter { brand ->

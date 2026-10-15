@@ -240,7 +240,7 @@ enum class ToolboxTab(
     ),
     // v1.4.18：ChatGPT做图指令大全（v1.4.20 扩展至 160 分类 / 1496 条，全域覆盖）
     IMAGE_PROMPTS(
-        title = "做图指令 · ChatGPT指令大全",
+        title = "做图指令大全",
         shortLabel = "做图指令",
         icon = Icons.Filled.AutoAwesome,
         desc = "160 分类 1496 条做图指令 · 修图/字体/电商/摄影/艺术全域 · 一键复制"
@@ -2638,6 +2638,8 @@ private fun IndependentCssDynamicWindow(
                                 text = tool.title,
                                 fontWeight = FontWeight.Black,
                                 fontSize = 15.5.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
                                 color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface
                             )
                             Text(

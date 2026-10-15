@@ -251,10 +251,7 @@ private fun ShengshiWaveSplashContent(
                     )
                 )
             )
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) { onDismiss() }
+            // v1.4.25：启动页禁止点击跳过，只能等倒计时结束自动进入
     ) {
         // ============ 背景特效 Canvas ============
         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -471,34 +468,14 @@ private fun ShengshiWaveSplashContent(
             }
             Spacer(modifier = Modifier.height(6.dp))
             Text(
-                text = "全网视频 · 一键直达",
+                text = "收集了多款产品 请自行体验",
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF8A6A4A),
                 letterSpacing = 3.sp
             )
             Spacer(modifier = Modifier.height(14.dp))
-            // 求分享气泡
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color.White.copy(alpha = 0.9f))
-                        .border(1.5.dp, Color(0xFF8FD0F0), RoundedCornerShape(12.dp))
-                        .padding(horizontal = 12.dp, vertical = 5.dp)
-                ) {
-                    Text("无水印~", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E9BD6))
-                }
-                Box(
-                    modifier = Modifier
-                        .scale(bubblePop)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFFFFD93D))
-                        .padding(horizontal = 12.dp, vertical = 5.dp)
-                ) {
-                    Text("YEAH!", fontSize = 12.sp, fontWeight = FontWeight.Black, color = Color(0xFF2B2B2B))
-                }
-            }
+            // v1.4.25：删除「无水印~/YEAH!」气泡
         }
 
         // ---- 底部加载点点 ----
@@ -510,7 +487,7 @@ private fun ShengshiWaveSplashContent(
             }
         }
         Text(
-            text = (uiText?.splashLoading?.ifBlank { "正在为你准备" } ?: "正在为你准备") + ".".repeat(dotCount),
+            text = (uiText?.splashLoading?.ifBlank { "软件初始化，请稍等..." } ?: "软件初始化，请稍等...") + ".".repeat(dotCount),
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFFB08968),

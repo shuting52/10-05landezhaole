@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": "2.0",
-    "total_categories": 160,
-    "total_prompts": 1496,
+    "total_categories": 161,
+    "total_prompts": 1521,
     "note": "ChatGPT做图指令全域大全：用户提供原稿清洗去重 + 全域扩展"
   },
   "categories": [
@@ -985,6 +985,38 @@
         {
           "key": "amazonready",
           "desc": "白底电商商品主图"
+        },
+        {
+          "key": "flatlay",
+          "desc": "俯视平铺构图，商品整齐排列展示全貌"
+        },
+        {
+          "key": "detailmacro",
+          "desc": "微距特写商品细节纹理，做工质感拉满"
+        },
+        {
+          "key": "scalecompare",
+          "desc": "商品与常见物品对比，直观体现尺寸"
+        },
+        {
+          "key": "unboxscene",
+          "desc": "开箱场景，包装盒半开露出商品一角"
+        },
+        {
+          "key": "giftset",
+          "desc": "礼盒套装陈列，节日送礼氛围"
+        },
+        {
+          "key": "waterdrop",
+          "desc": "商品表面水珠效果，清爽通透质感"
+        },
+        {
+          "key": "floating",
+          "desc": "商品悬浮空中，动感解构展示"
+        },
+        {
+          "key": "exploded",
+          "desc": "爆炸图展示商品内部结构与零件"
         }
       ]
     },
@@ -1020,6 +1052,34 @@
         {
           "key": "sport",
           "desc": "运动/户外/装备，动感活力"
+        },
+        {
+          "key": "fashion",
+          "desc": "服装/穿搭，真人模特上身效果"
+        },
+        {
+          "key": "shoes",
+          "desc": "鞋靴/运动鞋，潮流街拍质感"
+        },
+        {
+          "key": "bag",
+          "desc": "箱包/皮具，皮质纹理高级感"
+        },
+        {
+          "key": "toy",
+          "desc": "玩具/母婴，温馨可爱氛围"
+        },
+        {
+          "key": "pet",
+          "desc": "宠物用品，萌宠出镜带货"
+        },
+        {
+          "key": "car",
+          "desc": "汽车用品，硬朗机械质感"
+        },
+        {
+          "key": "book",
+          "desc": "图书文具，文艺ins风摆拍"
         }
       ]
     },
@@ -6993,6 +7053,53 @@
         {
           "key": "info_health",
           "desc": "健康科普图，易懂"
+        }
+      ]
+    },
+    {
+      "id": "ecommerce_marketing",
+      "name": "电商营销图",
+      "icon": "campaign",
+      "prompts": [
+        {
+          "key": "mainimage",
+          "desc": "电商主图，3:4构图商品居中卖点突出"
+        },
+        {
+          "key": "detailpage",
+          "desc": "详情页长图，卖点分模块排版"
+        },
+        {
+          "key": "banner",
+          "desc": "店铺横幅/海报，大促氛围拉满"
+        },
+        {
+          "key": "coupon",
+          "desc": "优惠券/满减海报，价格冲击力强"
+        },
+        {
+          "key": "liveroom",
+          "desc": "直播间背景板，品牌调性统一"
+        },
+        {
+          "key": "reviewimg",
+          "desc": "买家秀风格，真实感种草图"
+        },
+        {
+          "key": "comparechart",
+          "desc": "参数对比图，竞品PK一目了然"
+        },
+        {
+          "key": "sizechart",
+          "desc": "尺码表/规格图，信息清晰易读"
+        },
+        {
+          "key": "scenariomkt",
+          "desc": "场景营销图，痛点场景引发共鸣"
+        },
+        {
+          "key": "festival",
+          "desc": "节日大促主视觉，618/双11氛围"
         }
       ]
     }
