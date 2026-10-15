@@ -104,6 +104,24 @@ object ThemePresetsRepository {
         description = "浓郁巧克力 · 暗夜黏土"
     )
 
+    /** 手绘暖阳 —— 手绘风（v1.4.31 新增，参考 shejishi 手绘风主题） */
+    val handDrawnSunny = ThemePreset(
+        id = "hand_drawn_sunny",
+        name = "手绘暖阳",
+        style = "handdrawn",
+        categoryName = "手绘风",
+        primaryColor = Color(0xFFFFC93C),      // 鸭黄
+        secondaryColor = Color(0xFFFF9F43),    // 橙
+        bgColor = Color(0xFFFFF6E5),           // 奶油黄
+        surfaceColor = Color(0xFFFFFFFF),      // 纯白卡片
+        textColor = Color(0xFF4A3B2A),         // 深棕
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFFFF6E5), Color(0xFFFFF0D0)),
+        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFFFF9EE), Color(0xFFFFF6E5)),
+        designStyle = DesignStyle.DEFAULT,
+        description = "奶油黄底 · 鸭黄点缀 · 手绘治愈"
+    )
+
     /** 磨砂玻璃 —— 玻璃拟态（浅） */
     val frostGlass = ThemePreset(
         id = "frost_glass",
@@ -455,6 +473,8 @@ object ThemePresetsRepository {
 
     // —— 分类列表（供主题切换弹窗） ——
     val clayThemes: List<ThemePreset> = listOf(creamDango, clayOrange, clayChoco)
+    // v1.4.31：手绘风分类
+    val handDrawnThemes: List<ThemePreset> = listOf(handDrawnSunny)
     val glassThemes: List<ThemePreset> = listOf(
         frostGlass, liquidGlass,
         glassOcean, glassSunset, glassAurora, glassSakura, glassMint,
@@ -477,7 +497,7 @@ object ThemePresetsRepository {
     val gradientThemes: List<ThemePreset> = listOf(liquidGlass, frostGlass)
 
     val allThemes: List<ThemePreset> = listOf(
-        creamDango, clayOrange, clayChoco, frostGlass, liquidGlass, iosFresh, iosDark,
+        creamDango, clayOrange, clayChoco, handDrawnSunny, frostGlass, liquidGlass, iosFresh, iosDark,
         minimalPaper, minimalInk, minimalOat, minimalMist, minimalMint,
         minimalSakura, minimalLemon, minimalLavender, minimalCeladon, minimalStone,
         neuCream, neuMist, neuPeach, neuSky, neuMint,
