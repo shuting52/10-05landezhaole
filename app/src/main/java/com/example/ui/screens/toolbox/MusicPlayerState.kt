@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
@@ -250,9 +251,15 @@ object MusicPlayerState {
             val retriever = android.media.MediaMetadataRetriever()
             try {
                 retriever.setDataSource(context, Uri.parse(track.uri))
-                // 先尝试标准歌词键
-                var lyrics = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_LYRICS)
-                // 部分文件歌词藏在标题/注释里（带时间轴的 LRC 文本）
+                // 尝试读取内嵌歌词（部分 MP3/M4A 内嵌了 USLT 歌词）
+                // METADATA_KEY_LYRICS 需要 API 35+，用反射兼容低版本
+                var lyrics: String? = null
+                try {
+                    val field = android.media.MediaMetadataRetriever::class.java.getField("METADATA_KEY_LYRICS")
+                    val key = field.getInt(null)
+                    lyrics = retriever.extractMetadata(key)
+                } catch (_: Exception) {}
+                // 部分文件歌词藏在标题里（带时间轴的 LRC 文本）
                 if (lyrics.isNullOrBlank()) {
                     val title = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_TITLE)
                     if (title != null && title.contains("[") && title.contains("]")) lyrics = title
