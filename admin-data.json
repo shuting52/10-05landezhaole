@@ -1,15 +1,16 @@
 {
   "version": {
-    "code": 180,
-    "name": "1.4.25",
+    "code": 181,
+    "name": "1.4.26",
     "changelog": [
-      "✨ v1.4.25 更新来啦～",
-      "feat: v1.4.25 修复本地播放+启动页+首页Logo+车标/指令扩展"
+      "✨ v1.4.26 更新来啦～",
+      "fix: v1.4.26 修复编译错误（launch 未导入/METADATA_KEY_LYRICS 需 API 35+）",
+      "feat: v1.4.26 歌词+播放模式+车型库+删反馈提示"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.25-1792058842.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.25-1792058842.apk",
-    "lastBuildSha": "d1325f7f14c81509ea969b0a3a67098f5b4f745f",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.26-1792061463.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.26-1792061463.apk",
+    "lastBuildSha": "051ce77b5a891c3d4452f6076d93f1a4081276b1",
     "apkSize": 23113345
   },
   "home": {
@@ -24344,10 +24345,11 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.4.25 已上线",
+    "title": "懒得找了 v1.4.26 已上线",
     "changelog": [
-      "✨ v1.4.25 更新来啦～",
-      "feat: v1.4.25 修复本地播放+启动页+首页Logo+车标/指令扩展"
+      "✨ v1.4.26 更新来啦～",
+      "fix: v1.4.26 修复编译错误（launch 未导入/METADATA_KEY_LYRICS 需 API 35+）",
+      "feat: v1.4.26 歌词+播放模式+车型库+删反馈提示"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24409,10 +24411,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.4.25",
-      "code": 180,
-      "at": "2026-10-15T10:07:30Z",
-      "sha": "d1325f7f14c81509ea969b0a3a67098f5b4f745f"
+      "version": "1.4.26",
+      "code": 181,
+      "at": "2026-10-15T10:51:09Z",
+      "sha": "051ce77b5a891c3d4452f6076d93f1a4081276b1"
     }
   },
   "_ai_notice": "内容由AI生成"
