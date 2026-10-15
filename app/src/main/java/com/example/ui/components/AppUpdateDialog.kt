@@ -227,8 +227,18 @@ fun AppUpdateDialog(
             // 问题根因：PackageInstaller 静默安装优先，国产 ROM 常拦截且回调丢失，
             // 界面永远停在「正在安装…」（用户截图所见）。修复：下载完成后直接用 FileProvider
             // 打开系统安装器，由用户点击「安装」完成更新 —— Android 最标准、最可靠的路径。
+            // v1.4.16：先把安装包拷贝到公共下载目录，任何环节失败用户都能手动安装
+            copyApkToDownloads(context, file, versionName)
             statusLabel = "下载完成，正在打开系统安装器…"
-            installViaFileProvider(context, file)
+            val installerOpened = installViaFileProvider(context, file)
+            if (!installerOpened) {
+                // 安装器打不开：直接进入失败态，按钮变「重试」，不再卡死
+                installOutcome = false
+                progress = 100f
+                statusLabel = "未能打开系统安装器，安装包已保存到手机「下载」文件夹（landezhao-*.apk），可手动安装，或点重试"
+                Toast.makeText(context, "未能打开系统安装器，安装包已存到下载文件夹，可手动安装", Toast.LENGTH_LONG).show()
+                return
+            }
 
             // 后台轮询版本号收尾：用户点「安装」成功后，弹窗自动进入完成态
             coroutineScope.launch {
@@ -240,6 +250,10 @@ fun AppUpdateDialog(
                     installOutcome = true
                     progress = 100f
                     statusLabel = "安装完成"
+                } else {
+                    // v1.4.16：超时兜底——之前这里静默无操作，弹窗永远卡在「正在安装…」
+                    installOutcome = false
+                    statusLabel = "安装超时：若已在系统安装页点过安装请忽略；否则安装包在手机「下载」文件夹（landezhao-*.apk），可手动安装，或点重试"
                 }
             }
         } catch (e: Exception) {
@@ -268,10 +282,13 @@ fun AppUpdateDialog(
         Toast.makeText(context, "打开 QQ 群失败，请手动搜索群号：$groupNumber", Toast.LENGTH_LONG).show()
     }
 
+    /** v1.4.16 慢速熔断异常：当前源龟速时抛给上层切换下一源 */
+    class SlowDownloadException(msg: String) : Exception(msg)
+
     /** 同步执行单次下载，返回保存好的 File（跑在 IO 线程） */
     suspend fun downloadWithProgress(
         url: String,
-        onProgress: suspend (frac: Float, downloaded: Long, total: Long) -> Unit
+        onProgress: suspend (frac: Float, downloaded: Long, total: Long, speedBps: Long) -> Unit
     ): File {
         return withContext(kotlinx.coroutines.Dispatchers.IO) {
             val client = okhttp3.OkHttpClient.Builder()
@@ -297,29 +314,47 @@ fun AppUpdateDialog(
                 val file = File(dir, "latest.apk")
                 body.byteStream().use { input ->
                     file.outputStream().use { output ->
-                        val buf = ByteArray(16 * 1024)
+                        val buf = ByteArray(64 * 1024)
                         var downloaded = 0L
                         var lastEmit = 0L
+                        val startMs = System.currentTimeMillis()
+                        // v1.4.16 慢速熔断：起步 12 秒后，若 10 秒窗口平均速度 < 60KB/s 则放弃当前源
+                        var windowStartMs = startMs
+                        var windowBytes = 0L
+                        fun emitSpeed(): Long {
+                            val elapsed = (System.currentTimeMillis() - startMs).coerceAtLeast(1L)
+                            return (downloaded * 1000L / elapsed).coerceAtLeast(0L)
+                        }
                         while (true) {
                             val n = input.read(buf)
                             if (n <= 0) break
                             output.write(buf, 0, n)
                             downloaded += n
+                            windowBytes += n
+                            val now = System.currentTimeMillis()
+                            // 慢速熔断检查
+                            if (now - startMs > 12_000 && now - windowStartMs >= 10_000) {
+                                val windowSecs = (now - windowStartMs) / 1000.0
+                                val avgBps = (windowBytes / windowSecs).toLong()
+                                if (avgBps < 60 * 1024 && downloaded < (if (rawTotal > 0) rawTotal else Long.MAX_VALUE)) {
+                                    throw SlowDownloadException("当前源速度过慢（${avgBps / 1024}KB/s），切换更快线路")
+                                }
+                                windowStartMs = now
+                                windowBytes = 0L
+                            }
                             if (rawTotal > 0) {
-                                val now = System.currentTimeMillis()
                                 if (now - lastEmit > 80 || downloaded == rawTotal) {
                                     lastEmit = now
                                     val frac = (downloaded.toFloat() / rawTotal.toFloat()).coerceIn(0f, 1f)
-                                    onProgress(frac, downloaded, rawTotal)
+                                    onProgress(frac, downloaded, rawTotal, emitSpeed())
                                 }
                             } else {
                                 // v1.0.11 修复「进度条卡住不动」：部分 CDN 不返回 Content-Length（total<=0）
-                                val now = System.currentTimeMillis()
                                 if (now - lastEmit > 150) {
                                     lastEmit = now
                                     val dynTotal = maxOf(effectiveTotal, downloaded + 512 * 1024L)
                                     val frac = (downloaded.toDouble() / dynTotal).coerceIn(0.0, 0.92)
-                                    onProgress(frac.toFloat(), downloaded, dynTotal)
+                                    onProgress(frac.toFloat(), downloaded, dynTotal, emitSpeed())
                                 }
                             }
                         }
@@ -355,16 +390,16 @@ fun AppUpdateDialog(
                         val owner = m.groupValues[1]
                         val repo = m.groupValues[2]
                         val path = m.groupValues[3]
-                        // 国内加速镜像（优先，速度快）
-                        add("https://ghfast.top/https://raw.githubusercontent.com/$owner/$repo/main/$path")
-                        add("https://ghproxy.net/https://raw.githubusercontent.com/$owner/$repo/main/$path")
+                        // v1.4.16：国内实测速度排序——jsdmir/gitmirror 国内节点最稳放最前，
+                        // ghproxy 经常抽风降级，官方 raw 最后兜底
                         add("https://cdn.jsdmir.cn/gh/$owner/$repo@main/$path")
-                        // jsDelivr 多节点
-                        add("https://testingcf.jsdelivr.net/gh/$owner/$repo@main/$path")
+                        add("https://raw.gitmirror.com/$owner/$repo/main/$path")
+                        add("https://ghfast.top/https://raw.githubusercontent.com/$owner/$repo/main/$path")
                         add("https://cdn.jsdelivr.net/gh/$owner/$repo@main/$path")
                         add("https://gcore.jsdelivr.net/gh/$owner/$repo@main/$path")
-                        add("https://raw.gitmirror.com/$owner/$repo/main/$path")
-                        // GitHub 官方 raw（最后兜底）
+                        add("https://testingcf.jsdelivr.net/gh/$owner/$repo@main/$path")
+                        add("https://ghproxy.net/https://raw.githubusercontent.com/$owner/$repo/main/$path")
+                        // GitHub 官方（最后兜底）
                         add("https://github.com/$owner/$repo/raw/main/$path")
                         add(url)
                     }
@@ -389,12 +424,18 @@ fun AppUpdateDialog(
                         } else {
                             "重试下载 ${formatSizeMb(downloadedBytes)} / ${formatSizeMb(totalBytes)}"
                         }
-                        val file = downloadWithProgress(candidate) { p, dlBytes, totBytes ->
+                        // v1.4.16：状态栏显示实时速度
+                        fun formatSpeed(bps: Long): String = when {
+                            bps >= 1024 * 1024 -> String.format(java.util.Locale.US, "%.1f MB/s", bps / (1024.0 * 1024.0))
+                            bps >= 1024 -> "${bps / 1024} KB/s"
+                            else -> "$bps B/s"
+                        }
+                        val file = downloadWithProgress(candidate) { p, dlBytes, totBytes, speedBps ->
                             totalBytes = totBytes
                             progress = (8f + p * 92f).coerceIn(8f, 100f)
                             // 让显示的已下载大小跟随进度条丝滑同步变化
                             downloadedBytes = if (p >= 0.99f) totBytes else maxOf(dlBytes, (totBytes * (progress / 100f)).toLong()).coerceAtMost(totBytes)
-                            statusLabel = "正在极速下载 ${formatSizeMb(downloadedBytes)} / ${formatSizeMb(totalBytes)}"
+                            statusLabel = "正在下载 ${formatSizeMb(downloadedBytes)} / ${formatSizeMb(totalBytes)} · ${formatSpeed(speedBps)}"
                         }
                         // 校验 APK 文件头 PK
                         val header = try {
@@ -432,6 +473,11 @@ fun AppUpdateDialog(
                         break@outer
                     } catch (e: Exception) {
                         lastError = e
+                        if (e is SlowDownloadException) {
+                            // v1.4.16：当前源龟速，直接换下一源，不重试
+                            statusLabel = "当前线路太慢，正在换更快线路…"
+                            break
+                        }
                         statusLabel = "下载失败，重试中…"
                         kotlinx.coroutines.delay(900)
                     }
@@ -1441,18 +1487,53 @@ private fun installViaPackageInstaller(context: Context, apkFile: File): Boolean
 }
 
 /** FileProvider + 系统安装器（最通用的兜底方案） */
-private fun installViaFileProvider(context: Context, file: File) {
-    try {
-        val uri = FileProvider.getUriForFile(context, context.packageName + ".fileprovider", file)
-        val intent = Intent(Intent.ACTION_VIEW).apply {
+/** v1.4.16：返回安装器是否成功调起。ACTION_VIEW 失败时回退 ACTION_INSTALL_PACKAGE。 */
+private fun installViaFileProvider(context: Context, file: File): Boolean {
+    val uri = try {
+        FileProvider.getUriForFile(context, context.packageName + ".fileprovider", file)
+    } catch (e: Exception) {
+        return false
+    }
+    val intents = listOf(
+        Intent(Intent.ACTION_VIEW).apply {
             setDataAndType(uri, "application/vnd.android.package-archive")
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        },
+        Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
+            setData(uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
-        context.startActivity(intent)
-    } catch (e: Exception) {
-        Toast.makeText(context, "无法打开系统安装器，请稍后到文件管理器中手动安装更新包", Toast.LENGTH_LONG).show()
+    )
+    for (intent in intents) {
+        try {
+            // 先确认有 Activity 能处理，避免国产 ROM 直接抛异常
+            if (intent.resolveActivity(context.packageManager) == null) continue
+            context.startActivity(intent)
+            return true
+        } catch (e: Exception) {
+            // 尝试下一个
+        }
     }
+    return false
+}
+
+/** v1.4.16：把 APK 拷贝到公共下载目录，安装器打不开时用户可手动安装。返回拷贝后的文件。 */
+private fun copyApkToDownloads(context: Context, file: File, versionName: String): File? {
+    return try {
+        val publicDir = android.os.Environment.getExternalStoragePublicDirectory(
+            android.os.Environment.DIRECTORY_DOWNLOADS
+        ) ?: return null
+        if (!publicDir.exists()) publicDir.mkdirs()
+        val dest = File(publicDir, "landezhao-${versionName.removePrefix("v")}.apk")
+        file.inputStream().use { input -> dest.outputStream().use { output -> input.copyTo(output) } }
+        // 通知媒体库刷新，文件管理器里立即可见
+        try {
+            android.media.MediaScannerConnection.scanFile(context, arrayOf(dest.absolutePath), null, null)
+        } catch (_: Exception) {}
+        dest
+    } catch (e: Exception) { null }
 }
 
 /** 提取 APK 签名证书 SHA-256（十六进制小写） */

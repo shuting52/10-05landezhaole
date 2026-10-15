@@ -18,6 +18,17 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <queries>
+        <!-- v1.4.16 修复「下载完成打不开系统安装器」：Android 11+ 包可见性限制，
+             未声明则 startActivity(ACTION_VIEW, package-archive) 抛 ActivityNotFoundException，
+             弹窗永远卡在「正在打开系统安装器…」 -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:mimeType="application/vnd.android.package-archive" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.INSTALL_PACKAGE" />
+            <data android:mimeType="application/vnd.android.package-archive" />
+        </intent>
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
