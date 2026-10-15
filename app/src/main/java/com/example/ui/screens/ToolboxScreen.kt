@@ -71,6 +71,7 @@ import androidx.compose.material.icons.filled.EventNote
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.MonitorWeight
+import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Public
@@ -276,6 +277,13 @@ enum class ToolboxTab(
         shortLabel = "随机抽签",
         icon = Icons.Filled.Casino,
         desc = "随机数/抛硬币/掷骰子/名单抽取 · 选择困难症救星"
+    ),
+    // v1.4.22 音乐播放器（致敬开源 Folia folia-major）
+    MUSIC_PLAYER(
+        title = "音乐播放器 · 在线试听",
+        shortLabel = "音乐播放器",
+        icon = Icons.Filled.MusicNote,
+        desc = "在线搜索 30 秒试听 · 本地音频播放 · 播放列表"
     )
 }
 
@@ -551,6 +559,7 @@ fun ToolboxScreen(
                     ToolboxTab.BMI_CALC -> com.example.ui.screens.toolbox.BmiSection()
                     ToolboxTab.COUNTDOWN -> com.example.ui.screens.toolbox.CountdownSection()
                     ToolboxTab.RANDOM_DRAW -> com.example.ui.screens.toolbox.RandomDrawSection()
+                    ToolboxTab.MUSIC_PLAYER -> com.example.ui.screens.toolbox.MusicPlayerSection()
                 }
             }
         }
@@ -813,6 +822,126 @@ private val RING_MENU_GROUPS: List<RingMenuGroup> = listOf(
                 tab = ToolboxTab.IMAGE_PROMPTS,
                 name = "做图指令",
                 desc = "160 分类 1496 条做图指令 · 全域覆盖 · 一键复制"
+            )
+        )
+    ),
+    // v1.4.21 补漏：车标识别（之前只加了 Tab 枚举，漏了转盘入口）
+    RingMenuGroup(
+        id = "car_brand",
+        entryLabel = "车标识别",
+        sheetTitle = "车标大全",
+        sheetSub = "真实车标智能识别",
+        icon = ToolboxTab.CAR_BRAND.icon,
+        options = listOf(
+            RingMenuOption(
+                tab = ToolboxTab.CAR_BRAND,
+                name = "车标识别",
+                desc = "网络真实知名车标库 · 品牌档案 · 拍照/图片车标智能识别"
+            )
+        )
+    ),
+    // v1.4.22 新增：二维码生成
+    RingMenuGroup(
+        id = "qr_generator",
+        entryLabel = "二维码生成",
+        sheetTitle = "二维码生成器",
+        sheetSub = "文本链接转码",
+        icon = ToolboxTab.QR_GENERATOR.icon,
+        options = listOf(
+            RingMenuOption(
+                tab = ToolboxTab.QR_GENERATOR,
+                name = "二维码生成",
+                desc = "文本/链接一键生成高清二维码 · 长按截图保存"
+            )
+        )
+    ),
+    // v1.4.22 新增：密码生成器
+    RingMenuGroup(
+        id = "password_gen",
+        entryLabel = "密码生成",
+        sheetTitle = "随机密码生成器",
+        sheetSub = "高强度随机密码",
+        icon = ToolboxTab.PASSWORD_GEN.icon,
+        options = listOf(
+            RingMenuOption(
+                tab = ToolboxTab.PASSWORD_GEN,
+                name = "密码生成",
+                desc = "长度可调 · 大小写数字符号自由组合 · 本地生成不上传"
+            )
+        )
+    ),
+    // v1.4.22 新增：单位换算
+    RingMenuGroup(
+        id = "unit_convert",
+        entryLabel = "单位换算",
+        sheetTitle = "单位换算",
+        sheetSub = "长度重量温度",
+        icon = ToolboxTab.UNIT_CONVERT.icon,
+        options = listOf(
+            RingMenuOption(
+                tab = ToolboxTab.UNIT_CONVERT,
+                name = "单位换算",
+                desc = "长度/重量/温度双向换算 · 常用单位全覆盖"
+            )
+        )
+    ),
+    // v1.4.22 新增：BMI计算
+    RingMenuGroup(
+        id = "bmi_calc",
+        entryLabel = "BMI计算",
+        sheetTitle = "BMI 健康计算",
+        sheetSub = "身体质量指数",
+        icon = ToolboxTab.BMI_CALC.icon,
+        options = listOf(
+            RingMenuOption(
+                tab = ToolboxTab.BMI_CALC,
+                name = "BMI计算",
+                desc = "身高体重算 BMI · 健康分级与建议"
+            )
+        )
+    ),
+    // v1.4.22 新增：倒数日
+    RingMenuGroup(
+        id = "countdown",
+        entryLabel = "倒数日",
+        sheetTitle = "倒数日 · 纪念日",
+        sheetSub = "重要日子提醒",
+        icon = ToolboxTab.COUNTDOWN.icon,
+        options = listOf(
+            RingMenuOption(
+                tab = ToolboxTab.COUNTDOWN,
+                name = "倒数日",
+                desc = "生日考试纪念日 · 自动算剩余天数 · 本地保存"
+            )
+        )
+    ),
+    // v1.4.22 新增：随机抽签
+    RingMenuGroup(
+        id = "random_draw",
+        entryLabel = "随机抽签",
+        sheetTitle = "随机抽签",
+        sheetSub = "帮你做决定",
+        icon = ToolboxTab.RANDOM_DRAW.icon,
+        options = listOf(
+            RingMenuOption(
+                tab = ToolboxTab.RANDOM_DRAW,
+                name = "随机抽签",
+                desc = "随机数/抛硬币/掷骰子/名单抽取 · 选择困难症救星"
+            )
+        )
+    ),
+    // v1.4.22 新增：音乐播放器（致敬开源 Folia folia-major）
+    RingMenuGroup(
+        id = "music_player",
+        entryLabel = "音乐播放器",
+        sheetTitle = "音乐播放器",
+        sheetSub = "在线试听 · 本地播放",
+        icon = ToolboxTab.MUSIC_PLAYER.icon,
+        options = listOf(
+            RingMenuOption(
+                tab = ToolboxTab.MUSIC_PLAYER,
+                name = "音乐播放器",
+                desc = "在线搜索 30 秒试听 · 本地音频播放 · 播放列表"
             )
         )
     )

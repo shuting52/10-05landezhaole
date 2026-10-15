@@ -890,7 +890,7 @@ private fun ContactAuthorDialog(
     cloudSettings: SettingsDto? = null
 ) {
     var selectedTab by remember { mutableStateOf(0) }
-    val tabs = listOf("支付宝", "QQ", "微信")
+    val tabs = listOf("微信投喂", "QQ", "微信")
 
     // 联系作者二维码「写死」逻辑：控制台上传后持久化到本地，
     // 只要不重新上传新的二维码，后续更新都不会回退到内置图或替换为旧图。
@@ -1002,7 +1002,7 @@ private fun ContactAuthorDialog(
 
             when (selectedTab) {
                 0 -> {
-                    // 支付宝
+                    // 微信投喂
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxWidth()
@@ -1010,7 +1010,7 @@ private fun ContactAuthorDialog(
                         Card(
                             shape = RoundedCornerShape(16.dp),
                             colors = CardDefaults.cardColors(containerColor = Color.White),
-                            border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFF1677FF).copy(alpha = 0.3f)),
+                            border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFF07C160).copy(alpha = 0.3f)),
                             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                         ) {
                             Box(
@@ -1019,7 +1019,7 @@ private fun ContactAuthorDialog(
                                     .padding(10.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                ContactQrImage(url = aliQr, contentDescription = "支付宝扫码")
+                                ContactQrImage(url = aliQr, contentDescription = "微信投喂扫码")
                             }
                         }
 
@@ -1028,7 +1028,7 @@ private fun ContactAuthorDialog(
                             text = "投喂作者",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Black,
-                            color = Color(0xFF1677FF)
+                            color = Color(0xFF07C160)
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
@@ -1040,11 +1040,11 @@ private fun ContactAuthorDialog(
                         Spacer(modifier = Modifier.height(14.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(
-                                onClick = { openAlipay() },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1677FF)),
+                                onClick = { openWeChat() },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF07C160)),
                                 shape = RoundedCornerShape(20.dp)
                             ) {
-                                Text("唤醒支付宝", fontSize = 12.sp)
+                                Text("唤醒微信", fontSize = 12.sp)
                             }
 
                             OutlinedButton(
