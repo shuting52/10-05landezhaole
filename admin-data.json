@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 185,
-    "name": "1.4.30",
+    "code": 186,
+    "name": "1.4.31",
     "changelog": [
-      "✨ v1.4.30 更新来啦～",
-      "feat: v1.4.30 去水印新增 TikTok 支持 + 全面检查"
+      "✨ v1.4.31 更新来啦～",
+      "feat: v1.4.31 新增手绘风主题「手绘暖阳」"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.30-1792071097.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.30-1792071097.apk",
-    "lastBuildSha": "96b62308a41cd384264eaa017ef65e3b890ec65e",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.31-1792073980.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.31-1792073980.apk",
+    "lastBuildSha": "7738e0b832ec715ddf9a729a47708278e5952e39",
     "apkSize": 23980324
   },
   "home": {
@@ -24344,10 +24344,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.4.30 已上线",
+    "title": "懒得找了 v1.4.31 已上线",
     "changelog": [
-      "✨ v1.4.30 更新来啦～",
-      "feat: v1.4.30 去水印新增 TikTok 支持 + 全面检查"
+      "✨ v1.4.31 更新来啦～",
+      "feat: v1.4.31 新增手绘风主题「手绘暖阳」"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24409,10 +24409,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.4.30",
-      "code": 185,
-      "at": "2026-10-15T13:31:44Z",
-      "sha": "96b62308a41cd384264eaa017ef65e3b890ec65e"
+      "version": "1.4.31",
+      "code": 186,
+      "at": "2026-10-15T14:19:47Z",
+      "sha": "7738e0b832ec715ddf9a729a47708278e5952e39"
     }
   },
   "_ai_notice": "内容由AI生成"
