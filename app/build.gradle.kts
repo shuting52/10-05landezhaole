@@ -13,11 +13,11 @@ android {
   compileSdk { version = release(36) { minorApiLevel = 1 } }
 
   defaultConfig {
-    applicationId = "com.aistudio.landezhaole.lzdl"
+    applicationId = "com.landezhaole.Android"
     minSdk = 24
     targetSdk = 36
-    versionCode = 182
-    versionName = "1.4.27"
+    versionCode = 183
+    versionName = "1.4.28"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
