@@ -1,18 +1,16 @@
 {
   "version": {
-    "code": 174,
-    "name": "1.4.19",
+    "code": 175,
+    "name": "1.4.20",
     "changelog": [
-      "✨ v1.4.19 更新来啦～",
-      "fix: v1.4.19 scale 参数名改为 scaleX/scaleY（CI 编译报错修复）",
-      "fix: v1.4.19 补 withTransform 的 import（CI 编译报错修复）",
-      "feat: v1.4.19 三处优化"
+      "✨ v1.4.20 更新来啦～",
+      "feat: v1.4.20 做图指令全域扩展 + 界面重制 + 底部Tab缩小"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.19-1792031319.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.19-1792031319.apk",
-    "lastBuildSha": "c29706e1ff6a5f1ac42df8cb73e8545f51c0701c",
-    "apkSize": 22957585
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.20-1792034500.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.20-1792034500.apk",
+    "lastBuildSha": "dc28e947e92064863e1c133d5769ee95a235bfbf",
+    "apkSize": 22981397
   },
   "home": {
     "categories": [
@@ -24346,12 +24344,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.4.19 已上线",
+    "title": "懒得找了 v1.4.20 已上线",
     "changelog": [
-      "✨ v1.4.19 更新来啦～",
-      "fix: v1.4.19 scale 参数名改为 scaleX/scaleY（CI 编译报错修复）",
-      "fix: v1.4.19 补 withTransform 的 import（CI 编译报错修复）",
-      "feat: v1.4.19 三处优化"
+      "✨ v1.4.20 更新来啦～",
+      "feat: v1.4.20 做图指令全域扩展 + 界面重制 + 底部Tab缩小"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24413,10 +24409,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.4.19",
-      "code": 174,
-      "at": "2026-10-15T02:28:46Z",
-      "sha": "c29706e1ff6a5f1ac42df8cb73e8545f51c0701c"
+      "version": "1.4.20",
+      "code": 175,
+      "at": "2026-10-15T03:21:47Z",
+      "sha": "dc28e947e92064863e1c133d5769ee95a235bfbf"
     }
   },
   "_ai_notice": "内容由AI生成"
