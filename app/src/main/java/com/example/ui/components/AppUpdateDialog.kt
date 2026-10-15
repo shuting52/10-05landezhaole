@@ -115,7 +115,9 @@ fun AppUpdateDialog(
     update: UpdateDialogDto? = null,
     apkUrl: String? = null,
     forceUpdate: Boolean = false,
-    autoDownload: Boolean = false
+    autoDownload: Boolean = false,
+    // v1.4.19：云端下发的 APK 真实字节数（>0 时直接采用，不再用 17MB 写死值）
+    apkSize: Long = 0L
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -123,7 +125,8 @@ fun AppUpdateDialog(
     var isUpdating by remember { mutableStateOf(false) }
     var progress by remember { mutableFloatStateOf(0f) }
     var downloadedBytes by remember { mutableStateOf(0L) }
-    var totalBytes by remember { mutableStateOf(17825792L) } // 默认约 17.00 MB，连上 HTTP 响应头后自动采用真实 APK Content-Length
+    // v1.4.19：优先用云端真实 APK 大小；缺失时才用 17.00 MB 占位，HTTP 响应头到了自动纠正
+    var totalBytes by remember { mutableStateOf(if (apkSize > 1024 * 50) apkSize else 17825792L) }
     var statusLabel by remember { mutableStateOf("等待更新…") }
     var isSignatureConflict by remember { mutableStateOf(false) }
     // 安装结果：PackageInstaller 回调 / 看门狗轮询 共同驱动（true=成功 false=失败 null=进行中）
@@ -308,7 +311,7 @@ fun AppUpdateDialog(
                 if (!resp.isSuccessful) throw Exception("HTTP ${resp.code}")
                 val body = resp.body ?: throw Exception("无响应体")
                 val rawTotal = body.contentLength()
-                val effectiveTotal = if (rawTotal > 1024 * 50) rawTotal else 17825792L
+                val effectiveTotal = if (rawTotal > 1024 * 50) rawTotal else if (apkSize > 1024 * 50) apkSize else 17825792L
                 val dir = File(context.cacheDir, "update")
                 dir.mkdirs()
                 val file = File(dir, "latest.apk")

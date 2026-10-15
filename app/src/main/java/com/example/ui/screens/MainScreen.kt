@@ -548,6 +548,7 @@ fun MainScreen(
                     cancelText = "稍后再说"
                 ),
                 apkUrl = cloudVersion.apkUrl.ifBlank { null },
+                apkSize = cloudVersion.apkSize,
                 // v1.0.16：改为点击「立即更新」后才开始下载安装（不自动下载），
                 // 下载完成直接用系统安装器安装，绝不卡在安装中
                 forceUpdate = true,

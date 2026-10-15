@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -175,6 +176,8 @@ fun CustomRadioBottomNav(
     Box(
         modifier = modifier
             .fillMaxWidth()
+            // v1.4.19：系统导航栏安全边距，避免底部 Tab 与手机导航键重叠
+            .navigationBarsPadding()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .shadow(8.dp, RoundedCornerShape(22.dp), ambientColor = Color.Black.copy(alpha = 0.08f))
             .clip(RoundedCornerShape(22.dp))

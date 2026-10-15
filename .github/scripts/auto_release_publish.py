@@ -94,7 +94,7 @@ def build_changelog(base_sha):
         items.append(msg)
     return items or ["本次更新包含多项优化与修复"]
 
-def build_new_admin_data(code, name, apk_url, apk_url_raw, changelog, head_sha):
+def build_new_admin_data(code, name, apk_url, apk_url_raw, changelog, head_sha, apk_size=0):
     """构造本仓库新 admin-data.json 内容（字符串）"""
     with open(ADMIN_FILE, encoding="utf-8") as f:
         admin = json.load(f)
@@ -102,6 +102,8 @@ def build_new_admin_data(code, name, apk_url, apk_url_raw, changelog, head_sha):
         "code": int(code), "name": name, "changelog": changelog,
         "force": False,
         "apkUrl": apk_url, "apkUrlRaw": apk_url_raw,
+        # v1.4.19：APK 真实字节数，供下载弹窗直接显示真实大小
+        "apkSize": int(apk_size),
         "lastBuildSha": head_sha,
     })
     admin["updateDialog"]["title"] = f"懒得找了 v{name} 已上线"
@@ -158,7 +160,8 @@ def main():
         print("::error::本仓库 APK 上传失败"); sys.exit(1)
 
     # 4. API 更新本仓库 admin-data.json（sha 乐观锁 + 冲突重试）
-    new_admin = build_new_admin_data(code, name, apk_url, apk_url_raw, changelog, head)
+    new_admin = build_new_admin_data(code, name, apk_url, apk_url_raw, changelog, head,
+                                    apk_size=os.path.getsize(APK_SRC))
     st, d = api_put_with_retry("admin-data.json", new_admin,
                                f"release: v{name}（versionCode {code}）自动发布", gh_token)
     print("本仓库 admin-data 更新:", st, d.get("content", {}).get("name", d.get("message", "")))

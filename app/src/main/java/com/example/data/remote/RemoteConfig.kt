@@ -122,7 +122,9 @@ data class VersionDto(
     val changelog: List<String> = emptyList(),
     val force: Boolean = false,
     val apkUrl: String = "",
-    val apkUrlRaw: String = ""
+    val apkUrlRaw: String = "",
+    // v1.4.19：APK 真实字节数（CI 发布时写入），下载弹窗直接显示真实大小
+    val apkSize: Long = 0L
 )
 
 data class HomeDto(

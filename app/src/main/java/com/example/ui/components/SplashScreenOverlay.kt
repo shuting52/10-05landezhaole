@@ -17,6 +17,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -157,24 +158,27 @@ fun SplashScreenOverlay(
  * 「盛世华诞 · 圆形波浪旋转加载器」开屏
  * ===================================================================== */
 
-/** 国风山水主题色 */
-private val SsJade = Color(0xFF1B4931)          // 青山黛绿
-private val SsGold = Color(0xFFFDE047)         // 缃色流金
-private val SsDeepCyan = Color(0xFF0A192F)     // 黛墨夜色
-private val SsMistGreen = Color(0xFF2D6A4F)    // 远山翠微
-private val SsWaterTeal = Color(0xFF132E35)    // 碧水深潭
+/* =====================================================================
+ * v1.4.19 开屏动效重制：「Aurora 极光 × 流光 × 涟漪」
+ * 最新 CSS 流行特效的 Compose 还原：
+ * 1. Aurora 极光背景 —— 4 团大面积径向渐变色块缓慢漂移（CSS filter:blur 质感）
+ * 2. 涟漪扩散 —— 中央 3 圈同心圆持续向外扩散淡出
+ * 3. 旋转光环 —— 中央虚线光环缓慢旋转（CSS conic-gradient spinner 质感）
+ * 4. 标题流光 shimmer —— "懒得找了" 高光横向扫过（CSS background-clip:text 质感）
+ * 5. 上升粒子 —— 26 颗星星/圆点从底部升起
+ * 6. 玻璃气泡 —— 半透明高光气泡漂浮
+ * 7. 团子 squash 拉伸 + 摇摆 + 眨眼（保留 v1.4.14 可爱风）
+ * ===================================================================== */
 
-/** 五圈波浪环颜色（国风山水五色：碧玉、天青、流金、松柏、霁蓝） */
-private val RingColors = listOf(
-    Color(0xFF10B981), // 碧玉绿
-    Color(0xFF06B6D4), // 烟波天青
-    Color(0xFFFACC15), // 缃色流金
-    Color(0xFF34D399), // 松柏翠绿
-    Color(0xFF38BDF8)  // 霁蓝晴空
+/** 上升粒子种子 */
+private data class SplashParticle(
+    val x: Float,       // 0..1 横向位置
+    val speed: Float,   // 上升速度系数
+    val sizeDp: Float,  // 大小 dp
+    val phase: Float,   // 0..1 相位
+    val color: Color,
+    val isStar: Boolean
 )
-
-/** 五圈波浪环尺寸（从外到内）与旋转速度 */
-private data class RingSpec(val size: Float, val durationMs: Int, val reverse: Boolean, val radius: FloatArray)
 
 @Composable
 private fun ShengshiWaveSplashContent(
@@ -184,17 +188,55 @@ private fun ShengshiWaveSplashContent(
     entryAlpha: Animatable<Float, *>,
     uiText: com.example.data.remote.UiTextDto? = null
 ) {
-    // v1.4.14：图2风格重写 —— 清新 pastel 可爱风启动页（动态漂浮团子 + 俏皮文案）
-    val infinite = rememberInfiniteTransition(label = "splash_float")
+    val infinite = rememberInfiniteTransition(label = "splash_fx")
+
+    // ---- Aurora 极光漂移 ----
+    val aurora1 by infinite.animateFloat(0f, 1f, infiniteRepeatable(tween(9000, easing = LinearEasing), RepeatMode.Reverse), label = "a1")
+    val aurora2 by infinite.animateFloat(0f, 1f, infiniteRepeatable(tween(12000, easing = LinearEasing), RepeatMode.Reverse), label = "a2")
+    val aurora3 by infinite.animateFloat(0f, 1f, infiniteRepeatable(tween(7000, easing = LinearEasing), RepeatMode.Reverse), label = "a3")
+
+    // ---- 标题流光：-0.3..1.3 循环扫过 ----
+    val shimmer by infinite.animateFloat(-0.3f, 1.3f, infiniteRepeatable(tween(2800, easing = LinearEasing), RepeatMode.Restart), label = "shimmer")
+
+    // ---- 涟漪扩散 0..1 / 旋转光环角度 ----
+    val ripple by infinite.animateFloat(0f, 1f, infiniteRepeatable(tween(3200, easing = LinearEasing), RepeatMode.Restart), label = "ripple")
+    val ringAngle by infinite.animateFloat(0f, 360f, infiniteRepeatable(tween(16000, easing = LinearEasing), RepeatMode.Restart), label = "ring")
+
+    // ---- 团子浮动 + squash 拉伸 + 摇摆 ----
     val float1 by infinite.animateFloat(0f, 14f, infiniteRepeatable(tween(2200, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "f1")
     val float2 by infinite.animateFloat(0f, -12f, infiniteRepeatable(tween(2600, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "f2")
     val float3 by infinite.animateFloat(0f, 10f, infiniteRepeatable(tween(1900, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "f3")
+    val squash by infinite.animateFloat(0.94f, 1.06f, infiniteRepeatable(tween(2200, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "squash")
     val bubblePop by infinite.animateFloat(0.92f, 1.06f, infiniteRepeatable(tween(1400, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "pop")
-    // 眨眼动画
+    val wobble by infinite.animateFloat(-7f, 7f, infiniteRepeatable(tween(2600, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "wobble")
+    // 眨眼
     val blink by infinite.animateFloat(1f, 1f, infiniteRepeatable(
         keyframes { durationMillis = 3600; 1f at 0; 1f at 3300; 0.12f at 3400; 1f at 3500 },
         RepeatMode.Restart
     ), label = "blink")
+    // 粒子上升进度
+    val particleT by infinite.animateFloat(0f, 1f, infiniteRepeatable(tween(7000, easing = LinearEasing), RepeatMode.Restart), label = "pt")
+
+    // 粒子种子（固定随机，保证稳定）
+    val particles = remember {
+        val rnd = kotlin.random.Random(20261015)
+        val palette = listOf(Color(0xFFFFD93D), Color(0xFFF8A8C8), Color(0xFF8FD0F0), Color(0xFFFF9A3D), Color.White)
+        List(26) {
+            SplashParticle(
+                x = rnd.nextFloat(),
+                speed = 0.5f + rnd.nextFloat() * 0.9f,
+                sizeDp = 3f + rnd.nextFloat() * 7f,
+                phase = rnd.nextFloat(),
+                color = palette[rnd.nextInt(palette.size)],
+                isStar = rnd.nextFloat() < 0.35f
+            )
+        }
+    }
+    // 玻璃气泡种子：x, y, 半径(dp)
+    val bubbles = remember {
+        val rnd = kotlin.random.Random(7)
+        List(7) { Triple(rnd.nextFloat(), 0.1f + rnd.nextFloat() * 0.75f, 12f + rnd.nextFloat() * 26f) }
+    }
 
     Box(
         modifier = Modifier
@@ -213,42 +255,145 @@ private fun ShengshiWaveSplashContent(
                 indication = null
             ) { onDismiss() }
     ) {
-        // ---- 背景漂浮团子 Canvas ----
+        // ============ 背景特效 Canvas ============
         Canvas(modifier = Modifier.fillMaxSize()) {
             val w = size.width; val h = size.height
-            // 粉色圆团子（左上）
-            drawKawaiiBlob(
-                center = Offset(w * 0.22f, h * 0.30f + float1 * 2),
-                r = w * 0.13f,
-                color = Color(0xFFF8A8C8),
-                eyeScaleY = blink
+
+            // ---- 1. Aurora 极光团（径向渐变模拟 CSS blur） ----
+            drawAuroraBlob(
+                center = Offset(w * (0.12f + 0.30f * aurora1), h * (0.18f + 0.10f * aurora2)),
+                r = w * 0.55f, color = Color(0xFFF8A8C8)
             )
-            // 蓝色圆角团子（中央偏下）
-            drawKawaiiBlob(
-                center = Offset(w * 0.52f, h * 0.62f + float2 * 2),
-                r = w * 0.20f,
-                color = Color(0xFF8FD0F0),
-                eyeScaleY = blink,
-                roundRect = true
+            drawAuroraBlob(
+                center = Offset(w * (0.88f - 0.28f * aurora2), h * (0.30f + 0.12f * aurora3)),
+                r = w * 0.50f, color = Color(0xFF8FD0F0)
             )
-            // 黄色团子（右下）
-            drawKawaiiBlob(
-                center = Offset(w * 0.78f, h * 0.72f + float3 * 2),
-                r = w * 0.15f,
-                color = Color(0xFFFFD93D),
-                eyeScaleY = blink
+            drawAuroraBlob(
+                center = Offset(w * (0.30f + 0.35f * aurora3), h * (0.85f - 0.10f * aurora1)),
+                r = w * 0.60f, color = Color(0xFFFFD93D)
             )
-            // 橙色小团子（右上点缀）
-            drawKawaiiBlob(
-                center = Offset(w * 0.85f, h * 0.22f + float2),
-                r = w * 0.09f,
-                color = Color(0xFFFF9A3D),
-                eyeScaleY = blink
+            drawAuroraBlob(
+                center = Offset(w * (0.75f - 0.20f * aurora1), h * (0.70f + 0.12f * aurora2)),
+                r = w * 0.42f, color = Color(0xFFFF9A3D)
             )
-            // 星星点缀
-            val starY = h * 0.18f + float3
-            drawStar(center = Offset(w * 0.15f, starY), r = 14.dp.toPx(), color = Color(0xFFFFD93D))
-            drawStar(center = Offset(w * 0.68f, h * 0.14f + float1), r = 10.dp.toPx(), color = Color(0xFFF8A8C8))
+
+            // ---- 2. 中央涟漪扩散 ----
+            val cx = w * 0.5f; val cy = h * 0.42f
+            for (i in 0 until 3) {
+                val t = (ripple + i / 3f) % 1f
+                drawCircle(
+                    color = Color(0xFFFF9A3D).copy(alpha = (1f - t) * 0.30f),
+                    radius = w * (0.16f + t * 0.42f),
+                    center = Offset(cx, cy),
+                    style = Stroke(width = (1f + 3f * (1f - t)).dp.toPx(), cap = StrokeCap.Round)
+                )
+            }
+
+            // ---- 3. 旋转虚线光环 ----
+            val ringR = w * 0.30f
+            drawArc(
+                color = Color(0xFFFFD93D).copy(alpha = 0.55f),
+                startAngle = ringAngle,
+                sweepAngle = 300f,
+                useCenter = false,
+                topLeft = Offset(cx - ringR, cy - ringR),
+                size = Size(ringR * 2f, ringR * 2f),
+                style = Stroke(
+                    width = 5.dp.toPx(), cap = StrokeCap.Round,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(22f, 16f), 0f)
+                )
+            )
+            drawArc(
+                color = Color(0xFFF8A8C8).copy(alpha = 0.45f),
+                startAngle = -ringAngle * 0.7f,
+                sweepAngle = 200f,
+                useCenter = false,
+                topLeft = Offset(cx - ringR * 1.25f, cy - ringR * 1.25f),
+                size = Size(ringR * 2.5f, ringR * 2.5f),
+                style = Stroke(
+                    width = 3.dp.toPx(), cap = StrokeCap.Round,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 18f), 0f)
+                )
+            )
+
+            // ---- 4. 可爱团子（squash 拉伸 + 摇摆 + 眨眼） ----
+            withTransform(
+                transformBlock = {
+                    val c1 = Offset(w * 0.22f, h * 0.28f + float1 * 2)
+                    rotate(wobble * 0.6f, pivot = c1)
+                    scale(sx = 2f - squash, sy = squash, pivot = c1)
+                }
+            ) {
+                drawKawaiiBlob(
+                    center = Offset(w * 0.22f, h * 0.28f + float1 * 2),
+                    r = w * 0.11f, color = Color(0xFFF8A8C8), eyeScaleY = blink
+                )
+            }
+            withTransform(
+                transformBlock = {
+                    val c2 = Offset(w * 0.55f, h * 0.66f + float2 * 2)
+                    rotate(-wobble * 0.5f, pivot = c2)
+                    scale(sx = 2f - squash, sy = squash, pivot = c2)
+                }
+            ) {
+                drawKawaiiBlob(
+                    center = Offset(w * 0.55f, h * 0.66f + float2 * 2),
+                    r = w * 0.17f, color = Color(0xFF8FD0F0), eyeScaleY = blink, roundRect = true
+                )
+            }
+            withTransform(
+                transformBlock = {
+                    val c3 = Offset(w * 0.80f, h * 0.74f + float3 * 2)
+                    rotate(wobble * 0.8f, pivot = c3)
+                    scale(sx = 2f - squash, sy = squash, pivot = c3)
+                }
+            ) {
+                drawKawaiiBlob(
+                    center = Offset(w * 0.80f, h * 0.74f + float3 * 2),
+                    r = w * 0.13f, color = Color(0xFFFFD93D), eyeScaleY = blink
+                )
+            }
+            withTransform(
+                transformBlock = {
+                    val c4 = Offset(w * 0.86f, h * 0.20f + float2)
+                    scale(sx = 2f - squash, sy = squash, pivot = c4)
+                }
+            ) {
+                drawKawaiiBlob(
+                    center = Offset(w * 0.86f, h * 0.20f + float2),
+                    r = w * 0.075f, color = Color(0xFFFF9A3D), eyeScaleY = blink
+                )
+            }
+
+            // ---- 5. 玻璃气泡 ----
+            bubbles.forEachIndexed { i, (bx, by, br) ->
+                val drift = when (i % 3) { 0 -> float1; 1 -> float2; else -> float3 }
+                val c = Offset(w * bx, h * by + drift * 1.6f)
+                val r = br.dp.toPx()
+                drawCircle(Color.White.copy(alpha = 0.16f), r, c)
+                drawCircle(Color.White.copy(alpha = 0.30f), r * 0.32f, Offset(c.x - r * 0.30f, c.y - r * 0.34f))
+                drawArc(
+                    Color.White.copy(alpha = 0.55f), 195f, 110f, false,
+                    Offset(c.x - r * 0.85f, c.y - r * 0.85f), Size(r * 1.7f, r * 1.7f),
+                    style = Stroke(2.dp.toPx(), cap = StrokeCap.Round)
+                )
+            }
+
+            // ---- 6. 上升粒子 ----
+            particles.forEach { pt ->
+                val t = (particleT * pt.speed + pt.phase) % 1f
+                val y = h * (1.06f - t * 1.18f)
+                val alpha = (minOf(t * 6f, (1f - t) * 2.5f).coerceIn(0f, 1f)) * 0.85f
+                if (alpha > 0.01f) {
+                    val c = Offset(w * pt.x, y)
+                    val r = pt.sizeDp.dp.toPx()
+                    if (pt.isStar) {
+                        drawStar(center = c, r = r, color = pt.color.copy(alpha = alpha))
+                    } else {
+                        drawCircle(color = pt.color.copy(alpha = alpha), radius = r * 0.5f, center = c)
+                    }
+                }
+            }
         }
 
         // ---- 右上角跳过按钮（奶白 pill） ----
@@ -291,13 +436,27 @@ private fun ShengshiWaveSplashContent(
                 Text("Hi~", fontSize = 15.sp, fontWeight = FontWeight.Black, color = Color.White)
             }
             Spacer(modifier = Modifier.height(10.dp))
-            // 主标题：懒得找了
+            // 主标题：流光 shimmer
+            val shimmerX = shimmer * 760f
             Text(
                 text = "懒得找了",
-                fontSize = 52.sp,
-                fontWeight = FontWeight.Black,
-                color = Color(0xFF2B2B2B),
-                letterSpacing = 2.sp
+                style = androidx.compose.ui.text.TextStyle(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFF2B2B2B),
+                            Color(0xFF2B2B2B),
+                            Color(0xFFFFF3D6),
+                            Color(0xFFFFB03D),
+                            Color(0xFF2B2B2B),
+                            Color(0xFF2B2B2B)
+                        ),
+                        start = Offset(shimmerX - 170f, 0f),
+                        end = Offset(shimmerX + 170f, 0f)
+                    ),
+                    fontSize = 52.sp,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 2.sp
+                )
             )
             // 波浪装饰线
             Canvas(modifier = Modifier.fillMaxWidth(0.7f).height(12.dp)) {
@@ -360,6 +519,26 @@ private fun ShengshiWaveSplashContent(
     }
 }
 
+/** Aurora 极光团：径向渐变模拟 CSS blur 大色块 */
+private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawAuroraBlob(
+    center: Offset,
+    r: Float,
+    color: Color
+) {
+    drawCircle(
+        brush = Brush.radialGradient(
+            colors = listOf(
+                color.copy(alpha = 0.42f),
+                color.copy(alpha = 0.14f),
+                Color.Transparent
+            ),
+            center = center,
+            radius = r
+        ),
+        radius = r,
+        center = center
+    )
+}
 /** 可爱团子绘制（含笑脸，eyeScaleY 控制眨眼） */
 private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawKawaiiBlob(
     center: Offset,
@@ -420,86 +599,6 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawStar(
         close()
     }
     drawPath(path, color)
-}
-
-/** 单圈波浪环（独立组合函数，内部持有自己的旋转/呼吸动画） */
-@Composable
-private fun WaveRing(spec: RingSpec, index: Int, color: Color) {
-    val angle by rememberInfiniteTransition(label = "ring_$index").animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(spec.durationMs, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "ringAngle$index"
-    )
-    val pulse by rememberInfiniteTransition(label = "ring_pulse_$index").animateFloat(
-        initialValue = 0.96f,
-        targetValue = 1.08f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1600 + index * 180, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "ringPulse$index"
-    )
-    val shape = RoundedCornerShape(
-        topStartPercent = spec.radius[0].toInt(),
-        topEndPercent = spec.radius[1].toInt(),
-        bottomEndPercent = spec.radius[2].toInt(),
-        bottomStartPercent = spec.radius[3].toInt()
-    )
-    Box(
-        modifier = Modifier
-            .size(spec.size.dp)
-            .scale(pulse)
-            .rotate(if (spec.reverse) -angle else angle)
-            .clip(shape)
-            .background(color.copy(alpha = 0.10f))
-            .border(3.dp, color, shape)
-            .shadow(
-                elevation = 4.dp,
-                shape = shape,
-                ambientColor = color,
-                spotColor = color
-            )
-    )
-}
-
-/** 环绕轨道四颗光点（沿方形轨道公转） */
-@Composable
-private fun OrbitDots(angle: Float) {
-    val dotColors = listOf(
-        Color(0xFFFF006E),
-        Color(0xFF00D9FF),
-        Color(0xFFFFEA00),
-        Color(0xFF00FF88)
-    )
-    Box(modifier = Modifier.size(220.dp)) {
-        // 四颗光点分别置于上/下/左/右，整体随 angle 旋转
-        val spin = angle
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .rotate(spin)
-        ) {
-            listOf(
-                Alignment.TopCenter to dotColors[0],
-                Alignment.BottomCenter to dotColors[1],
-                Alignment.CenterStart to dotColors[2],
-                Alignment.CenterEnd to dotColors[3]
-            ).forEach { (align, color) ->
-                Box(
-                    modifier = Modifier
-                        .align(align)
-                        .size(9.dp)
-                        .clip(CircleShape)
-                        .background(color)
-                        .shadow(8.dp, CircleShape, ambientColor = color, spotColor = color)
-                )
-            }
-        }
-    }
 }
 
 /* =====================================================================
