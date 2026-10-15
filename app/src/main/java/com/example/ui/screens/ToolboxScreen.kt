@@ -208,11 +208,12 @@ enum class ToolboxTab(
         icon = Icons.Filled.Paid,
         desc = "全球 50+ 货币 · 实时汇率 · 双向换算"
     ),
+    // v1.4.21 全面升级：经期日历/排卵预测/症状心情/周期统计/导出
     PERIOD(
-        title = "生理期记录 · 周期看板",
+        title = "生理期记录 · 经期日历",
         shortLabel = "生理期记录",
         icon = Icons.Filled.EventNote,
-        desc = "开始/结束日期 · 备注 · 保存删除 · 周期看板"
+        desc = "经期日历 · 排卵易孕期预测 · 流量症状心情 · 规律性统计 · 导出分享"
     ),
     LOCATION_MOCK(
         title = "IP纯净度检测 (ping0.cc 仅作为参考)",
@@ -727,7 +728,7 @@ private val RING_MENU_GROUPS: List<RingMenuGroup> = listOf(
         id = "period",
         entryLabel = "生理期记录",
         sheetTitle = "生理期记录",
-        sheetSub = "开始/结束日期",
+        sheetSub = "经期日历 · 排卵预测 · 症状心情",
         icon = ToolboxTab.PERIOD.icon,
         options = listOf(
             RingMenuOption(

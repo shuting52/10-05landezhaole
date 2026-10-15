@@ -128,20 +128,27 @@ data class DownVidPlatform(
     val tip: String
 )
 
+// v1.4.21：解析引擎升级（移植 GitHub 开源项目 parse-video-py / f2 解析逻辑），
+// 各平台走专用解析器：无水印直链 + 真实作者/标题，失败自动回退通用提取
 private val SupportedPlatforms = listOf(
-    DownVidPlatform("抖音", "Douyin", Color(0xFF0F0F12), "打开抖音点击分享 → 复制链接即可解析"),
-    DownVidPlatform("快手", "Kuaishou", Color(0xFFFF5000), "支持快手视频、图集、作品原画提取"),
-    DownVidPlatform("哔哩哔哩", "Bilibili", Color(0xFF00A1D6), "支持 B 站视频、稿件高清音视频下载"),
-    DownVidPlatform("小红书", "RED", Color(0xFFFF2442), "支持小红书无水印图文与高清视频"),
-    DownVidPlatform("YouTube", "YouTube", Color(0xFFFF0000), "支持油管高清短片与音频提取"),
-    DownVidPlatform("TikTok", "TikTok", Color(0xFF00F2FE), "全球 TikTok 无水印高清原画提取"),
-    DownVidPlatform("微博视频", "Weibo", Color(0xFFE6162D), "支持微博秒拍视频与高清音轨提取"),
-    DownVidPlatform("西瓜视频", "Xigua", Color(0xFFFF3B30), "支持中长视频与西瓜高清作品")
+    DownVidPlatform("抖音", "Douyin", Color(0xFF0F0F12), "无水印直链(playwm→play)·视频/图集·真实作者"),
+    DownVidPlatform("快手", "Kuaishou", Color(0xFFFF5000), "INIT_STATE 直取原画·视频/图集·真实作者"),
+    DownVidPlatform("哔哩哔哩", "Bilibili", Color(0xFF00A1D6), "官方 API 取 cid/playurl·高清直链"),
+    DownVidPlatform("小红书", "RED", Color(0xFFFF2442), "无水印图文原图·视频 masterUrl 直链"),
+    DownVidPlatform("微博", "Weibo", Color(0xFFE6162D), "h5/m API·视频秒拍·正文大图"),
+    DownVidPlatform("西瓜视频", "Xigua", Color(0xFFFF3B30), "同抖音引擎·无水印中长视频"),
+    DownVidPlatform("好看视频", "Haokan", Color(0xFF2932E1), "百度官方 json 接口·原画直链"),
+    DownVidPlatform("微视", "Weishi", Color(0xFF07C160), "video_url 直取"),
+    DownVidPlatform("YouTube", "YouTube", Color(0xFFFF0000), "通用提取·og:video"),
+    DownVidPlatform("TikTok", "TikTok", Color(0xFF00F2FE), "同抖音引擎·无水印原画")
 )
 
 /**
  * DownVid 全网无水印视频下载神器
- * 基于开源项目 https://github.com/yxxbc/downvid 深度适配 Android 端
+ * 基于开源项目 https://github.com/yxxbc/downvid 深度适配 Android 端；
+ * v1.4.21 解析引擎升级，移植以下开源项目解析逻辑（遵循其开源协议）：
+ * - https://github.com/wujunwei928/parse-video-py (MIT)
+ * - https://github.com/Johnserf-Seed/f2 (Apache-2.0)
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -195,12 +202,13 @@ fun DownVidScreen(
                 // 不再把分享页链接伪装成可下载直链（之前兜底导致下载到 HTML 页面）
                 val media = VideoLinkParser.resolveMedia(context, target)
                 if (media.videoUrls.isNotEmpty() || media.imageUrls.isNotEmpty()) {
-                    val platformName = detectPlatform(target)
+                    // v1.4.21：优先用解析器返回的真实平台名/作者名
+                    val platformName = media.platform?.takeIf { it.isNotBlank() } ?: detectPlatform(target)
                     val kind = if (media.videoUrls.isNotEmpty()) "视频" else "图片"
                     val result = VideoParseResult(
                         title = media.title?.ifBlank { null }
                             ?: "${platformName}精选${kind} · ${System.currentTimeMillis() % 10000}",
-                        author = "原创作者",
+                        author = media.author?.takeIf { it.isNotBlank() } ?: "原创作者",
                         platform = platformName,
                         coverUrl = media.coverUrl
                             ?: media.imageUrls.firstOrNull()
@@ -769,11 +777,15 @@ fun DownVidScreen(
                         Text("🎬 关于 DownVid", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = themeColors.primary)
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "DownVid 是基于开源项目 (https://github.com/yxxbc/downvid) 深度重构的移动端音视频提取下载套件。\n\n" +
+                            text = "DownVid 是基于开源项目深度重构的移动端音视频提取下载套件。\n" +
+                                    "解析引擎 v2 移植自 GitHub 开源项目：\n" +
+                                    "• parse-video-py (MIT)：抖音/快手/微博/西瓜/好看\n" +
+                                    "• f2 (Apache-2.0)：抖音无水印思路\n" +
+                                    "• yxxbc/downvid：初代解析框架\n\n" +
                                     "特点：\n" +
                                     "• 纯本地无广告，无需登录授权\n" +
-                                    "• 自动去除各平台自带水印与文字遮罩\n" +
-                                    "• 支持音视频分离，一键抽取背景音乐 MP3\n" +
+                                    "• 各平台专用解析器：无水印直链 + 真实作者标题\n" +
+                                    "• 解析失败自动回退通用提取，绝不给假链接\n" +
                                     "• 系统原生 DownloadManager 高速并行下载",
                             fontSize = 12.sp,
                             color = Color(0xFF26303C),
@@ -931,6 +943,9 @@ private fun detectPlatform(url: String): String {
         "youtube" in lower || "youtu.be" in lower -> "YouTube"
         "weibo" in lower -> "微博"
         "ixigua" in lower -> "西瓜视频"
+        "haokan" in lower -> "好看视频"
+        "weishi" in lower -> "微视"
+        "pipixia" in lower -> "皮皮虾"
         else -> "短视频"
     }
 }
