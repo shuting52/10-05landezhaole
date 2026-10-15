@@ -322,7 +322,7 @@ private fun ShengshiWaveSplashContent(
                 transformBlock = {
                     val c1 = Offset(w * 0.22f, h * 0.28f + float1 * 2)
                     rotate(wobble * 0.6f, pivot = c1)
-                    scale(sx = 2f - squash, sy = squash, pivot = c1)
+                    scale(scaleX = 2f - squash, scaleY = squash, pivot = c1)
                 }
             ) {
                 drawKawaiiBlob(
@@ -334,7 +334,7 @@ private fun ShengshiWaveSplashContent(
                 transformBlock = {
                     val c2 = Offset(w * 0.55f, h * 0.66f + float2 * 2)
                     rotate(-wobble * 0.5f, pivot = c2)
-                    scale(sx = 2f - squash, sy = squash, pivot = c2)
+                    scale(scaleX = 2f - squash, scaleY = squash, pivot = c2)
                 }
             ) {
                 drawKawaiiBlob(
@@ -346,7 +346,7 @@ private fun ShengshiWaveSplashContent(
                 transformBlock = {
                     val c3 = Offset(w * 0.80f, h * 0.74f + float3 * 2)
                     rotate(wobble * 0.8f, pivot = c3)
-                    scale(sx = 2f - squash, sy = squash, pivot = c3)
+                    scale(scaleX = 2f - squash, scaleY = squash, pivot = c3)
                 }
             ) {
                 drawKawaiiBlob(
@@ -357,7 +357,7 @@ private fun ShengshiWaveSplashContent(
             withTransform(
                 transformBlock = {
                     val c4 = Offset(w * 0.86f, h * 0.20f + float2)
-                    scale(sx = 2f - squash, sy = squash, pivot = c4)
+                    scale(scaleX = 2f - squash, scaleY = squash, pivot = c4)
                 }
             ) {
                 drawKawaiiBlob(
