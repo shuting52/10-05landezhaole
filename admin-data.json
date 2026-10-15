@@ -1,15 +1,18 @@
 {
   "version": {
-    "code": 173,
-    "name": "1.4.18",
+    "code": 174,
+    "name": "1.4.19",
     "changelog": [
-      "✨ v1.4.18 更新来啦～",
-      "feat: v1.4.18 工具箱新增「做图指令」工具"
+      "✨ v1.4.19 更新来啦～",
+      "fix: v1.4.19 scale 参数名改为 scaleX/scaleY（CI 编译报错修复）",
+      "fix: v1.4.19 补 withTransform 的 import（CI 编译报错修复）",
+      "feat: v1.4.19 三处优化"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.18-1792029250.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.18-1792029250.apk",
-    "lastBuildSha": "b024735dd34eb32258eecc3277db9506c06d9409"
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.19-1792031319.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.19-1792031319.apk",
+    "lastBuildSha": "c29706e1ff6a5f1ac42df8cb73e8545f51c0701c",
+    "apkSize": 22957585
   },
   "home": {
     "categories": [
@@ -24343,10 +24346,12 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.4.18 已上线",
+    "title": "懒得找了 v1.4.19 已上线",
     "changelog": [
-      "✨ v1.4.18 更新来啦～",
-      "feat: v1.4.18 工具箱新增「做图指令」工具"
+      "✨ v1.4.19 更新来啦～",
+      "fix: v1.4.19 scale 参数名改为 scaleX/scaleY（CI 编译报错修复）",
+      "fix: v1.4.19 补 withTransform 的 import（CI 编译报错修复）",
+      "feat: v1.4.19 三处优化"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24408,10 +24413,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.4.18",
-      "code": 173,
-      "at": "2026-10-15T01:54:16Z",
-      "sha": "b024735dd34eb32258eecc3277db9506c06d9409"
+      "version": "1.4.19",
+      "code": 174,
+      "at": "2026-10-15T02:28:46Z",
+      "sha": "c29706e1ff6a5f1ac42df8cb73e8545f51c0701c"
     }
   },
   "_ai_notice": "内容由AI生成"
