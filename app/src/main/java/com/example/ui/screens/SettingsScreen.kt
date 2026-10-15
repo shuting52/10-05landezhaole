@@ -304,7 +304,7 @@ fun SettingsScreen(
             text = "🌐 官方社群矩阵",
             fontSize = 12.sp,
             fontWeight = FontWeight.Black,
-            color = Color(0xFFDE2910),
+            color = LocalThemeUiColors.current.primary,
             modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
         )
         QuadrantCardGrid(
@@ -378,7 +378,7 @@ fun SettingsScreen(
             text = "✨ 锦囊与更新",
             fontSize = 12.sp,
             fontWeight = FontWeight.Black,
-            color = Color(0xFFDE2910),
+            color = LocalThemeUiColors.current.primary,
             modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
         )
         // 独立动态警告标识：检测到有新版本时，以醒目呼吸横幅告知用户
@@ -487,7 +487,7 @@ fun SettingsScreen(
             text = "📜 协议与关于",
             fontSize = 12.sp,
             fontWeight = FontWeight.Black,
-            color = Color(0xFFDE2910),
+            color = LocalThemeUiColors.current.primary,
             modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
         )
         QuadrantCardGrid(

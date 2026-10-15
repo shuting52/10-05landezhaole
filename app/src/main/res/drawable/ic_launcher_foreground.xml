@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- v1.4.17 修复图标过大：前景图本身 100% 顶边无留白，108dp 全幅显示会被启动器遮罩裁切、
+         视觉上过大。缩到 72dp 居中，主体落在 66dp 安全区内，四周留白呼吸感。 -->
     <item
-        android:width="108dp"
-        android:height="108dp"
+        android:width="72dp"
+        android:height="72dp"
         android:drawable="@drawable/ic_launcher_fg_114"
         android:gravity="center" />
 </layer-list>

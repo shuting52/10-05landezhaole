@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.cos
 import kotlin.math.sin
+import com.example.ui.theme.LocalThemeUiColors
 
 /**
  * 象限卡片位置定义：
@@ -176,11 +177,14 @@ private fun QuadrantSingleCard(item: QuadrantCardItem) {
             )
         )
     } else {
+        // v1.4.17：玻璃底跟随主题（之前写死白/粉/紫，暗色主题下违和）
+        val themeUi = LocalThemeUiColors.current
+        val glassTint = themeUi.surface
         Brush.linearGradient(
             colors = listOf(
                 Color.White.copy(alpha = 0.44f),
-                Color(0xFFF6F0FF).copy(alpha = 0.26f),
-                Color(0xFFFFEDF5).copy(alpha = 0.32f),
+                glassTint.copy(alpha = 0.26f),
+                glassTint.copy(alpha = 0.32f),
                 Color.White.copy(alpha = 0.48f)
             ),
             start = Offset(0f, 0f),
