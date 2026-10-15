@@ -336,7 +336,8 @@ fun AppUpdateDialog(
                             if (now - startMs > 12_000 && now - windowStartMs >= 10_000) {
                                 val windowSecs = (now - windowStartMs) / 1000.0
                                 val avgBps = (windowBytes / windowSecs).toLong()
-                                if (avgBps < 60 * 1024 && downloaded < (if (rawTotal > 0) rawTotal else Long.MAX_VALUE)) {
+                                val totalForCheck: Long = if (rawTotal > 0) rawTotal else Long.MAX_VALUE
+                                if (avgBps < 60 * 1024 && downloaded < totalForCheck) {
                                     throw SlowDownloadException("当前源速度过慢（${avgBps / 1024}KB/s），切换更快线路")
                                 }
                                 windowStartMs = now
