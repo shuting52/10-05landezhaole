@@ -73,6 +73,7 @@ object VideoLinkParser {
                     "xiaohongshu.com" in lower || "xhslink.com" in lower -> parseXiaohongshu(url)
                     "weishi.qq.com" in lower -> parseWeishi(url)
                     "pipixia.com" in lower -> parseDouyin(url) // 皮皮虾与抖音同源 _ROUTER_DATA
+                    "x.com" in lower || "twitter.com" in lower -> parseX(url) // v1.4.29：X 视频直链
                     else -> null
                 }
                 if (specific != null && (specific.videoUrls.isNotEmpty() || specific.imageUrls.isNotEmpty())) {
@@ -524,6 +525,38 @@ object VideoLinkParser {
             }
             if (videos.isEmpty()) return null
             MediaParseResult(videoUrls = videos.distinct().take(5), platform = "微视")
+        } catch (_: Exception) { null }
+    }
+
+    /**
+     * X (Twitter) 视频解析（v1.4.29 新增）
+     * X 视频本身无水印，直接从网页 HTML 提取 video.twimg.com 直链
+     * 优先取最高清晰度的 mp4（720p+），过滤 m3u8
+     */
+    private fun parseX(shareUrl: String): MediaParseResult? {
+        return try {
+            val html = getString(shareUrl, UA_ANDROID) ?: return null
+            val videos = mutableListOf<String>()
+            // 提取所有 video.twimg.com 的 mp4 直链
+            Regex("""https://video\.twimg\.com/[^"'\\\s]+\.mp4[^"'\\\s]*""").findAll(html).forEach { m ->
+                val v = unescapeUrl(m.groupValues[0])
+                if (v.startsWith("http")) videos.add(v)
+            }
+            if (videos.isEmpty()) return null
+            // 按分辨率排序，优先高清（720x1280 等）
+            val sorted = videos.distinct().sortedByDescending { url ->
+                Regex("""(\d+)x(\d+)""").find(url)?.let {
+                    it.groupValues[1].toIntOrNull()?.times(it.groupValues[2].toIntOrNull() ?: 0) ?: 0
+                } ?: 0
+            }
+            // 提取标题
+            val title = Regex("""<title[^>]*>([^<]+)</title>""").find(html)?.groupValues?.get(1)?.trim()
+                ?.replace(" / X", "")?.takeIf { it.isNotBlank() }
+            MediaParseResult(
+                videoUrls = sorted.take(3),
+                platform = "X",
+                title = title
+            )
         } catch (_: Exception) { null }
     }
 
