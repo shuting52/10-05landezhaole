@@ -571,11 +571,10 @@ private fun PeriodCalendarCard(
 
     val periodDays = mutableSetOf<String>()
     records.forEach { r ->
-        val s = parseDate(r.startDate); val e = parseDate(r.endDate)
-        if (s != null && e != null) {
-            var d = s
-            while (!d.after(e)) { periodDays.add(fmtDate(d)); d = addDays(d, 1) }
-        }
+        val s = parseDate(r.startDate) ?: return@forEach
+        val e = parseDate(r.endDate) ?: return@forEach
+        var d: Date = s
+        while (!d.after(e)) { periodDays.add(fmtDate(d)); d = addDays(d, 1) }
     }
     val predictedDays = mutableSetOf<String>()
     forecast.nextStart?.let { ns ->
@@ -594,9 +593,9 @@ private fun PeriodCalendarCard(
     val fertileStart = forecast.fertileStart
     val fertileEnd = forecast.fertileEnd
     if (fertileStart != null && fertileEnd != null) {
-        var baseS = fertileStart; var baseE = fertileEnd
+        var baseS: Date = fertileStart; var baseE: Date = fertileEnd
         repeat(3) {
-            var d = baseS
+            var d: Date = baseS
             while (!d.after(baseE)) { fertileDays.add(fmtDate(d)); d = addDays(d, 1) }
             baseS = addDays(baseS, forecast.cycleLen); baseE = addDays(baseE, forecast.cycleLen)
         }
