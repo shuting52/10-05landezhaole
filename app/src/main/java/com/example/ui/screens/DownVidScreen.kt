@@ -118,7 +118,8 @@ data class VideoParseResult(
     val imageUrls: List<String> = emptyList(),
     val audioUrl: String? = null,
     val originalLink: String,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
+    val qualityOptions: List<Pair<String, String>> = emptyList() // v1.4.32：画质选项
 )
 
 /**
@@ -219,7 +220,8 @@ fun DownVidScreen(
                         durationText = if (media.videoUrls.isNotEmpty()) "高清原画" else "${media.imageUrls.size}张原图",
                         videoUrls = media.videoUrls,
                         imageUrls = media.imageUrls,
-                        originalLink = target
+                        originalLink = target,
+                        qualityOptions = media.qualityOptions
                     )
                     currentResult = result
                     if (historyList.none { it.originalLink == target }) {
