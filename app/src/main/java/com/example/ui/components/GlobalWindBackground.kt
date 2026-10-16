@@ -1627,6 +1627,90 @@ private fun DesignStyleBackground(
                 )
             }
 
+            DesignStyle.HAND_DRAWN -> {
+                // ✏️ 手绘风：奶油黄底 + 手绘波浪线 + 小星星 + 小花涂鸦（shejishi 规范）
+                drawRect(baseColor)
+                val doodleYellow = primaryColor.copy(alpha = 0.55f)      // 鸭黄涂鸦
+                val doodleOrange = secondaryColor.copy(alpha = 0.45f)    // 橙色涂鸦
+                val doodleBrown = Color(0xFF4A3B2A).copy(alpha = 0.28f)  // 深棕线条
+                // 手绘波浪线（顶部 + 中部 + 底部，线条抖动模拟手绘）
+                fun wavyLine(yBase: Float, amp: Float, color: Color, width: Float) {
+                    val path = Path().apply {
+                        moveTo(-20f, yBase)
+                        val segs = 12
+                        for (s in 1..segs) {
+                            val x = w * (s.toFloat() / segs)
+                            val px = w * ((s - 1).toFloat() / segs)
+                            val mx = (px + x) / 2f
+                            // 故意不规则的抖动，模拟手绘
+                            val wobble = kotlin.math.sin(s * 2.1f + windShift * 2f) * amp +
+                                kotlin.math.cos(s * 3.7f) * amp * 0.4f
+                            quadraticTo(mx, yBase + wobble, x, yBase)
+                        }
+                    }
+                    drawPath(path, color, style = Stroke(width = width))
+                }
+                wavyLine(h * 0.14f, 10.dp.toPx(), doodleOrange, 3.dp.toPx())
+                wavyLine(h * 0.16f, 8.dp.toPx(), doodleYellow, 2.2.dp.toPx())
+                wavyLine(h * 0.86f, 12.dp.toPx(), doodleYellow, 3.dp.toPx())
+                wavyLine(h * 0.88f, 9.dp.toPx(), doodleBrown, 2.dp.toPx())
+                // 手绘小星星（四角闪光形，带轻微旋转抖动）
+                fun doodleStar(cx: Float, cy: Float, r: Float, color: Color, rot: Float) {
+                    val path = Path().apply {
+                        for (i in 0 until 8) {
+                            val ang = Math.PI / 4 * i + rot
+                            val rr = if (i % 2 == 0) r else r * 0.38f
+                            val x = cx + (kotlin.math.cos(ang) * rr).toFloat()
+                            val y = cy + (kotlin.math.sin(ang) * rr).toFloat()
+                            if (i == 0) moveTo(x, y) else lineTo(x, y)
+                        }
+                        close()
+                    }
+                    drawPath(path, color)
+                }
+                doodleStar(w * 0.12f, h * 0.30f, 16.dp.toPx(), doodleYellow, slay1Angle * 0.05f)
+                doodleStar(w * 0.88f, h * 0.24f, 12.dp.toPx(), doodleOrange, slay2Angle * 0.05f)
+                doodleStar(w * 0.78f, h * 0.68f, 14.dp.toPx(), doodleYellow, -slay1Angle * 0.04f)
+                doodleStar(w * 0.18f, h * 0.72f, 10.dp.toPx(), doodleOrange, slay2Angle * 0.06f)
+                doodleStar(w * 0.50f, h * 0.08f, 9.dp.toPx(), doodleYellow, 0.3f)
+                // 手绘小花（五瓣 + 花心）
+                fun doodleFlower(cx: Float, cy: Float, r: Float, petal: Color, core: Color) {
+                    for (p in 0 until 5) {
+                        val ang = Math.PI * 2 / 5 * p + windShift * 0.3f
+                        val px = cx + (kotlin.math.cos(ang) * r).toFloat()
+                        val py = cy + (kotlin.math.sin(ang) * r).toFloat()
+                        drawCircle(petal, radius = r * 0.62f, center = Offset(px, py))
+                    }
+                    drawCircle(core, radius = r * 0.45f, center = Offset(cx, cy))
+                }
+                doodleFlower(w * 0.85f, h * 0.45f, 14.dp.toPx(), doodleOrange, doodleYellow)
+                doodleFlower(w * 0.10f, h * 0.55f, 11.dp.toPx(), doodleYellow, doodleOrange)
+                doodleFlower(w * 0.62f, h * 0.92f, 12.dp.toPx(), doodleOrange, doodleYellow)
+                // 手绘虚线圆圈（装饰）
+                drawCircle(
+                    color = doodleBrown,
+                    radius = 46.dp.toPx(),
+                    center = Offset(w * 0.30f, h * 0.42f),
+                    style = Stroke(width = 2.4.dp.toPx())
+                )
+                drawCircle(
+                    color = doodleYellow,
+                    radius = 30.dp.toPx(),
+                    center = Offset(w * 0.70f, h * 0.55f),
+                    style = Stroke(width = 2.4.dp.toPx())
+                )
+                // 暖色柔光晕
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        listOf(doodleYellow.copy(alpha = 0.20f * glowPulse), Color.Transparent),
+                        center = Offset(w * 0.5f, h * 0.35f),
+                        radius = w * 0.55f
+                    ),
+                    center = Offset(w * 0.5f, h * 0.35f),
+                    radius = w * 0.55f
+                )
+            }
+
             DesignStyle.BAUHAUS -> {
                 // 🔟 包豪斯风格：红黄蓝三原色构图、经典正圆/正方/三角形绝对几何、形式服务于功能
                 drawRect(Color(0xFFFDFBF7))

@@ -38,7 +38,8 @@ enum class DesignStyle(val displayName: String, val desc: String) {
     RETROFUTURISM("Retrofuturism 复古未来主义", "它是“过去的未来”，常混合蒸汽波、赛博朋克（霓虹灯、故障艺术）等元素，用复古视角想象未来世界。"),
     BRUTALISM("Brutalism 粗野主义", "新粗野主义的前身，它更极致，完全放弃装饰、结构外露，用纯粹功能性的元素直接呈现，显得有些“原始”。"),
     ANTI_DESIGN("Anti-Design 反设计", "以一种混乱、不和谐、朋克风的方式，挑战传统的美学和可用性规则。"),
-    ACID_GRAPHICS("Acid Graphics 酸性设计", "灵感源自迷幻视觉，常使用高饱和度、循环的几何图形、液态金属感以及混乱的排版，视觉冲击力极强。")
+    ACID_GRAPHICS("Acid Graphics 酸性设计", "灵感源自迷幻视觉，常使用高饱和度、循环的几何图形、液态金属感以及混乱的排版，视觉冲击力极强。"),
+    HAND_DRAWN("Hand-Drawn 手绘风", "圆润抖动的线条、波浪线、小星星小花涂鸦，奶油黄底色，治愈系手绘质感。")
 }
 
 data class ThemePreset(
@@ -189,7 +190,7 @@ object ThemePresetsRepository {
         atmosphereEffect = AtmosphereEffect.NONE,
         gradientColors = listOf(Color(0xFFFFF6E5), Color(0xFFFFEDC8)),
         cardGradientColors = listOf(Color(0xFFFFF6E5), Color(0xFFFFF0D0)),
-        designStyle = DesignStyle.DEFAULT,
+        designStyle = DesignStyle.HAND_DRAWN,
         description = "奶油黄底 · 鸭黄 · 手绘线条 · ◆装饰符"
     )
 
