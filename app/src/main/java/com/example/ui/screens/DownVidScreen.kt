@@ -84,6 +84,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -112,6 +114,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.data.util.VideoLinkParser
 import com.example.ui.theme.LocalThemeUiColors
+import com.example.ui.theme.ThemeUiColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -188,96 +191,15 @@ fun DownVidScreen(
     var mediaExpanded by remember(currentResult) { mutableStateOf(true) }
     var descExpanded by remember { mutableStateOf(false) }
 
-    // v1.4.33：粘贴辅助（输入卡片「粘贴」按钮共用）
-    fun doPaste() {
-        try {
-            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = clipboard.primaryClip
-            if (clip != null && clip.itemCount > 0) {
-                val text = clip.getItemAt(0).text?.toString() ?: ""
-                val extracted = extractUrl(text)
-                if (extracted.isNotBlank()) {
-                    inputUrl = extracted
-                    Toast.makeText(context, "已粘贴链接", Toast.LENGTH_SHORT).show()
-                } else {
-                    inputUrl = text
-                }
-            } else {
-                Toast.makeText(context, "剪贴板为空", Toast.LENGTH_SHORT).show()
-            }
-        } catch (_: Exception) {}
-    }
+    // v1.4.34：自动解析 / 自动下载开关（SharedPreferences 持久化，默认全开）
+    val autoPrefs = remember { context.getSharedPreferences("lzdz_downvid_auto", Context.MODE_PRIVATE) }
+    var autoParseEnabled by remember { mutableStateOf(autoPrefs.getBoolean("auto_parse", true)) }
+    var autoDownloadEnabled by remember { mutableStateOf(autoPrefs.getBoolean("auto_download", true)) }
 
-    // 自动读取剪贴板有效链接
-    LaunchedEffect(Unit) {
-        try {
-            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = clipboard.primaryClip
-            if (clip != null && clip.itemCount > 0) {
-                val text = clip.getItemAt(0).text?.toString() ?: ""
-                val extracted = extractUrl(text)
-                if (extracted.isNotBlank() && (extracted.startsWith("http://") || extracted.startsWith("https://"))) {
-                    inputUrl = extracted
-                }
-            }
-        } catch (_: Exception) {}
-    }
 
     // 解析逻辑
-    fun startParsing() {
-        val target = extractUrl(inputUrl).trim()
-        if (target.isBlank() || (!target.startsWith("http://") && !target.startsWith("https://"))) {
-            errorMessage = "请输入或粘贴合法的视频/图文分享链接"
-            Toast.makeText(context, "请输入合法的分享链接", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        isParsing = true
-        errorMessage = null
-
-        coroutineScope.launch {
-            try {
-                // v1.4.13：改用 resolveMedia（视频+图片+真实封面+标题）；解析不到真实直链则明确失败，
-                // 不再把分享页链接伪装成可下载直链（之前兜底导致下载到 HTML 页面）
-                val media = VideoLinkParser.resolveMedia(context, target)
-                if (media.videoUrls.isNotEmpty() || media.imageUrls.isNotEmpty()) {
-                    // v1.4.21：优先用解析器返回的真实平台名/作者名
-                    val platformName = media.platform?.takeIf { it.isNotBlank() } ?: detectPlatform(target)
-                    val kind = if (media.videoUrls.isNotEmpty()) "视频" else "图片"
-                    val result = VideoParseResult(
-                        title = media.title?.ifBlank { null }
-                            ?: "${platformName}精选${kind} · ${System.currentTimeMillis() % 10000}",
-                        author = media.author?.takeIf { it.isNotBlank() } ?: "原创作者",
-                        platform = platformName,
-                        coverUrl = media.coverUrl
-                            ?: media.imageUrls.firstOrNull()
-                            ?: media.videoUrls.firstOrNull(),
-                        durationText = if (media.videoUrls.isNotEmpty()) "高清原画" else "${media.imageUrls.size}张原图",
-                        videoUrls = media.videoUrls,
-                        imageUrls = media.imageUrls,
-                        originalLink = target,
-                        qualityOptions = media.qualityOptions
-                    )
-                    currentResult = result
-                    if (historyList.none { it.originalLink == target }) {
-                        historyList.add(0, result)
-                    }
-                    Toast.makeText(context, "🎉 解析成功，可一键下载！", Toast.LENGTH_SHORT).show()
-                } else {
-                    // 明确失败：不展示虚假下载按钮
-                    currentResult = null
-                    errorMessage = "未能提取到视频/图片直链，该分享可能需要登录、已失效或平台升级了反爬"
-                    Toast.makeText(context, "😕 解析失败：未找到可下载的媒体", Toast.LENGTH_LONG).show()
-                }
-            } catch (e: Exception) {
-                errorMessage = "解析遇到网络异常: ${e.message}"
-            } finally {
-                isParsing = false
-            }
-        }
-    }
-
-    // v1.4.13：一键下载图片并自动存入相册（Pictures/懒得找了，相册可见，无需手动操作）
+    // v1.4.34：支持 overrideUrl（粘贴/剪贴板自动触发时直接传，避免 state 未刷新读到旧值）；
+    // 解析成功后按开关自动下载全部媒体
     fun triggerImageDownload(urls: List<String>) {
         if (urls.isEmpty()) {
             Toast.makeText(context, "没有可下载的图片", Toast.LENGTH_SHORT).show()
@@ -334,6 +256,119 @@ fun DownVidScreen(
         }
     }
 
+    // v1.4.33：粘贴辅助（输入卡片「粘贴」按钮共用）
+    // v1.4.34：粘贴后自动解析（开关控制）
+    fun startParsing(overrideUrl: String? = null) {
+        val target = extractUrl(overrideUrl ?: inputUrl).trim()
+        if (target.isBlank() || (!target.startsWith("http://") && !target.startsWith("https://"))) {
+            errorMessage = "请输入或粘贴合法的视频/图文分享链接"
+            Toast.makeText(context, "请输入合法的分享链接", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        isParsing = true
+        errorMessage = null
+
+        coroutineScope.launch {
+            try {
+                // v1.4.13：改用 resolveMedia（视频+图片+真实封面+标题）；解析不到真实直链则明确失败，
+                // 不再把分享页链接伪装成可下载直链（之前兜底导致下载到 HTML 页面）
+                val media = VideoLinkParser.resolveMedia(context, target)
+                if (media.videoUrls.isNotEmpty() || media.imageUrls.isNotEmpty()) {
+                    // v1.4.21：优先用解析器返回的真实平台名/作者名
+                    val platformName = media.platform?.takeIf { it.isNotBlank() } ?: detectPlatform(target)
+                    val kind = if (media.videoUrls.isNotEmpty()) "视频" else "图片"
+                    val result = VideoParseResult(
+                        title = media.title?.ifBlank { null }
+                            ?: "${platformName}精选${kind} · ${System.currentTimeMillis() % 10000}",
+                        author = media.author?.takeIf { it.isNotBlank() } ?: "原创作者",
+                        platform = platformName,
+                        coverUrl = media.coverUrl
+                            ?: media.imageUrls.firstOrNull()
+                            ?: media.videoUrls.firstOrNull(),
+                        durationText = if (media.videoUrls.isNotEmpty()) "高清原画" else "${media.imageUrls.size}张原图",
+                        videoUrls = media.videoUrls,
+                        imageUrls = media.imageUrls,
+                        originalLink = target,
+                        qualityOptions = media.qualityOptions
+                    )
+                    currentResult = result
+                    if (historyList.none { it.originalLink == target }) {
+                        historyList.add(0, result)
+                    }
+                    // v1.4.34：解析成功后自动下载（开关控制；视频用默认最高画质，附带图片一并下载）
+                    if (autoDownloadEnabled) {
+                        if (result.videoUrls.isNotEmpty()) {
+                            val bestUrl = result.qualityOptions.firstOrNull()?.second
+                                ?: result.videoUrls.first()
+                            triggerDownload(bestUrl, "DownVid_${System.currentTimeMillis()}.mp4")
+                            if (result.imageUrls.isNotEmpty()) {
+                                triggerImageDownload(result.imageUrls)
+                            }
+                        } else if (result.imageUrls.isNotEmpty()) {
+                            triggerImageDownload(result.imageUrls)
+                        }
+                    } else {
+                        Toast.makeText(context, "🎉 解析成功，可一键下载！", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    // 明确失败：不展示虚假下载按钮
+                    currentResult = null
+                    errorMessage = "未能提取到视频/图片直链，该分享可能需要登录、已失效或平台升级了反爬"
+                    Toast.makeText(context, "😕 解析失败：未找到可下载的媒体", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                errorMessage = "解析遇到网络异常: ${e.message}"
+            } finally {
+                isParsing = false
+            }
+        }
+    }
+
+    // v1.4.13：一键下载图片并自动存入相册（Pictures/懒得找了，相册可见，无需手动操作）
+    fun doPaste() {
+        try {
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = clipboard.primaryClip
+            if (clip != null && clip.itemCount > 0) {
+                val text = clip.getItemAt(0).text?.toString() ?: ""
+                val extracted = extractUrl(text)
+                if (extracted.isNotBlank()) {
+                    inputUrl = extracted
+                    Toast.makeText(context, "已粘贴链接", Toast.LENGTH_SHORT).show()
+                    if (autoParseEnabled) {
+                        autoPrefs.edit().putString("last_auto_target", extracted.trim()).apply()
+                        startParsing(extracted)
+                    }
+                } else {
+                    inputUrl = text
+                }
+            } else {
+                Toast.makeText(context, "剪贴板为空", Toast.LENGTH_SHORT).show()
+            }
+        } catch (_: Exception) {}
+    }
+
+
+    // 自动读取剪贴板有效链接
+    // v1.4.34：进页自动解析（开关控制；同一链接只自动处理一次，避免重复下载）
+    LaunchedEffect(Unit) {
+        try {
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = clipboard.primaryClip
+            if (clip != null && clip.itemCount > 0) {
+                val text = clip.getItemAt(0).text?.toString() ?: ""
+                val extracted = extractUrl(text)
+                if (extracted.isNotBlank() && (extracted.startsWith("http://") || extracted.startsWith("https://"))) {
+                    inputUrl = extracted
+                    if (autoParseEnabled && autoPrefs.getString("last_auto_target", null) != extracted.trim()) {
+                        autoPrefs.edit().putString("last_auto_target", extracted.trim()).apply()
+                        startParsing(extracted)
+                    }
+                }
+            }
+        } catch (_: Exception) {}
+    }
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -497,6 +532,34 @@ fun DownVidScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("完成解析", fontSize = 15.sp, fontWeight = FontWeight.Bold)
                         }
+                    }
+
+                    // v1.4.34：自动解析 / 自动下载开关
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        AutoToggleChip(
+                            label = "粘贴自动解析",
+                            checked = autoParseEnabled,
+                            onCheckedChange = {
+                                autoParseEnabled = it
+                                autoPrefs.edit().putBoolean("auto_parse", it).apply()
+                            },
+                            themeColors = themeColors,
+                            modifier = Modifier.weight(1f)
+                        )
+                        AutoToggleChip(
+                            label = "解析自动下载",
+                            checked = autoDownloadEnabled,
+                            onCheckedChange = {
+                                autoDownloadEnabled = it
+                                autoPrefs.edit().putBoolean("auto_download", it).apply()
+                            },
+                            themeColors = themeColors,
+                            modifier = Modifier.weight(1f)
+                        )
                     }
 
                     if (errorMessage != null) {
@@ -1299,5 +1362,43 @@ private fun detectPlatform(url: String): String {
         "weishi" in lower -> "微视"
         "pipixia" in lower -> "皮皮虾"
         else -> "短视频"
+    }
+}
+
+// v1.4.34：自动开关小组件（标签 + Switch，点整行可切换）
+@Composable
+private fun AutoToggleChip(
+    label: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    themeColors: ThemeUiColors,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(14.dp))
+            .background(if (checked) themeColors.primary.copy(alpha = 0.12f) else Color(0xFFF0F3F6))
+            .clickable { onCheckedChange(!checked) }
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+            color = if (checked) themeColors.primary else themeColors.textMuted,
+            modifier = Modifier.weight(1f)
+        )
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = themeColors.primary,
+                uncheckedThumbColor = Color.White,
+                uncheckedTrackColor = Color(0xFFD5DCE3)
+            )
+        )
     }
 }
