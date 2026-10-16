@@ -253,6 +253,8 @@ fun AppUpdateDialog(
                     installOutcome = true
                     progress = 100f
                     statusLabel = "安装完成"
+                    // v1.5.3：安装成功后自动清理残留 APK（缓存目录 + 下载目录）
+                    cleanupOldApks(context)
                 } else {
                     // v1.4.16：超时兜底——之前这里静默无操作，弹窗永远卡在「正在安装…」
                     installOutcome = false
@@ -1524,6 +1526,32 @@ private fun installViaFileProvider(context: Context, file: File): Boolean {
 }
 
 /** v1.4.16：把 APK 拷贝到公共下载目录，安装器打不开时用户可手动安装。返回拷贝后的文件。 */
+/** v1.5.3：安装成功后自动清理残留 APK（缓存目录 + 公共下载目录的 landezhao-*.apk） */
+fun cleanupOldApks(context: Context) {
+    try {
+        // 1. 清理私有缓存目录
+        File(context.cacheDir, "update").listFiles()?.forEach { f ->
+            try { if (f.name.endsWith(".apk")) f.delete() } catch (_: Exception) {}
+        }
+    } catch (_: Exception) {}
+    try {
+        // 2. 清理公共下载目录的旧版本安装包
+        val publicDir = android.os.Environment.getExternalStoragePublicDirectory(
+            android.os.Environment.DIRECTORY_DOWNLOADS
+        )
+        publicDir?.listFiles()?.forEach { f ->
+            try {
+                if (f.name.startsWith("landezhao-") && f.name.endsWith(".apk")) f.delete()
+            } catch (_: Exception) {}
+        }
+    } catch (_: Exception) {}
+    // 3. 清理 SharedPreferences 中的待安装标记
+    try {
+        context.getSharedPreferences("lzdz_update_prefs", Context.MODE_PRIVATE)
+            .edit().remove("pending_install_apk").apply()
+    } catch (_: Exception) {}
+}
+
 private fun copyApkToDownloads(context: Context, file: File, versionName: String): File? {
     return try {
         val publicDir = android.os.Environment.getExternalStoragePublicDirectory(

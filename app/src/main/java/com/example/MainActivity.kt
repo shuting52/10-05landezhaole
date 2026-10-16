@@ -1,5 +1,6 @@
 package com.example
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -40,6 +41,23 @@ class MainActivity : ComponentActivity() {
 
         // 安全加固：异步读取云端签名校验配置，开启时验证自身签名（防止二次打包篡改）
         SecurityGuard.verifyInBackground(applicationContext)
+
+        // v1.5.3：版本变化时清理残留的旧版本 APK（安装成功后弹窗可能来不及清理）
+        kotlin.concurrent.thread {
+            try {
+                val prefs = applicationContext.getSharedPreferences("lzdz_update_prefs", Context.MODE_PRIVATE)
+                val lastCode = prefs.getInt("last_version_code", 0)
+                val curCode = try {
+                    applicationContext.packageManager.getPackageInfo(applicationContext.packageName, 0).let {
+                        if (android.os.Build.VERSION.SDK_INT >= 28) it.longVersionCode.toInt() else it.versionCode
+                    }
+                } catch (_: Exception) { 0 }
+                if (curCode > 0 && lastCode > 0 && curCode != lastCode) {
+                    com.example.ui.components.cleanupOldApks(applicationContext)
+                }
+                if (curCode > 0) prefs.edit().putInt("last_version_code", curCode).apply()
+            } catch (_: Exception) {}
+        }
 
         val database = AppDatabase.getDatabase(applicationContext)
         val repository = NavRepository(database.itemRecordDao(), database.uploadedResourceDao(), database.cloneAppDao())
