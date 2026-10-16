@@ -718,6 +718,7 @@ fun SiteBrandIcon(
         DesignStyle.SKEUOMORPHISM -> RoundedCornerShape(8.dp)
         DesignStyle.ACID_GRAPHICS -> RoundedCornerShape(6.dp)
         DesignStyle.HAND_DRAWN -> RoundedCornerShape(24.dp)
+        DesignStyle.CARTOON -> RoundedCornerShape(28.dp)
         else -> RoundedCornerShape(8.dp)
     }
 

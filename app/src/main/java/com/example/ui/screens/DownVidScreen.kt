@@ -638,10 +638,14 @@ fun DownVidScreen(
                 colors = CardDefaults.cardColors(containerColor = themeColors.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // v1.6.2：标题居中 —— 图标+标题居中，操作按钮下一行居中排列
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     ) {
                         Box(
                             modifier = Modifier
@@ -658,7 +662,7 @@ fun DownVidScreen(
                             )
                         }
                         Spacer(modifier = Modifier.width(12.dp))
-                        Column(modifier = Modifier.weight(1f)) {
+                        Column(horizontalAlignment = Alignment.Start) {
                             Text(
                                 text = "粘贴链接",
                                 fontSize = 16.sp,
@@ -671,6 +675,13 @@ fun DownVidScreen(
                                 color = themeColors.textMuted
                             )
                         }
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         // v1.6.1：设置按钮 —— 单条/批量模式、自动解析/下载收纳到设置面板
                         Box(
                             modifier = Modifier
@@ -690,42 +701,40 @@ fun DownVidScreen(
                                 Text("设置", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = themeColors.primary)
                             }
                         }
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .background(themeColors.primary.copy(alpha = 0.14f))
-                                    .clickable { doPaste() }
-                                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        Icons.Filled.ContentPaste,
-                                        contentDescription = null,
-                                        tint = themeColors.primary,
-                                        modifier = Modifier.size(15.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text("粘贴", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = themeColors.primary)
-                                }
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(themeColors.primary.copy(alpha = 0.14f))
+                                .clickable { doPaste() }
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Filled.ContentPaste,
+                                    contentDescription = null,
+                                    tint = themeColors.primary,
+                                    modifier = Modifier.size(15.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("粘贴", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = themeColors.primary)
                             }
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .background(LocalThemeUiColors.current.surface)
-                                    .clickable { inputUrl = ""; errorMessage = null }
-                                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        Icons.Filled.Clear,
-                                        contentDescription = null,
-                                        tint = themeColors.textMuted,
-                                        modifier = Modifier.size(15.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text("清空", fontSize = 13.sp, color = themeColors.textMuted)
-                                }
+                        }
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(LocalThemeUiColors.current.surface)
+                                .clickable { inputUrl = ""; batchInput = ""; errorMessage = null }
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Filled.Clear,
+                                    contentDescription = null,
+                                    tint = themeColors.textMuted,
+                                    modifier = Modifier.size(15.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("清空", fontSize = 13.sp, color = themeColors.textMuted)
                             }
                         }
                     }

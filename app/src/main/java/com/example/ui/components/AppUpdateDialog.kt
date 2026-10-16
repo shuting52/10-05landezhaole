@@ -848,17 +848,12 @@ private fun CssUpdateCard(
         }
 
         // 3. 主体卡通画板卡片（液态玻璃呈现 + 七彩流光跑动边框）
+        // v1.6.2：去掉阴影（用户要求）
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 5.dp, bottom = 6.dp)
                 .clip(RoundedCornerShape(cardCorner))
-                .shadow(
-                    elevation = 20.dp,
-                    shape = RoundedCornerShape(cardCorner),
-                    ambientColor = Color(0xFFA855F7).copy(alpha = 0.35f),
-                    spotColor = Color(0xFF38BDF8).copy(alpha = 0.40f)
-                )
                 .background(
                     Brush.linearGradient(
                         listOf(

@@ -39,7 +39,8 @@ enum class DesignStyle(val displayName: String, val desc: String) {
     BRUTALISM("Brutalism 粗野主义", "新粗野主义的前身，它更极致，完全放弃装饰、结构外露，用纯粹功能性的元素直接呈现，显得有些“原始”。"),
     ANTI_DESIGN("Anti-Design 反设计", "以一种混乱、不和谐、朋克风的方式，挑战传统的美学和可用性规则。"),
     ACID_GRAPHICS("Acid Graphics 酸性设计", "灵感源自迷幻视觉，常使用高饱和度、循环的几何图形、液态金属感以及混乱的排版，视觉冲击力极强。"),
-    HAND_DRAWN("Hand-Drawn 手绘风", "圆润抖动的线条、波浪线、小星星小花涂鸦，奶油黄底色，治愈系手绘质感。")
+    HAND_DRAWN("Hand-Drawn 手绘风", "圆润抖动的线条、波浪线、小星星小花涂鸦，奶油黄底色，治愈系手绘质感。"),
+    CARTOON("Cartoon 卡通", "更新弹窗同款：28.dp 大圆角 + 3.dp 深可可描边 + 粉色硬阴影，Q版卡通质感。")
 }
 
 data class ThemePreset(
@@ -82,8 +83,8 @@ object ThemePresetsRepository {
         atmosphereEffect = AtmosphereEffect.NONE,
         gradientColors = listOf(Color(0xFFFFF8EC), Color(0xFFFFF0D6)),
         cardGradientColors = listOf(Color(0xFFFFF8EC), Color(0xFFFFEFD0)),
-        designStyle = DesignStyle.CLAYMORPHISM,
-        description = "奶油底 · 番茄红 · 明黄点缀 · 粗黑描边贴纸感"
+        designStyle = DesignStyle.CARTOON,
+        description = "更新弹窗同款卡通：28.dp 大圆角 · 深可可描边 · 粉色硬阴影"
     )
 
     /** 2. 国潮风 —— 宣纸底 + 朱红 + 黛青 + 烫金 */

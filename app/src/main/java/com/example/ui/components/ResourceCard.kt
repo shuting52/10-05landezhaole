@@ -109,6 +109,7 @@ fun ResourceCard(
         designStyle == DesignStyle.SKEUOMORPHISM -> RoundedCornerShape(12.dp)
         designStyle == DesignStyle.ACID_GRAPHICS -> RoundedCornerShape(8.dp)
         designStyle == DesignStyle.HAND_DRAWN -> RoundedCornerShape(24.dp)
+        designStyle == DesignStyle.CARTOON -> RoundedCornerShape(28.dp)
         uiverse.cardStyle == CardStylePreset.CYBERPUNK -> RoundedCornerShape(topStart = 0.dp, topEnd = 14.dp, bottomEnd = 0.dp, bottomStart = 14.dp)
         uiverse.cardStyle == CardStylePreset.GLASSMORPHISM -> RoundedCornerShape(16.dp)
         uiverse.cardStyle == CardStylePreset.NEUMORPHISM -> RoundedCornerShape(16.dp)

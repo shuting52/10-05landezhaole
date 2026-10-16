@@ -122,8 +122,17 @@ fun CustomRadioBottomNav(
     // v1.4.13：图4风格重写 —— 白色圆角容器 + 黄色高亮选中 pill（主题跟随）
     val themeColors = com.example.ui.theme.LocalThemeUiColors.current
     // v1.5.8：圆角跟 DesignStyle 走，手绘风用 24dp 大圆角
-    val navCorner = if (themeColors.designStyle == DesignStyle.HAND_DRAWN) 24.dp else 18.dp
-    val navPillCorner = if (themeColors.designStyle == DesignStyle.HAND_DRAWN) 16.dp else 12.dp
+    // v1.6.2：卡通风格用 28.dp（更新弹窗同款）
+    val navCorner = when (themeColors.designStyle) {
+        DesignStyle.HAND_DRAWN -> 24.dp
+        DesignStyle.CARTOON -> 28.dp
+        else -> 18.dp
+    }
+    val navPillCorner = when (themeColors.designStyle) {
+        DesignStyle.HAND_DRAWN -> 16.dp
+        DesignStyle.CARTOON -> 20.dp
+        else -> 12.dp
+    }
     val navItems = listOf(
         BottomNavTabItem(
             tab = AppBottomTab.HOME,
