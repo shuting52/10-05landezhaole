@@ -153,7 +153,6 @@ import com.example.ui.components.ResourceCard
 import com.example.ui.components.SaharaWaveButton
 import com.example.ui.components.SiteBrandIcon
 import com.example.ui.components.SiteDetailDialog
-import com.example.ui.components.DragonBootSplash
 import com.example.ui.components.SplashScreenOverlay
 import com.example.ui.theme.LocalThemeUiColors
 import com.example.ui.theme.LocalUiverseState
@@ -459,14 +458,9 @@ fun MainScreen(
         }
     }
 
-        // v1.6.3：龙腾开屏 —— 冷启动先播龙动画（点击跳过），结束后再走原有云端开屏
-        var showDragonBoot by remember { mutableStateOf(true) }
-        if (showDragonBoot) {
-            DragonBootSplash(onFinish = { showDragonBoot = false })
-        }
-
+        // v1.6.4：已删除龙腾开屏（用户要求去掉冷启动特效）
         // v1.1.12 修复：开屏改用新版粒子动画 SplashScreenOverlay（云端 splash 配置驱动，控制台可实时同步）
-        if (uiState.isSplashVisible && !showDragonBoot) {
+        if (uiState.isSplashVisible) {
             SplashScreenOverlay(
                 isVisible = true,
                 onDismiss = { viewModel.dismissSplash() },
@@ -560,8 +554,9 @@ fun MainScreen(
         LaunchedEffect(uiState.isCloudReady, cloudVersion?.code, uiState.isSplashVisible) {
             val localCode = com.example.BuildConfig.VERSION_CODE
             val cloudCode = cloudVersion?.code ?: 0
-            // 开屏已结束 && 云端配置已就绪 && 云端版本高于本地 → 强制弹窗
-            if (!uiState.isSplashVisible && cloudVersion != null && uiState.isCloudReady && cloudCode > localCode) {
+            // 开屏已结束 && 云端配置已就绪 && 云端版本高于本地 && 用户未手动关闭过 → 强制弹窗
+            // v1.6.4：加 updateDialogDismissed 判断，修关闭后重触发导致弹窗出现两次
+            if (!uiState.isSplashVisible && cloudVersion != null && uiState.isCloudReady && cloudCode > localCode && !updateDialogDismissed) {
                 showCloudUpdateDialog = true
             }
         }
