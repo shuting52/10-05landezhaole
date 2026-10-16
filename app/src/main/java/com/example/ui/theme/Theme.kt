@@ -363,6 +363,8 @@ data class ThemeUiColors(
     val border: Color = Color(0xFFE8590C).copy(alpha = 0.35f),
     // 卡片渐变（暖橙黏土）
     val cardGradient: List<Color> = listOf(Color(0xFFFFD8A8), Color(0xFFFFE8CC), Color(0xFFFFF3E6)),
+    // v1.5.6：背景渐变（从 ThemePreset.gradientColors 派生，背景不再误用卡片渐变色）
+    val backgroundGradient: List<Color> = emptyList(),
     val designStyle: DesignStyle = DesignStyle.CLAYMORPHISM
 )
 
@@ -382,6 +384,7 @@ fun ThemePreset.toUiColors(): ThemeUiColors {
         accent = primaryColor,
         border = if (cardGrad.size >= 2) primaryColor.copy(alpha = 0.55f) else primaryColor.copy(alpha = 0.35f),
         cardGradient = cardGrad,
+        backgroundGradient = gradientColors,
         designStyle = this.designStyle
     )
 }

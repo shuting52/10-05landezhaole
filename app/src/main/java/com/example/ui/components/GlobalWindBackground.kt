@@ -74,7 +74,8 @@ fun GlobalWindBackground(
     // v1.5.4：主题色直读，不再经参数传递
     val themeBgColor: Color = theme.background
     val themePrimaryColor: Color = theme.primary
-    val themeGradientColors: List<Color> = theme.cardGradient
+    // v1.5.6：背景渐变用 backgroundGradient（主题 gradientColors），不再误用 cardGradient（卡片色）
+    val themeGradientColors: List<Color> = theme.backgroundGradient
     val designStyle: DesignStyle = theme.designStyle
     val uiverse = LocalUiverseState.current
     val infiniteTransition = rememberInfiniteTransition(label = "capsule_wind_background")
