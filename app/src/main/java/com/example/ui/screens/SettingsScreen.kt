@@ -171,7 +171,7 @@ fun CuteCartoonLiquidGlassDialog(
                 onClick = onConfirm,
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF8B5CF6)
+                    containerColor = LocalThemeUiColors.current.primary
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -277,7 +277,7 @@ fun SettingsScreen(
                 Icon(
                     imageVector = Icons.Filled.Settings,
                     contentDescription = null,
-                    tint = Color(0xFFFFFAF0),
+                    tint = Color.White,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -628,7 +628,7 @@ fun SettingsScreen(
                         text = "「懒得找了」· 纯净聚合生态",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E293B),
+                        color = LocalThemeUiColors.current.text,
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -670,7 +670,7 @@ fun SettingsScreen(
                         text = "用户服务协议与法律声明",
                         fontSize = 14.5.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E293B),
+                        color = LocalThemeUiColors.current.text,
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(10.dp))
@@ -720,7 +720,7 @@ fun SettingsScreen(
                         text = "个人信息与隐私安全保护指南",
                         fontSize = 14.5.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E293B),
+                        color = LocalThemeUiColors.current.text,
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(10.dp))
@@ -1222,7 +1222,7 @@ private fun ContactQrImage(
         modifier = Modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFFAFAFA), RoundedCornerShape(12.dp)),
+            .background(LocalThemeUiColors.current.surface, RoundedCornerShape(12.dp)),
         contentAlignment = Alignment.Center
     ) {
         if (url.isNotBlank()) {
@@ -1256,7 +1256,7 @@ private fun ContactQrImage(
                 Text(
                     text = "二维码待上传",
                     fontSize = 11.sp,
-                    color = Color(0xFF9E9E9E)
+                    color = LocalThemeUiColors.current.textMuted
                 )
             }
         }

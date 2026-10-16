@@ -451,7 +451,7 @@ fun DownVidScreen(
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(20.dp))
-                                    .background(Color(0xFFE8EDF2))
+                                    .background(LocalThemeUiColors.current.surface)
                                     .clickable { inputUrl = ""; errorMessage = null }
                                     .padding(horizontal = 16.dp, vertical = 8.dp)
                             ) {
@@ -490,9 +490,9 @@ fun DownVidScreen(
                         maxLines = 3,
                         shape = RoundedCornerShape(14.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color(0xFFF0F3F6),
-                            unfocusedContainerColor = Color(0xFFF0F3F6),
-                            disabledContainerColor = Color(0xFFF0F3F6),
+                            focusedContainerColor = LocalThemeUiColors.current.surface,
+                            unfocusedContainerColor = LocalThemeUiColors.current.surface,
+                            disabledContainerColor = LocalThemeUiColors.current.surface,
                             focusedBorderColor = Color.Transparent,
                             unfocusedBorderColor = Color.Transparent
                         ),
@@ -511,7 +511,7 @@ fun DownVidScreen(
                         shape = RoundedCornerShape(25.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = themeColors.primary,
-                            disabledContainerColor = Color(0xFFD5DCE3)
+                            disabledContainerColor = LocalThemeUiColors.current.border
                         ),
                         enabled = !isParsing
                     ) {
@@ -660,7 +660,7 @@ fun DownVidScreen(
                                             modifier = Modifier
                                                 .size(96.dp)
                                                 .clip(RoundedCornerShape(14.dp))
-                                                .background(Color(0xFFF0F3F6))
+                                                .background(LocalThemeUiColors.current.surface)
                                                 .then(
                                                     if (selected) Modifier.border(
                                                         2.5.dp,
@@ -758,8 +758,8 @@ fun DownVidScreen(
                                         shape = RoundedCornerShape(24.dp),
                                         colors = ButtonDefaults.buttonColors(
                                             containerColor = if (hasSelection) themeColors.primary
-                                            else Color(0xFFD5DCE3),
-                                            disabledContainerColor = Color(0xFFD5DCE3)
+                                            else LocalThemeUiColors.current.border,
+                                            disabledContainerColor = LocalThemeUiColors.current.border
                                         ),
                                         enabled = hasSelection
                                     ) {
@@ -786,7 +786,7 @@ fun DownVidScreen(
                                         modifier = Modifier
                                             .size(96.dp)
                                             .clip(RoundedCornerShape(14.dp))
-                                            .background(Color(0xFFF0F3F6)),
+                                            .background(LocalThemeUiColors.current.surface),
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Icon(
@@ -1033,7 +1033,7 @@ fun DownVidScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(Color(0xFFF0F3F6))
+                                    .background(LocalThemeUiColors.current.surface)
                                     .padding(12.dp)
                             ) {
                                 Column {
@@ -1112,7 +1112,7 @@ fun DownVidScreen(
                                 text = title,
                                 fontSize = 13.sp,
                                 fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal,
-                                color = if (selectedTab == index) themeColors.primary else Color(0xFF52796F)
+                                color = if (selectedTab == index) themeColors.primary else LocalThemeUiColors.current.textMuted
                             )
                         }
                     )
@@ -1339,7 +1339,7 @@ private fun TipStepRow(step: String, text: String) {
             Text(step, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = themeColors.primary)
         }
         Spacer(modifier = Modifier.width(10.dp))
-        Text(text, fontSize = 12.sp, color = Color(0xFF333333))
+        Text(text, fontSize = 12.sp, color = LocalThemeUiColors.current.text)
     }
 }
 
@@ -1377,7 +1377,7 @@ private fun AutoToggleChip(
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(14.dp))
-            .background(if (checked) themeColors.primary.copy(alpha = 0.12f) else Color(0xFFF0F3F6))
+            .background(if (checked) themeColors.primary.copy(alpha = 0.12f) else LocalThemeUiColors.current.surface)
             .clickable { onCheckedChange(!checked) }
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -1397,7 +1397,7 @@ private fun AutoToggleChip(
                 checkedThumbColor = Color.White,
                 checkedTrackColor = themeColors.primary,
                 uncheckedThumbColor = Color.White,
-                uncheckedTrackColor = Color(0xFFD5DCE3)
+                uncheckedTrackColor = LocalThemeUiColors.current.border
             )
         )
     }

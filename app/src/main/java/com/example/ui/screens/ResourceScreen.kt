@@ -84,6 +84,7 @@ import coil.compose.AsyncImage
 import com.example.R
 import com.example.data.local.db.UploadedResourceEntity
 import com.example.ui.theme.FlameRed
+import com.example.ui.theme.LocalThemeUiColors
 import kotlinx.coroutines.launch
 
 /**
@@ -161,7 +162,7 @@ fun ResourceScreen(
             ) {
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    color = Color(0xFF1E1B4B).copy(alpha = 0.08f),
+                    color = LocalThemeUiColors.current.text.copy(alpha = 0.08f),
                     border = BorderStroke(1.dp, Color(0xFF6366F1).copy(alpha = 0.25f))
                 ) {
                     Row(
@@ -201,7 +202,7 @@ fun ResourceScreen(
                 },
                 shape = RoundedCornerShape(14.dp),
                 color = Color.White.copy(alpha = 0.85f),
-                border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                border = BorderStroke(1.dp, LocalThemeUiColors.current.border),
                 shadowElevation = 1.dp
             ) {
                 Row(
@@ -227,7 +228,7 @@ fun ResourceScreen(
                         text = if (isSyncing) "同步中" else "同步",
                         fontSize = 11.5.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF334155)
+                        color = LocalThemeUiColors.current.text
                     )
                 }
             }
@@ -242,7 +243,7 @@ fun ResourceScreen(
                     Brush.linearGradient(
                         listOf(
                             Color.White.copy(alpha = 0.95f),
-                            Color(0xFFF8FAFC).copy(alpha = 0.90f),
+                            LocalThemeUiColors.current.surface.copy(alpha = 0.90f),
                             Color.White.copy(alpha = 0.95f)
                         )
                     )
@@ -270,7 +271,7 @@ fun ResourceScreen(
                     Text(
                         text = "搜索资源、提示词咒语、视频、模型、技能...",
                         fontSize = 13.sp,
-                        color = Color(0xFF94A3B8)
+                        color = LocalThemeUiColors.current.textMuted
                     )
                 },
                 leadingIcon = {
@@ -287,7 +288,7 @@ fun ResourceScreen(
                             Icon(
                                 imageVector = Icons.Filled.Clear,
                                 contentDescription = "清除",
-                                tint = Color(0xFF64748B),
+                                tint = LocalThemeUiColors.current.textMuted,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -318,10 +319,10 @@ fun ResourceScreen(
                 Surface(
                     onClick = { selectedCategory = type },
                     shape = RoundedCornerShape(16.dp),
-                    color = if (isSelected) Color(0xFF1E1B4B) else Color.White.copy(alpha = 0.75f),
+                    color = if (isSelected) LocalThemeUiColors.current.text else Color.White.copy(alpha = 0.75f),
                     border = BorderStroke(
                         width = 1.dp,
-                        color = if (isSelected) Color(0xFF1E1B4B) else Color(0xFFE2E8F0)
+                        color = if (isSelected) LocalThemeUiColors.current.text else LocalThemeUiColors.current.border
                     ),
                     shadowElevation = if (isSelected) 2.dp else 0.dp
                 ) {
@@ -333,19 +334,19 @@ fun ResourceScreen(
                             text = label,
                             fontSize = 12.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                            color = if (isSelected) Color.White else Color(0xFF475569)
+                            color = if (isSelected) Color.White else LocalThemeUiColors.current.text
                         )
                         if (count > 0) {
                             Spacer(modifier = Modifier.width(5.dp))
                             Surface(
                                 shape = CircleShape,
-                                color = if (isSelected) Color.White.copy(alpha = 0.25f) else Color(0xFFF1F5F9)
+                                color = if (isSelected) Color.White.copy(alpha = 0.25f) else LocalThemeUiColors.current.surface
                             ) {
                                 Text(
                                     text = "$count",
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (isSelected) Color.White else Color(0xFF64748B),
+                                    color = if (isSelected) Color.White else LocalThemeUiColors.current.textMuted,
                                     modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.dp)
                                 )
                             }
@@ -374,7 +375,7 @@ fun ResourceScreen(
                     Icon(
                         imageVector = Icons.Filled.Palette,
                         contentDescription = null,
-                        tint = Color(0xFFCBD5E1),
+                        tint = LocalThemeUiColors.current.border,
                         modifier = Modifier.size(54.dp)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
@@ -382,13 +383,13 @@ fun ResourceScreen(
                         text = if (searchQuery.isNotBlank()) "未搜索到与「$searchQuery」相关的资源" else "正在连接 GitHub 仓库资源库...",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF475569)
+                        color = LocalThemeUiColors.current.text
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
                         text = "点击下方推荐关键词一键检索：",
                         fontSize = 12.sp,
-                        color = Color(0xFF94A3B8)
+                        color = LocalThemeUiColors.current.textMuted
                     )
                     Spacer(modifier = Modifier.height(14.dp))
                     // 推荐关键词快捷选择
@@ -401,13 +402,13 @@ fun ResourceScreen(
                             Surface(
                                 onClick = { searchQuery = tag },
                                 shape = RoundedCornerShape(12.dp),
-                                color = Color(0xFFF1F5F9),
+                                color = LocalThemeUiColors.current.surface,
                                 modifier = Modifier.padding(horizontal = 4.dp)
                             ) {
                                 Text(
                                     text = tag,
                                     fontSize = 11.5.sp,
-                                    color = Color(0xFF475569),
+                                    color = LocalThemeUiColors.current.text,
                                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
                                 )
                             }
@@ -422,13 +423,13 @@ fun ResourceScreen(
                             Surface(
                                 onClick = { searchQuery = tag },
                                 shape = RoundedCornerShape(12.dp),
-                                color = Color(0xFFF1F5F9),
+                                color = LocalThemeUiColors.current.surface,
                                 modifier = Modifier.padding(horizontal = 4.dp)
                             ) {
                                 Text(
                                     text = tag,
                                     fontSize = 11.5.sp,
-                                    color = Color(0xFF475569),
+                                    color = LocalThemeUiColors.current.text,
                                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
                                 )
                             }
@@ -515,7 +516,7 @@ private fun ResourceDisplayCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.92f)),
-        border = BorderStroke(1.2.dp, Color(0xFFE2E8F0)),
+        border = BorderStroke(1.2.dp, LocalThemeUiColors.current.border),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
@@ -542,9 +543,9 @@ private fun ResourceDisplayCard(
                             .background(
                                 Brush.linearGradient(
                                     listOf(
-                                        Color(0xFF1E1B4B),
+                                        LocalThemeUiColors.current.text,
                                         Color(0xFF31102F),
-                                        Color(0xFF0F172A)
+                                        LocalThemeUiColors.current.text
                                     )
                                 )
                             ),
@@ -638,7 +639,7 @@ private fun ResourceDisplayCard(
                         Icon(
                             imageVector = if (isVideoPrompt) Icons.Filled.Movie else Icons.Filled.ZoomIn,
                             contentDescription = "查看详情",
-                            tint = Color(0xFF1E293B),
+                            tint = LocalThemeUiColors.current.text,
                             modifier = Modifier.size(13.dp)
                         )
                         Spacer(modifier = Modifier.width(3.dp))
@@ -646,7 +647,7 @@ private fun ResourceDisplayCard(
                             text = if (isVideoPrompt) "预览详情" else "预览大图",
                             fontSize = 10.5.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1E293B)
+                            color = LocalThemeUiColors.current.text
                         )
                     }
                 }
@@ -659,7 +660,7 @@ private fun ResourceDisplayCard(
                     text = item.title,
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 16.sp,
-                    color = Color(0xFF0F172A)
+                    color = LocalThemeUiColors.current.text
                 )
 
                 // 描述
@@ -668,7 +669,7 @@ private fun ResourceDisplayCard(
                     Text(
                         text = item.desc,
                         fontSize = 12.5.sp,
-                        color = Color(0xFF475569),
+                        color = LocalThemeUiColors.current.text,
                         lineHeight = 18.sp,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
@@ -681,8 +682,8 @@ private fun ResourceDisplayCard(
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
-                        color = Color(0xFF0F172A),
-                        border = BorderStroke(1.dp, Color(0xFF334155))
+                        color = LocalThemeUiColors.current.text,
+                        border = BorderStroke(1.dp, LocalThemeUiColors.current.text)
                     ) {
                         Column(modifier = Modifier.padding(10.dp)) {
                             Row(
@@ -708,7 +709,7 @@ private fun ResourceDisplayCard(
                                 Text(
                                     text = "点击一键复制",
                                     fontSize = 9.5.sp,
-                                    color = Color(0xFF94A3B8)
+                                    color = LocalThemeUiColors.current.textMuted
                                 )
                             }
                             Spacer(modifier = Modifier.height(4.dp))
@@ -717,7 +718,7 @@ private fun ResourceDisplayCard(
                                 fontSize = 11.sp,
                                 fontFamily = FontFamily.Monospace,
                                 lineHeight = 16.sp,
-                                color = Color(0xFFE2E8F0),
+                                color = LocalThemeUiColors.current.border,
                                 maxLines = 4,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -738,7 +739,7 @@ private fun ResourceDisplayCard(
                         Text(
                             text = if (item.author.isNotBlank()) "👤 ${item.author}" else "🏷️ ${item.tags}",
                             fontSize = 11.sp,
-                            color = Color(0xFF64748B),
+                            color = LocalThemeUiColors.current.textMuted,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.weight(1f, fill = false)
@@ -775,7 +776,7 @@ private fun ResourceDisplayCard(
                                 onClick = { onAction(actionUrl) },
                                 shape = RoundedCornerShape(12.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF0F172A)
+                                    containerColor = LocalThemeUiColors.current.text
                                 ),
                                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                             ) {
@@ -818,8 +819,8 @@ private fun ResourceDetailDialog(
             modifier = Modifier
                 .fillMaxWidth(0.92f)
                 .clip(RoundedCornerShape(24.dp)),
-            color = Color(0xFF0F172A),
-            border = BorderStroke(1.dp, Color(0xFF334155))
+            color = LocalThemeUiColors.current.text,
+            border = BorderStroke(1.dp, LocalThemeUiColors.current.text)
         ) {
             Column(modifier = Modifier.padding(18.dp)) {
                 // 顶栏关闭按钮
@@ -868,7 +869,7 @@ private fun ResourceDetailDialog(
                     Text(
                         text = resource.desc,
                         fontSize = 13.sp,
-                        color = Color(0xFF94A3B8),
+                        color = LocalThemeUiColors.current.textMuted,
                         lineHeight = 18.sp
                     )
                     Spacer(modifier = Modifier.height(10.dp))
@@ -879,8 +880,8 @@ private fun ResourceDetailDialog(
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
-                        color = Color(0xFF1E293B),
-                        border = BorderStroke(1.dp, Color(0xFF475569))
+                        color = LocalThemeUiColors.current.text,
+                        border = BorderStroke(1.dp, LocalThemeUiColors.current.text)
                     ) {
                         Column(modifier = Modifier.padding(12.dp)) {
                             Text(
@@ -894,7 +895,7 @@ private fun ResourceDetailDialog(
                                 text = resource.prompt,
                                 fontSize = 11.5.sp,
                                 fontFamily = FontFamily.Monospace,
-                                color = Color(0xFFF1F5F9),
+                                color = LocalThemeUiColors.current.surface,
                                 lineHeight = 17.sp
                             )
                         }

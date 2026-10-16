@@ -154,6 +154,7 @@ import com.example.ui.components.SaharaWaveButton
 import com.example.ui.components.SiteBrandIcon
 import com.example.ui.components.SiteDetailDialog
 import com.example.ui.components.SplashScreenOverlay
+import com.example.ui.theme.LocalThemeUiColors
 import com.example.ui.theme.LocalUiverseState
 import com.example.ui.uiverse.CardStylePreset
 import com.example.ui.uiverse.InputStylePreset
@@ -361,7 +362,7 @@ fun MainScreen(
                                         text = if (uiState.searchQuery.isNotBlank()) "🔍 搜索结果 (${filteredCards.size})" else "🎯 资源宝库 (${filteredCards.size})",
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF2C0E11)
+                                        color = LocalThemeUiColors.current.text
                                     )
                                 }
                             }
@@ -2119,8 +2120,8 @@ private fun LuckyDrawSheetContent(
         // 分类标签区域 (采用独立弹窗呈现所有分类与站点内容)
         Surface(
             shape = RoundedCornerShape(14.dp),
-            color = Color(0xFFFFF0DF),
-            border = BorderStroke(1.dp, Color(0xFFFFD7B2)),
+            color = LocalThemeUiColors.current.surface,
+            border = BorderStroke(1.dp, LocalThemeUiColors.current.border),
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { showCategorySitesDialog = true }
