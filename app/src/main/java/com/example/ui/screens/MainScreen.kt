@@ -153,6 +153,7 @@ import com.example.ui.components.ResourceCard
 import com.example.ui.components.SaharaWaveButton
 import com.example.ui.components.SiteBrandIcon
 import com.example.ui.components.SiteDetailDialog
+import com.example.ui.components.DragonBootSplash
 import com.example.ui.components.SplashScreenOverlay
 import com.example.ui.theme.LocalThemeUiColors
 import com.example.ui.theme.LocalUiverseState
@@ -458,8 +459,14 @@ fun MainScreen(
         }
     }
 
+        // v1.6.3：龙腾开屏 —— 冷启动先播龙动画（点击跳过），结束后再走原有云端开屏
+        var showDragonBoot by remember { mutableStateOf(true) }
+        if (showDragonBoot) {
+            DragonBootSplash(onFinish = { showDragonBoot = false })
+        }
+
         // v1.1.12 修复：开屏改用新版粒子动画 SplashScreenOverlay（云端 splash 配置驱动，控制台可实时同步）
-        if (uiState.isSplashVisible) {
+        if (uiState.isSplashVisible && !showDragonBoot) {
             SplashScreenOverlay(
                 isVisible = true,
                 onDismiss = { viewModel.dismissSplash() },
