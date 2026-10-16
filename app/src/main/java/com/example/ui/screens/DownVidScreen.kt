@@ -44,6 +44,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -1408,6 +1409,9 @@ fun DownVidScreen(
                 }
                 val dedicatedList = filtered.filter { it.dedicated }
                 val genericList = filtered.filter { !it.dedicated }
+                // v1.6.0：抽屉式列表 —— 点击展开/收起
+                var dedicatedExpanded by remember { mutableStateOf(true) }
+                var genericExpanded by remember { mutableStateOf(false) }
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(
                         text = "全网多平台无水印下载支持",
@@ -1434,37 +1438,45 @@ fun DownVidScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "共 ${SupportedPlatforms.size} 家 · ✦专用无水印 ${dedicatedList.size} · 通用提取 ${SupportedPlatforms.count { !it.dedicated }}",
+                        text = "共 ${SupportedPlatforms.size} 家 · ✦专用无水印 ${SupportedPlatforms.count { it.dedicated }} · 通用提取 ${SupportedPlatforms.count { !it.dedicated }}",
                         fontSize = 11.sp,
                         color = themeColors.textMuted,
                         modifier = Modifier.padding(bottom = 6.dp)
                     )
+                    // 抽屉1：专用无水印解析
                     if (dedicatedList.isNotEmpty()) {
-                        PlatformSectionHeader("✦ 专用无水印解析", themeColors)
-                        FlowRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        PlatformDrawer(
+                            title = "✦ 专用无水印解析",
+                            count = dedicatedList.size,
+                            expanded = dedicatedExpanded || platformQuery.isNotBlank(),
+                            onToggle = { dedicatedExpanded = !dedicatedExpanded },
+                            themeColors = themeColors
                         ) {
-                            dedicatedList.forEach { p ->
-                                PlatformPillCard(platform = p, onClick = {
-                                    Toast.makeText(context, "${p.name}: ${p.tip}", Toast.LENGTH_LONG).show()
-                                })
+                            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                dedicatedList.forEach { p ->
+                                    PlatformListRow(platform = p, onClick = {
+                                        Toast.makeText(context, "${p.name}: ${p.tip}", Toast.LENGTH_LONG).show()
+                                    })
+                                }
                             }
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
+                    // 抽屉2：通用视频提取
                     if (genericList.isNotEmpty()) {
-                        PlatformSectionHeader("○ 通用视频提取", themeColors)
-                        FlowRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        PlatformDrawer(
+                            title = "○ 通用视频提取",
+                            count = genericList.size,
+                            expanded = genericExpanded || platformQuery.isNotBlank(),
+                            onToggle = { genericExpanded = !genericExpanded },
+                            themeColors = themeColors
                         ) {
-                            genericList.forEach { p ->
-                                PlatformPillCard(platform = p, onClick = {
-                                    Toast.makeText(context, "${p.name}: ${p.tip}", Toast.LENGTH_LONG).show()
-                                })
+                            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                genericList.forEach { p ->
+                                    PlatformListRow(platform = p, onClick = {
+                                        Toast.makeText(context, "${p.name}: ${p.tip}", Toast.LENGTH_LONG).show()
+                                    })
+                                }
                             }
                         }
                     }
@@ -1634,77 +1646,107 @@ private fun DownVidHeader(onPasteClipboard: () -> Unit) {
 }
 
 @Composable
-private fun PlatformSectionHeader(title: String, themeColors: com.example.ui.theme.ThemeUiColors) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
-        Box(
-            modifier = Modifier
-                .size(8.dp)
-                .clip(CircleShape)
-                .background(themeColors.primary)
-        )
-        Spacer(modifier = Modifier.width(6.dp))
-        Text(title, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = themeColors.text)
+private fun PlatformDrawer(
+    title: String,
+    count: Int,
+    expanded: Boolean,
+    onToggle: () -> Unit,
+    themeColors: com.example.ui.theme.ThemeUiColors,
+    content: @Composable () -> Unit
+) {
+    // v1.6.0：抽屉容器 —— 点击标题展开/收起
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.92f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(10.dp))
+                    .clickable { onToggle() }
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .clip(CircleShape)
+                        .background(themeColors.primary)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(title, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = themeColors.text, modifier = Modifier.weight(1f))
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(themeColors.primary.copy(alpha = 0.12f))
+                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                ) {
+                    Text("$count 家", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = themeColors.primary)
+                }
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(
+                    if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                    contentDescription = if (expanded) "收起" else "展开",
+                    tint = themeColors.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            androidx.compose.animation.AnimatedVisibility(visible = expanded) {
+                Column(modifier = Modifier.padding(top = 8.dp)) {
+                    content()
+                }
+            }
+        }
     }
 }
 
 @Composable
-private fun PlatformPillCard(platform: DownVidPlatform, onClick: () -> Unit) {
+private fun PlatformListRow(platform: DownVidPlatform, onClick: () -> Unit) {
     val themeColors = LocalThemeUiColors.current
-    // v1.5.9：动态标签效果 —— 呼吸光晕 + 渐变描边
-    val infiniteTransition = rememberInfiniteTransition(label = "platform_tag")
-    val glow by infiniteTransition.animateFloat(
-        initialValue = 0.25f,
-        targetValue = 0.55f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1800, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "tagGlow"
-    )
+    // v1.6.0：列表行 —— 色点 + 名称 + 英文tag + 无水印角标 + 箭头
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(14.dp),
-        color = Color.White.copy(alpha = 0.95f),
-        shadowElevation = 1.dp,
-        border = BorderStroke(
-            1.dp,
-            Brush.linearGradient(
-                listOf(
-                    platform.iconColor.copy(alpha = 0.35f + glow * 0.3f),
-                    platform.iconColor.copy(alpha = 0.12f)
-                )
-            )
-        )
+        shape = RoundedCornerShape(12.dp),
+        color = themeColors.surface.copy(alpha = 0.6f),
+        modifier = Modifier.fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 呼吸光点
             Box(
                 modifier = Modifier
                     .size(10.dp)
                     .clip(CircleShape)
-                    .background(platform.iconColor.copy(alpha = 0.55f + glow * 0.45f))
+                    .background(platform.iconColor)
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column {
+            Spacer(modifier = Modifier.width(10.dp))
+            Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(platform.name, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF132A13))
+                    Text(platform.name, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = themeColors.text)
                     if (platform.dedicated) {
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(6.dp))
                                 .background(platform.iconColor)
-                                .padding(horizontal = 4.dp, vertical = 1.dp)
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
-                            Text("无水印", fontSize = 8.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                            Text("无水印", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color.White)
                         }
                     }
                 }
-                Text(platform.tag, fontSize = 9.sp, color = Color.Gray)
+                Text(platform.tag, fontSize = 11.sp, color = themeColors.textMuted)
             }
+            Icon(
+                Icons.Filled.ChevronRight,
+                contentDescription = null,
+                tint = themeColors.textMuted,
+                modifier = Modifier.size(18.dp)
+            )
         }
     }
 }
