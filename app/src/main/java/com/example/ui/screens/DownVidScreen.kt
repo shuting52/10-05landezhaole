@@ -72,6 +72,7 @@ import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.SmartDisplay
@@ -118,6 +119,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.data.util.LivePhoto
 import com.example.data.util.VideoLinkParser
 import com.example.ui.theme.LocalThemeUiColors
 import com.example.ui.theme.ThemeUiColors
@@ -138,7 +140,8 @@ data class VideoParseResult(
     val audioUrl: String? = null,
     val originalLink: String,
     val timestamp: Long = System.currentTimeMillis(),
-    val qualityOptions: List<Pair<String, String>> = emptyList() // v1.4.32：画质选项
+    val qualityOptions: List<Pair<String, String>> = emptyList(), // v1.4.32：画质选项
+    val livePhotos: List<LivePhoto> = emptyList() // v1.6.5：Live 实况图
 )
 
 /**
@@ -416,6 +419,7 @@ fun DownVidScreen(
                         durationText = if (media.videoUrls.isNotEmpty()) "高清原画" else "${media.imageUrls.size}张原图",
                         videoUrls = media.videoUrls,
                         imageUrls = media.imageUrls,
+                        livePhotos = media.livePhotos,
                         originalLink = target,
                         qualityOptions = media.qualityOptions
                     )
@@ -490,6 +494,7 @@ fun DownVidScreen(
                             durationText = if (media.videoUrls.isNotEmpty()) "高清原画" else "${media.imageUrls.size}张原图",
                             videoUrls = media.videoUrls,
                             imageUrls = media.imageUrls,
+                            livePhotos = media.livePhotos,
                             originalLink = target,
                             qualityOptions = media.qualityOptions
                         )
@@ -1293,6 +1298,163 @@ fun DownVidScreen(
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ---- 卡片2.5：Live 实况图（v1.6.5） ----
+        if (currentResult != null && currentResult!!.livePhotos.isNotEmpty()) {
+            val res = currentResult!!
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = themeColors.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(themeColors.primary.copy(alpha = 0.12f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Filled.PlayCircle,
+                                    contentDescription = null,
+                                    tint = themeColors.primary,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = "Live 实况图",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = themeColors.text
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Surface(
+                                        shape = RoundedCornerShape(6.dp),
+                                        color = themeColors.primary
+                                    ) {
+                                        Text(
+                                            text = "${res.livePhotos.size} 张",
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White,
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                        )
+                                    }
+                                }
+                                Text(
+                                    text = "静态图 + 动态视频成对下载",
+                                    fontSize = 12.sp,
+                                    color = themeColors.textMuted
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(12.dp))
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(res.livePhotos.size) { idx ->
+                                val lp = res.livePhotos[idx]
+                                Box(
+                                    modifier = Modifier
+                                        .size(110.dp)
+                                        .clip(RoundedCornerShape(14.dp))
+                                        .background(LocalThemeUiColors.current.surface)
+                                        .clickable {
+                                            // 下载实况图：静态图 + 动态视频
+                                            triggerImageDownload(listOf(lp.imageUrl))
+                                            triggerDownload(
+                                                lp.videoUrl,
+                                                "LivePhoto_${System.currentTimeMillis()}_$idx.mp4"
+                                            )
+                                            Toast.makeText(
+                                                context,
+                                                "实况图 ${idx + 1}：图片+视频已加入下载",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                ) {
+                                    AsyncImage(
+                                        model = lp.imageUrl,
+                                        contentDescription = "实况图 ${idx + 1}",
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                    // Live 角标
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.TopStart)
+                                            .padding(6.dp)
+                                            .background(
+                                                Color.Black.copy(alpha = 0.65f),
+                                                RoundedCornerShape(6.dp)
+                                            )
+                                            .padding(horizontal = 6.dp, vertical = 3.dp)
+                                    ) {
+                                        Text("LIVE", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                    }
+                                    // 播放按钮
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.Center)
+                                            .size(36.dp)
+                                            .clip(CircleShape)
+                                            .background(Color.Black.copy(alpha = 0.55f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            Icons.Filled.PlayArrow,
+                                            contentDescription = "下载实况图",
+                                            tint = Color.White,
+                                            modifier = Modifier.size(22.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Button(
+                            onClick = {
+                                res.livePhotos.forEachIndexed { idx, lp ->
+                                    triggerImageDownload(listOf(lp.imageUrl))
+                                    triggerDownload(
+                                        lp.videoUrl,
+                                        "LivePhoto_${System.currentTimeMillis()}_$idx.mp4"
+                                    )
+                                }
+                                Toast.makeText(
+                                    context,
+                                    "全部 ${res.livePhotos.size} 张实况图已加入下载",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = themeColors.primary)
+                        ) {
+                            Icon(Icons.Filled.Download, contentDescription = null, modifier = Modifier.size(17.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                "一键下载全部实况图(${res.livePhotos.size})",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                 }

@@ -28,7 +28,14 @@ data class MediaParseResult(
     val title: String? = null,
     val author: String? = null,          // v1.4.21：真实作者昵称
     val platform: String? = null,        // v1.4.21：平台名
-    val qualityOptions: List<Pair<String, String>> = emptyList() // v1.4.31：画质选项（标签 to 直链）
+    val qualityOptions: List<Pair<String, String>> = emptyList(), // v1.4.31：画质选项（标签 to 直链）
+    val livePhotos: List<LivePhoto> = emptyList() // v1.6.5：Live 实况图（静态图 + 动态视频成对）
+)
+
+/** v1.6.5：Live 实况图 —— 一张静态封面 + 一段动态视频 */
+data class LivePhoto(
+    val imageUrl: String,
+    val videoUrl: String
 )
 
 object VideoLinkParser {
@@ -225,7 +232,14 @@ object VideoLinkParser {
                     coverUrl = pickNonWebp(urls).takeIf { it.startsWith("http") }
                 }
             }
-            if (images.isNotEmpty()) videoUrl = "" // 图集时无视频
+            // v1.6.5：Live 实况图识别 —— 图集 + 视频同时存在时，配对为实况图
+            val livePhotos = mutableListOf<LivePhoto>()
+            if (images.isNotEmpty() && videoUrl.startsWith("http")) {
+                images.forEach { imgUrl ->
+                    livePhotos.add(LivePhoto(imageUrl = imgUrl, videoUrl = videoUrl))
+                }
+            }
+            if (images.isNotEmpty()) videoUrl = "" // 图集时无视频（实况图已单独配对）
 
             MediaParseResult(
                 videoUrls = listOfNotNull(videoUrl.takeIf { it.startsWith("http") }),
@@ -233,7 +247,8 @@ object VideoLinkParser {
                 coverUrl = coverUrl ?: images.firstOrNull(),
                 title = title,
                 author = author,
-                platform = "抖音"
+                platform = "抖音",
+                livePhotos = livePhotos.distinctBy { it.imageUrl }.take(20)
             )
         } catch (_: Exception) { null }
     }
@@ -507,11 +522,21 @@ object VideoLinkParser {
             // 标题
             val title = Regex("""(?i)og:title["']\s+content\s*=\s*["']([^"']+)["']""")
                 .find(html)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotBlank() }
+            // v1.6.5：Live 实况图识别 —— 图文 + 视频同时存在时配对
+            val livePhotos = mutableListOf<LivePhoto>()
+            val distinctVideos = videos.map(::unescapeUrl).distinct().take(5)
+            val distinctImages = images.map(::unescapeUrl).distinct().take(20)
+            if (distinctImages.isNotEmpty() && distinctVideos.isNotEmpty()) {
+                distinctImages.forEach { imgUrl ->
+                    livePhotos.add(LivePhoto(imageUrl = imgUrl, videoUrl = distinctVideos[0]))
+                }
+            }
             MediaParseResult(
-                videoUrls = videos.map(::unescapeUrl).distinct().take(5),
-                imageUrls = images.map(::unescapeUrl).distinct().take(20),
+                videoUrls = distinctVideos,
+                imageUrls = distinctImages,
                 title = title,
-                platform = "小红书"
+                platform = "小红书",
+                livePhotos = livePhotos.take(20)
             )
         } catch (_: Exception) { null }
     }
@@ -691,12 +716,36 @@ object VideoLinkParser {
                 val v = m.groupValues[1].trim()
                 if (isImageUrl(v)) images.add(v)
             }
+        // v1.6.5：JSON-LD 里的 image 字段
+        Regex(""""image"\s*:\s*"([^"]+?\.(?:jpg|jpeg|png|webp|gif)(?:\?[^"]*)?)"""", RegexOption.IGNORE_CASE)
+            .findAll(html).forEach { m ->
+                val v = unescapeUrl(m.groupValues[1].trim())
+                if (isImageUrl(v)) images.add(v)
+            }
+        // v1.6.5：<img> 标签的大图（过滤小图标/avatar）
+        Regex("""<img[^>]+src\s*=\s*["']([^"']+)["']""", RegexOption.IGNORE_CASE)
+            .findAll(html).forEach { m ->
+                val v = unescapeUrl(m.groupValues[1].trim())
+                if (isImageUrl(v) && !v.contains("avatar", true) && !v.contains("icon", true)
+                    && !v.contains("logo", true)) images.add(v)
+            }
+
+        // v1.6.5：Live 实况图 —— 通用页同时有图和视频时配对
+        val distinctVideos = videos.map(::unescapeUrl).filter { it.isNotBlank() }.distinct().take(5)
+        val distinctImages = images.map(::unescapeUrl).filter { it.isNotBlank() }.distinct().take(20)
+        val livePhotos = mutableListOf<LivePhoto>()
+        if (distinctImages.isNotEmpty() && distinctVideos.isNotEmpty()) {
+            distinctImages.forEach { imgUrl ->
+                livePhotos.add(LivePhoto(imageUrl = imgUrl, videoUrl = distinctVideos[0]))
+            }
+        }
 
         return MediaParseResult(
-            videoUrls = videos.map(::unescapeUrl).filter { it.isNotBlank() }.distinct().take(5),
-            imageUrls = images.map(::unescapeUrl).filter { it.isNotBlank() }.distinct().take(20),
+            videoUrls = distinctVideos,
+            imageUrls = distinctImages,
             coverUrl = cover,
-            title = title
+            title = title,
+            livePhotos = livePhotos.take(20)
         )
     }
 
