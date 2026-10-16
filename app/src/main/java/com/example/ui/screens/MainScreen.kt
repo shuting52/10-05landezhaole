@@ -254,12 +254,7 @@ fun MainScreen(
         GlobalWindBackground(
             bgMediaType = bgType,
             bgMediaUrl = bgUrl,
-            // v1.0.4：主题切换优化——背景跟随软件背景（主题背景色）同步
-            themeBgColor = uiState.currentTheme.bgColor,
-            themePrimaryColor = uiState.currentTheme.primaryColor,
-            themeGradientColors = uiState.currentTheme.gradientColors,
-            dynamicEffect = uiState.dynamicEffect,
-            designStyle = uiState.currentTheme.designStyle
+            dynamicEffect = uiState.dynamicEffect
         ) {
             // v1.8.7：背景媒体（图片/视频）激活时，全局白色 background/surface 自动转为半透明磨砂，
             // 让背景透出（设置页、卡片、各 Tab 均生效）；无背景媒体时保持原样

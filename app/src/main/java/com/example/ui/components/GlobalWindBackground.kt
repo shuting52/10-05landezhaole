@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.unit.dp
 import com.example.ui.theme.LocalUiverseState
+import com.example.ui.theme.LocalThemeUiColors
 import com.example.ui.theme.DesignStyle
 import com.example.ui.components.ComponentThemeResolver
 import com.example.ui.components.LocalComponentThemes
@@ -56,25 +57,25 @@ val WindPeach4 = Color(0xFFFAC097)
 val WindPeach5 = Color(0xFFFAC39C)
 
 /**
- * 全局胶囊化风动背景（Global Capsule Wind Background）
- * - 整体背景升级为「大胶囊舞台底衬 + 动态悬浮流光胶囊群 + 微光胶囊轮廓」
- * - 全屏背景与自定义媒体均以胶囊形态呈现（圆角 36dp 大胶囊轮廓与内部漂浮动感胶囊）
- * - 支持跟随主题色同步变色（霓虹绿地图/国庆红/暖桃风），彻底落实 UI 整体胶囊化设计
+ * 全局胶囊化风动背景（Global Capsule Wind Background）— v1.5.4 重写版
+ * - 主题应用机制重写：直接从 LocalThemeUiColors 读色，不再靠参数传递，杜绝中间断链
+ * - 背景基色恒为主题 background，装饰层全部从主题色派生，切换主题必变色
+ * - 保留：动态胶囊、媒体背景、设计风格、动态效果
  */
 @Composable
 fun GlobalWindBackground(
     modifier: Modifier = Modifier,
     bgMediaType: String = "none",
     bgMediaUrl: String = "",
-    // 主题切换优化——背景跟随软件背景（主题背景色）同步
-    themeBgColor: Color? = null,
-    themePrimaryColor: Color? = null,
-    // v1.2.0：渐变主题背景 + 动态效果主题
-    themeGradientColors: List<Color> = emptyList(),
     dynamicEffect: DynamicEffectPreset = DynamicEffectPreset.NONE,
-    designStyle: DesignStyle = DesignStyle.DEFAULT,
     content: @Composable BoxScope.() -> Unit
 ) {
+    val theme = LocalThemeUiColors.current
+    // v1.5.4：主题色直读，不再经参数传递
+    val themeBgColor: Color = theme.background
+    val themePrimaryColor: Color = theme.primary
+    val themeGradientColors: List<Color> = theme.cardGradient
+    val designStyle: DesignStyle = theme.designStyle
     val uiverse = LocalUiverseState.current
     val infiniteTransition = rememberInfiniteTransition(label = "capsule_wind_background")
 
@@ -135,13 +136,13 @@ fun GlobalWindBackground(
 
     val ringAmplitude = RingEffectConfigState.amplitude
 
-    val activePrimary = themePrimaryColor ?: Color(0xFF00C080)
+    val activePrimary = themePrimaryColor
     // v1.1.10：控制台「主题工具箱」global 组件可覆盖全局背景色（优先级：控制台 > 主题预设 > 默认）
     val globalComp = ComponentThemeResolver.resolve(LocalComponentThemes.current, "global")
     // v1.1.22：global.css 纯白背景（默认配置）视为未定制，强制恢复经典皮肤胶囊渐变背景，不再整页白底
     val globalBg = globalComp?.backgroundColor
     val effectiveGlobalBg = if (globalBg != null && globalBg != Color.White) globalBg else null
-    val activeBg = effectiveGlobalBg ?: (themeBgColor ?: Color(0xFFFFFFFF))
+    val activeBg = effectiveGlobalBg ?: themeBgColor
 
     Box(modifier = modifier.fillMaxSize()) {
         // ========== 1. 底层动态全屏画布：渲染多层悬浮流动胶囊与微光粒子群 ==========
@@ -150,7 +151,7 @@ fun GlobalWindBackground(
             dynamicEffect != DynamicEffectPreset.NONE -> {
                 DynamicEffectBackground(
                     effect = dynamicEffect,
-                    baseColor = themeBgColor ?: Color(0xFFFFF7EC),
+                    baseColor = themeBgColor,
                     accent = activePrimary,
                     windShift = windShift,
                     slay1Angle = slay1Angle,
@@ -167,7 +168,7 @@ fun GlobalWindBackground(
                     style = designStyle,
                     baseColor = activeBg,
                     primaryColor = activePrimary,
-                    secondaryColor = themePrimaryColor ?: Color(0xFF38BDF8),
+                    secondaryColor = themePrimaryColor,
                     windShift = windShift,
                     slay1Angle = slay1Angle,
                     slay2Angle = slay2Angle,
@@ -296,8 +297,8 @@ fun GlobalWindBackground(
             }
             else -> {
                 // 国风山水动态背景（远山如黛 · 层峦叠翠 · 烟波浩渺 · 竹影青鹤）
-                val base = themeBgColor ?: Color(0xFFF2F7F4)
-                val accent = themePrimaryColor ?: Color(0xFF1B4931)
+                val base = themeBgColor
+                val accent = themePrimaryColor
                 // v1.4.11 修复：主题切换背景跟随——此前 jadeGreen/goldGlint/底衬渐变写死国风绿，
                 // 无渐变主题（如经典科技蓝）切换后背景仍显示绿色山水。现全部从主题色派生。
                 val jadeGreen = accent
@@ -1283,17 +1284,21 @@ private fun DesignStyleBackground(
 
         when (style) {
             DesignStyle.SKEUOMORPHISM -> {
-                // 1️⃣ 拟物化：逼真皮革米褐质感、精细缝线边缘、四角黄铜铆钉与温润写实质感光
+                // 1️⃣ 拟物化：v1.5.4重写——基色从主题派生，不再写死
                 drawRect(
                     brush = Brush.radialGradient(
-                        colors = listOf(Color(0xFFF7F2EC), Color(0xFFEFE7DE), Color(0xFFE2D6CB)),
+                        colors = listOf(
+                            lerp(baseColor, Color.White, 0.12f),
+                            baseColor,
+                            lerp(baseColor, Color.Black, 0.08f)
+                        ),
                         center = Offset(w * 0.45f, h * 0.35f),
                         radius = (w * 0.95f)
                     )
                 )
-                // 四周边框精细双道缝线
+                // 四周边框精细双道缝线（从主题主色派生）
                 val stitchPad = 14.dp.toPx()
-                val stitchColor = Color(0xFF8B5A2B).copy(alpha = 0.38f)
+                val stitchColor = primaryColor.copy(alpha = 0.38f)
                 val stitchWidth = 1.4.dp.toPx()
                 // 顶部缝线
                 var sx = stitchPad + 18.dp.toPx()
@@ -1407,17 +1412,17 @@ private fun DesignStyleBackground(
             }
 
             DesignStyle.NEUMORPHISM -> {
-                // 4️⃣ 新拟态：柔和陶土底衬、双向凹凸浮雕光影（左上软白高光 + 右下深灰软影）
-                drawRect(Color(0xFFE0E5EC))
+                // 4️⃣ 新拟态：v1.5.4重写——基色从主题派生
+                drawRect(baseColor)
                 val neuDomes = listOf(
                     Triple(Offset(w * 0.28f, h * 0.22f), 80.dp.toPx(), 160.dp.toPx()),
                     Triple(Offset(w * 0.72f, h * 0.58f), 100.dp.toPx(), 190.dp.toPx()),
                     Triple(Offset(w * 0.35f, h * 0.82f), 70.dp.toPx(), 130.dp.toPx())
                 )
                 neuDomes.forEach { (center, rw, rh) ->
-                    // 凸起深影（右下）
+                    // 凸起深影（右下，从主题色派生）
                     drawRoundRect(
-                        color = Color(0xFFA3B1C6).copy(alpha = 0.45f * glowPulse),
+                        color = lerp(baseColor, Color.Black, 0.18f).copy(alpha = 0.45f * glowPulse),
                         topLeft = Offset(center.x - rw / 2 + 10.dp.toPx(), center.y - rh / 2 + 10.dp.toPx()),
                         size = Size(rw, rh),
                         cornerRadius = CornerRadius(32.dp.toPx(), 32.dp.toPx())
@@ -1597,10 +1602,10 @@ private fun DesignStyleBackground(
             }
 
             DesignStyle.MINIMALISM -> {
-                // 9️⃣ 极简主义：“少即是多”，极致留白、仅留优雅纤细的极细对齐线、纯粹灰度克制
-                drawRect(Color(0xFFFAFAFA))
-                // 极细微灰度坐标轴
-                val fineLineColor = Color(0xFF09090B).copy(alpha = 0.06f)
+                // 9️⃣ 极简主义：v1.5.4重写——基色从主题派生，不再写死
+                drawRect(baseColor)
+                // 极细对齐线（从主题文字色派生）
+                val fineLineColor = primaryColor.copy(alpha = 0.06f)
                 val lineSpacing = 48.dp.toPx()
                 var lx = lineSpacing
                 while (lx < w) {
@@ -1612,9 +1617,9 @@ private fun DesignStyleBackground(
                     drawLine(fineLineColor, Offset(0f, ly), Offset(w, ly), strokeWidth = 0.8.dp.toPx())
                     ly += lineSpacing
                 }
-                // 单个极其纤细的高雅同心圆（右上角）
+                // 单个极其纤细的高雅同心圆（右上角，从主题色派生）
                 drawCircle(
-                    color = Color(0xFF18181B).copy(alpha = 0.08f),
+                    color = primaryColor.copy(alpha = 0.08f),
                     radius = 90.dp.toPx(),
                     center = Offset(w * 0.88f, h * 0.15f),
                     style = Stroke(width = 1.dp.toPx())
