@@ -57,6 +57,7 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.Visibility
@@ -80,6 +81,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.ScrollableTabRow
@@ -183,6 +185,12 @@ fun DownVidScreen(
     var currentResult by remember { mutableStateOf<VideoParseResult?>(null) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var selectedTab by remember { mutableIntStateOf(0) } // 0: 解析下载, 1: 支持平台, 2: 下载记录, 3: 使用帮助
+    // v1.5.8：批量模式 —— 多链接批量解析下载 + 视频抽帧
+    var isBatchMode by remember { mutableStateOf(false) }
+    var batchInput by remember { mutableStateOf("") }
+    var batchProgress by remember { mutableStateOf("") } // 如 "3/10"
+    val batchResults = remember { mutableStateListOf<VideoParseResult>() }
+    var isExtractingFrames by remember { mutableStateOf(false) }
 
     val historyList = remember { mutableStateListOf<VideoParseResult>() }
 
@@ -325,6 +333,121 @@ fun DownVidScreen(
         }
     }
 
+    // v1.5.8：批量解析 —— 逐行解析多个链接，全部加入下载队列
+    fun startBatchParsing() {
+        val urls = batchInput.lines()
+            .map { extractUrl(it).trim() }
+            .filter { it.isNotBlank() && (it.startsWith("http://") || it.startsWith("https://")) }
+            .distinct()
+        if (urls.isEmpty()) {
+            Toast.makeText(context, "请每行粘贴一条分享链接", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (urls.size > 50) {
+            Toast.makeText(context, "单次最多 50 条，已截取前 50 条", Toast.LENGTH_SHORT).show()
+        }
+        val targets = urls.take(50)
+        isParsing = true
+        batchResults.clear()
+        batchProgress = "0/${targets.size}"
+
+        coroutineScope.launch {
+            var successCount = 0
+            targets.forEachIndexed { index, target ->
+                batchProgress = "${index + 1}/${targets.size}"
+                try {
+                    val media = VideoLinkParser.resolveMedia(context, target)
+                    if (media.videoUrls.isNotEmpty() || media.imageUrls.isNotEmpty()) {
+                        val platformName = media.platform?.takeIf { it.isNotBlank() } ?: detectPlatform(target)
+                        val kind = if (media.videoUrls.isNotEmpty()) "视频" else "图片"
+                        val result = VideoParseResult(
+                            title = media.title?.ifBlank { null }
+                                ?: "${platformName}精选${kind} · ${System.currentTimeMillis() % 10000}",
+                            author = media.author?.takeIf { it.isNotBlank() } ?: "原创作者",
+                            platform = platformName,
+                            coverUrl = media.coverUrl
+                                ?: media.imageUrls.firstOrNull()
+                                ?: media.videoUrls.firstOrNull(),
+                            durationText = if (media.videoUrls.isNotEmpty()) "高清原画" else "${media.imageUrls.size}张原图",
+                            videoUrls = media.videoUrls,
+                            imageUrls = media.imageUrls,
+                            originalLink = target,
+                            qualityOptions = media.qualityOptions
+                        )
+                        batchResults.add(result)
+                        if (historyList.none { it.originalLink == target }) {
+                            historyList.add(0, result)
+                        }
+                        // 批量模式默认全部下载
+                        if (result.videoUrls.isNotEmpty()) {
+                            val bestUrl = result.qualityOptions.firstOrNull()?.second
+                                ?: result.videoUrls.first()
+                            triggerDownload(bestUrl, "DownVid_batch_${System.currentTimeMillis()}_${index + 1}.mp4")
+                        }
+                        if (result.imageUrls.isNotEmpty()) {
+                            triggerImageDownload(result.imageUrls)
+                        }
+                        successCount++
+                    }
+                } catch (_: Exception) {}
+            }
+            isParsing = false
+            batchProgress = ""
+            Toast.makeText(context, "🎉 批量完成：${successCount}/${targets.size} 条解析成功，已全部加入下载", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    // v1.5.8：视频抽帧 —— 下载视频到缓存后用 MediaMetadataRetriever 按时间均分抽取 N 帧存入相册
+    fun extractFrames(videoUrl: String, frameCount: Int = 8) {
+        if (isExtractingFrames) return
+        isExtractingFrames = true
+        Toast.makeText(context, "⏳ 正在下载视频并抽帧...", Toast.LENGTH_SHORT).show()
+        coroutineScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            var retriever: android.media.MediaMetadataRetriever? = null
+            try {
+                // 下载视频到缓存
+                val cacheFile = java.io.File(context.cacheDir, "frame_extract_${System.currentTimeMillis()}.mp4")
+                val url = java.net.URL(videoUrl)
+                val conn = url.openConnection() as java.net.HttpURLConnection
+                conn.connectTimeout = 30000
+                conn.readTimeout = 60000
+                conn.getInputStream().use { input ->
+                    cacheFile.outputStream().use { output -> input.copyTo(output) }
+                }
+                // 抽帧
+                retriever = android.media.MediaMetadataRetriever()
+                retriever.setDataSource(cacheFile.absolutePath)
+                val durationMs = retriever.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull() ?: 0L
+                if (durationMs <= 0) throw Exception("无法读取视频时长")
+                val savedDir = java.io.File(android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_PICTURES), "懒得找了/抽帧")
+                savedDir.mkdirs()
+                val ts = System.currentTimeMillis()
+                var saved = 0
+                for (i in 0 until frameCount) {
+                    val timeUs = (durationMs * 1000 * (i + 0.5) / frameCount).toLong()
+                    val bitmap = retriever.getFrameAtTime(timeUs, android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC) ?: continue
+                    val outFile = java.io.File(savedDir, "FRAME_${ts}_${i + 1}.jpg")
+                    outFile.outputStream().use { out -> bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, out) }
+                    bitmap.recycle()
+                    saved++
+                    // 通知相册
+                    context.sendBroadcast(android.content.Intent(android.content.Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, android.net.Uri.fromFile(outFile)))
+                }
+                cacheFile.delete()
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                    Toast.makeText(context, "🎞️ 抽帧完成：${saved} 张已存入相册「懒得找了/抽帧」", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                    Toast.makeText(context, "抽帧失败: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            } finally {
+                try { retriever?.release() } catch (_: Exception) {}
+                isExtractingFrames = false
+            }
+        }
+    }
+
     // v1.4.13：一键下载图片并自动存入相册（Pictures/懒得找了，相册可见，无需手动操作）
     fun doPaste() {
         try {
@@ -424,9 +547,26 @@ fun DownVidScreen(
                                 color = themeColors.text
                             )
                             Text(
-                                text = "粘贴平台分享链接",
+                                text = if (isBatchMode) "批量模式：每行一条链接" else "粘贴平台分享链接",
                                 fontSize = 12.sp,
                                 color = themeColors.textMuted
+                            )
+                        }
+                        // v1.5.8：单条/批量模式切换
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(
+                                    if (isBatchMode) themeColors.primary else themeColors.primary.copy(alpha = 0.14f)
+                                )
+                                .clickable { isBatchMode = !isBatchMode }
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = if (isBatchMode) "批量模式" else "单条模式",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isBatchMode) Color.White else themeColors.primary
                             )
                         }
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -472,9 +612,9 @@ fun DownVidScreen(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     OutlinedTextField(
-                        value = inputUrl,
+                        value = if (isBatchMode) batchInput else inputUrl,
                         onValueChange = {
-                            inputUrl = it
+                            if (isBatchMode) batchInput = it else inputUrl = it
                             errorMessage = null
                         },
                         modifier = Modifier
@@ -482,12 +622,13 @@ fun DownVidScreen(
                             .testTag("downvid_input_url"),
                         placeholder = {
                             Text(
-                                "粘贴视频/图文分享链接...",
+                                if (isBatchMode) "每行粘贴一条分享链接，最多50条..." else "粘贴视频/图文分享链接...",
                                 fontSize = 13.sp,
                                 color = Color.Gray
                             )
                         },
-                        maxLines = 3,
+                        maxLines = if (isBatchMode) 8 else 3,
+                        minLines = if (isBatchMode) 5 else 1,
                         shape = RoundedCornerShape(14.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedContainerColor = LocalThemeUiColors.current.surface,
@@ -497,13 +638,13 @@ fun DownVidScreen(
                             unfocusedBorderColor = Color.Transparent
                         ),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(onDone = { startParsing() })
+                        keyboardActions = KeyboardActions(onDone = { if (isBatchMode) startBatchParsing() else startParsing() })
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Button(
-                        onClick = { startParsing() },
+                        onClick = { if (isBatchMode) startBatchParsing() else startParsing() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp)
@@ -522,7 +663,10 @@ fun DownVidScreen(
                                 strokeWidth = 2.dp
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("正在解析...", fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                            Text(
+                                if (isBatchMode && batchProgress.isNotBlank()) "批量解析中 $batchProgress..." else "正在解析...",
+                                fontSize = 15.sp, fontWeight = FontWeight.Bold
+                            )
                         } else {
                             Icon(
                                 Icons.Filled.RocketLaunch,
@@ -530,7 +674,10 @@ fun DownVidScreen(
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("完成解析", fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                            Text(
+                                if (isBatchMode) "批量解析下载" else "完成解析",
+                                fontSize = 15.sp, fontWeight = FontWeight.Bold
+                            )
                         }
                     }
 
@@ -864,6 +1011,19 @@ fun DownVidScreen(
                                                 Spacer(modifier = Modifier.width(4.dp))
                                                 Text("下载${selectedQuality.first}视频", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                                             }
+                                            // v1.5.8：抽帧按钮
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            OutlinedButton(
+                                                onClick = { extractFrames(selectedQuality.second) },
+                                                shape = RoundedCornerShape(12.dp),
+                                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                                modifier = Modifier.height(38.dp),
+                                                enabled = !isExtractingFrames
+                                            ) {
+                                                Icon(Icons.Filled.PhotoLibrary, contentDescription = null, modifier = Modifier.size(15.dp))
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Text("抽帧", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                                            }
                                             if (qualities.size > 1) {
                                                 Box {
                                                     IconButton(onClick = { showQualityMenu = true }) {
@@ -1194,6 +1354,19 @@ fun DownVidScreen(
                                 }
                             }) {
                                 Icon(Icons.Filled.Download, contentDescription = "重新下载", tint = themeColors.secondary)
+                            }
+                            // v1.5.8：视频抽帧按钮（仅视频）
+                            if (item.videoUrls.isNotEmpty()) {
+                                IconButton(
+                                    onClick = {
+                                        val vurl = item.qualityOptions.firstOrNull()?.second
+                                            ?: item.videoUrls.first()
+                                        extractFrames(vurl)
+                                    },
+                                    enabled = !isExtractingFrames
+                                ) {
+                                    Icon(Icons.Filled.PhotoLibrary, contentDescription = "抽帧", tint = themeColors.primary)
+                                }
                             }
                             IconButton(onClick = { historyList.remove(item) }) {
                                 Icon(Icons.Filled.Delete, contentDescription = "删除记录", tint = Color.LightGray)

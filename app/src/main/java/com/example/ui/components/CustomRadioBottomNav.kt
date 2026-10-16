@@ -121,6 +121,9 @@ fun CustomRadioBottomNav(
 ) {
     // v1.4.13：图4风格重写 —— 白色圆角容器 + 黄色高亮选中 pill（主题跟随）
     val themeColors = com.example.ui.theme.LocalThemeUiColors.current
+    // v1.5.8：圆角跟 DesignStyle 走，手绘风用 24dp 大圆角
+    val navCorner = if (themeColors.designStyle == DesignStyle.HAND_DRAWN) 24.dp else 18.dp
+    val navPillCorner = if (themeColors.designStyle == DesignStyle.HAND_DRAWN) 16.dp else 12.dp
     val navItems = listOf(
         BottomNavTabItem(
             tab = AppBottomTab.HOME,
@@ -180,10 +183,10 @@ fun CustomRadioBottomNav(
             .navigationBarsPadding()
             // v1.4.20：整体缩小一号
             .padding(horizontal = 24.dp, vertical = 6.dp)
-            .shadow(6.dp, RoundedCornerShape(18.dp), ambientColor = Color.Black.copy(alpha = 0.08f))
-            .clip(RoundedCornerShape(18.dp))
+            .shadow(6.dp, RoundedCornerShape(navCorner), ambientColor = Color.Black.copy(alpha = 0.08f))
+            .clip(RoundedCornerShape(navCorner))
             .background(themeColors.surface)
-            .border(1.dp, themeColors.primary.copy(alpha = 0.18f), RoundedCornerShape(18.dp))
+            .border(1.dp, themeColors.primary.copy(alpha = 0.18f), RoundedCornerShape(navCorner))
             .padding(horizontal = 6.dp, vertical = 5.dp)
     ) {
         Row(
@@ -202,7 +205,7 @@ fun CustomRadioBottomNav(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(navPillCorner))
                         .background(pillColor)
                         .clickable { onTabSelected(item.tab) }
                         .padding(vertical = 5.dp),

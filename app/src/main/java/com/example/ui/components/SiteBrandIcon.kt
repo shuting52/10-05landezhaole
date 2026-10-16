@@ -717,6 +717,7 @@ fun SiteBrandIcon(
         DesignStyle.NEUMORPHISM -> RoundedCornerShape(12.dp)
         DesignStyle.SKEUOMORPHISM -> RoundedCornerShape(8.dp)
         DesignStyle.ACID_GRAPHICS -> RoundedCornerShape(6.dp)
+        DesignStyle.HAND_DRAWN -> RoundedCornerShape(24.dp)
         else -> RoundedCornerShape(8.dp)
     }
 
