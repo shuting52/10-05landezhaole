@@ -63,468 +63,285 @@ data class ThemePreset(
 
 object ThemePresetsRepository {
     // ============================================================
-    // v1.4.13：主题系统重写 —— 移除全部旧主题（含默认），6 款新主题：
-    // 黏土拟态 ×2 / 磨砂玻璃 / 液态玻璃 / iOS 清新 / iOS 暗夜
-    // 每款都带 gradientColors，切换时背景必跟随变化。
+    // v1.5.5：主题系统按 shejishi 设计规范重写 —— 14 套风格
+    // 规范来源：https://github.com/shuting52/shejishi.git
     // ============================================================
 
-    /** 橙子汽水 —— 3D 黏土拟态（默认主题） */
-    val clayOrange = ThemePreset(
-        id = "clay_orange",
-        name = "橙子汽水",
+    /** 1. 黏土可爱 —— 奶油底 + 番茄红 + 明黄（默认主题） */
+    val clayCute = ThemePreset(
+        id = "sheji_clay_cute",
+        name = "黏土可爱",
         style = "clay",
-        categoryName = "黏土拟态",
-        primaryColor = Color(0xFFE8590C),
-        secondaryColor = Color(0xFFFF9A3D),
-        bgColor = Color(0xFFFFF3E6),
+        categoryName = "shejishi",
+        primaryColor = Color(0xFFFF4D2E),
+        secondaryColor = Color(0xFFFFD400),
+        bgColor = Color(0xFFFFF8EC),
         surfaceColor = Color(0xFFFFFFFF),
-        textColor = Color(0xFF4A2C12),
+        textColor = Color(0xFF23232B),
         atmosphereEffect = AtmosphereEffect.NONE,
-        gradientColors = listOf(Color(0xFFFFE0B8), Color(0xFFFFF6EC)),
-        cardGradientColors = listOf(Color(0xFFFFD8A8), Color(0xFFFFE8CC), Color(0xFFFFF3E6)),
+        gradientColors = listOf(Color(0xFFFFF8EC), Color(0xFFFFF0D6)),
+        cardGradientColors = listOf(Color(0xFFFFF8EC), Color(0xFFFFEFD0)),
         designStyle = DesignStyle.CLAYMORPHISM,
-        description = "Q版3D黏土 · 暖橙可爱 · 默认"
+        description = "奶油底 · 番茄红 · 明黄点缀 · 粗黑描边贴纸感"
     )
 
-    /** 巧克力派 —— 3D 黏土拟态（暗） */
-    val clayChoco = ThemePreset(
-        id = "clay_choco",
-        name = "巧克力派",
-        style = "clay",
-        categoryName = "黏土拟态",
-        primaryColor = Color(0xFFFF9A3D),
-        secondaryColor = Color(0xFFE8590C),
-        bgColor = Color(0xFF2B1D14),
-        surfaceColor = Color(0xFF3E2A1D),
-        textColor = Color(0xFFFFF3E6),
+    /** 2. 国潮风 —— 宣纸底 + 朱红 + 黛青 + 烫金 */
+    val guochao = ThemePreset(
+        id = "sheji_guochao",
+        name = "国潮风",
+        style = "guochao",
+        categoryName = "shejishi",
+        primaryColor = Color(0xFFC8102E),
+        secondaryColor = Color(0xFF2B4C4A),
+        bgColor = Color(0xFFF5EFE0),
+        surfaceColor = Color(0xFFFFFBF0),
+        textColor = Color(0xFF1A1A1A),
         atmosphereEffect = AtmosphereEffect.NONE,
-        gradientColors = listOf(Color(0xFF3E2A1D), Color(0xFF241811)),
-        cardGradientColors = listOf(Color(0xFF4A3423), Color(0xFF3E2A1D), Color(0xFF2B1D14)),
-        designStyle = DesignStyle.CLAYMORPHISM,
-        description = "浓郁巧克力 · 暗夜黏土"
-    )
-
-    /** 手绘暖阳 —— 手绘风（v1.4.31 新增，参考 shejishi 手绘风主题） */
-    val handDrawnSunny = ThemePreset(
-        id = "hand_drawn_sunny",
-        name = "手绘暖阳",
-        style = "handdrawn",
-        categoryName = "手绘风",
-        primaryColor = Color(0xFFFFC93C),      // 鸭黄
-        secondaryColor = Color(0xFFFF9F43),    // 橙
-        bgColor = Color(0xFFFFF6E5),           // 奶油黄
-        surfaceColor = Color(0xFFFFFFFF),      // 纯白卡片
-        textColor = Color(0xFF4A3B2A),         // 深棕
-        atmosphereEffect = AtmosphereEffect.NONE,
-        gradientColors = listOf(Color(0xFFFFF6E5), Color(0xFFFFF0D0)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFFFF9EE), Color(0xFFFFF6E5)),
+        gradientColors = listOf(Color(0xFFF5EFE0), Color(0xFFEDE3D0)),
+        cardGradientColors = listOf(Color(0xFFF5EFE0), Color(0xFFF0E6D2), Color(0xFFC9A86A)),
         designStyle = DesignStyle.DEFAULT,
-        description = "奶油黄底 · 鸭黄点缀 · 手绘治愈"
+        description = "宣纸底 · 朱红 · 黛青 · 烫金细线"
     )
 
-    /** 雾屿蓝 —— 清爽现代风（v1.4.33 新增：冷色调干净利落，与手绘暖阳形成对比） */
-    val mistIsle = ThemePreset(
-        id = "mist_isle",
-        name = "雾屿蓝",
-        style = "fresh",
-        categoryName = "清爽",
-        primaryColor = Color(0xFF2F7DE1),      // 晴空蓝
-        secondaryColor = Color(0xFF8FB8EC),    // 雾蓝
-        bgColor = Color(0xFFE9EFF3),           // 浅雾蓝灰
-        surfaceColor = Color(0xFFFFFFFF),      // 纯白卡片
-        textColor = Color(0xFF1C2B3A),         // 深岩灰蓝
-        atmosphereEffect = AtmosphereEffect.NONE,
-        gradientColors = listOf(Color(0xFFF2F5F9), Color(0xFFE9EFF3)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFF4F7FB), Color(0xFFE9EFF3)),
-        designStyle = DesignStyle.DEFAULT,
-        description = "雾蓝灰底 · 晴空蓝点缀 · 干净利落"
-    )
-
-    /** 磨砂玻璃 —— 玻璃拟态（浅） */
-    val frostGlass = ThemePreset(
-        id = "frost_glass",
-        name = "磨砂玻璃",
-        style = "glass",
-        categoryName = "玻璃拟态",
-        primaryColor = Color(0xFF2E7CD6),
-        secondaryColor = Color(0xFF7BB8F0),
-        bgColor = Color(0xFFEEF4FA),
-        surfaceColor = Color(0xFFFFFFFF),
-        textColor = Color(0xFF1E3A5C),
-        atmosphereEffect = AtmosphereEffect.NONE,
-        gradientColors = listOf(Color(0xFFDCEBF8), Color(0xFFF7FBFE)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFF0F7FD), Color(0xFFE8F2FA)),
-        designStyle = DesignStyle.GLASSMORPHISM,
-        description = "毛玻璃质感 · 通透轻盈"
-    )
-
-    /** 液态玻璃 —— 液态玻璃（动态光感） */
-    val liquidGlass = ThemePreset(
-        id = "liquid_glass",
-        name = "液态玻璃",
-        style = "glass",
-        categoryName = "液态玻璃",
-        primaryColor = Color(0xFF7C5CFF),
-        secondaryColor = Color(0xFF4AD9E8),
-        bgColor = Color(0xFFEDE9FE),
-        surfaceColor = Color(0xFFFFFFFF),
-        textColor = Color(0xFF2D2350),
-        atmosphereEffect = AtmosphereEffect.AURORA,
-        gradientColors = listOf(Color(0xFFDCD4FF), Color(0xFFEAFBFF)),
-        cardGradientColors = listOf(Color(0xFFE0D9FF), Color(0xFFD6F3FA), Color(0xFFF0EFFF)),
-        designStyle = DesignStyle.LIQUID_GLASS,
-        description = "光线折射 · 梦幻流光"
-    )
-
-    /** iOS 清新 —— iOS 风格（浅） */
-    val iosFresh = ThemePreset(
-        id = "ios_fresh",
-        name = "iOS 清新",
-        style = "ios",
-        categoryName = "iOS风格",
-        primaryColor = Color(0xFF007AFF),
-        secondaryColor = Color(0xFF5AC8FA),
-        bgColor = Color(0xFFF2F2F7),
-        surfaceColor = Color(0xFFFFFFFF),
-        textColor = Color(0xFF1C1C1E),
-        atmosphereEffect = AtmosphereEffect.NONE,
-        gradientColors = listOf(Color(0xFFE9E9EE), Color(0xFFFFFFFF)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFF8F8FA), Color(0xFFF2F2F7)),
-        designStyle = DesignStyle.FLAT_DESIGN,
-        description = "原生 iOS 质感 · 干净利落"
-    )
-
-    /** iOS 暗夜 —— iOS 风格（暗） */
-    val iosDark = ThemePreset(
-        id = "ios_dark",
-        name = "iOS 暗夜",
-        style = "ios",
-        categoryName = "iOS风格",
-        primaryColor = Color(0xFF0A84FF),
-        secondaryColor = Color(0xFF5AC8FA),
+    /** 3. 暗黑霓虹 —— 纯黑底 + 荧光渐变 */
+    val darkNeon = ThemePreset(
+        id = "sheji_dark_neon",
+        name = "暗黑霓虹",
+        style = "neon",
+        categoryName = "shejishi",
+        primaryColor = Color(0xFF00F0FF),
+        secondaryColor = Color(0xFFB537F2),
         bgColor = Color(0xFF000000),
-        surfaceColor = Color(0xFF1C1C1E),
-        textColor = Color(0xFFF2F2F7),
+        surfaceColor = Color(0xFF0A0A0A),
+        textColor = Color(0xFFFFFFFF),
         atmosphereEffect = AtmosphereEffect.NONE,
-        gradientColors = listOf(Color(0xFF1C1C1E), Color(0xFF000000)),
-        cardGradientColors = listOf(Color(0xFF2C2C2E), Color(0xFF1C1C1E), Color(0xFF111111)),
-        designStyle = DesignStyle.FLAT_DESIGN,
-        description = "深邃暗黑 · 护眼省电"
+        gradientColors = listOf(Color(0xFF00F0FF), Color(0xFFB537F2), Color(0xFFFF2E9A)),
+        cardGradientColors = listOf(Color(0xFF0A0A0A), Color(0xFF1A0A2E)),
+        designStyle = DesignStyle.DEFAULT,
+        description = "纯黑底 · 青紫粉荧光渐变 · 发光描边"
     )
 
-    // ============================================================
-    // v1.4.22：新增 30 款主题 —— 极简主义 ×10 / 新拟态 ×10 / 磨砂玻璃 ×10
-    // ============================================================
-
-    // ---------------- 极简主义 ×10（大量留白 · 单重点色 · 无装饰） ----------------
-    val minimalPaper = ThemePreset(
-        id = "minimal_paper", name = "纸白", style = "minimal", categoryName = "极简主义",
-        primaryColor = Color(0xFF1A1A1A), secondaryColor = Color(0xFF8A8A8A),
-        bgColor = Color(0xFFFAFAF8), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF1A1A1A),
-        gradientColors = listOf(Color(0xFFF4F4F0), Color(0xFFFFFFFF)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFF7F7F4)),
-        designStyle = DesignStyle.MINIMALISM, description = "一张白纸 · 黑白分明"
-    )
-    val minimalInk = ThemePreset(
-        id = "minimal_ink", name = "墨黑", style = "minimal", categoryName = "极简主义",
-        primaryColor = Color(0xFFF5F5F5), secondaryColor = Color(0xFF9A9A9A),
-        bgColor = Color(0xFF0B0B0C), surfaceColor = Color(0xFF161618), textColor = Color(0xFFF5F5F5),
-        gradientColors = listOf(Color(0xFF161618), Color(0xFF0B0B0C)),
-        cardGradientColors = listOf(Color(0xFF1E1E20), Color(0xFF161618)),
-        designStyle = DesignStyle.MINIMALISM, description = "极致黑 · 护眼深邃"
-    )
-    val minimalOat = ThemePreset(
-        id = "minimal_oat", name = "燕麦", style = "minimal", categoryName = "极简主义",
-        primaryColor = Color(0xFF8A6D4B), secondaryColor = Color(0xFFB89B72),
-        bgColor = Color(0xFFF6F1E8), surfaceColor = Color(0xFFFFFDF8), textColor = Color(0xFF4A3A28),
-        gradientColors = listOf(Color(0xFFEFE7D8), Color(0xFFFFFDF8)),
-        cardGradientColors = listOf(Color(0xFFFFFDF8), Color(0xFFF6F1E8)),
-        designStyle = DesignStyle.MINIMALISM, description = "温暖燕麦 · 侘寂留白"
-    )
-    val minimalMist = ThemePreset(
-        id = "minimal_mist", name = "雾蓝", style = "minimal", categoryName = "极简主义",
-        primaryColor = Color(0xFF4A7BA7), secondaryColor = Color(0xFF8FB4D4),
-        bgColor = Color(0xFFF0F4F8), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF243B52),
-        gradientColors = listOf(Color(0xFFE4ECF4), Color(0xFFF8FBFE)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFF0F4F8)),
-        designStyle = DesignStyle.MINIMALISM, description = "雾蓝呼吸 · 冷静克制"
-    )
-    val minimalMint = ThemePreset(
-        id = "minimal_mint", name = "薄荷", style = "minimal", categoryName = "极简主义",
-        primaryColor = Color(0xFF3D8B6D), secondaryColor = Color(0xFF7FBC9E),
-        bgColor = Color(0xFFEFF8F3), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF1F4436),
-        gradientColors = listOf(Color(0xFFE0F0E8), Color(0xFFF7FCF9)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFEFF8F3)),
-        designStyle = DesignStyle.MINIMALISM, description = "薄荷清新 · 自然留白"
-    )
-    val minimalSakura = ThemePreset(
-        id = "minimal_sakura", name = "樱粉", style = "minimal", categoryName = "极简主义",
-        primaryColor = Color(0xFFC26A8A), secondaryColor = Color(0xFFE0A0B8),
-        bgColor = Color(0xFFFBF2F4), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF5C2E3E),
-        gradientColors = listOf(Color(0xFFF6E4E9), Color(0xFFFDF7F9)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFFBF2F4)),
-        designStyle = DesignStyle.MINIMALISM, description = "樱粉淡雅 · 温柔留白"
-    )
-    val minimalLemon = ThemePreset(
-        id = "minimal_lemon", name = "柠檬", style = "minimal", categoryName = "极简主义",
-        primaryColor = Color(0xFF9A7B00), secondaryColor = Color(0xFFC9A91F),
-        bgColor = Color(0xFFFCF9EC), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF4D3F0A),
-        gradientColors = listOf(Color(0xFFF7F0D4), Color(0xFFFEFCF4)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFFCF9EC)),
-        designStyle = DesignStyle.MINIMALISM, description = "柠檬微光 · 明亮留白"
-    )
-    val minimalLavender = ThemePreset(
-        id = "minimal_lavender", name = "薰衣草", style = "minimal", categoryName = "极简主义",
-        primaryColor = Color(0xFF7B6BAE), secondaryColor = Color(0xFFA89BD4),
-        bgColor = Color(0xFFF4F2FA), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF3A3358),
-        gradientColors = listOf(Color(0xFFE8E4F4), Color(0xFFFAF9FD)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFF4F2FA)),
-        designStyle = DesignStyle.MINIMALISM, description = "薰衣草紫 · 宁静留白"
-    )
-    val minimalCeladon = ThemePreset(
-        id = "minimal_celadon", name = "青瓷", style = "minimal", categoryName = "极简主义",
-        primaryColor = Color(0xFF5B8A7E), secondaryColor = Color(0xFF8FB8AC),
-        bgColor = Color(0xFFF0F5F3), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF2A443C),
-        gradientColors = listOf(Color(0xFFE2EDE9), Color(0xFFF7FAF9)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFF0F5F3)),
-        designStyle = DesignStyle.MINIMALISM, description = "青瓷雅致 · 东方留白"
-    )
-    val minimalStone = ThemePreset(
-        id = "minimal_stone", name = "石灰", style = "minimal", categoryName = "极简主义",
-        primaryColor = Color(0xFF6E6E6E), secondaryColor = Color(0xFFA8A8A8),
-        bgColor = Color(0xFFF4F4F2), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF2E2E2E),
-        gradientColors = listOf(Color(0xFFE9E9E6), Color(0xFFFBFBFA)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFF4F4F2)),
-        designStyle = DesignStyle.MINIMALISM, description = "石灰质感 · 中性留白"
-    )
-
-    // ---------------- 新拟态 ×10（同色浮雕 · 精致双阴影） ----------------
-    val neuCream = ThemePreset(
-        id = "neu_cream", name = "奶油浮雕", style = "neu", categoryName = "新拟态",
-        primaryColor = Color(0xFFC67B3C), secondaryColor = Color(0xFFE0A866),
-        bgColor = Color(0xFFE8E0D4), surfaceColor = Color(0xFFE8E0D4), textColor = Color(0xFF5C4326),
-        gradientColors = listOf(Color(0xFFF0E9DC), Color(0xFFDCD2C2)),
-        cardGradientColors = listOf(Color(0xFFF0E9DC), Color(0xFFE8E0D4), Color(0xFFDCD2C2)),
-        designStyle = DesignStyle.NEUMORPHISM, description = "奶油浮雕 · 温润立体"
-    )
-    val neuMist = ThemePreset(
-        id = "neu_mist", name = "雾灰浮雕", style = "neu", categoryName = "新拟态",
-        primaryColor = Color(0xFF6B7B9A), secondaryColor = Color(0xFF9AABC4),
-        bgColor = Color(0xFFE0E5EC), surfaceColor = Color(0xFFE0E5EC), textColor = Color(0xFF3A4456),
-        gradientColors = listOf(Color(0xFFEAEEF4), Color(0xFFD2D8E0)),
-        cardGradientColors = listOf(Color(0xFFEAEEF4), Color(0xFFE0E5EC), Color(0xFFD2D8E0)),
-        designStyle = DesignStyle.NEUMORPHISM, description = "雾灰浮雕 · 经典新拟态"
-    )
-    val neuPeach = ThemePreset(
-        id = "neu_peach", name = "蜜桃浮雕", style = "neu", categoryName = "新拟态",
-        primaryColor = Color(0xFFD47B5C), secondaryColor = Color(0xFFE8A184),
-        bgColor = Color(0xFFF0DCD2), surfaceColor = Color(0xFFF0DCD2), textColor = Color(0xFF6B3A2A),
-        gradientColors = listOf(Color(0xFFF8E6DC), Color(0xFFE4CFC2)),
-        cardGradientColors = listOf(Color(0xFFF8E6DC), Color(0xFFF0DCD2), Color(0xFFE4CFC2)),
-        designStyle = DesignStyle.NEUMORPHISM, description = "蜜桃浮雕 · 甜美立体"
-    )
-    val neuSky = ThemePreset(
-        id = "neu_sky", name = "天青浮雕", style = "neu", categoryName = "新拟态",
-        primaryColor = Color(0xFF5B8FB9), secondaryColor = Color(0xFF8FBCD8),
-        bgColor = Color(0xFFDCE9F0), surfaceColor = Color(0xFFDCE9F0), textColor = Color(0xFF2E4A5E),
-        gradientColors = listOf(Color(0xFFE6F0F6), Color(0xFFCCDAE6)),
-        cardGradientColors = listOf(Color(0xFFE6F0F6), Color(0xFFDCE9F0), Color(0xFFCCDAE6)),
-        designStyle = DesignStyle.NEUMORPHISM, description = "天青浮雕 · 通透立体"
-    )
-    val neuMint = ThemePreset(
-        id = "neu_mint", name = "薄荷浮雕", style = "neu", categoryName = "新拟态",
-        primaryColor = Color(0xFF4E9B7E), secondaryColor = Color(0xFF7FBEA2),
-        bgColor = Color(0xFFD8EDE4), surfaceColor = Color(0xFFD8EDE4), textColor = Color(0xFF26493C),
-        gradientColors = listOf(Color(0xFFE2F4EC), Color(0xFFC8DFD4)),
-        cardGradientColors = listOf(Color(0xFFE2F4EC), Color(0xFFD8EDE4), Color(0xFFC8DFD4)),
-        designStyle = DesignStyle.NEUMORPHISM, description = "薄荷浮雕 · 清新立体"
-    )
-    val neuLilac = ThemePreset(
-        id = "neu_lilac", name = "丁香浮雕", style = "neu", categoryName = "新拟态",
-        primaryColor = Color(0xFF7E6BB8), secondaryColor = Color(0xFFA394D4),
-        bgColor = Color(0xFFE2DFF0), surfaceColor = Color(0xFFE2DFF0), textColor = Color(0xFF3E3660),
-        gradientColors = listOf(Color(0xFFECE9F8), Color(0xFFD4CFE6)),
-        cardGradientColors = listOf(Color(0xFFECE9F8), Color(0xFFE2DFF0), Color(0xFFD4CFE6)),
-        designStyle = DesignStyle.NEUMORPHISM, description = "丁香浮雕 · 梦幻立体"
-    )
-    val neuLemon = ThemePreset(
-        id = "neu_lemon", name = "柠檬浮雕", style = "neu", categoryName = "新拟态",
-        primaryColor = Color(0xFFB89B3C), secondaryColor = Color(0xFFD4BC66),
-        bgColor = Color(0xFFF2ECD8), surfaceColor = Color(0xFFF2ECD8), textColor = Color(0xFF5E4E1E),
-        gradientColors = listOf(Color(0xFFFAF4E2), Color(0xFFE6DCC2)),
-        cardGradientColors = listOf(Color(0xFFFAF4E2), Color(0xFFF2ECD8), Color(0xFFE6DCC2)),
-        designStyle = DesignStyle.NEUMORPHISM, description = "柠檬浮雕 · 明亮立体"
-    )
-    val neuCoral = ThemePreset(
-        id = "neu_coral", name = "珊瑚浮雕", style = "neu", categoryName = "新拟态",
-        primaryColor = Color(0xFFD4665C), secondaryColor = Color(0xFFE8948A),
-        bgColor = Color(0xFFF0D8D0), surfaceColor = Color(0xFFF0D8D0), textColor = Color(0xFF6B322A),
-        gradientColors = listOf(Color(0xFFF8E2DA), Color(0xFFE4C8BE)),
-        cardGradientColors = listOf(Color(0xFFF8E2DA), Color(0xFFF0D8D0), Color(0xFFE4C8BE)),
-        designStyle = DesignStyle.NEUMORPHISM, description = "珊瑚浮雕 · 热情立体"
-    )
-    val neuMidnight = ThemePreset(
-        id = "neu_midnight", name = "午夜浮雕", style = "neu", categoryName = "新拟态",
-        primaryColor = Color(0xFF7B8FD4), secondaryColor = Color(0xFFA3B4E8),
-        bgColor = Color(0xFF2A2E3A), surfaceColor = Color(0xFF2A2E3A), textColor = Color(0xFFE4E8F2),
-        gradientColors = listOf(Color(0xFF343947), Color(0xFF20242E)),
-        cardGradientColors = listOf(Color(0xFF343947), Color(0xFF2A2E3A), Color(0xFF20242E)),
-        designStyle = DesignStyle.NEUMORPHISM, description = "午夜浮雕 · 暗夜立体"
-    )
-    val neuForest = ThemePreset(
-        id = "neu_forest", name = "森绿浮雕", style = "neu", categoryName = "新拟态",
-        primaryColor = Color(0xFF6BAE7B), secondaryColor = Color(0xFF93C8A2),
-        bgColor = Color(0xFF24352C), surfaceColor = Color(0xFF24352C), textColor = Color(0xFFE2EFE6),
-        gradientColors = listOf(Color(0xFF2E4237), Color(0xFF1C2A21)),
-        cardGradientColors = listOf(Color(0xFF2E4237), Color(0xFF24352C), Color(0xFF1C2A21)),
-        designStyle = DesignStyle.NEUMORPHISM, description = "森绿浮雕 · 深邃立体"
-    )
-
-    // ---------------- 磨砂玻璃 ×10（不同配色风格） ----------------
-    val glassOcean = ThemePreset(
-        id = "glass_ocean", name = "海洋", style = "glass", categoryName = "玻璃拟态",
-        primaryColor = Color(0xFF0A84FF), secondaryColor = Color(0xFF5AC8FA),
-        bgColor = Color(0xFFE8F2FC), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF12395E),
-        gradientColors = listOf(Color(0xFFD4E8FA), Color(0xFFF2F9FE)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFE8F2FC), Color(0xFFD4E8FA)),
-        designStyle = DesignStyle.GLASSMORPHISM, description = "深海之蓝 · 通透"
-    )
-    val glassSunset = ThemePreset(
-        id = "glass_sunset", name = "落日", style = "glass", categoryName = "玻璃拟态",
-        primaryColor = Color(0xFFFF6B4A), secondaryColor = Color(0xFFFFB84A),
-        bgColor = Color(0xFFFDEEE6), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF6B2E1A),
-        gradientColors = listOf(Color(0xFFFADFD2), Color(0xFFFFF6F0)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFFDEEE6), Color(0xFFFADFD2)),
-        designStyle = DesignStyle.GLASSMORPHISM, description = "落日熔金 · 温暖"
-    )
-    val glassAurora = ThemePreset(
-        id = "glass_aurora", name = "极光", style = "glass", categoryName = "玻璃拟态",
-        primaryColor = Color(0xFF7C5CFF), secondaryColor = Color(0xFF4AD9E8),
-        bgColor = Color(0xFFEEE9FE), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF352A6B),
-        atmosphereEffect = AtmosphereEffect.AURORA,
-        gradientColors = listOf(Color(0xFFDDD4FE), Color(0xFFEAFBFF)),
-        cardGradientColors = listOf(Color(0xFFE4DBFE), Color(0xFFD9F2FA), Color(0xFFF2EEFE)),
-        designStyle = DesignStyle.GLASSMORPHISM, description = "极光流光 · 梦幻"
-    )
-    val glassSakura = ThemePreset(
-        id = "glass_sakura", name = "樱花", style = "glass", categoryName = "玻璃拟态",
-        primaryColor = Color(0xFFF06292), secondaryColor = Color(0xFFF8A8C8),
-        bgColor = Color(0xFFFCEEF3), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF6B2A40),
-        gradientColors = listOf(Color(0xFFFADDE8), Color(0xFFFFF5F8)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFFCEEF3), Color(0xFFFADDE8)),
-        designStyle = DesignStyle.GLASSMORPHISM, description = "樱花粉黛 · 浪漫"
-    )
-    val glassMint = ThemePreset(
-        id = "glass_mint", name = "薄荷", style = "glass", categoryName = "玻璃拟态",
-        primaryColor = Color(0xFF00B894), secondaryColor = Color(0xFF55DDBB),
-        bgColor = Color(0xFFE8F8F2), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF0F4D3E),
-        gradientColors = listOf(Color(0xFFD2F0E4), Color(0xFFF4FCF9)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFE8F8F2), Color(0xFFD2F0E4)),
-        designStyle = DesignStyle.GLASSMORPHISM, description = "薄荷冰沙 · 清爽"
-    )
-    val glassGrape = ThemePreset(
-        id = "glass_grape", name = "葡萄", style = "glass", categoryName = "玻璃拟态",
-        primaryColor = Color(0xFF9B51E0), secondaryColor = Color(0xFFC084FC),
-        bgColor = Color(0xFFF1EAFB), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF44266B),
-        gradientColors = listOf(Color(0xFFE4D6F8), Color(0xFFFAF6FE)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFF1EAFB), Color(0xFFE4D6F8)),
-        designStyle = DesignStyle.GLASSMORPHISM, description = "葡萄紫雾 · 优雅"
-    )
-    val glassHoney = ThemePreset(
-        id = "glass_honey", name = "蜜橙", style = "glass", categoryName = "玻璃拟态",
-        primaryColor = Color(0xFFFF9A3D), secondaryColor = Color(0xFFFFD93D),
-        bgColor = Color(0xFFFFF2E2), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF6B4416),
-        gradientColors = listOf(Color(0xFFFFE4C2), Color(0xFFFFF9F0)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFFFF2E2), Color(0xFFFFE4C2)),
-        designStyle = DesignStyle.GLASSMORPHISM, description = "蜜橙暖阳 · 甜美"
-    )
-    val glassGlacier = ThemePreset(
-        id = "glass_glacier", name = "冰川", style = "glass", categoryName = "玻璃拟态",
-        primaryColor = Color(0xFF22B8CF), secondaryColor = Color(0xFF4AD9E8),
-        bgColor = Color(0xFFEAFBFE), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF134E5C),
-        gradientColors = listOf(Color(0xFFD4F2F8), Color(0xFFF5FDFF)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFEAFBFE), Color(0xFFD4F2F8)),
-        designStyle = DesignStyle.GLASSMORPHISM, description = "冰川水晶 · 纯净"
-    )
-    val glassNeon = ThemePreset(
-        id = "glass_neon", name = "霓虹夜", style = "glass", categoryName = "玻璃拟态",
-        primaryColor = Color(0xFF00F0FF), secondaryColor = Color(0xFFFF2EA6),
-        bgColor = Color(0xFF0A0E1A), surfaceColor = Color(0xFF141A2E), textColor = Color(0xFFEAF6FF),
-        atmosphereEffect = AtmosphereEffect.STARS,
-        gradientColors = listOf(Color(0xFF141A2E), Color(0xFF0A0E1A)),
-        cardGradientColors = listOf(Color(0xFF1E2640), Color(0xFF141A2E), Color(0xFF0E1424)),
-        designStyle = DesignStyle.GLASSMORPHISM, description = "霓虹暗夜 · 赛博"
-    )
-    val glassForest = ThemePreset(
-        id = "glass_forest", name = "森林", style = "glass", categoryName = "玻璃拟态",
-        primaryColor = Color(0xFF2E9E6B), secondaryColor = Color(0xFF7BC8A0),
-        bgColor = Color(0xFFEAF5EE), surfaceColor = Color(0xFFFFFFFF), textColor = Color(0xFF1E4A34),
-        gradientColors = listOf(Color(0xFFD8EBDE), Color(0xFFF6FBF7)),
-        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFEAF5EE), Color(0xFFD8EBDE)),
-        designStyle = DesignStyle.GLASSMORPHISM, description = "森林氧气 · 自然"
-    )
-
-    /** 奶油团子 —— 启动页同款 pastel 奶油风（v1.4.22 起为默认主题） */
-    val creamDango = ThemePreset(
-        id = "cream_dango",
-        name = "奶油团子",
-        style = "clay",
-        categoryName = "黏土拟态",
-        primaryColor = Color(0xFFE8590C),
-        secondaryColor = Color(0xFFFF9A3D),
-        bgColor = Color(0xFFFFF8E7),
+    /** 4. 极简奶油 —— 米白底 + 墨 + 单点缀 */
+    val minimalCream = ThemePreset(
+        id = "sheji_minimal_cream",
+        name = "极简奶油",
+        style = "minimal",
+        categoryName = "shejishi",
+        primaryColor = Color(0xFF1A1A1A),
+        secondaryColor = Color(0xFFE8B04B),
+        bgColor = Color(0xFFFAF7F2),
         surfaceColor = Color(0xFFFFFFFF),
-        textColor = Color(0xFF4A2C12),
+        textColor = Color(0xFF1A1A1A),
         atmosphereEffect = AtmosphereEffect.NONE,
-        gradientColors = listOf(Color(0xFFFFF1DC), Color(0xFFFFF8E7)),
-        cardGradientColors = listOf(Color(0xFFFFE8D6), Color(0xFFFFF1DC), Color(0xFFFFF8E7)),
-        designStyle = DesignStyle.CLAYMORPHISM,
-        description = "启动页同款 · 奶油 pastel · 默认"
+        gradientColors = listOf(Color(0xFFFAF7F2), Color(0xFFF5F0E8)),
+        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFFAF7F2)),
+        designStyle = DesignStyle.MINIMALISM,
+        description = "米白底 · 墨即主色 · 单点缀金 · 大量留白"
     )
 
-    // —— 兼容别名（供旧引用处过渡，实际指向新主题） ——
-    // v1.4.22：默认主题改为启动页风格「奶油团子」
-    val defaultTheme = creamDango
-    val classicTheme = iosFresh
-    val shengshiTheme = clayOrange
-    val shanshuiTheme = clayOrange
+    /** 5. 复古港风 —— 米黄底 + 港红港绿撞色 */
+    val hkRetro = ThemePreset(
+        id = "sheji_hk_retro",
+        name = "复古港风",
+        style = "retro",
+        categoryName = "shejishi",
+        primaryColor = Color(0xFFD93A2B),
+        secondaryColor = Color(0xFF1F7A5C),
+        bgColor = Color(0xFFF7EFD8),
+        surfaceColor = Color(0xFFFFFBF0),
+        textColor = Color(0xFF2B2118),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFF7EFD8), Color(0xFFF0E2C4)),
+        cardGradientColors = listOf(Color(0xFFF7EFD8), Color(0xFFEFDDB8)),
+        designStyle = DesignStyle.DEFAULT,
+        description = "米黄底 · 港红港绿撞色 · 粗黑描边招牌字"
+    )
+
+    /** 6. 新拟态 —— 浅灰蓝底 + 珊瑚 */
+    val neumorphism = ThemePreset(
+        id = "sheji_neumorphism",
+        name = "新拟态",
+        style = "neu",
+        categoryName = "shejishi",
+        primaryColor = Color(0xFFFF6B6B),
+        secondaryColor = Color(0xFF6D7B8D),
+        bgColor = Color(0xFFE0E5EC),
+        surfaceColor = Color(0xFFE0E5EC),
+        textColor = Color(0xFF3D4A5C),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFE0E5EC), Color(0xFFD5DBE5)),
+        cardGradientColors = listOf(Color(0xFFE0E5EC), Color(0xFFD8DEE8)),
+        designStyle = DesignStyle.NEUMORPHISM,
+        description = "浅灰蓝同色 · 珊瑚点缀 · 双向柔阴影"
+    )
+
+    /** 7. 手绘风 —— 奶油黄底 + 鸭黄 + 橙 */
+    val handDrawn = ThemePreset(
+        id = "sheji_hand_drawn",
+        name = "手绘风",
+        style = "handdrawn",
+        categoryName = "shejishi",
+        primaryColor = Color(0xFFFFC93C),
+        secondaryColor = Color(0xFFFF9F43),
+        bgColor = Color(0xFFFFF6E5),
+        surfaceColor = Color(0xFFFFFFFF),
+        textColor = Color(0xFF4A3B2A),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFFFF6E5), Color(0xFFFFEDC8)),
+        cardGradientColors = listOf(Color(0xFFFFF6E5), Color(0xFFFFF0D0)),
+        designStyle = DesignStyle.DEFAULT,
+        description = "奶油黄底 · 鸭黄 · 手绘线条 · ◆装饰符"
+    )
+
+    /** 8. Bento 格栅风 —— 浅灰底 + 品牌蓝 */
+    val bentoGrid = ThemePreset(
+        id = "sheji_bento",
+        name = "Bento格栅",
+        style = "bento",
+        categoryName = "shejishi",
+        primaryColor = Color(0xFF0071E3),
+        secondaryColor = Color(0xFF0071E3),
+        bgColor = Color(0xFFF5F5F7),
+        surfaceColor = Color(0xFFFFFFFF),
+        textColor = Color(0xFF1D1D1F),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFF5F5F7), Color(0xFFEBEBED)),
+        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFF5F5F7)),
+        designStyle = DesignStyle.DEFAULT,
+        description = "浅灰底 · 品牌蓝 · 严格网格 · 数据可视化"
+    )
+
+    /** 9. 液态玻璃 —— 自适应背景 + 系统蓝 */
+    val liquidGlassNew = ThemePreset(
+        id = "sheji_liquid_glass",
+        name = "液态玻璃",
+        style = "liquid",
+        categoryName = "shejishi",
+        primaryColor = Color(0xFF0A84FF),
+        secondaryColor = Color(0xFF007AFF),
+        bgColor = Color(0xFFFFFFFF),
+        surfaceColor = Color(0xFFFFFFFF),
+        textColor = Color(0xFF000000),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFF0F4FF)),
+        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFF5F8FF)),
+        designStyle = DesignStyle.LIQUID_GLASS,
+        description = "玻璃拟态 · 系统蓝 · 高光描边 · 悬浮胶囊"
+    )
+
+    /** 10. 新丑风 —— 奶油纸底 + 高饱和撞色 + 粗黑边 */
+    val neoBrutalism = ThemePreset(
+        id = "sheji_neo_brutalism",
+        name = "新丑风",
+        style = "brutalism",
+        categoryName = "shejishi",
+        primaryColor = Color(0xFFFF6B6B),
+        secondaryColor = Color(0xFFFFDC58),
+        bgColor = Color(0xFFFFF4E5),
+        surfaceColor = Color(0xFFFFFFFF),
+        textColor = Color(0xFF000000),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFFFF4E5), Color(0xFFFFECD0)),
+        cardGradientColors = listOf(Color(0xFFFFF4E5), Color(0xFFFFE8C8), Color(0xFF7FBC8C)),
+        designStyle = DesignStyle.NEO_BRUTALISM,
+        description = "奶油纸底 · 高饱和撞色 · 3px黑边 · 硬阴影"
+    )
+
+    /** 11. 千禧复兴风 —— 蓝天渐变底 + 科技蓝 */
+    val frutigerAero = ThemePreset(
+        id = "sheji_frutiger_aero",
+        name = "千禧复兴",
+        style = "aero",
+        categoryName = "shejishi",
+        primaryColor = Color(0xFF00A8E8),
+        secondaryColor = Color(0xFF7ED957),
+        bgColor = Color(0xFFE8F9FF),
+        surfaceColor = Color(0xFFFFFFFF),
+        textColor = Color(0xFF0A2540),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFF7EC8F7), Color(0xFFE8F9FF)),
+        cardGradientColors = listOf(Color(0xFFE8F9FF), Color(0xFFD0F0FF)),
+        designStyle = DesignStyle.DEFAULT,
+        description = "蓝天渐变 · 科技蓝 · 玻璃高光 · 气泡上浮"
+    )
+
+    /** 12. 多巴胺配色风 —— 白底 + 高饱和主色 */
+    val dopamine = ThemePreset(
+        id = "sheji_dopamine",
+        name = "多巴胺",
+        style = "dopamine",
+        categoryName = "shejishi",
+        primaryColor = Color(0xFF58CC02),
+        secondaryColor = Color(0xFFA560FF),
+        bgColor = Color(0xFFFFFFFF),
+        surfaceColor = Color(0xFFFFF9E6),
+        textColor = Color(0xFF3C3C3C),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFFFF9E6)),
+        cardGradientColors = listOf(Color(0xFF58CC02), Color(0xFFFF4B4B), Color(0xFFA560FF)),
+        designStyle = DesignStyle.DEFAULT,
+        description = "白底 · 多邻国绿 · 高饱和 · 弹性动效"
+    )
+
+    /** 13. 瑞士大字报 —— 纸白底 + 黑 + 报纸红 */
+    val swissPoster = ThemePreset(
+        id = "sheji_swiss_poster",
+        name = "瑞士大字报",
+        style = "swiss",
+        categoryName = "shejishi",
+        primaryColor = Color(0xFF111111),
+        secondaryColor = Color(0xFFE30613),
+        bgColor = Color(0xFFFAFAF8),
+        surfaceColor = Color(0xFFFFFFFF),
+        textColor = Color(0xFF111111),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFFAFAF8), Color(0xFFF5F5F3)),
+        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFFAFAF8)),
+        designStyle = DesignStyle.MINIMALISM,
+        description = "纸白底 · 黑即主色 · 报纸红强调 · 超大标题"
+    )
+
+    /** 14. 扁平插画风 —— 暖纸底 + 柔紫 */
+    val flatIllustration = ThemePreset(
+        id = "sheji_flat_illustration",
+        name = "扁平插画",
+        style = "flat",
+        categoryName = "shejishi",
+        primaryColor = Color(0xFF6C5CE7),
+        secondaryColor = Color(0xFF00B894),
+        bgColor = Color(0xFFF7F3EF),
+        surfaceColor = Color(0xFFFFFFFF),
+        textColor = Color(0xFF2D3436),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFE8F0FE), Color(0xFFF3E8FF)),
+        cardGradientColors = listOf(Color(0xFFF7F3EF), Color(0xFFEFE8FF)),
+        designStyle = DesignStyle.FLAT_DESIGN,
+        description = "暖纸底 · 柔紫 · 大圆角 · 插画呼吸感"
+    )
+
+    // —— 默认主题 ——
+    val defaultTheme = clayCute
+    val classicTheme = clayCute
 
     // —— 分类列表（供主题切换弹窗） ——
-    val clayThemes: List<ThemePreset> = listOf(creamDango, clayOrange, clayChoco)
-    // v1.4.31：手绘风分类
-    val handDrawnThemes: List<ThemePreset> = listOf(handDrawnSunny)
-    // v1.4.33：清爽分类
-    val freshThemes: List<ThemePreset> = listOf(mistIsle)
-    val glassThemes: List<ThemePreset> = listOf(
-        frostGlass, liquidGlass,
-        glassOcean, glassSunset, glassAurora, glassSakura, glassMint,
-        glassGrape, glassHoney, glassGlacier, glassNeon, glassForest
-    )
-    val iosThemes: List<ThemePreset> = listOf(iosFresh, iosDark)
-    // v1.4.22：新增极简 / 新拟态分类
-    val minimalThemes: List<ThemePreset> = listOf(
-        minimalPaper, minimalInk, minimalOat, minimalMist, minimalMint,
-        minimalSakura, minimalLemon, minimalLavender, minimalCeladon, minimalStone
-    )
-    val neuThemes: List<ThemePreset> = listOf(
-        neuCream, neuMist, neuPeach, neuSky, neuMint,
-        neuLilac, neuLemon, neuCoral, neuMidnight, neuForest
+    val shejishiThemes: List<ThemePreset> = listOf(
+        clayCute, guochao, darkNeon, minimalCream, hkRetro, neumorphism, handDrawn,
+        bentoGrid, liquidGlassNew, neoBrutalism, frutigerAero, dopamine, swissPoster, flatIllustration
     )
 
-    // 兼容旧字段名（UiverseDialog 过渡用，实际不再使用）
-    val darkThemes: List<ThemePreset> = listOf(clayChoco, iosDark, minimalInk, neuMidnight, neuForest, glassNeon)
+    // 兼容旧字段名
+    val clayThemes: List<ThemePreset> = listOf(clayCute)
+    val handDrawnThemes: List<ThemePreset> = listOf(handDrawn)
+    val freshThemes: List<ThemePreset> = emptyList()
+    val glassThemes: List<ThemePreset> = listOf(liquidGlassNew)
+    val iosThemes: List<ThemePreset> = emptyList()
+    val minimalThemes: List<ThemePreset> = listOf(minimalCream, swissPoster)
+    val neuThemes: List<ThemePreset> = listOf(neumorphism)
+    val darkThemes: List<ThemePreset> = listOf(darkNeon)
     val designStyleThemes: List<ThemePreset> = emptyList()
-    val gradientThemes: List<ThemePreset> = listOf(liquidGlass, frostGlass)
+    val gradientThemes: List<ThemePreset> = listOf(liquidGlassNew, frutigerAero)
 
-    val allThemes: List<ThemePreset> = listOf(
-        creamDango, clayOrange, clayChoco, handDrawnSunny, mistIsle, frostGlass, liquidGlass, iosFresh, iosDark,
-        minimalPaper, minimalInk, minimalOat, minimalMist, minimalMint,
-        minimalSakura, minimalLemon, minimalLavender, minimalCeladon, minimalStone,
-        neuCream, neuMist, neuPeach, neuSky, neuMint,
-        neuLilac, neuLemon, neuCoral, neuMidnight, neuForest,
-        glassOcean, glassSunset, glassAurora, glassSakura, glassMint,
-        glassGrape, glassHoney, glassGlacier, glassNeon, glassForest
-    )
+    val allThemes: List<ThemePreset> = shejishiThemes
 
     fun findById(id: String): ThemePreset? = allThemes.find { it.id == id }
 }
