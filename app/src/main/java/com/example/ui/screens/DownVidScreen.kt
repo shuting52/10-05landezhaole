@@ -60,6 +60,7 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.filled.TouchApp
@@ -307,6 +308,8 @@ fun DownVidScreen(
     var batchProgress by remember { mutableStateOf("") } // 如 "3/10"
     val batchResults = remember { mutableStateListOf<VideoParseResult>() }
     var isExtractingFrames by remember { mutableStateOf(false) }
+    // v1.6.1：去水印设置面板展开状态
+    var showDownVidSettings by remember { mutableStateOf(false) }
 
     val historyList = remember { mutableStateListOf<VideoParseResult>() }
 
@@ -668,22 +671,24 @@ fun DownVidScreen(
                                 color = themeColors.textMuted
                             )
                         }
-                        // v1.5.8：单条/批量模式切换
+                        // v1.6.1：设置按钮 —— 单条/批量模式、自动解析/下载收纳到设置面板
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(20.dp))
-                                .background(
-                                    if (isBatchMode) themeColors.primary else themeColors.primary.copy(alpha = 0.14f)
-                                )
-                                .clickable { isBatchMode = !isBatchMode }
+                                .background(themeColors.primary.copy(alpha = 0.14f))
+                                .clickable { showDownVidSettings = !showDownVidSettings }
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
-                            Text(
-                                text = if (isBatchMode) "批量模式" else "单条模式",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isBatchMode) Color.White else themeColors.primary
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Filled.Settings,
+                                    contentDescription = null,
+                                    tint = themeColors.primary,
+                                    modifier = Modifier.size(15.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("设置", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = themeColors.primary)
+                            }
                         }
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Box(
@@ -721,6 +726,75 @@ fun DownVidScreen(
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text("清空", fontSize = 13.sp, color = themeColors.textMuted)
                                 }
+                            }
+                        }
+                    }
+
+                    // v1.6.1：设置面板 —— 单条/批量模式 + 自动解析/下载开关
+                    androidx.compose.animation.AnimatedVisibility(visible = showDownVidSettings) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(themeColors.surface.copy(alpha = 0.7f))
+                                .padding(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            // 解析模式切换
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text("解析模式", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = themeColors.text, modifier = Modifier.weight(1f))
+                                Row(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(20.dp))
+                                        .background(themeColors.primary.copy(alpha = 0.1f))
+                                        .padding(4.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    listOf("单条" to false, "批量" to true).forEach { (label, batch) ->
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(16.dp))
+                                                .background(if (isBatchMode == batch) themeColors.primary else Color.Transparent)
+                                                .clickable { isBatchMode = batch }
+                                                .padding(horizontal = 14.dp, vertical = 6.dp)
+                                        ) {
+                                            Text(
+                                                label,
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = if (isBatchMode == batch) Color.White else themeColors.textMuted
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                AutoToggleChip(
+                                    label = "粘贴自动解析",
+                                    checked = autoParseEnabled,
+                                    onCheckedChange = {
+                                        autoParseEnabled = it
+                                        autoPrefs.edit().putBoolean("auto_parse", it).apply()
+                                    },
+                                    themeColors = themeColors,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                AutoToggleChip(
+                                    label = "解析自动下载",
+                                    checked = autoDownloadEnabled,
+                                    onCheckedChange = {
+                                        autoDownloadEnabled = it
+                                        autoPrefs.edit().putBoolean("auto_download", it).apply()
+                                    },
+                                    themeColors = themeColors,
+                                    modifier = Modifier.weight(1f)
+                                )
                             }
                         }
                     }
@@ -795,34 +869,6 @@ fun DownVidScreen(
                                 fontSize = 15.sp, fontWeight = FontWeight.Bold
                             )
                         }
-                    }
-
-                    // v1.4.34：自动解析 / 自动下载开关
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        AutoToggleChip(
-                            label = "粘贴自动解析",
-                            checked = autoParseEnabled,
-                            onCheckedChange = {
-                                autoParseEnabled = it
-                                autoPrefs.edit().putBoolean("auto_parse", it).apply()
-                            },
-                            themeColors = themeColors,
-                            modifier = Modifier.weight(1f)
-                        )
-                        AutoToggleChip(
-                            label = "解析自动下载",
-                            checked = autoDownloadEnabled,
-                            onCheckedChange = {
-                                autoDownloadEnabled = it
-                                autoPrefs.edit().putBoolean("auto_download", it).apply()
-                            },
-                            themeColors = themeColors,
-                            modifier = Modifier.weight(1f)
-                        )
                     }
 
                     if (errorMessage != null) {
