@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 191,
-    "name": "1.5.1",
+    "code": 192,
+    "name": "1.5.2",
     "changelog": [
-      "✨ v1.5.1 更新来啦～",
-      "fix: 主题切换全量修复（37处硬编码颜色改走主题系统）"
+      "✨ v1.5.2 更新来啦～",
+      "fix: 主页品牌红体系全部跟随主题"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.5.1-1792122045.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.5.1-1792122045.apk",
-    "lastBuildSha": "f558a7a2ce6e69d9684b51534ef033ac9fa42979",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.5.2-1792123948.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.5.2-1792123948.apk",
+    "lastBuildSha": "a2308a207ec1e099eb349aaef62221afaa1594ae",
     "apkSize": 24013088
   },
   "home": {
@@ -24344,10 +24344,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.5.1 已上线",
+    "title": "懒得找了 v1.5.2 已上线",
     "changelog": [
-      "✨ v1.5.1 更新来啦～",
-      "fix: 主题切换全量修复（37处硬编码颜色改走主题系统）"
+      "✨ v1.5.2 更新来啦～",
+      "fix: 主页品牌红体系全部跟随主题"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24409,10 +24409,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.5.1",
-      "code": 191,
-      "at": "2026-10-16T03:40:52Z",
-      "sha": "f558a7a2ce6e69d9684b51534ef033ac9fa42979"
+      "version": "1.5.2",
+      "code": 192,
+      "at": "2026-10-16T04:12:35Z",
+      "sha": "a2308a207ec1e099eb349aaef62221afaa1594ae"
     }
   },
   "_ai_notice": "内容由AI生成"
