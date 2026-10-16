@@ -1,16 +1,16 @@
 {
   "version": {
-    "code": 188,
-    "name": "1.4.33",
+    "code": 189,
+    "name": "1.4.34",
     "changelog": [
-      "✨ v1.4.33 更新来啦～",
-      "feat: v1.4.33 去水印图集重做 + 雾屿蓝主题"
+      "✨ v1.4.34 更新来啦～",
+      "feat: v1.4.34 去水印自动解析/自动下载"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.33-1792106151.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.33-1792106151.apk",
-    "lastBuildSha": "e73524de8951f162ca55139bb0159fbce31ed920",
-    "apkSize": 23996708
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.4.34-1792115008.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.4.34-1792115008.apk",
+    "lastBuildSha": "d2ba8523740c89026c29c0d5edc5690c135d9b4f",
+    "apkSize": 24013092
   },
   "home": {
     "categories": [
@@ -24344,10 +24344,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.4.33 已上线",
+    "title": "懒得找了 v1.4.34 已上线",
     "changelog": [
-      "✨ v1.4.33 更新来啦～",
-      "feat: v1.4.33 去水印图集重做 + 雾屿蓝主题"
+      "✨ v1.4.34 更新来啦～",
+      "feat: v1.4.34 去水印自动解析/自动下载"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24409,10 +24409,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.4.33",
-      "code": 188,
-      "at": "2026-10-15T23:15:57Z",
-      "sha": "e73524de8951f162ca55139bb0159fbce31ed920"
+      "version": "1.4.34",
+      "code": 189,
+      "at": "2026-10-16T01:43:35Z",
+      "sha": "d2ba8523740c89026c29c0d5edc5690c135d9b4f"
     }
   },
   "_ai_notice": "内容由AI生成"
