@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 202,
-    "name": "1.6.2",
+    "code": 203,
+    "name": "1.6.3",
     "changelog": [
-      "✨ v1.6.2 更新来啦～",
-      "feat: v1.6.2 卡通默认主题 + 面板居中 + 去更新弹窗阴影"
+      "✨ v1.6.3 更新来啦～",
+      "feat: v1.6.3 龙腾开屏启动特效"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.6.2-1792163914.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.6.2-1792163914.apk",
-    "lastBuildSha": "40ec5ebe29fcf18dd9f63046793348174c6a334f",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.6.3-1792165072.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.6.3-1792165072.apk",
+    "lastBuildSha": "7c96ab170e2ada2cee2fbb99b3ee05255f2d87c3",
     "apkSize": 24029472
   },
   "home": {
@@ -24344,10 +24344,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.6.2 已上线",
+    "title": "懒得找了 v1.6.3 已上线",
     "changelog": [
-      "✨ v1.6.2 更新来啦～",
-      "feat: v1.6.2 卡通默认主题 + 面板居中 + 去更新弹窗阴影"
+      "✨ v1.6.3 更新来啦～",
+      "feat: v1.6.3 龙腾开屏启动特效"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24409,10 +24409,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.6.2",
-      "code": 202,
-      "at": "2026-10-16T15:18:41Z",
-      "sha": "40ec5ebe29fcf18dd9f63046793348174c6a334f"
+      "version": "1.6.3",
+      "code": 203,
+      "at": "2026-10-16T15:38:00Z",
+      "sha": "7c96ab170e2ada2cee2fbb99b3ee05255f2d87c3"
     }
   },
   "_ai_notice": "内容由AI生成"
