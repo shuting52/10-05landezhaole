@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 198,
-    "name": "1.5.8",
+    "code": 199,
+    "name": "1.5.9",
     "changelog": [
-      "✨ v1.5.8 更新来啦～",
-      "feat: v1.5.8 手绘风组件跟随 + 去水印批量下载/抽帧"
+      "✨ v1.5.9 更新来啦～",
+      "feat: v1.5.9 去水印平台库扩至100+ & 动态标签效果 & 删品牌标签"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.5.8-1792156068.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.5.8-1792156068.apk",
-    "lastBuildSha": "89d01b86fc74818448748bcac4bad66c79cec7e5",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.5.9-1792157700.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.5.9-1792157700.apk",
+    "lastBuildSha": "b751da46482373822b6ce99829996274188d5368",
     "apkSize": 24013088
   },
   "home": {
@@ -24344,10 +24344,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.5.8 已上线",
+    "title": "懒得找了 v1.5.9 已上线",
     "changelog": [
-      "✨ v1.5.8 更新来啦～",
-      "feat: v1.5.8 手绘风组件跟随 + 去水印批量下载/抽帧"
+      "✨ v1.5.9 更新来啦～",
+      "feat: v1.5.9 去水印平台库扩至100+ & 动态标签效果 & 删品牌标签"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24409,10 +24409,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.5.8",
-      "code": 198,
-      "at": "2026-10-16T13:07:56Z",
-      "sha": "89d01b86fc74818448748bcac4bad66c79cec7e5"
+      "version": "1.5.9",
+      "code": 199,
+      "at": "2026-10-16T13:35:06Z",
+      "sha": "b751da46482373822b6ce99829996274188d5368"
     }
   },
   "_ai_notice": "内容由AI生成"
