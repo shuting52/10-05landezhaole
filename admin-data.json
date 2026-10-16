@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 200,
-    "name": "1.6.0",
+    "code": 201,
+    "name": "1.6.1",
     "changelog": [
-      "✨ v1.6.0 更新来啦～",
-      "feat: v1.6.0 平台列表改抽屉式"
+      "✨ v1.6.1 更新来啦～",
+      "feat: v1.6.1 去水印面板重构：设置收纳"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.6.0-1792159074.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.6.0-1792159074.apk",
-    "lastBuildSha": "d01825bfd388212289fd0c2506b96fd335efb4a9",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.6.1-1792161073.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.6.1-1792161073.apk",
+    "lastBuildSha": "33fcde3fbb4f2613a04237cf535b2ac55dd16f33",
     "apkSize": 24029472
   },
   "home": {
@@ -24344,10 +24344,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.6.0 已上线",
+    "title": "懒得找了 v1.6.1 已上线",
     "changelog": [
-      "✨ v1.6.0 更新来啦～",
-      "feat: v1.6.0 平台列表改抽屉式"
+      "✨ v1.6.1 更新来啦～",
+      "feat: v1.6.1 去水印面板重构：设置收纳"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24409,10 +24409,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.6.0",
-      "code": 200,
-      "at": "2026-10-16T13:58:00Z",
-      "sha": "d01825bfd388212289fd0c2506b96fd335efb4a9"
+      "version": "1.6.1",
+      "code": 201,
+      "at": "2026-10-16T14:31:20Z",
+      "sha": "33fcde3fbb4f2613a04237cf535b2ac55dd16f33"
     }
   },
   "_ai_notice": "内容由AI生成"
