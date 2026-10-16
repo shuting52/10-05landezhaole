@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 195,
-    "name": "1.5.5",
+    "code": 196,
+    "name": "1.5.6",
     "changelog": [
-      "✨ v1.5.5 更新来啦～",
-      "rewrite: v1.5.5 主题按 shejishi 规范重写"
+      "✨ v1.5.6 更新来啦～",
+      "fix: v1.5.6 背景不再误用卡片渐变色"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.5.5-1792145664.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.5.5-1792145664.apk",
-    "lastBuildSha": "4adc9b51adae0e1d5791c650c9371ba944676c63",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.5.6-1792151589.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.5.6-1792151589.apk",
+    "lastBuildSha": "52a712af25979f72972ace1d26bac3a32d7e382e",
     "apkSize": 24013088
   },
   "home": {
@@ -24344,10 +24344,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.5.5 已上线",
+    "title": "懒得找了 v1.5.6 已上线",
     "changelog": [
-      "✨ v1.5.5 更新来啦～",
-      "rewrite: v1.5.5 主题按 shejishi 规范重写"
+      "✨ v1.5.6 更新来啦～",
+      "fix: v1.5.6 背景不再误用卡片渐变色"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24409,10 +24409,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.5.5",
-      "code": 195,
-      "at": "2026-10-16T10:14:32Z",
-      "sha": "4adc9b51adae0e1d5791c650c9371ba944676c63"
+      "version": "1.5.6",
+      "code": 196,
+      "at": "2026-10-16T11:53:14Z",
+      "sha": "52a712af25979f72972ace1d26bac3a32d7e382e"
     }
   },
   "_ai_notice": "内容由AI生成"
