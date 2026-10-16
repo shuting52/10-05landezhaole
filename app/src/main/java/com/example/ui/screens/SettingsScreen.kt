@@ -622,7 +622,6 @@ fun SettingsScreen(
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    DynamicCssBrandTag()
                     Spacer(modifier = Modifier.height(14.dp))
                     Text(
                         text = "「懒得找了」· 纯净聚合生态",
@@ -1207,7 +1206,6 @@ private fun ContactAuthorDialog(
         }
     }
 }
-
 /**
  * 联系二维码：控制台上传的二维码「写死」生效——
  * 一旦存在云端/缓存二维码，仅展示该二维码，不再呈现内置二维码；
@@ -1262,67 +1260,3 @@ private fun ContactQrImage(
         }
     }
 }
-
-/**
- * v1.0.1 关于我们·全新动态 CSS 品牌标签：渐变流光 + 呼吸浮动动画
- * 内容固定为「懒得找了-307779523」，圆角胶囊 + 粉橙黄渐变流光扫过，可爱卡通风格贴合新主题
- */
-@Composable
-private fun DynamicCssBrandTag() {
-    val infinite = rememberInfiniteTransition(label = "about_css_brand_tag")
-    // 渐变流光：从左侧扫到右侧再循环
-    val shift by infinite.animateFloat(
-        initialValue = -1f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 2600, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "tag_shift"
-    )
-    // 呼吸浮动：轻微放大缩小让标签更有生命力
-    val breathe by infinite.animateFloat(
-        initialValue = 0.96f,
-        targetValue = 1.04f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1100, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "tag_breathe"
-    )
-    Box(
-        modifier = Modifier
-            .padding(vertical = 4.dp)
-            .graphicsLayer {
-                scaleX = breathe
-                scaleY = breathe
-            }
-            .clip(RoundedCornerShape(50))
-            .background(
-                Brush.linearGradient(
-                    colors = listOf(CutePink, CutePeach, CuteLemon, CutePink),
-                    start = Offset(shift * 700f, 0f),
-                    end = Offset(shift * 700f + 460f, 0f)
-                )
-            )
-            .padding(horizontal = 20.dp, vertical = 10.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = "🧸",
-                fontSize = 15.sp
-            )
-            Text(
-                text = "懒得找了-307779523",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Black,
-                color = Color.White
-            )
-        }
-    }
-}
-

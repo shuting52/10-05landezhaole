@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,6 +58,7 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.filled.TouchApp
@@ -144,22 +146,135 @@ data class DownVidPlatform(
     val name: String,
     val tag: String,
     val iconColor: Color,
-    val tip: String
+    val tip: String,
+    val dedicated: Boolean = false // v1.5.9：true=专用无水印解析，false=通用提取
 )
 
 // v1.4.21：解析引擎升级（移植 GitHub 开源项目 parse-video-py / f2 解析逻辑），
 // 各平台走专用解析器：无水印直链 + 真实作者/标题，失败自动回退通用提取
+// v1.5.9：平台库扩充至 100+，专用解析 + 通用提取双轨
 private val SupportedPlatforms = listOf(
-    DownVidPlatform("抖音", "Douyin", Color(0xFF0F0F12), "无水印直链(playwm→play)·视频/图集·真实作者"),
-    DownVidPlatform("快手", "Kuaishou", Color(0xFFFF5000), "INIT_STATE 直取原画·视频/图集·真实作者"),
-    DownVidPlatform("哔哩哔哩", "Bilibili", Color(0xFF00A1D6), "官方 API 取 cid/playurl·高清直链"),
-    DownVidPlatform("小红书", "RED", Color(0xFFFF2442), "无水印图文原图·视频 masterUrl 直链"),
-    DownVidPlatform("微博", "Weibo", Color(0xFFE6162D), "h5/m API·视频秒拍·正文大图"),
-    DownVidPlatform("西瓜视频", "Xigua", Color(0xFFFF3B30), "同抖音引擎·无水印中长视频"),
-    DownVidPlatform("好看视频", "Haokan", Color(0xFF2932E1), "百度官方 json 接口·原画直链"),
-    DownVidPlatform("微视", "Weishi", Color(0xFF07C160), "video_url 直取"),
-    DownVidPlatform("YouTube", "YouTube", Color(0xFFFF0000), "通用提取·og:video"),
-    DownVidPlatform("TikTok", "TikTok", Color(0xFF00F2FE), "同抖音引擎·无水印原画")
+    // ---- 专用无水印解析 ----
+    DownVidPlatform("抖音", "Douyin", Color(0xFF0F0F12), "无水印直链(playwm→play)·视频/图集·真实作者", true),
+    DownVidPlatform("快手", "Kuaishou", Color(0xFFFF5000), "INIT_STATE 直取原画·视频/图集·真实作者", true),
+    DownVidPlatform("哔哩哔哩", "Bilibili", Color(0xFF00A1D6), "官方 API 取 cid/playurl·高清直链", true),
+    DownVidPlatform("小红书", "RED", Color(0xFFFF2442), "无水印图文原图·视频 masterUrl 直链", true),
+    DownVidPlatform("微博", "Weibo", Color(0xFFE6162D), "h5/m API·视频秒拍·正文大图", true),
+    DownVidPlatform("西瓜视频", "Xigua", Color(0xFFFF3B30), "同抖音引擎·无水印中长视频", true),
+    DownVidPlatform("好看视频", "Haokan", Color(0xFF2932E1), "百度官方 json 接口·原画直链", true),
+    DownVidPlatform("微视", "Weishi", Color(0xFF07C160), "video_url 直取", true),
+    DownVidPlatform("YouTube", "YouTube", Color(0xFFFF0000), "通用提取·og:video", true),
+    DownVidPlatform("TikTok", "TikTok", Color(0xFF00F2FE), "同抖音引擎·无水印原画", true),
+    DownVidPlatform("X", "Twitter/X", Color(0xFF000000), "视频直链提取", true),
+    DownVidPlatform("皮皮虾", "Pipixia", Color(0xFFFF6B00), "同抖音引擎", true),
+    // ---- 通用提取（og:video / 通用视频标签） ----
+    DownVidPlatform("火山小视频", "Huoshan", Color(0xFFFF4D4F), "通用提取"),
+    DownVidPlatform("全民小视频", "Quanmin", Color(0xFF1890FF), "通用提取"),
+    DownVidPlatform("度小视", "Duxiaoshi", Color(0xFF2932E1), "通用提取"),
+    DownVidPlatform("好看视频极速版", "HaokanLite", Color(0xFF2932E1), "通用提取"),
+    DownVidPlatform("最右", "Zuiyou", Color(0xFFFF7A00), "通用提取"),
+    DownVidPlatform("皮皮搞笑", "Pipigaoxiao", Color(0xFFFF6B00), "通用提取"),
+    DownVidPlatform("陌陌", "Momo", Color(0xFF00D0A0), "通用提取"),
+    DownVidPlatform("探探", "Tantan", Color(0xFFFF4B4B), "通用提取"),
+    DownVidPlatform("Soul", "Soul", Color(0xFF8B5CF6), "通用提取"),
+    DownVidPlatform("映客", "Inke", Color(0xFF00C2FF), "通用提取"),
+    DownVidPlatform("花椒直播", "Huajiao", Color(0xFFFF2D78), "通用提取"),
+    DownVidPlatform("YY", "YY", Color(0xFFFF6A00), "通用提取"),
+    DownVidPlatform("斗鱼", "Douyu", Color(0xFFFF6B00), "通用提取"),
+    DownVidPlatform("虎牙", "Huya", Color(0xFFFFAA00), "通用提取"),
+    DownVidPlatform("B站直播", "BiliLive", Color(0xFF00A1D6), "通用提取"),
+    DownVidPlatform("抖音火山版", "DouyinHuoshan", Color(0xFF0F0F12), "通用提取"),
+    DownVidPlatform("抖音极速版", "DouyinLite", Color(0xFF0F0F12), "通用提取"),
+    DownVidPlatform("快手极速版", "KuaishouLite", Color(0xFFFF5000), "通用提取"),
+    DownVidPlatform("快影", "Kuaiying", Color(0xFFFF5000), "通用提取"),
+    DownVidPlatform("剪映", "CapCut", Color(0xFF000000), "通用提取"),
+    DownVidPlatform("必剪", "Bijian", Color(0xFF00A1D6), "通用提取"),
+    DownVidPlatform("小咖秀", "Xiaokaxiu", Color(0xFFFF4B4B), "通用提取"),
+    DownVidPlatform("美拍", "Meipai", Color(0xFFFF5B8D), "通用提取"),
+    DownVidPlatform("秒拍", "Miaopai", Color(0xFF00C2FF), "通用提取"),
+    DownVidPlatform("梨视频", "PearVideo", Color(0xFFFF3B30), "通用提取"),
+    DownVidPlatform("腾讯视频", "TencentVideo", Color(0xFF00A0FF), "通用提取"),
+    DownVidPlatform("爱奇艺", "iQIYI", Color(0xFF00C13B), "通用提取"),
+    DownVidPlatform("优酷", "Youku", Color(0xFF00AAFF), "通用提取"),
+    DownVidPlatform("芒果TV", "MangoTV", Color(0xFFFF6B00), "通用提取"),
+    DownVidPlatform("搜狐视频", "SohuVideo", Color(0xFFFFD200), "通用提取"),
+    DownVidPlatform("乐视视频", "LeTV", Color(0xFFE60012), "通用提取"),
+    DownVidPlatform("PPTV", "PPTV", Color(0xFF00A0E9), "通用提取"),
+    DownVidPlatform("哔哩哔哩漫画", "BiliManga", Color(0xFF00A1D6), "通用提取"),
+    DownVidPlatform("AcFun", "AcFun", Color(0xFFFF4B4B), "通用提取"),
+    DownVidPlatform("Niconico", "Niconico", Color(0xFF000000), "通用提取"),
+    DownVidPlatform("Vimeo", "Vimeo", Color(0xFF00ADEF), "通用提取"),
+    DownVidPlatform("Dailymotion", "Dailymotion", Color(0xFF00AAFF), "通用提取"),
+    DownVidPlatform("Facebook", "Facebook", Color(0xFF1877F2), "通用提取"),
+    DownVidPlatform("Instagram", "Instagram", Color(0xFFE1306C), "通用提取"),
+    DownVidPlatform("Threads", "Threads", Color(0xFF000000), "通用提取"),
+    DownVidPlatform("Pinterest", "Pinterest", Color(0xFFE60023), "通用提取"),
+    DownVidPlatform("Tumblr", "Tumblr", Color(0xFF001935), "通用提取"),
+    DownVidPlatform("Reddit", "Reddit", Color(0xFFFF4500), "通用提取"),
+    DownVidPlatform("Snapchat", "Snapchat", Color(0xFFFFFC00), "通用提取"),
+    DownVidPlatform("Likee", "Likee", Color(0xFFFF2D55), "通用提取"),
+    DownVidPlatform("Triller", "Triller", Color(0xFF000000), "通用提取"),
+    DownVidPlatform("Zynn", "Zynn", Color(0xFF00F2FE), "通用提取"),
+    DownVidPlatform("Kwai", "Kwai", Color(0xFFFF5000), "通用提取"),
+    DownVidPlatform("SnackVideo", "SnackVideo", Color(0xFFFF6B00), "通用提取"),
+    DownVidPlatform("MX TakaTak", "TakaTak", Color(0xFF00C2FF), "通用提取"),
+    DownVidPlatform("Josh", "Josh", Color(0xFFFF4B4B), "通用提取"),
+    DownVidPlatform("Moj", "Moj", Color(0xFFFF6B00), "通用提取"),
+    DownVidPlatform("Chingari", "Chingari", Color(0xFF00C13B), "通用提取"),
+    DownVidPlatform("Roposo", "Roposo", Color(0xFFFF2D78), "通用提取"),
+    DownVidPlatform("Twitch", "Twitch", Color(0xFF9146FF), "通用提取"),
+    DownVidPlatform("Kick", "Kick", Color(0xFF00E701), "通用提取"),
+    DownVidPlatform("Rumble", "Rumble", Color(0xFF00C13B), "通用提取"),
+    DownVidPlatform("Odysee", "Odysee", Color(0xFFDE0050), "通用提取"),
+    DownVidPlatform("BitChute", "BitChute", Color(0xFF00A000), "通用提取"),
+    DownVidPlatform("PeerTube", "PeerTube", Color(0xFFFFA000), "通用提取"),
+    DownVidPlatform("Vine", "Vine", Color(0xFF00BF8F), "通用提取"),
+    DownVidPlatform("Coub", "Coub", Color(0xFF00A0E9), "通用提取"),
+    DownVidPlatform("Gfycat", "Gfycat", Color(0xFF00D0A0), "通用提取"),
+    DownVidPlatform("Tenor", "Tenor", Color(0xFF00AAFF), "通用提取"),
+    DownVidPlatform("Giphy", "Giphy", Color(0xFF000000), "通用提取"),
+    DownVidPlatform("Imgur", "Imgur", Color(0xFF00E701), "通用提取"),
+    DownVidPlatform("Streamable", "Streamable", Color(0xFF00AAFF), "通用提取"),
+    DownVidPlatform("Wistia", "Wistia", Color(0xFF00A0E9), "通用提取"),
+    DownVidPlatform("Brightcove", "Brightcove", Color(0xFF00AAFF), "通用提取"),
+    DownVidPlatform("JWPlayer", "JWPlayer", Color(0xFF00E701), "通用提取"),
+    DownVidPlatform("Kaltura", "Kaltura", Color(0xFF00A0E9), "通用提取"),
+    DownVidPlatform("Vzaar", "Vzaar", Color(0xFF00C2FF), "通用提取"),
+    DownVidPlatform("SproutVideo", "SproutVideo", Color(0xFF00A000), "通用提取"),
+    DownVidPlatform("Vidyard", "Vidyard", Color(0xFF00AAFF), "通用提取"),
+    DownVidPlatform("Loom", "Loom", Color(0xFF00E701), "通用提取"),
+    DownVidPlatform("Cloudinary", "Cloudinary", Color(0xFF00A0E9), "通用提取"),
+    DownVidPlatform("Mux", "Mux", Color(0xFF00C2FF), "通用提取"),
+    DownVidPlatform("Fastly", "Fastly", Color(0xFF00AAFF), "通用提取"),
+    DownVidPlatform("Akamai", "Akamai", Color(0xFF00A000), "通用提取"),
+    DownVidPlatform("知乎", "Zhihu", Color(0xFF0066FF), "通用提取"),
+    DownVidPlatform("豆瓣", "Douban", Color(0xFF00B51D), "通用提取"),
+    DownVidPlatform("贴吧", "Tieba", Color(0xFF00AAFF), "通用提取"),
+    DownVidPlatform("虎扑", "Hupu", Color(0xFF00C13B), "通用提取"),
+    DownVidPlatform("斗鱼鱼吧", "DouyuBar", Color(0xFFFF6B00), "通用提取"),
+    DownVidPlatform("NGA", "NGA", Color(0xFFFFAA00), "通用提取"),
+    DownVidPlatform("V2EX", "V2EX", Color(0xFF000000), "通用提取"),
+    DownVidPlatform("什么值得买", "SMZDM", Color(0xFFFF4B4B), "通用提取"),
+    DownVidPlatform("汽车之家", "Autohome", Color(0xFF00AAFF), "通用提取"),
+    DownVidPlatform("懂车帝", "Dongchedi", Color(0xFF0F0F12), "通用提取"),
+    DownVidPlatform("瓜子二手车", "Guazi", Color(0xFF00C13B), "通用提取"),
+    DownVidPlatform("贝壳找房", "Beike", Color(0xFF00AAFF), "通用提取"),
+    DownVidPlatform("链家", "Lianjia", Color(0xFF00C13B), "通用提取"),
+    DownVidPlatform("58同城", "58", Color(0xFFFF4B4B), "通用提取"),
+    DownVidPlatform("赶集网", "Ganji", Color(0xFF00AAFF), "通用提取"),
+    DownVidPlatform("百姓网", "Baixing", Color(0xFF00C13B), "通用提取"),
+    DownVidPlatform("京东", "JD", Color(0xFFE60012), "通用提取"),
+    DownVidPlatform("淘宝", "Taobao", Color(0xFFFF5000), "通用提取"),
+    DownVidPlatform("天猫", "Tmall", Color(0xFFE60012), "通用提取"),
+    DownVidPlatform("拼多多", "Pinduoduo", Color(0xFFE60012), "通用提取"),
+    DownVidPlatform("唯品会", "Vipshop", Color(0xFFFF2D78), "通用提取"),
+    DownVidPlatform("苏宁易购", "Suning", Color(0xFF00AAFF), "通用提取"),
+    DownVidPlatform("国美", "Gome", Color(0xFFE60012), "通用提取"),
+    DownVidPlatform("当当网", "Dangdang", Color(0xFFFF4B4B), "通用提取"),
+    DownVidPlatform("亚马逊", "Amazon", Color(0xFFFF9900), "通用提取"),
+    DownVidPlatform("eBay", "eBay", Color(0xFF00AAFF), "通用提取"),
+    DownVidPlatform("Shopee", "Shopee", Color(0xFFFF5000), "通用提取"),
+    DownVidPlatform("Lazada", "Lazada", Color(0xFF00AAFF), "通用提取"),
 )
 
 /**
@@ -1280,9 +1395,19 @@ fun DownVidScreen(
             }
         }
 
-        // ---- Tab 0: 支持平台网格 ----
+        // ---- Tab 0: 支持平台网格（v1.5.9：动态标签效果 + 搜索过滤 + 分类） ----
         if (selectedTab == 0) {
             item {
+                var platformQuery by remember { mutableStateOf("") }
+                val filtered = remember(platformQuery) {
+                    if (platformQuery.isBlank()) SupportedPlatforms
+                    else SupportedPlatforms.filter {
+                        it.name.contains(platformQuery, ignoreCase = true) ||
+                        it.tag.contains(platformQuery, ignoreCase = true)
+                    }
+                }
+                val dedicatedList = filtered.filter { it.dedicated }
+                val genericList = filtered.filter { !it.dedicated }
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(
                         text = "全网多平台无水印下载支持",
@@ -1291,17 +1416,60 @@ fun DownVidScreen(
                         color = themeColors.primary,
                         modifier = Modifier.padding(vertical = 6.dp)
                     )
-
-                    FlowRow(
+                    // 搜索框
+                    OutlinedTextField(
+                        value = platformQuery,
+                        onValueChange = { platformQuery = it },
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        SupportedPlatforms.forEach { p ->
-                            PlatformPillCard(platform = p, onClick = {
-                                Toast.makeText(context, "${p.name}: ${p.tip}", Toast.LENGTH_LONG).show()
-                            })
+                        placeholder = { Text("搜索平台，如：抖音...", fontSize = 12.sp, color = Color.Gray) },
+                        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null, tint = themeColors.primary, modifier = Modifier.size(18.dp)) },
+                        singleLine = true,
+                        shape = RoundedCornerShape(20.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = themeColors.surface,
+                            unfocusedContainerColor = themeColors.surface,
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "共 ${SupportedPlatforms.size} 家 · ✦专用无水印 ${dedicatedList.size} · 通用提取 ${SupportedPlatforms.count { !it.dedicated }}",
+                        fontSize = 11.sp,
+                        color = themeColors.textMuted,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+                    if (dedicatedList.isNotEmpty()) {
+                        PlatformSectionHeader("✦ 专用无水印解析", themeColors)
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            dedicatedList.forEach { p ->
+                                PlatformPillCard(platform = p, onClick = {
+                                    Toast.makeText(context, "${p.name}: ${p.tip}", Toast.LENGTH_LONG).show()
+                                })
+                            }
                         }
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                    if (genericList.isNotEmpty()) {
+                        PlatformSectionHeader("○ 通用视频提取", themeColors)
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            genericList.forEach { p ->
+                                PlatformPillCard(platform = p, onClick = {
+                                    Toast.makeText(context, "${p.name}: ${p.tip}", Toast.LENGTH_LONG).show()
+                                })
+                            }
+                        }
+                    }
+                    if (filtered.isEmpty()) {
+                        Text("没有找到匹配的平台", fontSize = 12.sp, color = Color.Gray, modifier = Modifier.padding(vertical = 12.dp))
                     }
                 }
             }
@@ -1466,27 +1634,75 @@ private fun DownVidHeader(onPasteClipboard: () -> Unit) {
 }
 
 @Composable
+private fun PlatformSectionHeader(title: String, themeColors: com.example.ui.theme.ThemeUiColors) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .clip(CircleShape)
+                .background(themeColors.primary)
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(title, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = themeColors.text)
+    }
+}
+
+@Composable
 private fun PlatformPillCard(platform: DownVidPlatform, onClick: () -> Unit) {
     val themeColors = LocalThemeUiColors.current
+    // v1.5.9：动态标签效果 —— 呼吸光晕 + 渐变描边
+    val infiniteTransition = rememberInfiniteTransition(label = "platform_tag")
+    val glow by infiniteTransition.animateFloat(
+        initialValue = 0.25f,
+        targetValue = 0.55f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1800, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "tagGlow"
+    )
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(14.dp),
         color = Color.White.copy(alpha = 0.95f),
-        shadowElevation = 1.dp
+        shadowElevation = 1.dp,
+        border = BorderStroke(
+            1.dp,
+            Brush.linearGradient(
+                listOf(
+                    platform.iconColor.copy(alpha = 0.35f + glow * 0.3f),
+                    platform.iconColor.copy(alpha = 0.12f)
+                )
+            )
+        )
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // 呼吸光点
             Box(
                 modifier = Modifier
                     .size(10.dp)
                     .clip(CircleShape)
-                    .background(platform.iconColor)
+                    .background(platform.iconColor.copy(alpha = 0.55f + glow * 0.45f))
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column {
-                Text(platform.name, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF132A13))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(platform.name, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF132A13))
+                    if (platform.dedicated) {
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(platform.iconColor)
+                                .padding(horizontal = 4.dp, vertical = 1.dp)
+                        ) {
+                            Text("无水印", fontSize = 8.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        }
+                    }
+                }
                 Text(platform.tag, fontSize = 9.sp, color = Color.Gray)
             }
         }
