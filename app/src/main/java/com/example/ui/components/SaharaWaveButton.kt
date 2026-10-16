@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import kotlin.math.PI
 import kotlin.math.sin
 
+import com.example.ui.theme.LocalThemeUiColors
 import com.example.ui.theme.LocalUiverseState
 import com.example.ui.uiverse.ButtonStylePreset
 import androidx.compose.foundation.border
@@ -135,13 +136,13 @@ fun SaharaWaveButton(
                 bgBrush != null -> Modifier.background(bgBrush)
                 bgColor != null -> Modifier.background(bgColor)
                 else -> Modifier.background(
-                    // v1.1.15：中国红系渐变（用户要求）
-                    Brush.horizontalGradient(listOf(Color(0xFFC8102E), Color(0xFFDE2910), Color(0xFFFF5722)))
+                    // 主题跟随：默认样式用主题主色渐变
+                    Brush.horizontalGradient(listOf(LocalThemeUiColors.current.primary, LocalThemeUiColors.current.secondary))
                 )
             }
         }
         else -> Modifier.background(
-            Brush.horizontalGradient(listOf(Color(0xFFC8102E), Color(0xFFDE2910), Color(0xFFFF5722)))
+            Brush.horizontalGradient(listOf(LocalThemeUiColors.current.primary, LocalThemeUiColors.current.secondary))
         )
     }
 

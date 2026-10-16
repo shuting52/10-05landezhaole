@@ -159,13 +159,10 @@ import com.example.ui.theme.LocalUiverseState
 import com.example.ui.uiverse.CardStylePreset
 import com.example.ui.uiverse.InputStylePreset
 import com.example.ui.uiverse.UiverseDialog
-import com.example.ui.theme.FlameRed
-import com.example.ui.theme.SunsetOrange
 import com.example.ui.viewmodel.AppBottomTab
 import com.example.ui.viewmodel.NavViewModel
 
 // v1.2.6：中国红标准色（截图2要求：绿色改为中国红）
-private val ChinaRed = Color(0xFFDE2910)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -355,7 +352,7 @@ fun MainScreen(
                                         modifier = Modifier
                                             .size(7.dp)
                                             .clip(CircleShape)
-                                            .background(Color(0xFFDE2910))
+                                            .background(LocalThemeUiColors.current.primary)
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
@@ -846,7 +843,7 @@ private fun HeaderBrandSection(
         listOf(
             Color.White.copy(alpha = 0.94f),
             Color.White.copy(alpha = 0.45f),
-            Color(0xFFDE2910).copy(alpha = 0.45f),
+            LocalThemeUiColors.current.primary.copy(alpha = 0.45f),
             Color.White.copy(alpha = 0.90f)
         )
     )
@@ -998,13 +995,14 @@ fun AnimatedBrandTitle(
         label = "sparkle_scale"
     )
 
+    val themeUi = LocalThemeUiColors.current
     val gradientBrush = Brush.linearGradient(
         colors = listOf(
-            Color(0xFFFF3B30),
-            Color(0xFFFF8C00),
-            Color(0xFFFFCC00),
-            Color(0xFFFF2D55),
-            Color(0xFFFF3B30)
+            themeUi.primary,
+            themeUi.secondary,
+            themeUi.primary.copy(alpha = 0.7f),
+            themeUi.secondary,
+            themeUi.primary
         ),
         start = Offset(shimmerOffset, 0f),
         end = Offset(shimmerOffset + 240f, 60f)
@@ -1025,11 +1023,11 @@ fun AnimatedBrandTitle(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(4.dp))
-                .background(Color(0xFFDE2910))
-                .border(0.6.dp, Color(0xFFFFD700), RoundedCornerShape(4.dp))
+                .background(LocalThemeUiColors.current.primary)
+                .border(0.6.dp, LocalThemeUiColors.current.secondary, RoundedCornerShape(4.dp))
                 .padding(horizontal = 4.dp, vertical = 1.dp)
         ) {
-            Text("精选", color = Color(0xFFFFD700), fontSize = 9.sp, fontWeight = FontWeight.ExtraBold)
+            Text("精选", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.ExtraBold)
         }
         Text(
             text = "✨",
@@ -1794,7 +1792,7 @@ fun DynamicOnlineCountWidget(
             text = "收录 $totalResourceCount+ 华夏宝藏",
             fontSize = 10.5.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFFDE2910)
+            color = LocalThemeUiColors.current.primary
         )
     }
 }
@@ -1847,7 +1845,7 @@ private fun SearchSection(
             Text(placeholderText?.ifBlank { "🔍 探索全网精选资源、AI、实用工具、影视..." } ?: "🔍 探索全网精选资源、AI、实用工具、影视...", fontSize = 13.sp, maxLines = 1)
         },
         leadingIcon = {
-            Icon(Icons.Filled.Search, contentDescription = "搜索", tint = Color(0xFFDE2910))
+            Icon(Icons.Filled.Search, contentDescription = "搜索", tint = LocalThemeUiColors.current.primary)
         },
         trailingIcon = {
             // v1.1.15：固定占位宽度——避免输入时清除按钮出现导致输入框宽度突变、光标跳到文字前
@@ -1906,7 +1904,7 @@ private fun CategoryTagsSheetContent(
                 modifier = Modifier
                     .size(36.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(Brush.linearGradient(listOf(FlameRed, SunsetOrange))),
+                    .background(Brush.linearGradient(listOf(LocalThemeUiColors.current.primary, LocalThemeUiColors.current.secondary))),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -1967,13 +1965,13 @@ private fun CategoryTagsSheetContent(
                     text = (uiText?.allSites?.ifBlank { "全部站点" } ?: "全部站点") + " ($totalResourceCount)",
                     fontSize = 12.5.sp,
                     fontWeight = if (isAllSelected) FontWeight.Bold else FontWeight.Normal,
-                    color = if (isAllSelected) ChinaRed else MaterialTheme.colorScheme.onSurface
+                    color = if (isAllSelected) LocalThemeUiColors.current.primary else MaterialTheme.colorScheme.onSurface
                 )
             }
 
             Button(
                 onClick = onRollLucky,
-                colors = ButtonDefaults.buttonColors(containerColor = SunsetOrange),
+                colors = ButtonDefaults.buttonColors(containerColor = LocalThemeUiColors.current.secondary),
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.weight(1f)
             ) {
@@ -2108,7 +2106,7 @@ private fun LuckyDrawSheetContent(
                 text = uiText?.luckyTitle?.ifBlank { "✨ 分类列表 · 今日宝藏" } ?: "✨ 分类列表 · 今日宝藏",
                 fontWeight = FontWeight.Black,
                 fontSize = 18.sp,
-                color = ChinaRed
+                color = LocalThemeUiColors.current.primary
             )
             IconButton(onClick = onClose) {
                 Icon(Icons.Filled.Close, contentDescription = "关闭")
@@ -2141,13 +2139,13 @@ private fun LuckyDrawSheetContent(
                         modifier = Modifier
                             .size(32.dp)
                             .clip(CircleShape)
-                            .background(ChinaRed.copy(alpha = 0.12f)),
+                            .background(LocalThemeUiColors.current.primary.copy(alpha = 0.12f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Extension,
                             contentDescription = null,
-                            tint = ChinaRed,
+                            tint = LocalThemeUiColors.current.primary,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -2166,7 +2164,7 @@ private fun LuckyDrawSheetContent(
                                 text = if (activeCatName != null) activeCatName else "全站宝藏",
                                 fontSize = 13.5.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = ChinaRed
+                                color = LocalThemeUiColors.current.primary
                             )
                         }
                         Text(
@@ -2183,7 +2181,7 @@ private fun LuckyDrawSheetContent(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
-                        .background(ChinaRed)
+                        .background(LocalThemeUiColors.current.primary)
                         .padding(horizontal = 10.dp, vertical = 5.dp)
                 ) {
                     Text(
@@ -2214,7 +2212,7 @@ private fun LuckyDrawSheetContent(
                 )
                 .border(
                     width = 1.5.dp,
-                    brush = Brush.horizontalGradient(listOf(ChinaRed, SunsetOrange)),
+                    brush = Brush.horizontalGradient(listOf(LocalThemeUiColors.current.primary, LocalThemeUiColors.current.secondary)),
                     shape = RoundedCornerShape(16.dp)
                 )
                 .padding(18.dp)
@@ -2293,7 +2291,7 @@ private fun LuckyDrawSheetContent(
             Button(
                 onClick = onOpen,
                 modifier = Modifier.weight(1.3f),
-                colors = ButtonDefaults.buttonColors(containerColor = ChinaRed),
+                colors = ButtonDefaults.buttonColors(containerColor = LocalThemeUiColors.current.primary),
                 shape = RoundedCornerShape(22.dp)
             ) {
                 Icon(Icons.Filled.OpenInNew, contentDescription = null, modifier = Modifier.size(16.dp))
@@ -2426,7 +2424,7 @@ private fun FavoritesSheet(
                             }
 
                             IconButton(onClick = { onRemove(item) }) {
-                                Icon(Icons.Filled.Bookmark, contentDescription = "移除收藏", tint = FlameRed)
+                                Icon(Icons.Filled.Bookmark, contentDescription = "移除收藏", tint = LocalThemeUiColors.current.primary)
                             }
                         }
                     }
