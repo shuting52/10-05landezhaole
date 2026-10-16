@@ -162,10 +162,12 @@ object VideoLinkParser {
     private fun parseDouyin(shareUrl: String): MediaParseResult? {
         return try {
             var videoId = extractDouyinId(shareUrl)
+            var isNote = "/note/" in shareUrl
             // v.douyin.com 短链 → 跟随重定向拿 video_id
             if (videoId.isBlank() && "v.douyin.com" in shareUrl.lowercase()) {
                 val loc = getRedirectLocation(shareUrl) ?: ""
                 videoId = extractDouyinId(loc)
+                if ("/note/" in loc) isNote = true
             }
             if (videoId.isBlank()) return null
 
@@ -180,9 +182,10 @@ object VideoLinkParser {
                     break
                 }
             }
-            // 回退：HTML _ROUTER_DATA
+            // 回退：HTML _ROUTER_DATA（v1.6.6：note 用 /share/note/ 路径）
             if (item == null) {
-                val html = getString("https://www.iesdouyin.com/share/video/$videoId/", UA) ?: return null
+                val sharePath = if (isNote) "note" else "video"
+                val html = getString("https://www.iesdouyin.com/share/$sharePath/$videoId/", UA) ?: return null
                 val routerJson = Regex("""window\._ROUTER_DATA\s*=\s*(.*?)</script>""", RegexOption.DOT_MATCHES_ALL)
                     .find(html)?.groupValues?.get(1)?.trim() ?: return null
                 val root = JSONObject(routerJson)
