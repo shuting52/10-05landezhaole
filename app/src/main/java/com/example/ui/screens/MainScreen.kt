@@ -176,6 +176,11 @@ fun MainScreen(
     val filteredCards by viewModel.filteredCards.collectAsStateWithLifecycle()
 
     val favUrls = favorites.map { it.url }.toSet()
+    // v1.7.2：已访问 URL 集合
+    val visitedUrls by viewModel.visitedUrls.collectAsStateWithLifecycle()
+    // v1.7.2：正在加载的卡片 URL（点击后显示加载中）
+    var loadingCardUrl by remember { mutableStateOf<String?>(null) }
+    val scope = rememberCoroutineScope()
 
     val uploadedSoftware by viewModel.uploadedSoftware.collectAsStateWithLifecycle()
     val uploadedSkills by viewModel.uploadedSkills.collectAsStateWithLifecycle()
@@ -360,7 +365,17 @@ fun MainScreen(
                             ResourceCard(
                                 card = realBadge,
                                 isFavorite = favUrls.contains(card.url),
-                                onCardClick = { viewModel.openCard(context, it) },
+                                isVisited = visitedUrls.contains(card.url),
+                                isLoading = loadingCardUrl == card.url,
+                                onCardClick = {
+                                    // v1.7.2：点击后显示加载中，800ms 后打开链接并标记已访问
+                                    loadingCardUrl = it.url
+                                    scope.launch {
+                                        kotlinx.coroutines.delay(800)
+                                        viewModel.openCard(context, it)
+                                        loadingCardUrl = null
+                                    }
+                                },
                                 onFavoriteToggle = { viewModel.toggleFavorite(it, context) },
                                 onCardLongClick = { viewModel.showDetail(it) },
                                 // v1.1.4 主题分支：组件级定制真正生效

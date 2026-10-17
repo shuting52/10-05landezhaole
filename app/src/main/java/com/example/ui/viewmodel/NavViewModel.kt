@@ -105,6 +105,10 @@ class NavViewModel(
     private val _uiState = MutableStateFlow(NavUiState())
     val uiState: StateFlow<NavUiState> = _uiState
 
+    // v1.7.2：已访问（已点击）软件 URL 集合，用于卡片对勾标记
+    private val _visitedUrls = MutableStateFlow<Set<String>>(emptySet())
+    val visitedUrls: StateFlow<Set<String>> = _visitedUrls
+
     // ===== 本地「隐藏墓碑」：本体删除云端条目后，云端轮询不再把它同步回来 =====
     // （解决「本体删除后过一会儿又出现」的同步不到位问题）
     private val hiddenPrefs: android.content.SharedPreferences? =
@@ -160,6 +164,13 @@ class NavViewModel(
         // Pre-seed some popular initial software and skills if empty
         viewModelScope.launch {
             seedInitialResources()
+        }
+        // v1.7.2：加载已访问 URL 集合
+        viewModelScope.launch {
+            try {
+                val visited = repository.getVisitedUrls()
+                _visitedUrls.value = visited.toSet()
+            } catch (_: Exception) { }
         }
         // 拉取云端配置：分类 / 开屏 / 欢迎 / 更新弹窗，实时覆盖本地数据
         viewModelScope.launch {
@@ -936,6 +947,8 @@ class NavViewModel(
     fun openCard(context: Context, card: NavCard) {
         viewModelScope.launch {
             repository.recordVisit(card)
+            // v1.7.2：更新已访问集合，触发卡片对勾
+            _visitedUrls.value = _visitedUrls.value + card.url
         }
         openUrl(context, card.url, card.title)
     }

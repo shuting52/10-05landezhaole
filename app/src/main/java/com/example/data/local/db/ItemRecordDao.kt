@@ -14,6 +14,9 @@ interface ItemRecordDao {
     @Query("SELECT * FROM user_records WHERE visitedTimestamp > 0 ORDER BY visitedTimestamp DESC LIMIT 100")
     fun getHistory(): Flow<List<UserItemRecord>>
 
+    @Query("SELECT url FROM user_records WHERE visitedTimestamp > 0")
+    suspend fun getVisitedUrls(): List<String>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdate(record: UserItemRecord)
 

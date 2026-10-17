@@ -43,6 +43,9 @@ class NavRepository(
     suspend fun renameClone(id: String, newName: String) = cloneAppDao.renameClone(id, newName)
     suspend fun recordCloneLaunch(id: String) = cloneAppDao.recordLaunch(id)
 
+    // v1.7.2：获取已访问 URL 列表
+    suspend fun getVisitedUrls(): List<String> = dao.getVisitedUrls()
+
     suspend fun recordVisit(card: NavCard) {
         val existing = dao.getByUrl(card.url)
         val updated = if (existing != null) {

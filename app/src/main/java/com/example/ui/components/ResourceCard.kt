@@ -27,6 +27,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -69,7 +71,10 @@ fun ResourceCard(
     onCardLongClick: ((NavCard) -> Unit)? = null,
     modifier: Modifier = Modifier,
     // v1.1.4 主题分支：组件级主题定制（componentThemes）真正生效
-    componentThemes: Map<String, String> = emptyMap()
+    componentThemes: Map<String, String> = emptyMap(),
+    // v1.7.2：已访问标记 + 加载中状态
+    isVisited: Boolean = false,
+    isLoading: Boolean = false
 ) {
     val uiverse = LocalUiverseState.current
     // v1.2.2：主题 UI 色板——卡片背景/文字/边框跟随当前主题（默认经典=浅粉浅紫浅蓝，切主题后跟随主题色）
@@ -362,6 +367,57 @@ fun ResourceCard(
         }
 
         // v1.1.12：删除所有角标功能（用户要求）——不再渲染公司角标 / RibbonBadge
+
+        // v1.7.2：加载中遮罩
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
+            ) {
+                androidx.compose.material3.CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = Color.White,
+                    strokeWidth = 2.dp
+                )
+            }
+        }
+
+        // v1.7.2：已访问对勾 + 高光闪烁
+        if (isVisited && !isLoading) {
+            var flashAlpha by remember { mutableStateOf(1f) }
+            LaunchedEffect(card.url) {
+                // 高光闪烁一次
+                flashAlpha = 1f
+                kotlinx.coroutines.delay(100)
+                flashAlpha = 0.3f
+                kotlinx.coroutines.delay(150)
+                flashAlpha = 1f
+                kotlinx.coroutines.delay(150)
+                flashAlpha = 0.3f
+                kotlinx.coroutines.delay(150)
+                flashAlpha = 0.85f
+            }
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(x = (-4).dp, y = 4.dp)
+                    .size(22.dp)
+                    .clip(CircleShape)
+                    .background(
+                        Color(0xFF4CAF50).copy(alpha = flashAlpha)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Check,
+                    contentDescription = "已访问",
+                    tint = Color.White,
+                    modifier = Modifier.size(14.dp)
+                )
+            }
+        }
     }
 }
 
