@@ -521,6 +521,9 @@ private fun downloadApptekaApk(
                         .setAllowedOverMetered(true)
                         .setMimeType("application/vnd.android.package-archive")
                         .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, safeName)
+                    // v1.7.7：Appteka 下载链需要 Appteka UA，否则服务器拒绝导致下载失败
+                    request.addRequestHeader("User-Agent", "Appteka/23.0 Android")
+                    request.addRequestHeader("Referer", "https://appteka.store/")
                     dm.enqueue(request)
                     Toast.makeText(context, "已开始下载 ${item.label} 到「下载」文件夹", Toast.LENGTH_LONG).show()
                     onCompleted()
