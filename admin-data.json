@@ -1,16 +1,16 @@
 {
   "version": {
-    "code": 219,
-    "name": "1.7.9",
+    "code": 220,
+    "name": "1.7.10",
     "changelog": [
-      "✨ v1.7.9 更新来啦～",
-      "fix: 修复分区存储下载失败 + 看门狗改为0s（关闭）"
+      "✨ v1.7.10 更新来啦～",
+      "fix: 修复换自定义背景后不生效"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.9-1792253208.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.9-1792253208.apk",
-    "lastBuildSha": "3d13b57da0f0107c04046e8378f022bc383b0b4a",
-    "apkSize": 24029472
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.10-1792256171.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.10-1792256171.apk",
+    "lastBuildSha": "e502cc831edd8ecb07db6778f9ddc00cec15cf93",
+    "apkSize": 24029476
   },
   "home": {
     "categories": [
@@ -24344,10 +24344,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.9 已上线",
+    "title": "懒得找了 v1.7.10 已上线",
     "changelog": [
-      "✨ v1.7.9 更新来啦～",
-      "fix: 修复分区存储下载失败 + 看门狗改为0s（关闭）"
+      "✨ v1.7.10 更新来啦～",
+      "fix: 修复换自定义背景后不生效"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24409,10 +24409,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.9",
-      "code": 219,
-      "at": "2026-10-17T16:06:53Z",
-      "sha": "3d13b57da0f0107c04046e8378f022bc383b0b4a"
+      "version": "1.7.10",
+      "code": 220,
+      "at": "2026-10-17T16:56:16Z",
+      "sha": "e502cc831edd8ecb07db6778f9ddc00cec15cf93"
     }
   },
   "_ai_notice": "内容由AI生成"
