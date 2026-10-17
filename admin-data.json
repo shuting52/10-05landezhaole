@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 206,
-    "name": "1.6.6",
+    "code": 207,
+    "name": "1.6.7",
     "changelog": [
-      "✨ v1.6.6 更新来啦～",
-      "fix: v1.6.6 抖音图文 note 解析路径修正"
+      "✨ v1.6.7 更新来啦～",
+      "feat: v1.6.7 删除背景动态特效与透明磨砂"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.6.6-1792171997.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.6.6-1792171997.apk",
-    "lastBuildSha": "5e22197eec02bcc4b4fe101b74ade76c197911fc",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.6.7-1792196951.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.6.7-1792196951.apk",
+    "lastBuildSha": "447735eb9724dde109cbfd3a6ad4b22bdbc0a017",
     "apkSize": 24029472
   },
   "home": {
@@ -24344,10 +24344,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.6.6 已上线",
+    "title": "懒得找了 v1.6.7 已上线",
     "changelog": [
-      "✨ v1.6.6 更新来啦～",
-      "fix: v1.6.6 抖音图文 note 解析路径修正"
+      "✨ v1.6.7 更新来啦～",
+      "feat: v1.6.7 删除背景动态特效与透明磨砂"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24409,10 +24409,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.6.6",
-      "code": 206,
-      "at": "2026-10-16T17:33:25Z",
-      "sha": "5e22197eec02bcc4b4fe101b74ade76c197911fc"
+      "version": "1.6.7",
+      "code": 207,
+      "at": "2026-10-17T00:29:19Z",
+      "sha": "447735eb9724dde109cbfd3a6ad4b22bdbc0a017"
     }
   },
   "_ai_notice": "内容由AI生成"
