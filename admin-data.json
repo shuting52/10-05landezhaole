@@ -24364,7 +24364,183 @@
     "enabled": true,
     "url": "https://myip.ipip.net/"
   },
-  "tools": [],
+  "tools": [
+    {
+      "id": "tool_rtranslator",
+      "name": "RTranslator",
+      "desc": "离线AI实时翻译，Meta NLLB+Whisper 本地运行，支持对话/对讲/文本三种模式，无需联网",
+      "url": "https://github.com/niedev/RTranslator",
+      "icon": "🗣️"
+    },
+    {
+      "id": "tool_evertranslator",
+      "name": "EverTranslator",
+      "desc": "屏幕取词翻译，悬浮窗划词即可翻译任意界面上的文字，玩游戏看外文资讯必备",
+      "url": "https://github.com/firemaples/EverTranslator",
+      "icon": "🔍"
+    },
+    {
+      "id": "tool_screentranslate",
+      "name": "Screen Translate",
+      "desc": "开源屏幕翻译工具，浮动气泡实时翻译屏幕可见文本、图片文字和聊天内容",
+      "url": "https://github.com/AidanPark/src-screen-translator",
+      "icon": "🌐"
+    },
+    {
+      "id": "tool_shelter",
+      "name": "Shelter",
+      "desc": "软件分身/应用隔离，利用系统工作资料创建隔离空间，双开微信/游戏+一键冻结后台",
+      "url": "https://github.com/PeterCxy/Shelter",
+      "icon": "📦"
+    },
+    {
+      "id": "tool_binaryeye",
+      "name": "Binary Eye",
+      "desc": "开源二维码/条形码扫描+生成器，完全离线无广告，支持几十种条码格式",
+      "url": "https://github.com/markusfisch/BinaryEye",
+      "icon": "🔳"
+    },
+    {
+      "id": "tool_qrscanner",
+      "name": "QR & Barcode Scanner",
+      "desc": "二维码条码扫描生成全能工具，带扫描历史记录，可导出 CSV/JSON",
+      "url": "https://github.com/wewewe718/QrAndBarcodeScanner",
+      "icon": "📷"
+    },
+    {
+      "id": "tool_sensors",
+      "name": "传感器工具箱",
+      "desc": "手机传感器工具箱：指南针、水平仪、磁场强度测量，一次集齐",
+      "url": "https://github.com/sseam/utility1",
+      "icon": "🧭"
+    },
+    {
+      "id": "tool_pomodorot",
+      "name": "Pomodorot",
+      "desc": "极简番茄钟，自定义专注/休息时长，界面干净无广告",
+      "url": "https://github.com/mlm-games/pomodorot",
+      "icon": "🍅"
+    },
+    {
+      "id": "tool_amaze",
+      "name": "Amaze 文件管理器",
+      "desc": "Material Design 开源文件管理器，多标签页、压缩解压、应用备份卸载、FTP/SMB",
+      "url": "https://github.com/TeamAmaze/AmazeFileManager",
+      "icon": "📁"
+    },
+    {
+      "id": "tool_opencalc",
+      "name": "OpenCalc",
+      "desc": "简洁美观的开源计算器，科学模式+历史记录+多主题",
+      "url": "https://github.com/Darkempire78/OpenCalc",
+      "icon": "🧮"
+    },
+    {
+      "id": "tool_fossifycalc",
+      "name": "Fossify 计算器",
+      "desc": "无广告计算器，可自定义主题色，简单快速无多余权限",
+      "url": "https://github.com/FossifyOrg/Calculator",
+      "icon": "🔢"
+    },
+    {
+      "id": "tool_lumiocalc",
+      "name": "Lumio 计算器",
+      "desc": "计算器+单位换算+生活工具合集：折扣税费、小费AA、百分比、贷款EMI、BMI、日期计算",
+      "url": "https://github.com/lumio-apps/calculator",
+      "icon": "🧾"
+    },
+    {
+      "id": "tool_loophabit",
+      "name": "Loop 习惯打卡",
+      "desc": "习惯打卡追踪，习惯强度评分+统计图表+桌面小部件，完全离线无账号",
+      "url": "https://github.com/iSoron/uhabits",
+      "icon": "✅"
+    },
+    {
+      "id": "tool_clipboardeditor",
+      "name": "极简剪贴板",
+      "desc": "仅83KB的轻量剪贴板编辑器，查看/编辑剪贴板内容，支持同步模式",
+      "url": "https://github.com/TrianguloY/SimpleClipboardEditor",
+      "icon": "📋"
+    },
+    {
+      "id": "tool_rapidrop",
+      "name": "RapiDrop",
+      "desc": "局域网点对点剪贴板同步+文件共享，端到端加密，零云端零账号",
+      "url": "https://github.com/Prabotics/RapiDrop",
+      "icon": "🔗"
+    },
+    {
+      "id": "tool_clipboardhistory",
+      "name": "剪贴板历史",
+      "desc": "剪贴板历史记录管理器，标签分类+搜索，再也不怕复制内容丢失",
+      "url": "https://github.com/ayoung19/clipboard-history",
+      "icon": "🗂️"
+    },
+    {
+      "id": "tool_stride",
+      "name": "Stride 计步器",
+      "desc": "Material 3 风格计步器，每日目标+成就系统+历史统计",
+      "url": "https://github.com/NikhilKain/stride",
+      "icon": "👣"
+    },
+    {
+      "id": "tool_pedometer",
+      "name": "Pedometer",
+      "desc": "经典开源计步器，硬件传感器低功耗后台计步，带桌面小部件和图表",
+      "url": "https://github.com/j4velin/Pedometer",
+      "icon": "🚶"
+    },
+    {
+      "id": "tool_metronome",
+      "name": "节拍器 toc2",
+      "desc": "简单节拍器，BPM 设置+拍速点按+多音色，练乐器打拍子用",
+      "url": "https://github.com/thetwom/toc2",
+      "icon": "🎵"
+    },
+    {
+      "id": "tool_practicemetronome",
+      "name": "练习节拍器",
+      "desc": "多语言节拍器，支持变速循环、耐力训练、渐变速练习，离线可用",
+      "url": "https://github.com/nandoticon/practicemetronome",
+      "icon": "🥁"
+    },
+    {
+      "id": "tool_pwdgen",
+      "name": "密码生成器",
+      "desc": "离线密码生成器，防截屏、60秒自动清空剪贴板",
+      "url": "https://github.com/quanaoqua5-eng/Open-source-password-generator",
+      "icon": "🔐"
+    },
+    {
+      "id": "tool_pkgextractor",
+      "name": "包名提取器",
+      "desc": "从 Google Play 链接中提取应用包名并一键复制到剪贴板",
+      "url": "https://github.com/sorcerer86/PackageExtractor",
+      "icon": "📲"
+    },
+    {
+      "id": "tool_pyapktool",
+      "name": "pyapktool",
+      "desc": "APK 解包/打包/签名一条龙（Python 命令行），无前置依赖",
+      "url": "https://github.com/agentzex/pyapktool",
+      "icon": "🛠️"
+    },
+    {
+      "id": "tool_flashlight",
+      "name": "极简手电筒",
+      "desc": "极简手电筒，不到30KB，一键开关闪光灯，无多余权限无广告",
+      "url": "https://github.com/bleeding182/minimalist-flashlight",
+      "icon": "🔦"
+    },
+    {
+      "id": "tool_fossifyflash",
+      "name": "Fossify 手电筒",
+      "desc": "开源手电筒，LED 强光+屏幕补光+可调频闪 SOS 模式，带桌面小部件",
+      "url": "https://github.com/FossifyOrg/Flashlight",
+      "icon": "💡"
+    }
+  ],
   "themeKit": {
     "appBar": {
       "css": ""
