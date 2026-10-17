@@ -126,7 +126,8 @@ fun MarqueeNoticeWidget(
     cloudMarquee: MarqueeDto? = null
 ) {
     // 后台关闭跑马灯：本体完全不渲染公告内容（严格修复开关无效问题）
-    if (cloudMarquee != null && cloudMarquee.enabled == false) return
+    // v1.6.9：云端未加载时也不显示本地默认，避免开局闪出跑马灯
+    if (cloudMarquee == null || cloudMarquee.enabled == false) return
 
     // 播放队列（v1.2.4：严格遵循控制台设置的内容——仅 defaultText + 时段 segments，不再混入自动生成的逐小时文案）
     val defaultText = cloudMarquee?.defaultText?.ifBlank {
