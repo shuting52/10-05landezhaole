@@ -113,6 +113,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -211,7 +212,9 @@ fun MainScreen(
             // 先清掉旧文件
             dir.listFiles()?.forEach { it.delete() }
             val ext = if (type == "video") "mp4" else "jpg"
-            val dest = java.io.File(dir, "bg.$ext")
+            // v1.7.10 修复换背景不生效：文件名带时间戳，否则 Coil 按 URL 缓存旧图、
+            // AndroidView 不重建导致播放器继续播旧文件
+            val dest = java.io.File(dir, "bg_${System.currentTimeMillis()}.$ext")
             context.contentResolver.openInputStream(sourceUri)?.use { input ->
                 dest.outputStream().use { output -> input.copyTo(output) }
             }
@@ -257,8 +260,11 @@ fun MainScreen(
                 .background(MaterialTheme.colorScheme.background)
         ) {
             // 自定义背景（图片/视频）静态底层展示
+            // v1.7.10 修复：key 随 URL 变化，换背景时强制重建播放器/图片层
             if ((bgType == "image" || bgType == "video") && bgUrl.isNotBlank()) {
-                BgMediaStaticLayer(bgType = bgType, bgUrl = bgUrl)
+                key(bgUrl) {
+                    BgMediaStaticLayer(bgType = bgType, bgUrl = bgUrl)
+                }
             }
             Scaffold(
                 containerColor = Color.Transparent,
