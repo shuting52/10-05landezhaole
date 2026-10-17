@@ -141,7 +141,9 @@ data class VideoParseResult(
     val originalLink: String,
     val timestamp: Long = System.currentTimeMillis(),
     val qualityOptions: List<Pair<String, String>> = emptyList(), // v1.4.32：画质选项
-    val livePhotos: List<LivePhoto> = emptyList() // v1.6.5：Live 实况图
+    val livePhotos: List<LivePhoto> = emptyList(), // v1.6.5：Live 实况图
+    val description: String? = null, // v1.7.0：文案
+    val topics: List<String> = emptyList() // v1.7.0：话题
 )
 
 /**
@@ -421,7 +423,9 @@ fun DownVidScreen(
                         imageUrls = media.imageUrls,
                         livePhotos = media.livePhotos,
                         originalLink = target,
-                        qualityOptions = media.qualityOptions
+                        qualityOptions = media.qualityOptions,
+                        description = media.description,
+                        topics = media.topics
                     )
                     currentResult = result
                     if (historyList.none { it.originalLink == target }) {
@@ -1536,6 +1540,27 @@ fun DownVidScreen(
                                         fontWeight = FontWeight.Medium,
                                         color = themeColors.text
                                     )
+                                    // v1.7.0：文案展示
+                                    if (!res.description.isNullOrBlank()) {
+                                        Spacer(modifier = Modifier.height(6.dp))
+                                        Text(
+                                            text = res.description,
+                                            fontSize = 13.sp,
+                                            color = themeColors.text,
+                                            maxLines = 5,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                    // v1.7.0：话题标签展示
+                                    if (res.topics.isNotEmpty()) {
+                                        Spacer(modifier = Modifier.height(6.dp))
+                                        Text(
+                                            text = res.topics.joinToString(" ") { "#$it#" },
+                                            fontSize = 12.sp,
+                                            color = themeColors.primary,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    }
                                     Spacer(modifier = Modifier.height(6.dp))
                                     Text(
                                         text = "作者：${res.author} · 平台：${res.platform}",
@@ -1563,8 +1588,15 @@ fun DownVidScreen(
                                         .background(themeColors.primary.copy(alpha = 0.12f))
                                         .clickable {
                                             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                            // v1.7.0：复制包含标题+文案+话题+链接
+                                            val copyText = buildString {
+                                                if (!res.title.isNullOrBlank()) appendLine(res.title)
+                                                if (!res.description.isNullOrBlank()) appendLine(res.description)
+                                                if (res.topics.isNotEmpty()) appendLine(res.topics.joinToString(" ") { "#$it#" })
+                                                append(res.originalLink)
+                                            }
                                             clipboard.setPrimaryClip(
-                                                ClipData.newPlainText("文案", "${res.title}\n${res.originalLink}")
+                                                ClipData.newPlainText("文案", copyText)
                                             )
                                             Toast.makeText(context, "文案已复制", Toast.LENGTH_SHORT).show()
                                         }

@@ -29,7 +29,9 @@ data class MediaParseResult(
     val author: String? = null,          // v1.4.21：真实作者昵称
     val platform: String? = null,        // v1.4.21：平台名
     val qualityOptions: List<Pair<String, String>> = emptyList(), // v1.4.31：画质选项（标签 to 直链）
-    val livePhotos: List<LivePhoto> = emptyList() // v1.6.5：Live 实况图（静态图 + 动态视频成对）
+    val livePhotos: List<LivePhoto> = emptyList(), // v1.6.5：Live 实况图（静态图 + 动态视频成对）
+    val description: String? = null,     // v1.7.0：文案/描述
+    val topics: List<String> = emptyList() // v1.7.0：话题标签
 )
 
 /** v1.6.5：Live 实况图 —— 一张静态封面 + 一段动态视频 */
@@ -506,11 +508,17 @@ object VideoLinkParser {
             val html = getString(shareUrl) ?: return null
             val videos = mutableListOf<String>()
             val images = mutableListOf<String>()
+            var desc: String? = null
+            val topics = mutableListOf<String>()
             Regex("""window\.__INITIAL_STATE__\s*=\s*(\{.*?\})\s*</script>""", RegexOption.DOT_MATCHES_ALL)
                 .find(html)?.groupValues?.get(1)?.let { state ->
                     Regex(""""masterUrl"\s*:\s*"([^"]+)"""").findAll(state).forEach { m ->
-                        val v = unescapeUrl(m.groupValues[1])
-                        if (v.startsWith("http")) videos.add(v)
+                        var v = unescapeUrl(m.groupValues[1])
+                        if (v.startsWith("http")) {
+                            // v1.7.0：http 转 https，提高直链可用性
+                            if (v.startsWith("http://")) v = "https://" + v.removePrefix("http://")
+                            videos.add(v)
+                        }
                     }
                     Regex(""""url"\s*:\s*"([^"]*?/[^"]*?\.(?:mp4)(?:[^"]*)?)"""").findAll(state).forEach { m ->
                         val v = unescapeUrl(m.groupValues[1])
@@ -521,6 +529,24 @@ object VideoLinkParser {
                             val v = unescapeUrl(m.groupValues[1])
                             if (isImageUrl(v)) images.add(v)
                         }
+                    // v1.7.0：文案（desc）
+                    Regex(""""desc"\s*:\s*"((?:[^"\\]|\\.)*)"""").find(state)?.groupValues?.get(1)?.let { d ->
+                        val cleanDesc = d.replace("\\n", "\n").replace("\\u002F", "/").replace("\\\"", "\"").trim()
+                        if (cleanDesc.isNotBlank()) desc = cleanDesc
+                    }
+                    // v1.7.0：话题 —— 从 desc 提取 #话题#，再从 tagList 补充
+                    desc?.let { d ->
+                        Regex("""#([^#\s]{1,30})#""").findAll(d).forEach { tm ->
+                            val t = tm.groupValues[1].trim()
+                            if (t.isNotBlank() && !topics.contains(t)) topics.add(t)
+                        }
+                    }
+                    Regex(""""tagList"\s*:\s*\[(.*?)\]""", RegexOption.DOT_MATCHES_ALL).find(state)?.groupValues?.get(1)?.let { tl ->
+                        Regex(""""name"\s*:\s*"([^"]+)"""").findAll(tl).forEach { tm ->
+                            val t = tm.groupValues[1].trim().removePrefix("#").removeSuffix("#")
+                            if (t.isNotBlank() && !topics.contains(t)) topics.add(t)
+                        }
+                    }
                 }
             // 标题
             val title = Regex("""(?i)og:title["']\s+content\s*=\s*["']([^"']+)["']""")
@@ -539,7 +565,9 @@ object VideoLinkParser {
                 imageUrls = distinctImages,
                 title = title,
                 platform = "小红书",
-                livePhotos = livePhotos.take(20)
+                livePhotos = livePhotos.take(20),
+                description = desc,
+                topics = topics.take(10)
             )
         } catch (_: Exception) { null }
     }
@@ -743,12 +771,17 @@ object VideoLinkParser {
             }
         }
 
+        // v1.7.0：通用 og:description 文案
+        val description = Regex("""(?i)(?:property|name)\s*=\s*["']og:description["']\s+content\s*=\s*["']([^"']+)["']""")
+            .find(html)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotBlank() }
+
         return MediaParseResult(
             videoUrls = distinctVideos,
             imageUrls = distinctImages,
             coverUrl = cover,
             title = title,
-            livePhotos = livePhotos.take(20)
+            livePhotos = livePhotos.take(20),
+            description = description
         )
     }
 
