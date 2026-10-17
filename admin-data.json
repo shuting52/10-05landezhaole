@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 210,
-    "name": "1.7.0",
+    "code": 211,
+    "name": "1.7.1",
     "changelog": [
-      "✨ v1.7.0 更新来啦～",
-      "feat: v1.7.0 小红书解析增强 + 文案/话题自动提取"
+      "✨ v1.7.1 更新来啦～",
+      "fix: v1.7.1 修复视频被认成图片 + 批量模式文案话题"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.0-1792216154.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.0-1792216154.apk",
-    "lastBuildSha": "bca79e9710361df72e38ba1e9ecd10e76afe64a5",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.1-1792231445.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.1-1792231445.apk",
+    "lastBuildSha": "640a8b48fb114caefaa96763fd4b88069323480c",
     "apkSize": 24029472
   },
   "home": {
@@ -24344,10 +24344,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.0 已上线",
+    "title": "懒得找了 v1.7.1 已上线",
     "changelog": [
-      "✨ v1.7.0 更新来啦～",
-      "feat: v1.7.0 小红书解析增强 + 文案/话题自动提取"
+      "✨ v1.7.1 更新来啦～",
+      "fix: v1.7.1 修复视频被认成图片 + 批量模式文案话题"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24409,10 +24409,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.0",
-      "code": 210,
-      "at": "2026-10-17T05:49:20Z",
-      "sha": "bca79e9710361df72e38ba1e9ecd10e76afe64a5"
+      "version": "1.7.1",
+      "code": 211,
+      "at": "2026-10-17T10:04:10Z",
+      "sha": "640a8b48fb114caefaa96763fd4b88069323480c"
     }
   },
   "_ai_notice": "内容由AI生成"
