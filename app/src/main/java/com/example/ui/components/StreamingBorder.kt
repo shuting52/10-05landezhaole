@@ -8,9 +8,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -59,22 +57,8 @@ fun Modifier.streamingBorder(
     baseBorderColor: Color = Color.White.copy(alpha = 0.38f),
     phaseOffset: Float = 0f,
     showGlow: Boolean = true,
-    rainbow: Boolean = true,
-    forceClassic: Boolean = false
+    rainbow: Boolean = true
 ): Modifier {
-    // v1.7.5：黏土风全局生效——CARTOON 设计风格下，流光边框变为 3dp 粗黑描边（更新弹窗用 forceClassic=true 保持原样）
-    if (!forceClassic) {
-        val themeColors = com.example.ui.theme.LocalThemeUiColors.current
-        if (themeColors.designStyle == com.example.ui.theme.DesignStyle.CARTOON) {
-            return this.then(
-                Modifier.border(
-                    width = 3.dp,
-                    color = Color(0xFF23232B),
-                    shape = RoundedCornerShape(cornerRadius)
-                )
-            )
-        }
-    }
     val masterAngle = LocalStreamingBorderAngle.current
     val angle = (masterAngle + phaseOffset) % 360f
 

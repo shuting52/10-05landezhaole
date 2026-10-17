@@ -109,11 +109,11 @@ import kotlin.math.sin
  * - 镜面高光渐变描边（左上/右下高光 + 柔紫/柔粉折射边）
  */
 /**
- * v1.7.3：黏土风格卡片 —— 参考用户截图：奶油底 + 粗黑描边 + 大圆角 + Q版质感
- * 特点：#FFFFF8EC 奶油底、3dp 深色描边、22dp 大圆角、无渐变流光
+ * v1.7.3：毛毡风格卡片 —— 暖米色绒面质感，柔软圆润，无流光特效
+ * 特点：暖 cream 底色 + 柔和棕色描边 + 大圆角 + 细腻绒面阴影
  */
 @Composable
-private fun ClayCardBox(
+private fun FeltCardBox(
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 22.dp,
     onClick: (() -> Unit)? = null,
@@ -123,23 +123,49 @@ private fun ClayCardBox(
     Box(
         modifier = modifier
             .clip(cardShape)
-            .background(Color(0xFFFFF8EC))  // 奶油底
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        Color(0xFFFFFBF3),  // 暖米白
+                        Color(0xFFFDF3E3),  // 浅绒黄
+                        Color(0xFFF8ECD8),  // 暖米色
+                    ),
+                    start = Offset(0f, 0f),
+                    end = Offset(600f, 400f)
+                )
+            )
             .border(
-                width = 3.dp,
-                color = Color(0xFF23232B),  // 粗黑描边（参考图）
+                width = 2.dp,
+                color = Color(0xFFD4A574).copy(alpha = 0.35f),  // 柔和绒棕描边
                 shape = cardShape
             )
             .shadow(
-                elevation = 4.dp,
+                elevation = 6.dp,
                 shape = cardShape,
-                spotColor = Color(0xFFFF4D2E).copy(alpha = 0.15f),
-                ambientColor = Color(0xFF23232B).copy(alpha = 0.1f)
+                spotColor = Color(0xFFB08968).copy(alpha = 0.25f),  // 暖棕阴影
+                ambientColor = Color(0xFFB08968).copy(alpha = 0.15f)
             )
             .let { mod ->
                 if (onClick != null) mod.clickable { onClick() } else mod
             }
+            .padding(2.dp)  // 内边距营造绒面厚度感
     ) {
-        content()
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(cornerRadius - 2.dp))
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.25f),
+                            Color.Transparent
+                        ),
+                        center = Offset(0.3f, 0.2f),
+                        radius = 800f
+                    )
+                )
+        ) {
+            content()
+        }
     }
 }
 
@@ -589,7 +615,7 @@ private fun ApptekaAppCard(
     var isCompleted by remember(item.appId) { mutableStateOf(false) }
 
     // v1.7.3：软件卡片使用毛毡风格
-    ClayCardBox(
+    FeltCardBox(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = 22.dp,
         onClick = {
@@ -625,8 +651,8 @@ private fun ApptekaAppCard(
                             .background(
                                 Brush.linearGradient(
                                     listOf(
-                                        Color(0xFFFF4D2E).copy(alpha = 0.25f),
-                                        Color(0xFFD63A1F).copy(alpha = 0.35f)
+                                        Color(0xFFB08968).copy(alpha = 0.25f),
+                                        Color(0xFF8B5E3C).copy(alpha = 0.35f)
                                     )
                                 )
                             ),
@@ -636,7 +662,7 @@ private fun ApptekaAppCard(
                             text = item.label.take(1).uppercase(Locale.getDefault()),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Black,
-                            color = Color(0xFFFF4D2E)
+                            color = Color(0xFFB08968)
                         )
                     }
                 }
@@ -703,14 +729,14 @@ private fun ApptekaAppCard(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(4.dp))
-                            .background(Color(0xFFFF4D2E).copy(alpha = 0.15f))
+                            .background(Color(0xFFB08968).copy(alpha = 0.15f))
                             .padding(horizontal = 4.dp, vertical = 1.dp)
                     ) {
                         Text(
                             text = "安装包",
                             fontSize = 8.5.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFD63A1F)
+                            color = Color(0xFF8B5E3C)
                         )
                     }
                 }
@@ -736,7 +762,7 @@ private fun ApptekaAppCard(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFFFF4D2E).copy(alpha = 0.15f))
+                            .background(Color(0xFFB08968).copy(alpha = 0.15f))
                             .clickable {
                                 downloadApptekaApk(context, item,
                                     onProgress = { isDownloading = it },
@@ -750,13 +776,13 @@ private fun ApptekaAppCard(
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(10.dp),
                                     strokeWidth = 1.5.dp,
-                                    color = Color(0xFFFF4D2E)
+                                    color = Color(0xFFB08968)
                                 )
                             } else {
                                 Icon(
                                     imageVector = Icons.Filled.Download,
                                     contentDescription = null,
-                                    tint = Color(0xFFFF4D2E),
+                                    tint = Color(0xFFB08968),
                                     modifier = Modifier.size(11.dp)
                                 )
                             }
@@ -765,7 +791,7 @@ private fun ApptekaAppCard(
                                 text = if (isDownloading) "解析中..." else "下载 APK",
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFD63A1F)
+                                color = Color(0xFF8B5E3C)
                             )
                         }
                     }
