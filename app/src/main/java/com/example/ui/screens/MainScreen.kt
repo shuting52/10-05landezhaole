@@ -147,7 +147,6 @@ import com.example.ui.components.AtmosphereOverlay
 import com.example.ui.components.CategorySitesDialog
 import com.example.ui.components.CustomRadioBottomNav
 import com.example.ui.components.CuteWelcomeDialog
-import com.example.ui.components.GlobalWindBackground
 import com.example.ui.components.HideAndSeekLoader
 import com.example.ui.components.ResourceCard
 import com.example.ui.components.SaharaWaveButton
@@ -244,31 +243,12 @@ fun MainScreen(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        // 本地背景媒体优先（主题版块本机选择），无本地媒体时回退云端背景
-        val bgType = uiState.localBgMediaType.ifBlank { "none" }.let {
-            if (it != "none") it else (uiState.cloudSettings?.bgMedia?.type ?: "none")
-        }
-        val bgUrl = uiState.localBgMediaUri.ifBlank {
-            uiState.cloudSettings?.bgMedia?.url.orEmpty()
-        }
-        GlobalWindBackground(
-            bgMediaType = bgType,
-            bgMediaUrl = bgUrl,
-            dynamicEffect = uiState.dynamicEffect
+        // v1.6.7：删除背景动态特效与透明磨砂（用户要求），背景固定为主题色
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            // v1.8.7：背景媒体（图片/视频）激活时，全局白色 background/surface 自动转为半透明磨砂，
-            // 让背景透出（设置页、卡片、各 Tab 均生效）；无背景媒体时保持原样
-            val mediaBgActive = bgType == "image" || bgType == "video"
-            val frostedScheme = if (mediaBgActive) {
-                MaterialTheme.colorScheme.copy(
-                    surface = Color.White.copy(alpha = 0.38f),
-                    surfaceVariant = Color.White.copy(alpha = 0.22f),
-                    background = Color.White.copy(alpha = 0.16f)
-                )
-            } else {
-                MaterialTheme.colorScheme
-            }
-            MaterialTheme(colorScheme = frostedScheme) {
             Scaffold(
                 containerColor = Color.Transparent,
                 contentWindowInsets = WindowInsets.statusBars,
@@ -810,7 +790,6 @@ fun MainScreen(
             )
         }
     }
-}
 
 // ---------------- HEADER SECTION ----------------
 @Composable
