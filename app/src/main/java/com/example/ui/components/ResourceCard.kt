@@ -272,15 +272,10 @@ fun ResourceCard(
                 )
                 .clip(cardShape)
                 .then(cardBgModifier)
-                .streamingBorder(
-                    cornerRadius = cardCornerRadius,
-                    strokeWidth = 1.4.dp,
-                    glowWidth = 3.2.dp,
-                    accentColor = themeUi.primary,
-                    tailColor = themeUi.primary.copy(alpha = 0.45f),
-                    baseBorderColor = themeUi.border.copy(alpha = 0.35f),
-                    phaseOffset = (card.id.hashCode().let { if (it < 0) -it else it } % 360).toFloat(),
-                    showGlow = true
+                .border(
+                    width = 3.dp,
+                    color = Color(0xFF23232B),
+                    shape = cardShape
                 )
                 .combinedClickable(
                     onClick = { onCardClick(card) },
@@ -288,8 +283,10 @@ fun ResourceCard(
                 )
                 .padding(horizontal = 7.dp, vertical = 7.dp)
         ) {
-            // v1.1.17 彩虹旋转渐变卡片背景 + 液体玻璃折射半透表层
-            RainbowSpinBackground(Modifier.fillMaxSize())
+            // v1.7.5：黏土风——奶油底色，无彩虹/流光
+            Box(
+                modifier = Modifier.fillMaxSize().background(Color(0xFFFFF8EC))
+            )
             Box(
                 modifier = Modifier
                     .fillMaxSize()

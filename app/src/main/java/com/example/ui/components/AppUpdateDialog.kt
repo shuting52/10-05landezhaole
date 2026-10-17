@@ -870,7 +870,8 @@ private fun CssUpdateCard(
                     glowWidth = 4.dp,
                     baseBorderColor = Color.White.copy(alpha = 0.65f),
                     rainbow = true,
-                    showGlow = true
+                    showGlow = true,
+                    forceClassic = true
                 )
         ) {
             // ---------- 顶部可爱卡通插画横幅 ----------
