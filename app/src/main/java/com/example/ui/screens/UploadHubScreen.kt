@@ -17,6 +17,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.draw.shadow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
@@ -70,6 +72,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -105,6 +108,67 @@ import kotlin.math.sin
  * - 游走液态光球折射 + 顶部液态曲面高光反射带 + 底部冰晶微焦散
  * - 镜面高光渐变描边（左上/右下高光 + 柔紫/柔粉折射边）
  */
+/**
+ * v1.7.3：毛毡风格卡片 —— 暖米色绒面质感，柔软圆润，无流光特效
+ * 特点：暖 cream 底色 + 柔和棕色描边 + 大圆角 + 细腻绒面阴影
+ */
+@Composable
+private fun FeltCardBox(
+    modifier: Modifier = Modifier,
+    cornerRadius: Dp = 22.dp,
+    onClick: (() -> Unit)? = null,
+    content: @Composable () -> Unit
+) {
+    val cardShape = RoundedCornerShape(cornerRadius)
+    Box(
+        modifier = modifier
+            .clip(cardShape)
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        Color(0xFFFFFBF3),  // 暖米白
+                        Color(0xFFFDF3E3),  // 浅绒黄
+                        Color(0xFFF8ECD8),  // 暖米色
+                    ),
+                    start = Offset(0f, 0f),
+                    end = Offset(600f, 400f)
+                )
+            )
+            .border(
+                width = 2.dp,
+                color = Color(0xFFD4A574).copy(alpha = 0.35f),  // 柔和绒棕描边
+                shape = cardShape
+            )
+            .shadow(
+                elevation = 6.dp,
+                shape = cardShape,
+                spotColor = Color(0xFFB08968).copy(alpha = 0.25f),  // 暖棕阴影
+                ambientColor = Color(0xFFB08968).copy(alpha = 0.15f)
+            )
+            .let { mod ->
+                if (onClick != null) mod.clickable { onClick() } else mod
+            }
+            .padding(2.dp)  // 内边距营造绒面厚度感
+    ) {
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(cornerRadius - 2.dp))
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.25f),
+                            Color.Transparent
+                        ),
+                        center = Offset(0.3f, 0.2f),
+                        radius = 800f
+                    )
+                )
+        ) {
+            content()
+        }
+    }
+}
+
 @Composable
 private fun LiquidGlassCardBox(
     modifier: Modifier = Modifier,
@@ -430,7 +494,8 @@ private suspend fun fetchApptekaDownloadUrl(appId: String): String? = withContex
 private fun downloadApptekaApk(
     context: Context,
     item: ApptekaAppItem,
-    onProgress: (Boolean) -> Unit = {}
+    onProgress: (Boolean) -> Unit = {},
+    onCompleted: () -> Unit = {}
 ) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
@@ -458,6 +523,7 @@ private fun downloadApptekaApk(
                         .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, safeName)
                     dm.enqueue(request)
                     Toast.makeText(context, "已开始下载 ${item.label} 到「下载」文件夹", Toast.LENGTH_LONG).show()
+                    onCompleted()
                 } catch (e: Exception) {
                     try {
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(directUrl)).apply {
@@ -545,14 +611,18 @@ private fun ApptekaAppCard(
 ) {
     val context = LocalContext.current
     var isDownloading by remember(item.appId) { mutableStateOf(false) }
+    // v1.7.3：下载完成标记（显示对勾）
+    var isCompleted by remember(item.appId) { mutableStateOf(false) }
 
-    LiquidGlassCardBox(
+    // v1.7.3：软件卡片使用毛毡风格
+    FeltCardBox(
         modifier = Modifier.fillMaxWidth(),
-        cornerRadius = 18.dp,
-        accentColor = Color(0xFF10B981),
-        phaseSeed = item.appId.hashCode(),
+        cornerRadius = 22.dp,
         onClick = {
-            downloadApptekaApk(context, item) { isDownloading = it }
+            downloadApptekaApk(context, item,
+                onProgress = { isDownloading = it },
+                onCompleted = { isCompleted = true }
+            )
         }
     ) {
         Row(
@@ -581,8 +651,8 @@ private fun ApptekaAppCard(
                             .background(
                                 Brush.linearGradient(
                                     listOf(
-                                        Color(0xFF10B981).copy(alpha = 0.25f),
-                                        Color(0xFF059669).copy(alpha = 0.35f)
+                                        Color(0xFFB08968).copy(alpha = 0.25f),
+                                        Color(0xFF8B5E3C).copy(alpha = 0.35f)
                                     )
                                 )
                             ),
@@ -592,7 +662,50 @@ private fun ApptekaAppCard(
                             text = item.label.take(1).uppercase(Locale.getDefault()),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Black,
-                            color = Color(0xFF10B981)
+                            color = Color(0xFFB08968)
+                        )
+                    }
+                }
+                // v1.7.3：下载完成对勾 + 高光闪烁
+                if (isCompleted) {
+                    var flashAlpha by remember { mutableStateOf(1f) }
+                    LaunchedEffect(item.appId) {
+                        flashAlpha = 1f
+                        kotlinx.coroutines.delay(100)
+                        flashAlpha = 0.3f
+                        kotlinx.coroutines.delay(150)
+                        flashAlpha = 1f
+                        kotlinx.coroutines.delay(150)
+                        flashAlpha = 0.85f
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Color(0xFF4CAF50).copy(alpha = 0.85f * flashAlpha)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = "已下载",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+                // 下载中遮罩
+                if (isDownloading) {
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Color.Black.copy(alpha = 0.4f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = Color.White,
+                            strokeWidth = 2.dp
                         )
                     }
                 }
@@ -616,14 +729,14 @@ private fun ApptekaAppCard(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(4.dp))
-                            .background(Color(0xFF10B981).copy(alpha = 0.15f))
+                            .background(Color(0xFFB08968).copy(alpha = 0.15f))
                             .padding(horizontal = 4.dp, vertical = 1.dp)
                     ) {
                         Text(
                             text = "安装包",
                             fontSize = 8.5.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF059669)
+                            color = Color(0xFF8B5E3C)
                         )
                     }
                 }
@@ -649,9 +762,12 @@ private fun ApptekaAppCard(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFF10B981).copy(alpha = 0.15f))
+                            .background(Color(0xFFB08968).copy(alpha = 0.15f))
                             .clickable {
-                                downloadApptekaApk(context, item) { isDownloading = it }
+                                downloadApptekaApk(context, item,
+                                    onProgress = { isDownloading = it },
+                                    onCompleted = { isCompleted = true }
+                                )
                             }
                             .padding(horizontal = 7.dp, vertical = 3.dp)
                     ) {
@@ -660,13 +776,13 @@ private fun ApptekaAppCard(
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(10.dp),
                                     strokeWidth = 1.5.dp,
-                                    color = Color(0xFF10B981)
+                                    color = Color(0xFFB08968)
                                 )
                             } else {
                                 Icon(
                                     imageVector = Icons.Filled.Download,
                                     contentDescription = null,
-                                    tint = Color(0xFF10B981),
+                                    tint = Color(0xFFB08968),
                                     modifier = Modifier.size(11.dp)
                                 )
                             }
@@ -675,7 +791,7 @@ private fun ApptekaAppCard(
                                 text = if (isDownloading) "解析中..." else "下载 APK",
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF059669)
+                                color = Color(0xFF8B5E3C)
                             )
                         }
                     }
