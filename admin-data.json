@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 207,
-    "name": "1.6.7",
+    "code": 208,
+    "name": "1.6.8",
     "changelog": [
-      "✨ v1.6.7 更新来啦～",
-      "feat: v1.6.7 删除背景动态特效与透明磨砂"
+      "✨ v1.6.8 更新来啦～",
+      "feat: v1.6.8 删除主题切换，保留自定义背景"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.6.7-1792196951.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.6.7-1792196951.apk",
-    "lastBuildSha": "447735eb9724dde109cbfd3a6ad4b22bdbc0a017",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.6.8-1792198617.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.6.8-1792198617.apk",
+    "lastBuildSha": "dff366c2ed3ff8e5bbde6e52b55d5d7837cbce8c",
     "apkSize": 24029472
   },
   "home": {
@@ -24344,10 +24344,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.6.7 已上线",
+    "title": "懒得找了 v1.6.8 已上线",
     "changelog": [
-      "✨ v1.6.7 更新来啦～",
-      "feat: v1.6.7 删除背景动态特效与透明磨砂"
+      "✨ v1.6.8 更新来啦～",
+      "feat: v1.6.8 删除主题切换，保留自定义背景"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24409,10 +24409,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.6.7",
-      "code": 207,
-      "at": "2026-10-17T00:29:19Z",
-      "sha": "447735eb9724dde109cbfd3a6ad4b22bdbc0a017"
+      "version": "1.6.8",
+      "code": 208,
+      "at": "2026-10-17T00:57:02Z",
+      "sha": "dff366c2ed3ff8e5bbde6e52b55d5d7837cbce8c"
     }
   },
   "_ai_notice": "内容由AI生成"
