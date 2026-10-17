@@ -243,12 +243,23 @@ fun MainScreen(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        // v1.6.7：删除背景动态特效与透明磨砂（用户要求），背景固定为主题色
+        // v1.6.8：主题切换已删除，保留自定义背景（用户要求）
+        // 背景图片/视频静态展示，无动态特效、无磨砂
+        val bgType = uiState.localBgMediaType.ifBlank { "none" }.let {
+            if (it != "none") it else (uiState.cloudSettings?.bgMedia?.type ?: "none")
+        }
+        val bgUrl = uiState.localBgMediaUri.ifBlank {
+            uiState.cloudSettings?.bgMedia?.url.orEmpty()
+        }
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
+            // 自定义背景（图片/视频）静态底层展示
+            if ((bgType == "image" || bgType == "video") && bgUrl.isNotBlank()) {
+                BgMediaStaticLayer(bgType = bgType, bgUrl = bgUrl)
+            }
             Scaffold(
                 containerColor = Color.Transparent,
                 contentWindowInsets = WindowInsets.statusBars,
@@ -790,6 +801,75 @@ fun MainScreen(
             )
         }
     }
+
+// ---------------- 背景媒体静态层（v1.6.8：主题切换删除后保留自定义背景） ----------------
+@Composable
+private fun BgMediaStaticLayer(bgType: String, bgUrl: String) {
+    if (bgType == "image" && bgUrl.isNotBlank()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 4.dp, vertical = 4.dp)
+                .clip(RoundedCornerShape(36.dp))
+        ) {
+            coil.compose.AsyncImage(
+                model = bgUrl,
+                contentDescription = null,
+                contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            // 半透明遮罩保证前景内容可读
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.35f))
+            )
+        }
+    } else if (bgType == "video" && bgUrl.isNotBlank()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 4.dp, vertical = 4.dp)
+                .clip(RoundedCornerShape(36.dp))
+        ) {
+            androidx.compose.ui.viewinterop.AndroidView(
+                factory = { ctx ->
+                    android.view.TextureView(ctx).apply {
+                        var player: android.media.MediaPlayer? = null
+                        surfaceTextureListener = object : android.view.TextureView.SurfaceTextureListener {
+                            override fun onSurfaceTextureAvailable(surface: android.graphics.SurfaceTexture, width: Int, height: Int) {
+                                try {
+                                    val mp = android.media.MediaPlayer()
+                                    player = mp
+                                    mp.setDataSource(ctx, android.net.Uri.parse(bgUrl))
+                                    mp.setSurface(android.view.Surface(surface))
+                                    mp.isLooping = true
+                                    mp.setVolume(0f, 0f)
+                                    mp.setOnPreparedListener { p ->
+                                        try { p.start() } catch (_: Exception) {}
+                                    }
+                                    mp.prepareAsync()
+                                } catch (_: Exception) {}
+                            }
+                            override fun onSurfaceTextureDestroyed(surface: android.graphics.SurfaceTexture): Boolean {
+                                try { player?.release() } catch (_: Exception) {}
+                                return true
+                            }
+                            override fun onSurfaceTextureSizeChanged(surface: android.graphics.SurfaceTexture, width: Int, height: Int) {}
+                            override fun onSurfaceTextureUpdated(surface: android.graphics.SurfaceTexture) {}
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxSize()
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.35f))
+            )
+        }
+    }
+}
 
 // ---------------- HEADER SECTION ----------------
 @Composable
