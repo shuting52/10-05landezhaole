@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 211,
-    "name": "1.7.1",
+    "code": 212,
+    "name": "1.7.2",
     "changelog": [
-      "✨ v1.7.1 更新来啦～",
-      "fix: v1.7.1 修复视频被认成图片 + 批量模式文案话题"
+      "✨ v1.7.2 更新来啦～",
+      "feat: v1.7.2 软件点击加载→对勾+高光闪烁"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.1-1792231445.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.1-1792231445.apk",
-    "lastBuildSha": "640a8b48fb114caefaa96763fd4b88069323480c",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.2-1792235795.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.2-1792235795.apk",
+    "lastBuildSha": "1cb9a19919e327123f2ec51667cf8d3324fafb86",
     "apkSize": 24029472
   },
   "home": {
@@ -24344,10 +24344,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.1 已上线",
+    "title": "懒得找了 v1.7.2 已上线",
     "changelog": [
-      "✨ v1.7.1 更新来啦～",
-      "fix: v1.7.1 修复视频被认成图片 + 批量模式文案话题"
+      "✨ v1.7.2 更新来啦～",
+      "feat: v1.7.2 软件点击加载→对勾+高光闪烁"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24409,10 +24409,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.1",
-      "code": 211,
-      "at": "2026-10-17T10:04:10Z",
-      "sha": "640a8b48fb114caefaa96763fd4b88069323480c"
+      "version": "1.7.2",
+      "code": 212,
+      "at": "2026-10-17T11:16:41Z",
+      "sha": "1cb9a19919e327123f2ec51667cf8d3324fafb86"
     }
   },
   "_ai_notice": "内容由AI生成"
