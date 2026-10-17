@@ -500,7 +500,9 @@ fun DownVidScreen(
                             imageUrls = media.imageUrls,
                             livePhotos = media.livePhotos,
                             originalLink = target,
-                            qualityOptions = media.qualityOptions
+                            qualityOptions = media.qualityOptions,
+                            description = media.description,
+                            topics = media.topics
                         )
                         batchResults.add(result)
                         if (historyList.none { it.originalLink == target }) {

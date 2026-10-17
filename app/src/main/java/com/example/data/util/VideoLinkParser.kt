@@ -513,12 +513,8 @@ object VideoLinkParser {
             Regex("""window\.__INITIAL_STATE__\s*=\s*(\{.*?\})\s*</script>""", RegexOption.DOT_MATCHES_ALL)
                 .find(html)?.groupValues?.get(1)?.let { state ->
                     Regex(""""masterUrl"\s*:\s*"([^"]+)"""").findAll(state).forEach { m ->
-                        var v = unescapeUrl(m.groupValues[1])
-                        if (v.startsWith("http")) {
-                            // v1.7.0：http 转 https，提高直链可用性
-                            if (v.startsWith("http://")) v = "https://" + v.removePrefix("http://")
-                            videos.add(v)
-                        }
+                        val v = unescapeUrl(m.groupValues[1])
+                        if (v.startsWith("http")) videos.add(v)
                     }
                     Regex(""""url"\s*:\s*"([^"]*?/[^"]*?\.(?:mp4)(?:[^"]*)?)"""").findAll(state).forEach { m ->
                         val v = unescapeUrl(m.groupValues[1])
