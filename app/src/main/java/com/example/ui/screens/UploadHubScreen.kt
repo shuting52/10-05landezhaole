@@ -490,6 +490,8 @@ private suspend fun fetchApptekaDownloadUrl(appId: String): String? = withContex
 
 /**
  * 下载 Appteka 真实 APK 到系统 Download 文件夹
+ * v1.7.8：改用 OkHttp 直接下载（替代 DownloadManager），完全控制 headers 和重定向，
+ * 解决 DownloadManager 因缺 UA/Referer 被服务器拒绝导致的下载失败
  */
 private fun downloadApptekaApk(
     context: Context,
@@ -502,46 +504,81 @@ private fun downloadApptekaApk(
             withContext(Dispatchers.Main) { onProgress(true) }
             val directUrl = item.directApkUrl ?: fetchApptekaDownloadUrl(item.appId)
             item.directApkUrl = directUrl
+            if (directUrl.isNullOrBlank()) {
+                withContext(Dispatchers.Main) {
+                    onProgress(false)
+                    Toast.makeText(context, "未能获取到下载直链，请稍后重试", Toast.LENGTH_SHORT).show()
+                }
+                return@launch
+            }
+            val safeVer = if (item.verName.isNotBlank()) "_${item.verName}" else ""
+            val safeName = "${item.label}${safeVer}.apk"
+                .replace(" ", "_")
+                .replace(Regex("[\\\\/:*?\"<>|]"), "_")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "开始下载 ${item.label}…", Toast.LENGTH_SHORT).show()
+            }
+
+            // OkHttp 直接下载，带 Appteka UA 和 Referer，自动跟随重定向
+            val client = OkHttpClient.Builder()
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .followRedirects(true)
+                .followSslRedirects(true)
+                .build()
+            val request = Request.Builder()
+                .url(directUrl)
+                .header("User-Agent", "Appteka/23.0 Android")
+                .header("Referer", "https://appteka.store/")
+                .build()
+            val response = client.newCall(request).execute()
+            if (!response.isSuccessful) {
+                throw Exception("HTTP ${response.code}")
+            }
+            val body = response.body ?: throw Exception("空响应")
+            // 保存到 Download 文件夹
+            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            if (!downloadsDir.exists()) downloadsDir.mkdirs()
+            val outFile = java.io.File(downloadsDir, safeName)
+            body.byteStream().use { input ->
+                outFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+            // 通知系统扫描新文件
+            try {
+                android.media.MediaScannerConnection.scanFile(
+                    context,
+                    arrayOf(outFile.absolutePath),
+                    arrayOf("application/vnd.android.package-archive"),
+                    null
+                )
+            } catch (_: Exception) { }
+
             withContext(Dispatchers.Main) {
                 onProgress(false)
-                if (directUrl.isNullOrBlank()) {
-                    Toast.makeText(context, "未能获取到下载直链，请稍后重试", Toast.LENGTH_SHORT).show()
-                    return@withContext
-                }
-                val safeVer = if (item.verName.isNotBlank()) "_${item.verName}" else ""
-                val safeName = "${item.label}${safeVer}.apk"
-                    .replace(" ", "_")
-                    .replace(Regex("[\\\\/:*?\"<>|]"), "_")
-                try {
-                    val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                    val request = DownloadManager.Request(Uri.parse(directUrl))
-                        .setTitle("懒得找了 · ${item.label}")
-                        .setDescription("正在下载 $safeName")
-                        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                        .setAllowedOverMetered(true)
-                        .setMimeType("application/vnd.android.package-archive")
-                        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, safeName)
-                    // v1.7.7：Appteka 下载链需要 Appteka UA，否则服务器拒绝导致下载失败
-                    request.addRequestHeader("User-Agent", "Appteka/23.0 Android")
-                    request.addRequestHeader("Referer", "https://appteka.store/")
-                    dm.enqueue(request)
-                    Toast.makeText(context, "已开始下载 ${item.label} 到「下载」文件夹", Toast.LENGTH_LONG).show()
-                    onCompleted()
-                } catch (e: Exception) {
-                    try {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(directUrl)).apply {
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        }
-                        context.startActivity(intent)
-                    } catch (e2: Exception) {
-                        Toast.makeText(context, "下载失败，请检查网络", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                onCompleted()
+                Toast.makeText(context, "已下载 ${item.label} 到「下载」文件夹", Toast.LENGTH_LONG).show()
             }
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {
                 onProgress(false)
-                Toast.makeText(context, "获取下载链接失败，请稍后重试", Toast.LENGTH_SHORT).show()
+                // 兜底：用浏览器打开直链
+                try {
+                    val fallbackUrl = item.directApkUrl
+                    if (!fallbackUrl.isNullOrBlank()) {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(fallbackUrl)).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        context.startActivity(intent)
+                        Toast.makeText(context, "已用浏览器打开下载链接", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "下载失败：${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (_: Exception) {
+                    Toast.makeText(context, "下载失败，请检查网络", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
