@@ -104,7 +104,7 @@ private val CSS_MINT = CuteMint
  * 客户端更新弹窗（v1.0.2 大改）：
  * - 全新 CSS 动态动画呈现：顶部渐变流光横幅 + 漂浮粒子 + 圆点列表呼吸动画 + 渐变流动进度条 + 渐变脉冲按钮
  * - 内容写死（FIXED_UPDATE_LOGS），不随云端 changelog 变化
- * - 修复「卡在下载完成正在安装」：PackageInstaller 回调改 MUTABLE + 25s 看门狗超时回退系统安装器
+ * - 修复「卡在下载完成正在安装」：PackageInstaller 回调改 MUTABLE + 看门狗已关闭（0s，不再超时回退）
  *   + 版本号轮询兜底检测（用户手动装完后弹窗自动进入完成态）
  */
 @Composable
@@ -129,7 +129,7 @@ fun AppUpdateDialog(
     var totalBytes by remember { mutableStateOf(if (apkSize > 1024 * 50) apkSize else 17825792L) }
     var statusLabel by remember { mutableStateOf("等待更新…") }
     var isSignatureConflict by remember { mutableStateOf(false) }
-    // 安装结果：PackageInstaller 回调 / 看门狗轮询 共同驱动（true=成功 false=失败 null=进行中）
+    // 安装结果：安装回调 / 版本轮询驱动（true=成功 false=失败 null=进行中；看门狗已关闭，0s）
     var installOutcome by remember { mutableStateOf<Boolean?>(null) }
     // 安装前已装版本 code，用于轮询判断升级是否完成
     var oldVersionCode by remember { mutableStateOf(-1) }
@@ -164,7 +164,7 @@ fun AppUpdateDialog(
      *  2. 签名一致 → PackageInstaller 系统会话：无需预先开启「安装未知应用」授权，
      *     系统确认页（PENDING_USER_ACTION）由 UpdateInstallReceiver 自动拉起，
      *     用户在系统界面点「安装」即完成升级
-     *  3. 看门狗：25 秒内未装成功 → 自动回退 FileProvider 打开系统安装器
+     *  3. 看门狗：已关闭（0s），不做超时回退
      *  4. 全程轮询版本号，装完自动进入完成态（彻底杜绝「卡在安装中」）
      */
     fun installApk(file: File) {
@@ -184,17 +184,10 @@ fun AppUpdateDialog(
                 isSignatureConflict = true
                 statusLabel = "旧版本签名不同，正在引导卸载…"
                 var publicApkPath: String? = null
-                try {
-                    val publicDir = android.os.Environment.getExternalStoragePublicDirectory(
-                        android.os.Environment.DIRECTORY_DOWNLOADS
-                    )
-                    if (publicDir != null) {
-                        if (!publicDir.exists()) publicDir.mkdirs()
-                        val dest = File(publicDir, "landezhao-${versionName.removePrefix("v")}.apk")
-                        file.inputStream().use { input -> dest.outputStream().use { output -> input.copyTo(output) } }
-                        publicApkPath = dest.absolutePath
-                    }
-                } catch (e: Exception) { }
+                // v1.7.9：Android 10+ 走 MediaStore 拷贝，修复分区存储下公共目录写不进的问题
+                publicApkPath = copyFileToPublicDownloads(
+                    context, file, "landezhao-${versionName.removePrefix("v")}.apk"
+                )
                 Toast.makeText(
                     context,
                     if (publicApkPath != null)
@@ -374,7 +367,7 @@ fun AppUpdateDialog(
 
     /**
      * 多源下载 + 安装：原 URL → jsDelivr CDN → GitHub raw → jsdmir 镜像（每源重试 2 次）
-     * 下载完成校验 PK 头后进入 installApk（含看门狗兜底）
+     * 下载完成校验 PK 头后进入 installApk（看门狗已关闭，0s）
      */
     fun startRealDownload() {
         val url = apkUrl
@@ -1547,20 +1540,49 @@ fun cleanupOldApks(context: Context) {
     } catch (_: Exception) {}
 }
 
-private fun copyApkToDownloads(context: Context, file: File, versionName: String): File? {
+/**
+ * 把文件拷贝到公共「下载」文件夹（v1.7.9 修复分区存储）：
+ * Android 10+ 走 MediaStore.Downloads（无需任何权限），低版本沿用公共目录直写。
+ * 成功返回可展示的位置描述（低版本为绝对路径，Q+ 为 "下载/<文件名>"），失败返回 null。
+ */
+private fun copyFileToPublicDownloads(context: Context, src: File, displayName: String): String? {
     return try {
-        val publicDir = android.os.Environment.getExternalStoragePublicDirectory(
-            android.os.Environment.DIRECTORY_DOWNLOADS
-        ) ?: return null
-        if (!publicDir.exists()) publicDir.mkdirs()
-        val dest = File(publicDir, "landezhao-${versionName.removePrefix("v")}.apk")
-        file.inputStream().use { input -> dest.outputStream().use { output -> input.copyTo(output) } }
-        // 通知媒体库刷新，文件管理器里立即可见
-        try {
-            android.media.MediaScannerConnection.scanFile(context, arrayOf(dest.absolutePath), null, null)
-        } catch (_: Exception) {}
-        dest
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            val values = android.content.ContentValues().apply {
+                put(android.provider.MediaStore.Downloads.DISPLAY_NAME, displayName)
+                put(android.provider.MediaStore.Downloads.MIME_TYPE, "application/vnd.android.package-archive")
+                put(android.provider.MediaStore.Downloads.RELATIVE_PATH, android.os.Environment.DIRECTORY_DOWNLOADS)
+            }
+            val uri = context.contentResolver.insert(
+                android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, values
+            ) ?: return null
+            try {
+                context.contentResolver.openOutputStream(uri)?.use { out ->
+                    src.inputStream().use { input -> input.copyTo(out) }
+                } ?: return null
+            } catch (e: Exception) {
+                try { context.contentResolver.delete(uri, null, null) } catch (_: Exception) {}
+                return null
+            }
+            "下载/$displayName"
+        } else {
+            val publicDir = android.os.Environment.getExternalStoragePublicDirectory(
+                android.os.Environment.DIRECTORY_DOWNLOADS
+            ) ?: return null
+            if (!publicDir.exists()) publicDir.mkdirs()
+            val dest = File(publicDir, displayName)
+            src.inputStream().use { input -> dest.outputStream().use { output -> input.copyTo(output) } }
+            try {
+                android.media.MediaScannerConnection.scanFile(context, arrayOf(dest.absolutePath), null, null)
+            } catch (_: Exception) {}
+            dest.absolutePath
+        }
     } catch (e: Exception) { null }
+}
+
+private fun copyApkToDownloads(context: Context, file: File, versionName: String) {
+    // v1.7.9：改走 copyFileToPublicDownloads（Android 10+ 用 MediaStore）；返回值调用处未使用
+    copyFileToPublicDownloads(context, file, "landezhao-${versionName.removePrefix("v")}.apk")
 }
 
 /** 提取 APK 签名证书 SHA-256（十六进制小写） */

@@ -489,6 +489,36 @@ private suspend fun fetchApptekaDownloadUrl(appId: String): String? = withContex
 }
 
 /**
+ * 打开公共「下载」文件夹的写入流（v1.7.9 修复分区存储）：
+ * Android 10+ 必须走 MediaStore.Downloads（无需任何权限），
+ * Android 9 及以下沿用公共目录直写（WRITE_EXTERNAL_STORAGE 覆盖到 API 28）。
+ * 返回 Pair(输出流, MediaStore Uri；低版本为 null，下载中断时用于删除残留)。
+ */
+private fun openDownloadOutputStream(
+    context: Context,
+    displayName: String,
+    mimeType: String
+): Pair<java.io.OutputStream, android.net.Uri?> {
+    return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+        val values = android.content.ContentValues().apply {
+            put(android.provider.MediaStore.Downloads.DISPLAY_NAME, displayName)
+            put(android.provider.MediaStore.Downloads.MIME_TYPE, mimeType)
+            put(android.provider.MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+        }
+        val uri = context.contentResolver.insert(
+            android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, values
+        ) ?: throw java.io.IOException("无法创建下载文件")
+        val out = context.contentResolver.openOutputStream(uri)
+            ?: throw java.io.IOException("无法打开下载文件")
+        out to uri
+    } else {
+        val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        if (!dir.exists()) dir.mkdirs()
+        java.io.File(dir, displayName).outputStream() to null
+    }
+}
+
+/**
  * 下载 Appteka 真实 APK 到系统 Download 文件夹
  * v1.7.8：改用 OkHttp 直接下载（替代 DownloadManager），完全控制 headers 和重定向，
  * 解决 DownloadManager 因缺 UA/Referer 被服务器拒绝导致的下载失败
@@ -533,28 +563,42 @@ private fun downloadApptekaApk(
                 .header("Referer", "https://appteka.store/")
                 .build()
             val response = client.newCall(request).execute()
-            if (!response.isSuccessful) {
-                throw Exception("HTTP ${response.code}")
-            }
-            val body = response.body ?: throw Exception("空响应")
-            // 保存到 Download 文件夹
-            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            if (!downloadsDir.exists()) downloadsDir.mkdirs()
-            val outFile = java.io.File(downloadsDir, safeName)
-            body.byteStream().use { input ->
-                outFile.outputStream().use { output ->
-                    input.copyTo(output)
+            response.use { resp ->
+                if (!resp.isSuccessful) {
+                    throw Exception("HTTP ${resp.code}")
+                }
+                val body = resp.body ?: throw Exception("空响应")
+                // 保存到 Download 文件夹（v1.7.9：Android 10+ 走 MediaStore，修复分区存储 EACCES）
+                val (downloadOut, downloadUri) = openDownloadOutputStream(
+                    context, safeName, "application/vnd.android.package-archive"
+                )
+                try {
+                    body.byteStream().use { input ->
+                        downloadOut.use { output -> input.copyTo(output) }
+                    }
+                } catch (e: Exception) {
+                    // 下载中断：删掉残留条目，避免留下坏包
+                    if (downloadUri != null) {
+                        try { context.contentResolver.delete(downloadUri, null, null) } catch (_: Exception) {}
+                    }
+                    throw e
+                }
+                // 低版本才需要通知媒体库扫描；MediaStore 写入的已自动索引
+                if (downloadUri == null) {
+                    try {
+                        val legacyFile = java.io.File(
+                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                            safeName
+                        )
+                        android.media.MediaScannerConnection.scanFile(
+                            context,
+                            arrayOf(legacyFile.absolutePath),
+                            arrayOf("application/vnd.android.package-archive"),
+                            null
+                        )
+                    } catch (_: Exception) { }
                 }
             }
-            // 通知系统扫描新文件
-            try {
-                android.media.MediaScannerConnection.scanFile(
-                    context,
-                    arrayOf(outFile.absolutePath),
-                    arrayOf("application/vnd.android.package-archive"),
-                    null
-                )
-            } catch (_: Exception) { }
 
             withContext(Dispatchers.Main) {
                 onProgress(false)
