@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 214,
-    "name": "1.7.4",
+    "code": 215,
+    "name": "1.7.5",
     "changelog": [
-      "✨ v1.7.4 更新来啦～",
-      "feat: v1.7.4 软件卡片改黏土风格（对标用户参考图）"
+      "✨ v1.7.5 更新来啦～",
+      "feat: v1.7.5 全局黏土风（除更新弹窗）"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.4-1792239239.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.4-1792239239.apk",
-    "lastBuildSha": "24946585bc285c761c2cf3f145e40f53ce2e1eb2",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.5-1792241251.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.5-1792241251.apk",
+    "lastBuildSha": "7d17ec190f676a55e9f7eed3b228cc254d22dffe",
     "apkSize": 24029472
   },
   "home": {
@@ -24344,10 +24344,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.4 已上线",
+    "title": "懒得找了 v1.7.5 已上线",
     "changelog": [
-      "✨ v1.7.4 更新来啦～",
-      "feat: v1.7.4 软件卡片改黏土风格（对标用户参考图）"
+      "✨ v1.7.5 更新来啦～",
+      "feat: v1.7.5 全局黏土风（除更新弹窗）"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24409,10 +24409,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.4",
-      "code": 214,
-      "at": "2026-10-17T12:14:05Z",
-      "sha": "24946585bc285c761c2cf3f145e40f53ce2e1eb2"
+      "version": "1.7.5",
+      "code": 215,
+      "at": "2026-10-17T12:47:36Z",
+      "sha": "7d17ec190f676a55e9f7eed3b228cc254d22dffe"
     }
   },
   "_ai_notice": "内容由AI生成"
