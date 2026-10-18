@@ -306,7 +306,7 @@ fun DownVidScreen(
     var isParsing by remember { mutableStateOf(false) }
     var currentResult by remember { mutableStateOf<VideoParseResult?>(null) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var selectedTab by remember { mutableIntStateOf(0) } // 0: 解析下载, 1: 支持平台, 2: 下载记录, 3: 使用帮助
+    var selectedTab by remember { mutableIntStateOf(0) } // 0: 解析历史, 1: 使用帮助（v1.7.12："支持平台"展示 Tab 已删除，平台解析支持不受影响）
     // v1.5.8：批量模式 —— 多链接批量解析下载 + 视频抽帧
     var isBatchMode by remember { mutableStateOf(false) }
     var batchInput by remember { mutableStateOf("") }
@@ -1630,7 +1630,7 @@ fun DownVidScreen(
                 contentColor = themeColors.primary,
                 edgePadding = 8.dp
             ) {
-                listOf("🔥 支持平台", "📂 解析历史 (${historyList.size})", "💡 使用技巧").forEachIndexed { index, title ->
+                listOf("📂 解析历史 (${historyList.size})", "💡 使用技巧").forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTab == index,
                         onClick = { selectedTab = index },
@@ -1647,94 +1647,8 @@ fun DownVidScreen(
             }
         }
 
-        // ---- Tab 0: 支持平台网格（v1.5.9：动态标签效果 + 搜索过滤 + 分类） ----
+        // ---- Tab 0: 历史记录（v1.7.12：原"支持平台"Tab 已删除，仅保留解析支持） ----
         if (selectedTab == 0) {
-            item {
-                var platformQuery by remember { mutableStateOf("") }
-                val filtered = remember(platformQuery) {
-                    if (platformQuery.isBlank()) SupportedPlatforms
-                    else SupportedPlatforms.filter {
-                        it.name.contains(platformQuery, ignoreCase = true) ||
-                        it.tag.contains(platformQuery, ignoreCase = true)
-                    }
-                }
-                val dedicatedList = filtered.filter { it.dedicated }
-                val genericList = filtered.filter { !it.dedicated }
-                // v1.6.0：抽屉式列表 —— 点击展开/收起
-                var dedicatedExpanded by remember { mutableStateOf(true) }
-                var genericExpanded by remember { mutableStateOf(false) }
-                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    Text(
-                        text = "全网多平台无水印下载支持",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = themeColors.primary,
-                        modifier = Modifier.padding(vertical = 6.dp)
-                    )
-                    // 搜索框
-                    OutlinedTextField(
-                        value = platformQuery,
-                        onValueChange = { platformQuery = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text("搜索平台，如：抖音...", fontSize = 12.sp, color = Color.Gray) },
-                        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null, tint = themeColors.primary, modifier = Modifier.size(18.dp)) },
-                        singleLine = true,
-                        shape = RoundedCornerShape(20.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = themeColors.surface,
-                            unfocusedContainerColor = themeColors.surface,
-                            focusedBorderColor = Color.Transparent,
-                            unfocusedBorderColor = Color.Transparent
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    // v1.7.11：统计行已删除（数量已在下方卡片徽章展示，腾出纵向空间）
-                    // 抽屉1：专用无水印解析
-                    if (dedicatedList.isNotEmpty()) {
-                        PlatformDrawer(
-                            title = "✦ 专用无水印解析",
-                            count = dedicatedList.size,
-                            expanded = dedicatedExpanded || platformQuery.isNotBlank(),
-                            onToggle = { dedicatedExpanded = !dedicatedExpanded },
-                            themeColors = themeColors
-                        ) {
-                            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                dedicatedList.forEach { p ->
-                                    PlatformListRow(platform = p, onClick = {
-                                        Toast.makeText(context, "${p.name}: ${p.tip}", Toast.LENGTH_LONG).show()
-                                    })
-                                }
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                    // 抽屉2：通用视频提取
-                    if (genericList.isNotEmpty()) {
-                        PlatformDrawer(
-                            title = "○ 通用视频提取",
-                            count = genericList.size,
-                            expanded = genericExpanded || platformQuery.isNotBlank(),
-                            onToggle = { genericExpanded = !genericExpanded },
-                            themeColors = themeColors
-                        ) {
-                            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                genericList.forEach { p ->
-                                    PlatformListRow(platform = p, onClick = {
-                                        Toast.makeText(context, "${p.name}: ${p.tip}", Toast.LENGTH_LONG).show()
-                                    })
-                                }
-                            }
-                        }
-                    }
-                    if (filtered.isEmpty()) {
-                        Text("没有找到匹配的平台", fontSize = 12.sp, color = Color.Gray, modifier = Modifier.padding(vertical = 12.dp))
-                    }
-                }
-            }
-        }
-
-        // ---- Tab 1: 历史记录 ----
-        if (selectedTab == 1) {
             if (historyList.isEmpty()) {
                 item {
                     Box(
@@ -1803,8 +1717,8 @@ fun DownVidScreen(
             }
         }
 
-        // ---- Tab 2: 使用技巧 ----
-        if (selectedTab == 2) {
+        // ---- Tab 1: 使用技巧 ----
+        if (selectedTab == 1) {
             item {
                 Card(
                     modifier = Modifier
@@ -1887,64 +1801,6 @@ private fun DownVidHeader(onPasteClipboard: () -> Unit) {
                 color = Color(0xFFF2F7F4).copy(alpha = 0.9f),
                 lineHeight = 16.sp
             )
-        }
-    }
-}
-
-@Composable
-private fun PlatformDrawer(
-    title: String,
-    count: Int,
-    expanded: Boolean,
-    onToggle: () -> Unit,
-    themeColors: com.example.ui.theme.ThemeUiColors,
-    content: @Composable () -> Unit
-) {
-    // v1.6.0：抽屉容器 —— 点击标题展开/收起
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.92f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(10.dp))
-                    .clickable { onToggle() }
-                    .padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(themeColors.primary)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(title, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = themeColors.text, modifier = Modifier.weight(1f))
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(themeColors.primary.copy(alpha = 0.12f))
-                        .padding(horizontal = 8.dp, vertical = 2.dp)
-                ) {
-                    Text("$count 家", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = themeColors.primary)
-                }
-                Spacer(modifier = Modifier.width(4.dp))
-                Icon(
-                    if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                    contentDescription = if (expanded) "收起" else "展开",
-                    tint = themeColors.primary,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-            androidx.compose.animation.AnimatedVisibility(visible = expanded) {
-                Column(modifier = Modifier.padding(top = 8.dp)) {
-                    content()
-                }
-            }
         }
     }
 }
