@@ -230,6 +230,48 @@ object MusicPlayerState {
         added
     }
 
+    /**
+     * 本地搜索：按关键词匹配歌名/歌手（MediaStore）
+     * 输入歌手名即可列出该歌手的全部曲目；任意文字匹配歌名或歌手
+     */
+    suspend fun searchLocalMusic(context: Context, keyword: String): List<Track> = withContext(Dispatchers.IO) {
+        val found = mutableListOf<Track>()
+        try {
+            val projection = arrayOf(
+                MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.DURATION
+            )
+            val like = "%" + keyword.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
+            val selection = "(${MediaStore.Audio.Media.DURATION} > ?) AND " +
+                    "(${MediaStore.Audio.Media.IS_MUSIC} != 0) AND " +
+                    "(${MediaStore.Audio.Media.TITLE} LIKE ? ESCAPE '\\' OR " +
+                    "${MediaStore.Audio.Media.ARTIST} LIKE ? ESCAPE '\\')"
+            val selectionArgs = arrayOf("30000", like, like)
+            val sortOrder = "${MediaStore.Audio.Media.ARTIST} ASC, ${MediaStore.Audio.Media.TITLE} ASC"
+
+            context.contentResolver.query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                projection, selection, selectionArgs, sortOrder
+            )?.use { cursor ->
+                val idCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
+                val titleCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
+                val artistCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
+                while (cursor.moveToNext()) {
+                    val id = cursor.getLong(idCol)
+                    val title = cursor.getString(titleCol) ?: "未知歌曲"
+                    val artist = cursor.getString(artistCol) ?: "未知歌手"
+                    val uri = Uri.withAppendedPath(
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id.toString()
+                    ).toString()
+                    found.add(Track(title = title, artist = artist, uri = uri, isLocal = true))
+                }
+            }
+        } catch (_: Exception) { }
+        found
+    }
+
     fun release() {
         try {
             player?.release()

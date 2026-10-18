@@ -1688,12 +1688,7 @@ fun DownVidScreen(
                         )
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "共 ${SupportedPlatforms.size} 家 · ✦专用无水印 ${SupportedPlatforms.count { it.dedicated }} · 通用提取 ${SupportedPlatforms.count { !it.dedicated }}",
-                        fontSize = 11.sp,
-                        color = themeColors.textMuted,
-                        modifier = Modifier.padding(bottom = 6.dp)
-                    )
+                    // v1.7.11：统计行已删除（数量已在下方卡片徽章展示，腾出纵向空间）
                     // 抽屉1：专用无水印解析
                     if (dedicatedList.isNotEmpty()) {
                         PlatformDrawer(

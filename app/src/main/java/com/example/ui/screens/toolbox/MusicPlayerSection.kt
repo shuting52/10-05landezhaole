@@ -84,6 +84,11 @@ fun MusicPlayerSection() {
     var searchResults by remember { mutableStateOf<List<MusicPlayerState.Track>>(emptyList()) }
     var searching by remember { mutableStateOf(false) }
     var scanning by remember { mutableStateOf(false) }
+    // v1.7.11：本地搜索状态
+    var localQuery by remember { mutableStateOf("") }
+    var localResults by remember { mutableStateOf<List<MusicPlayerState.Track>>(emptyList()) }
+    var localSearching by remember { mutableStateOf(false) }
+    var pendingLocalSearch by remember { mutableStateOf(false) }
 
     val state = MusicPlayerState
     val current = state.currentTrack
@@ -92,18 +97,57 @@ fun MusicPlayerSection() {
     val audioPermission = if (Build.VERSION.SDK_INT >= 33)
         Manifest.permission.READ_MEDIA_AUDIO else Manifest.permission.READ_EXTERNAL_STORAGE
 
+    // v1.7.11：本地搜索（歌名/歌手任意文字匹配，输歌手名列出其全部曲目）
+    // 实际查询（调用前已确保有权限）
+    fun doLocalSearchQuery() {
+        val q = localQuery.trim()
+        if (q.isBlank()) {
+            Toast.makeText(context, "请输入歌名或歌手", Toast.LENGTH_SHORT).show()
+            return
+        }
+        localSearching = true
+        scope.launch {
+            val results = withContext(Dispatchers.IO) {
+                state.searchLocalMusic(context, q)
+            }
+            localSearching = false
+            localResults = results
+            if (results.isEmpty()) Toast.makeText(context, "本地没找到，换个关键词试试", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            scanning = true
-            scope.launch {
-                state.scanLocalMusic(context)
-                scanning = false
+            // v1.7.11：授权后若有挂起的本地搜索则执行，否则走原来的全量扫描
+            if (pendingLocalSearch) {
+                pendingLocalSearch = false
+                doLocalSearchQuery()
+            } else {
+                scanning = true
+                scope.launch {
+                    state.scanLocalMusic(context)
+                    scanning = false
+                }
             }
         } else {
             Toast.makeText(context, "需要音频权限才能扫描本地歌曲", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    // v1.7.11：本地搜索入口（含权限检查）
+    fun requestLocalSearch() {
+        if (localQuery.trim().isBlank()) {
+            Toast.makeText(context, "请输入歌名或歌手", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (ContextCompat.checkSelfPermission(context, audioPermission) != PackageManager.PERMISSION_GRANTED) {
+            pendingLocalSearch = true
+            permissionLauncher.launch(audioPermission)
+            return
+        }
+        doLocalSearchQuery()
     }
 
     fun doScanLocal() {
@@ -324,6 +368,60 @@ fun MusicPlayerSection() {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(Icons.Filled.Album, contentDescription = null, tint = themeColors.textMuted, modifier = Modifier.size(32.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(track.title, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = themeColors.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(track.artist, fontSize = 11.sp, color = themeColors.textMuted, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    }
+                    Icon(Icons.Filled.PlayArrow, contentDescription = "播放", tint = themeColors.primary)
+                }
+            }
+        }
+
+        // ===== 本地搜索（v1.7.11：搜本机音乐，输歌手名列出其全部曲目）=====
+        Text("本地搜索", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = themeColors.text)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            OutlinedTextField(
+                value = localQuery,
+                onValueChange = { localQuery = it },
+                placeholder = { Text("歌名 / 歌手，搜本地音乐", fontSize = 13.sp) },
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(12.dp),
+                singleLine = true
+            )
+            Button(
+                onClick = { requestLocalSearch() },
+                enabled = !localSearching,
+                colors = ButtonDefaults.buttonColors(containerColor = themeColors.primary),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                if (localSearching) CircularProgressIndicator(color = Color.White, strokeWidth = 2.dp, modifier = Modifier.size(16.dp))
+                else Icon(Icons.Filled.Search, contentDescription = null, modifier = Modifier.size(18.dp))
+            }
+        }
+        if (localResults.isNotEmpty()) {
+            Text("找到 ${localResults.size} 首本地歌曲", fontSize = 11.sp, color = themeColors.textMuted)
+            localResults.forEach { track ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                        .clickable {
+                            val idx = state.playlist.indexOfFirst { it.uri == track.uri }
+                            if (idx >= 0) state.playAt(idx, context)
+                            else {
+                                state.addTrack(track)
+                                state.playAt(state.playlist.size - 1, context)
+                            }
+                        }
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Filled.MusicNote, contentDescription = null, tint = themeColors.textMuted, modifier = Modifier.size(32.dp))
                     Spacer(modifier = Modifier.width(10.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(track.title, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = themeColors.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
