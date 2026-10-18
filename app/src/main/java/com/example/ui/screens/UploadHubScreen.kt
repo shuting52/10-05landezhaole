@@ -625,16 +625,9 @@ private fun downloadAndInstallResourceInApp(
                 }
             }
         } catch (e: Exception) {
+            // v1.7.20：应用内下载失败只提示错误，不再跳转浏览器（用户需求）
             withContext(Dispatchers.Main) {
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    }
-                    context.startActivity(intent)
-                    Toast.makeText(context, "已切换外部浏览器下载", Toast.LENGTH_SHORT).show()
-                } catch (_: Exception) {
-                    Toast.makeText(context, "下载失败：${e.message}", Toast.LENGTH_SHORT).show()
-                }
+                Toast.makeText(context, "下载失败：${e.message}，请检查网络后重试", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -709,23 +702,10 @@ private fun downloadApptekaApk(
                 }
             }
         } catch (e: Exception) {
+            // v1.7.20：应用内下载失败只提示错误，不再跳转浏览器（用户需求）
             withContext(Dispatchers.Main) {
                 onProgress(false)
-                // 兜底：用浏览器打开直链
-                try {
-                    val fallbackUrl = item.directApkUrl
-                    if (!fallbackUrl.isNullOrBlank()) {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(fallbackUrl)).apply {
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        }
-                        context.startActivity(intent)
-                        Toast.makeText(context, "已用浏览器打开下载链接", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "下载失败：${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-                } catch (_: Exception) {
-                    Toast.makeText(context, "下载失败，请检查网络", Toast.LENGTH_SHORT).show()
-                }
+                Toast.makeText(context, "下载失败，请检查网络后重试", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -1699,13 +1679,8 @@ private fun SoftwareGridCard(
                     Toast.makeText(context, "✅ 该应用已完成下载，位于手机「下载」目录", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    context.startActivity(intent)
-                } catch (e: Exception) {
-                    Toast.makeText(context, "无法打开：$url", Toast.LENGTH_SHORT).show()
-                }
+                // v1.7.20：非安装包链接不再跳转浏览器（用户需求）
+                Toast.makeText(context, "该资源暂不支持应用内下载", Toast.LENGTH_SHORT).show()
             }
         } else {
             Toast.makeText(context, "该资源暂未配置下载链接", Toast.LENGTH_SHORT).show()
@@ -2002,13 +1977,8 @@ private fun SoftwareHorizontalCard(
             if (canInstall) {
                 downloadToLocal(url, res.title + (if (isZip) ".zip" else if (isApk) ".apk" else if (isMd) ".md" else ""))
             } else {
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    context.startActivity(intent)
-                } catch (e: Exception) {
-                    Toast.makeText(context, "无法打开：$url", Toast.LENGTH_SHORT).show()
-                }
+                // v1.7.20：非安装包链接不再跳转浏览器（用户需求）
+                Toast.makeText(context, "该资源暂不支持应用内下载", Toast.LENGTH_SHORT).show()
             }
         } else {
             Toast.makeText(context, "该资源暂未配置下载链接", Toast.LENGTH_SHORT).show()
@@ -2154,13 +2124,8 @@ private fun ResourceFileCard(
             if (canInstall) {
                 downloadToLocal(url, res.title + (if (isZip) ".zip" else if (isApk) ".apk" else if (isMd) ".md" else ""))
             } else {
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    context.startActivity(intent)
-                } catch (e: Exception) {
-                    Toast.makeText(context, "无法打开：$url", Toast.LENGTH_SHORT).show()
-                }
+                // v1.7.20：非安装包链接不再跳转浏览器（用户需求）
+                Toast.makeText(context, "该资源暂不支持应用内下载", Toast.LENGTH_SHORT).show()
             }
         } else {
             Toast.makeText(context, "该资源暂未配置下载链接", Toast.LENGTH_SHORT).show()

@@ -306,7 +306,7 @@ fun DownVidScreen(
     var isParsing by remember { mutableStateOf(false) }
     var currentResult by remember { mutableStateOf<VideoParseResult?>(null) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var selectedTab by remember { mutableIntStateOf(0) } // 0: 解析历史, 1: 最火开源仓库, 2: 使用帮助
+    var selectedTab by remember { mutableIntStateOf(0) } // 0: 解析历史, 1: 使用帮助
     var repoSearchQuery by remember { mutableStateOf("") }
     var isBatchMode by remember { mutableStateOf(false) }
     var batchInput by remember { mutableStateOf("") }
@@ -1643,7 +1643,7 @@ fun DownVidScreen(
                 contentColor = themeColors.primary,
                 edgePadding = 8.dp
             ) {
-                listOf("📂 解析历史 (${historyList.size})", "🔥 最火去水印项目", "💡 使用技巧").forEachIndexed { index, title ->
+                listOf("📂 解析历史 (${historyList.size})", "💡 使用技巧").forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTab == index,
                         onClick = { selectedTab = index },
@@ -1730,96 +1730,8 @@ fun DownVidScreen(
             }
         }
 
-        // ---- Tab 1: 最火开源去水印仓库 ----
+        // ---- Tab 1: 使用技巧 ----
         if (selectedTab == 1) {
-            item {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                    shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f))
-                ) {
-                    Column(modifier = Modifier.padding(14.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Filled.Search,
-                                contentDescription = null,
-                                tint = themeColors.primary,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                "搜索 GitHub 最火去水印项目",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = themeColors.text
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        OutlinedTextField(
-                            value = repoSearchQuery,
-                            onValueChange = { repoSearchQuery = it },
-                            placeholder = { Text("输入项目名、技术或支持平台...", fontSize = 12.sp, color = Color.Gray) },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = LocalThemeUiColors.current.surface,
-                                unfocusedContainerColor = LocalThemeUiColors.current.surface
-                            )
-                        )
-                    }
-                }
-            }
-
-            val filteredRepos = HOT_WATERMARK_REPOS.filter {
-                val q = repoSearchQuery.trim().lowercase()
-                q.isEmpty() || it.name.lowercase().contains(q) ||
-                    it.author.lowercase().contains(q) ||
-                    it.tag.lowercase().contains(q) ||
-                    it.desc.lowercase().contains(q) ||
-                    it.features.any { f -> f.lowercase().contains(q) }
-            }
-
-            if (filteredRepos.isEmpty()) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(30.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("未找到相关去水印项目，换个关键词试试~", fontSize = 13.sp, color = Color.Gray)
-                    }
-                }
-            } else {
-                items(filteredRepos, key = { it.name }) { repo ->
-                    HotWatermarkRepoCard(
-                        repo = repo,
-                        themeColors = themeColors,
-                        onOpen = {
-                            try {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(repo.url)).apply {
-                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                }
-                                context.startActivity(intent)
-                            } catch (_: Exception) {
-                                Toast.makeText(context, "无法打开浏览器", Toast.LENGTH_SHORT).show()
-                            }
-                        },
-                        onCopy = {
-                            val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            cm.setPrimaryClip(ClipData.newPlainText("RepoURL", repo.url))
-                            Toast.makeText(context, "已复制项目地址: ${repo.url}", Toast.LENGTH_SHORT).show()
-                        }
-                    )
-                }
-            }
-        }
-
-        // ---- Tab 2: 使用技巧 ----
-        if (selectedTab == 2) {
             item {
                 Card(
                     modifier = Modifier

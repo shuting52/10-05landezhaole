@@ -71,6 +71,7 @@ import android.webkit.WebViewClient
 import android.widget.VideoView
 import coil.compose.AsyncImage
 import com.example.data.remote.SplashDto
+import com.example.ui.theme.LocalThemeUiColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.withFrameNanos
@@ -96,9 +97,9 @@ fun SplashScreenOverlay(
     // v1.2.8：开屏副标题/加载文字可云端覆盖（控制台 UI 文本编辑）
     uiText: com.example.data.remote.UiTextDto? = null
 ) {
-    var countdownSeconds by remember(splash?.durationSeconds) {
-        // v1.4.11：默认 5 秒；云端控制台配置了展示时长则严格跟随后台设定
-        mutableIntStateOf((splash?.durationSeconds ?: 5).coerceIn(1, 15))
+    var countdownSeconds by remember {
+        // v1.7.20：固定 5 秒倒计时（用户需求，不再跟随云端配置）
+        mutableIntStateOf(5)
     }
 
     val entryScale = remember { Animatable(0.7f) }
@@ -379,6 +380,12 @@ fun CubeLoader3D(
 }
 
 @Composable
+/* =====================================================================
+ * v1.7.20：打字机启动页（用户需求）
+ * - 核心文字「懒得找了」打字机效果呈现，无多余文字
+ * - 倒计时只显示数字（无「跳过」），固定 5 秒后进入
+ * - 背景/文字跟随主题（更新弹窗除外）
+ * ===================================================================== */
 private fun CubeLoaderSplashContent(
     countdownSeconds: Int,
     onDismiss: () -> Unit,
@@ -386,178 +393,66 @@ private fun CubeLoaderSplashContent(
     entryAlpha: Animatable<Float, *>,
     uiText: com.example.data.remote.UiTextDto? = null
 ) {
-    val infinite = rememberInfiniteTransition(label = "cube_splash_fx")
-    val shimmer by infinite.animateFloat(
-        initialValue = -0.3f,
-        targetValue = 1.3f,
-        animationSpec = infiniteRepeatable(tween(2600, easing = LinearEasing), RepeatMode.Restart),
-        label = "title_shimmer"
-    )
-    val auraScale by infinite.animateFloat(
-        initialValue = 0.94f,
-        targetValue = 1.06f,
-        animationSpec = infiniteRepeatable(tween(2200, easing = FastOutSlowInEasing), RepeatMode.Reverse),
-        label = "aura_pulse"
-    )
+    val theme = LocalThemeUiColors.current
+    val fullText = "懒得找了"
+    var visibleChars by remember { mutableIntStateOf(0) }
+    var cursorVisible by remember { mutableStateOf(true) }
+
+    // 打字机效果：每 350ms 出现一个字
+    LaunchedEffect(Unit) {
+        while (visibleChars < fullText.length) {
+            delay(350)
+            visibleChars++
+        }
+    }
+    // 光标闪烁
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(530)
+            cursorVisible = !cursorVisible
+        }
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF0F1012),
-                        Color(0xFF16191D),
-                        Color(0xFF0C0D0F)
-                    )
-                )
-            )
+            .background(Brush.verticalGradient(theme.backgroundGradient))
     ) {
-        // 背景极光光晕
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val w = size.width
-            val h = size.height
-            val auraRadius = (w * 0.7f) * auraScale
-            drawCircle(
-                brush = Brush.radialGradient(
-                    colors = listOf(
-                        Color(0xFF3C948F).copy(alpha = 0.22f),
-                        Color(0xFF2AFEF3).copy(alpha = 0.08f),
-                        Color.Transparent
-                    ),
-                    center = Offset(w * 0.5f, h * 0.42f),
-                    radius = auraRadius
-                ),
-                radius = auraRadius,
-                center = Offset(w * 0.5f, h * 0.42f)
-            )
-        }
-
-        // 右上角跳过按钮 (科技感半透明圆角药丸)
-        Surface(
-            shape = RoundedCornerShape(20.dp),
-            color = Color(0xFF1E2228).copy(alpha = 0.85f),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF2AFEF3).copy(alpha = 0.45f)),
+        // 倒计时：只显示数字（右上角，无「跳过」）
+        Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 44.dp, end = 20.dp)
-                .clickable { onDismiss() }
+                .statusBarsPadding()
+                .padding(top = 16.dp, end = 20.dp)
+                .size(44.dp)
+                .clip(CircleShape)
+                .background(Color.White.copy(alpha = 0.65f))
+                .border(1.dp, theme.primary.copy(alpha = 0.4f), CircleShape),
+            contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "跳过  s",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF2AFEF3),
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                text = "$countdownSeconds",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Black,
+                color = theme.primary
             )
         }
 
-        // 中央立方体及品牌文案区
+        // 中央：打字机「懒得找了」
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .align(Alignment.Center)
-                .offset(y = (-20).dp)
                 .scale(entryScale.value)
                 .graphicsLayer { alpha = entryAlpha.value }
                 .padding(horizontal = 28.dp)
         ) {
-            // 3D 立方体加载器
-            CubeLoader3D(sizeDp = 92.dp)
-
-            Spacer(modifier = Modifier.height(28.dp))
-
-            // 主标题：流光 Neon 质感
-            val shimmerX = shimmer * 650f
             Text(
-                text = "懒得找了去水印",
-                style = androidx.compose.ui.text.TextStyle(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFEEEEEE),
-                            Color(0xFF2AFEF3),
-                            Color(0xFFFFFFFF),
-                            Color(0xFF3C948F),
-                            Color(0xFFEEEEEE)
-                        ),
-                        start = Offset(shimmerX - 180f, 0f),
-                        end = Offset(shimmerX + 180f, 0f)
-                    ),
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Black,
-                    letterSpacing = 2.sp
-                )
-            )
-
-            // 青绿流光分割线
-            Canvas(modifier = Modifier.fillMaxWidth(0.55f).height(10.dp).padding(vertical = 3.dp)) {
-                val cw = size.width
-                val ch = size.height
-                drawLine(
-                    brush = Brush.horizontalGradient(
-                        listOf(
-                            Color.Transparent,
-                            Color(0xFF2AFEF3).copy(alpha = 0.85f),
-                            Color(0xFF3C948F),
-                            Color.Transparent
-                        )
-                    ),
-                    start = Offset(0f, ch / 2f),
-                    end = Offset(cw, ch / 2f),
-                    strokeWidth = 2.dp.toPx(),
-                    cap = StrokeCap.Round
-                )
-            }
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Text(
-                text = uiText?.splashSub?.ifBlank { "全球精选资源 · 音视频提取去水印 · 效率百宝箱" } ?: "全球精选资源 · 音视频提取去水印 · 效率百宝箱",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF8E9BAE),
-                letterSpacing = 1.sp
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // 加载状态点点
-            var dotCount by remember { mutableIntStateOf(0) }
-            LaunchedEffect(Unit) {
-                while (true) {
-                    dotCount = (dotCount + 1) % 4
-                    delay(400)
-                }
-            }
-            Text(
-                text = (uiText?.splashLoading?.ifBlank { "软件初始化，请稍等..." } ?: "软件初始化，请稍等...") + ".".repeat(dotCount),
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF2AFEF3).copy(alpha = 0.85f),
-                letterSpacing = 1.5.sp
-            )
-        }
-
-        // 底部品牌标识
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .navigationBarsPadding()
-                .padding(bottom = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "3D CUBE VISUAL ENGINE · 极速直达",
-                color = Color(0xFF2AFEF3).copy(alpha = 0.45f),
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-                letterSpacing = 1.5.sp
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Copyright © 2026 懒得找了去水印. All rights reserved.",
-                color = Color(0xFF6B7280).copy(alpha = 0.6f),
-                fontSize = 10.sp
+                text = fullText.take(visibleChars) + if (cursorVisible && visibleChars < fullText.length) "▌" else "",
+                fontSize = 44.sp,
+                fontWeight = FontWeight.Black,
+                color = theme.text,
+                letterSpacing = 6.sp
             )
         }
     }

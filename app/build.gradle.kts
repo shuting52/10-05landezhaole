@@ -13,11 +13,11 @@ android {
   compileSdk = 36
 
   defaultConfig {
-    applicationId = "com.landezhaole.Android"
+    applicationId = "com.landezhaole.app"
     minSdk = 24
     targetSdk = 36
-    versionCode = 229
-    versionName = "1.7.19"
+    versionCode = 228
+    versionName = "1.7.18"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
