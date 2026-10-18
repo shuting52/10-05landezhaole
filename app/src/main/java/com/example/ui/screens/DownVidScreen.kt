@@ -48,6 +48,7 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.AudioFile
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Collections
@@ -305,6 +306,8 @@ fun DownVidScreen(
     var inputUrl by remember { mutableStateOf("") }
     var isParsing by remember { mutableStateOf(false) }
     var currentResult by remember { mutableStateOf<VideoParseResult?>(null) }
+    // v1.7.21（对标 jicun）：解析锁定 —— 解析成功后按钮变为「完成解析」并置灰，用户修改输入后解锁
+    var parseLocked by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var selectedTab by remember { mutableIntStateOf(0) } // 0: 解析历史, 1: 使用帮助
     var repoSearchQuery by remember { mutableStateOf("") }
@@ -428,6 +431,8 @@ fun DownVidScreen(
                         topics = media.topics
                     )
                     currentResult = result
+                    // v1.7.21（对标 jicun）：解析成功后锁定按钮为「完成解析」
+                    parseLocked = true
                     if (historyList.none { it.originalLink == target }) {
                         historyList.add(0, result)
                     }
@@ -588,6 +593,8 @@ fun DownVidScreen(
                 val extracted = extractUrl(text)
                 if (extracted.isNotBlank()) {
                     inputUrl = extracted
+                    // v1.7.21（对标 jicun）：新内容解锁「完成解析」
+                    parseLocked = false
                     Toast.makeText(context, "已粘贴链接", Toast.LENGTH_SHORT).show()
                     if (autoParseEnabled) {
                         autoPrefs.edit().putString("last_auto_target", extracted.trim()).apply()
@@ -734,7 +741,7 @@ fun DownVidScreen(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(20.dp))
                                 .background(LocalThemeUiColors.current.surface)
-                                .clickable { inputUrl = ""; batchInput = ""; errorMessage = null }
+                                .clickable { inputUrl = ""; batchInput = ""; errorMessage = null; parseLocked = false }
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -826,6 +833,8 @@ fun DownVidScreen(
                         onValueChange = {
                             if (isBatchMode) batchInput = it else inputUrl = it
                             errorMessage = null
+                            // v1.7.21（对标 jicun）：用户修改输入后解锁「完成解析」
+                            parseLocked = false
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -854,6 +863,7 @@ fun DownVidScreen(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Button(
+                        // v1.7.21（对标 jicun）：三态 —— 开始解析 / 解析中… / 完成解析（锁定）
                         onClick = { if (isBatchMode) startBatchParsing() else startParsing() },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -864,7 +874,7 @@ fun DownVidScreen(
                             containerColor = themeColors.primary,
                             disabledContainerColor = LocalThemeUiColors.current.border
                         ),
-                        enabled = !isParsing
+                        enabled = !isParsing && !parseLocked
                     ) {
                         if (isParsing) {
                             CircularProgressIndicator(
@@ -874,18 +884,21 @@ fun DownVidScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                if (isBatchMode && batchProgress.isNotBlank()) "批量解析中 $batchProgress..." else "正在解析...",
+                                if (isBatchMode && batchProgress.isNotBlank()) "批量解析中 $batchProgress..." else "解析中…",
                                 fontSize = 15.sp, fontWeight = FontWeight.Bold
                             )
                         } else {
                             Icon(
-                                Icons.Filled.RocketLaunch,
+                                if (parseLocked) Icons.Filled.CheckCircle else Icons.Filled.RocketLaunch,
                                 contentDescription = null,
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                if (isBatchMode) "批量解析下载" else "完成解析",
+                                // v1.7.21（对标 jicun）：解析成功后按钮变为「完成解析」并置灰
+                                if (parseLocked) "完成解析"
+                                else if (isBatchMode) "批量解析下载"
+                                else "开始解析",
                                 fontSize = 15.sp, fontWeight = FontWeight.Bold
                             )
                         }
@@ -903,8 +916,8 @@ fun DownVidScreen(
             }
         }
 
-        // ---- 卡片2：媒体预览（v1.4.33：对标参考图；图片多选下载 + 视频画质能力保留） ----
-        if (currentResult != null) {
+        // ---- 卡片2：媒体预览（v1.7.21 对标 jicun：有什么才显示什么 —— 仅当有视频/图片时显示） ----
+        if (currentResult != null && (currentResult!!.videoUrls.isNotEmpty() || currentResult!!.imageUrls.isNotEmpty())) {
             val res = currentResult!!
             val isImagePost = res.videoUrls.isEmpty() && res.imageUrls.isNotEmpty()
             item {
@@ -1480,8 +1493,74 @@ fun DownVidScreen(
             }
         }
 
-        // ---- 卡片3：文案预览（v1.4.33：对标参考图） ----
-        if (currentResult != null) {
+        // ---- 卡片2.6：音频预览（v1.7.21 对标 jicun：仅当解析出独立音轨时显示） ----
+        if (currentResult != null && currentResult!!.audioUrl != null) {
+            val res = currentResult!!
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = themeColors.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(themeColors.primary.copy(alpha = 0.12f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Filled.AudioFile,
+                                    contentDescription = null,
+                                    tint = themeColors.primary,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "音频预览",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = themeColors.text
+                                )
+                                Text(
+                                    text = "独立音轨 · 可单独下载",
+                                    fontSize = 12.sp,
+                                    color = themeColors.textMuted
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Button(
+                            onClick = {
+                                triggerDownload(
+                                    res.audioUrl!!,
+                                    "DownVid_${System.currentTimeMillis()}.mp3"
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = themeColors.primary)
+                        ) {
+                            Icon(Icons.Filled.Download, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("下载音频", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+        }
+
+        // ---- 卡片3：文案预览（v1.7.21 对标 jicun：仅当有文案时显示） ----
+        if (currentResult != null && !currentResult!!.description.isNullOrBlank()) {
             val res = currentResult!!
             item {
                 Card(
