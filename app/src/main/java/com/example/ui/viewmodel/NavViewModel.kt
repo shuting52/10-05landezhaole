@@ -38,8 +38,6 @@ import java.net.URLEncoder
 
 import com.example.data.local.db.UploadedResourceEntity
 import com.example.ui.theme.AtmosphereEffect
-import com.example.ui.theme.ThemePreset
-import com.example.ui.theme.ThemePresetsRepository
 import com.example.ui.uiverse.ActiveUiverseState
 import com.example.ui.uiverse.UiKitPreset
 import com.example.ui.uiverse.UiverseItem
@@ -62,7 +60,6 @@ enum class AppBottomTab(val title: String) {
 
 data class NavUiState(
     val currentTab: AppBottomTab = AppBottomTab.HOME,
-    val currentTheme: ThemePreset = ThemePresetsRepository.defaultTheme,
     val atmosphereEffect: AtmosphereEffect = AtmosphereEffect.NONE,
     // v1.2.0：动态效果主题
     val dynamicEffect: DynamicEffectPreset = DynamicEffectPreset.NONE,
@@ -93,7 +90,9 @@ data class NavUiState(
     val cloudUiText: UiTextDto? = null,
     // 本地背景媒体（主题版块直接本机选择，无需控制台）：type = none/image/video, uri 为本地内容 URI
     val localBgMediaType: String = "none",
-    val localBgMediaUri: String = ""
+    val localBgMediaUri: String = "",
+    // v1.7.17：自定义背景透明磨砂（模糊）效果
+    val bgFrosted: Boolean = false
 )
 
 class NavViewModel(
@@ -161,19 +160,7 @@ class NavViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
-        // 加载持久化主题
-        try {
-            val savedThemeId = appContext?.getSharedPreferences("lzdz_theme_prefs", Context.MODE_PRIVATE)
-                ?.getString("saved_theme_id", null)
-            if (!savedThemeId.isNullOrBlank()) {
-                ThemePresetsRepository.findById(savedThemeId)?.let { preset ->
-                    _uiState.value = _uiState.value.copy(
-                        currentTheme = preset,
-                        atmosphereEffect = preset.atmosphereEffect
-                    )
-                }
-            }
-        } catch (_: Exception) { }
+        // v1.7.17：主题预设已删除，不再加载持久化主题
 
         // Pre-seed some popular initial software and skills if empty
         viewModelScope.launch {
@@ -574,19 +561,6 @@ class NavViewModel(
         _uiState.value = _uiState.value.copy(currentTab = tab)
     }
 
-    fun setTheme(preset: ThemePreset) {
-        _uiState.value = _uiState.value.copy(
-            currentTheme = preset,
-            atmosphereEffect = preset.atmosphereEffect
-        )
-        try {
-            appContext?.getSharedPreferences("lzdz_theme_prefs", Context.MODE_PRIVATE)
-                ?.edit()
-                ?.putString("saved_theme_id", preset.id)
-                ?.apply()
-        } catch (_: Exception) { }
-    }
-
     fun setAtmosphereEffect(effect: AtmosphereEffect) {
         _uiState.value = _uiState.value.copy(atmosphereEffect = effect)
     }
@@ -601,17 +575,6 @@ class NavViewModel(
     }
 
     fun applyUiverseKit(kit: UiKitPreset) {
-        val newTheme = ThemePreset(
-            id = kit.id,
-            name = kit.displayName,
-            style = kit.id,
-            categoryName = "Uiverse",
-            primaryColor = kit.primaryColor,
-            secondaryColor = kit.secondaryColor,
-            bgColor = kit.backgroundColor,
-            surfaceColor = kit.surfaceColor,
-            textColor = kit.textColor
-        )
         val newCardStyle = when (kit) {
             UiKitPreset.STYLE_1_TILT_MAGNETIC -> CardStylePreset.TILT_3D_MAGNETIC
             UiKitPreset.STYLE_3_THICK_BUTTON -> CardStylePreset.STYLE_3_THICK_CARD
@@ -665,7 +628,6 @@ class NavViewModel(
         }
 
         _uiState.value = _uiState.value.copy(
-            currentTheme = ThemePresetsRepository.defaultTheme,
             activeUiverseState = _uiState.value.activeUiverseState.copy(
                 activeKit = kit,
                 cardStyle = newCardStyle,
@@ -683,7 +645,6 @@ class NavViewModel(
         // v1.1.15 修复「白底绿字」：云端自定义 CSS 不再覆盖本体主题色，经典皮肤恒定生效
         // （自定义 CSS 仍可作用于组件样式 activeUiverseState，但不改变全局主题颜色）
         _uiState.value = _uiState.value.copy(
-            currentTheme = ThemePresetsRepository.defaultTheme,
             activeUiverseState = _uiState.value.activeUiverseState.copy(
                 activeKit = UiKitPreset.CUSTOM_CODE,
                 cardStyle = CardStylePreset.CUSTOM,
@@ -706,13 +667,6 @@ class NavViewModel(
         if (item.cssCode.isNotBlank()) {
             applyUiverseCustomCss(item.cssCode, item.htmlCode)
         }
-    }
-
-    fun resetUiverseToDefault() {
-        _uiState.value = _uiState.value.copy(
-            currentTheme = ThemePresetsRepository.defaultTheme,
-            activeUiverseState = ActiveUiverseState()
-        )
     }
 
     /**
@@ -1059,6 +1013,24 @@ class NavViewModel(
             localBgMediaType = "none",
             localBgMediaUri = ""
         )
+    }
+
+    /** v1.7.17：设置自定义背景透明磨砂效果（持久化） */
+    fun setBgFrosted(frosted: Boolean) {
+        _uiState.value = _uiState.value.copy(bgFrosted = frosted)
+        try {
+            appContext?.getSharedPreferences("lzdz_bg_prefs", android.content.Context.MODE_PRIVATE)
+                ?.edit()?.putBoolean("bg_frosted", frosted)?.apply()
+        } catch (_: Exception) { }
+    }
+
+    /** v1.7.17：从持久化恢复磨砂设置 */
+    fun restoreBgFrosted() {
+        try {
+            val frosted = appContext?.getSharedPreferences("lzdz_bg_prefs", android.content.Context.MODE_PRIVATE)
+                ?.getBoolean("bg_frosted", false) ?: false
+            _uiState.value = _uiState.value.copy(bgFrosted = frosted)
+        } catch (_: Exception) { }
     }
 }
 

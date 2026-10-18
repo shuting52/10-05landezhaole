@@ -118,7 +118,6 @@ import com.example.ui.theme.CuteLemon
 import com.example.ui.theme.CutePeach
 import com.example.ui.theme.CutePink
 import com.example.ui.theme.LocalThemeUiColors
-import com.example.ui.theme.ThemePreset
 import android.content.ClipData
 import android.content.ClipboardManager
 import androidx.compose.foundation.Image
@@ -183,7 +182,6 @@ fun CuteCartoonLiquidGlassDialog(
 
 @Composable
 fun SettingsScreen(
-    currentTheme: ThemePreset,
     onOpenThemeSwitcher: () -> Unit,
     cloudUpdate: UpdateDialogDto? = null,
     cloudVersion: VersionDto? = null,

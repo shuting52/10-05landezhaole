@@ -203,6 +203,8 @@ fun MainScreen(
         if (type != "none" && path.isNotBlank()) {
             viewModel.setLocalBgMedia(type, "file://$path")
         }
+        // v1.7.17：恢复透明磨砂设置
+        viewModel.restoreBgFrosted()
     }
 
     // v1.4.22：用户自定义上传图片/视频作为软件背景
@@ -261,9 +263,10 @@ fun MainScreen(
         ) {
             // 自定义背景（图片/视频）静态底层展示
             // v1.7.10 修复：key 随 URL 变化，换背景时强制重建播放器/图片层
+            // v1.7.17：透明磨砂效果
             if ((bgType == "image" || bgType == "video") && bgUrl.isNotBlank()) {
-                key(bgUrl) {
-                    BgMediaStaticLayer(bgType = bgType, bgUrl = bgUrl)
+                key(bgUrl, uiState.bgFrosted) {
+                    BgMediaStaticLayer(bgType = bgType, bgUrl = bgUrl, frosted = uiState.bgFrosted)
                 }
             }
             Scaffold(
@@ -439,7 +442,6 @@ fun MainScreen(
                 }
                 AppBottomTab.SETTINGS -> {
                     SettingsScreen(
-                        currentTheme = uiState.currentTheme,
                         onOpenThemeSwitcher = { viewModel.setThemeDialogVisible(true) },
                         cloudUpdate = uiState.cloudUpdate,
                         cloudVersion = uiState.cloudVersion,
@@ -778,19 +780,13 @@ fun MainScreen(
             UiverseDialog(
                 isOpen = true,
                 onClose = { viewModel.setThemeDialogVisible(false) },
-                activeState = uiState.activeUiverseState,
-                onResetDefault = {
-                    viewModel.resetUiverseToDefault()
-                },
-                onApplyGradientTheme = { theme ->
-                    viewModel.setTheme(theme)
-                },
-                activeGradientThemeId = uiState.currentTheme.id,
-                // v1.4.22：自定义背景上传入口
+                // v1.4.22：自定义背景上传入口（v1.7.17：主题预设已删除，仅保留自定义背景+透明磨砂）
                 localBgMediaType = uiState.localBgMediaType,
+                bgFrosted = uiState.bgFrosted,
                 onPickLocalImage = { pickBgImageLauncher.launch("image/*") },
                 onPickLocalVideo = { pickBgVideoLauncher.launch("video/*") },
-                onClearLocalBgMedia = { clearCustomBackground() }
+                onClearLocalBgMedia = { clearCustomBackground() },
+                onToggleFrosted = { viewModel.setBgFrosted(it) }
             )
         }
 
@@ -810,7 +806,13 @@ fun MainScreen(
 
 // ---------------- 背景媒体静态层（v1.6.8：主题切换删除后保留自定义背景） ----------------
 @Composable
-private fun BgMediaStaticLayer(bgType: String, bgUrl: String) {
+private fun BgMediaStaticLayer(bgType: String, bgUrl: String, frosted: Boolean = false) {
+    // v1.7.17：透明磨砂效果（API 31+ 用系统模糊，低版本用半透明白叠加模拟）
+    val frostedBlur = if (frosted && android.os.Build.VERSION.SDK_INT >= 31) {
+        Modifier.blur(28.dp)
+    } else {
+        Modifier
+    }
     if (bgType == "image" && bgUrl.isNotBlank()) {
         Box(
             modifier = Modifier
@@ -822,7 +824,9 @@ private fun BgMediaStaticLayer(bgType: String, bgUrl: String) {
                 model = bgUrl,
                 contentDescription = null,
                 contentScale = androidx.compose.ui.layout.ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(frostedBlur)
             )
             // 半透明遮罩保证前景内容可读
             Box(
@@ -830,6 +834,14 @@ private fun BgMediaStaticLayer(bgType: String, bgUrl: String) {
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.35f))
             )
+            // 透明磨砂：白色半透明叠加营造毛玻璃质感
+            if (frosted) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White.copy(alpha = 0.22f))
+                )
+            }
         }
     } else if (bgType == "video" && bgUrl.isNotBlank()) {
         Box(
@@ -866,13 +878,23 @@ private fun BgMediaStaticLayer(bgType: String, bgUrl: String) {
                         }
                     }
                 },
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(frostedBlur)
             )
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.35f))
             )
+            // 透明磨砂：白色半透明叠加营造毛玻璃质感
+            if (frosted) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White.copy(alpha = 0.22f))
+                )
+            }
         }
     }
 }

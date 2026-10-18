@@ -87,7 +87,6 @@ class MainActivity : ComponentActivity() {
                 LocalStreamingBorderAngle provides streamingBorderAngle
             ) {
                 MyApplicationTheme(
-                    themePreset = uiState.currentTheme,
                     uiverseState = uiState.activeUiverseState
                 ) {
                     Surface(
