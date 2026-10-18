@@ -1,16 +1,15 @@
 {
   "version": {
-    "code": 228,
-    "name": "1.7.18",
+    "code": 229,
+    "name": "1.7.19",
     "changelog": [
-      "✨ v1.7.18 更新来啦～",
-      "fix: 修复磨砂模糊与流光边框编译错误",
-      "feat: 删除全部主题预设，仅保留自定义背景+透明磨砂"
+      "✨ v1.7.19 更新来啦～",
+      "feat: 新皮肤 Frutiger Aero 千禧复兴"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.18-1792338192.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.18-1792338192.apk",
-    "lastBuildSha": "fe0c4940bdf40c9fc1abe8b96c1f40167dba60f7",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.19-1792347508.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.19-1792347508.apk",
+    "lastBuildSha": "f5f9724e2ac37336aa8997b9eb2630de82f4bb05",
     "apkSize": 24045920
   },
   "home": {
@@ -24345,11 +24344,10 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.18 已上线",
+    "title": "懒得找了 v1.7.19 已上线",
     "changelog": [
-      "✨ v1.7.18 更新来啦～",
-      "fix: 修复磨砂模糊与流光边框编译错误",
-      "feat: 删除全部主题预设，仅保留自定义背景+透明磨砂"
+      "✨ v1.7.19 更新来啦～",
+      "feat: 新皮肤 Frutiger Aero 千禧复兴"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24411,10 +24409,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.18",
-      "code": 228,
-      "at": "2026-10-18T15:43:18Z",
-      "sha": "fe0c4940bdf40c9fc1abe8b96c1f40167dba60f7"
+      "version": "1.7.19",
+      "code": 229,
+      "at": "2026-10-18T18:18:35Z",
+      "sha": "f5f9724e2ac37336aa8997b9eb2630de82f4bb05"
     }
   },
   "_ai_notice": "内容由AI生成"
