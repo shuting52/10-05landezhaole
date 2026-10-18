@@ -40,7 +40,10 @@ enum class DesignStyle(val displayName: String, val desc: String) {
     ANTI_DESIGN("Anti-Design 反设计", "以一种混乱、不和谐、朋克风的方式，挑战传统的美学和可用性规则。"),
     ACID_GRAPHICS("Acid Graphics 酸性设计", "灵感源自迷幻视觉，常使用高饱和度、循环的几何图形、液态金属感以及混乱的排版，视觉冲击力极强。"),
     HAND_DRAWN("Hand-Drawn 手绘风", "圆润抖动的线条、波浪线、小星星小花涂鸦，奶油黄底色，治愈系手绘质感。"),
-    CARTOON("Cartoon 卡通", "更新弹窗同款：28.dp 大圆角 + 3.dp 深可可描边 + 粉色硬阴影，Q版卡通质感。")
+    CARTOON("Cartoon 卡通", "更新弹窗同款：28.dp 大圆角 + 3.dp 深可可描边 + 粉色硬阴影，Q版卡通质感。"),
+    FELT_CRAFT("Felt Craft 毛毡风", "温暖质朴的羊毛毡手作质感，缝线虚线边缘，温润燕麦羊毛色系。"),
+    GUOCHAO("Guochao 国潮风", "经典中国传统色调与东方典雅韵味。"),
+    CYBERPUNK("Cyberpunk 赛博朋克", "高饱和度霓虹与深邃暗夜科技感。")
 }
 
 data class ThemePreset(
@@ -321,7 +324,205 @@ object ThemePresetsRepository {
         description = "暖纸底 · 柔紫 · 大圆角 · 插画呼吸感"
     )
 
-    /** 15. 柔光拟物 GLOSS UI —— 浅灰底 + iOS蓝 + 高光渐变（默认主题） */
+    /** 15. 温润羊毛毡（毛毡风格） —— 暖燕麦羊毛底 + 暖褐毛毡红 + 森林毡绿 */
+    val feltWarmOat = ThemePreset(
+        id = "sheji_felt_oat",
+        name = "温润羊毛毡",
+        style = "felt",
+        categoryName = "毛毡风格",
+        primaryColor = Color(0xFFC86446),
+        secondaryColor = Color(0xFF4A6B53),
+        bgColor = Color(0xFFF7F2E9),
+        surfaceColor = Color(0xFFFFFDF9),
+        textColor = Color(0xFF382E2B),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFF7F2E9), Color(0xFFEDE5D8)),
+        cardGradientColors = listOf(Color(0xFFFFFDF9), Color(0xFFF7F2E9)),
+        designStyle = DesignStyle.FELT_CRAFT,
+        description = "暖调燕麦羊毛 · 粗纺缝线触感 · 温润手作质感"
+    )
+
+    /** 16. 森林毛毡（毛毡风格） —— 浅鼠尾草底 + 苔藓深绿 + 焦糖栗色 */
+    val feltForest = ThemePreset(
+        id = "sheji_felt_forest",
+        name = "森林毛毡",
+        style = "felt",
+        categoryName = "毛毡风格",
+        primaryColor = Color(0xFF3E6B48),
+        secondaryColor = Color(0xFFD48B47),
+        bgColor = Color(0xFFF1F5EE),
+        surfaceColor = Color(0xFFFAFCF8),
+        textColor = Color(0xFF263328),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFF1F5EE), Color(0xFFE4EDE0)),
+        cardGradientColors = listOf(Color(0xFFFAFCF8), Color(0xFFF1F5EE)),
+        designStyle = DesignStyle.FELT_CRAFT,
+        description = "苔藓绿毛毡 · 焦糖色点缀 · 质朴自然手工感"
+    )
+
+    /** 17. 手账绘本（手绘风格） —— 素描底 + 桃粉标记笔 + 薄荷绿 */
+    val handDrawnNotebook = ThemePreset(
+        id = "sheji_hand_drawn_notebook",
+        name = "手账绘本",
+        style = "handdrawn",
+        categoryName = "手绘风格",
+        primaryColor = Color(0xFFFF6B81),
+        secondaryColor = Color(0xFF2ED573),
+        bgColor = Color(0xFFFDFCF7),
+        surfaceColor = Color(0xFFFFFFFF),
+        textColor = Color(0xFF2F3542),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFFDFCF7), Color(0xFFF5F3E9)),
+        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFFAF7EE)),
+        designStyle = DesignStyle.HAND_DRAWN,
+        description = "手账手绘 · 荧光笔标记 · 随笔涂鸦趣味"
+    )
+
+    /** 18. 柔白新拟态（新拟态风格） —— 经典浅灰底 + 优雅靛蓝 + 柔青 */
+    val neuSoftWhite = ThemePreset(
+        id = "sheji_neu_soft_white",
+        name = "柔白新拟态",
+        style = "neu",
+        categoryName = "新拟态",
+        primaryColor = Color(0xFF4F46E5),
+        secondaryColor = Color(0xFF06B6D4),
+        bgColor = Color(0xFFEBECF0),
+        surfaceColor = Color(0xFFEBECF0),
+        textColor = Color(0xFF313848),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFEBECF0), Color(0xFFE2E4E9)),
+        cardGradientColors = listOf(Color(0xFFEBECF0), Color(0xFFE8E9ED)),
+        designStyle = DesignStyle.NEUMORPHISM,
+        description = "纯粹新拟态 · 背景与卡片同色 · 柔和浮雕凹凸光影"
+    )
+
+    /** 19. 暗石新拟态（新拟态风格） —— 幽暗岩板底 + 霓虹天蓝 + 柔紫 */
+    val neuDarkSlate = ThemePreset(
+        id = "sheji_neu_dark_slate",
+        name = "暗石新拟态",
+        style = "neu",
+        categoryName = "新拟态",
+        primaryColor = Color(0xFF38BDF8),
+        secondaryColor = Color(0xFFA78BFA),
+        bgColor = Color(0xFF24272C),
+        surfaceColor = Color(0xFF24272C),
+        textColor = Color(0xFFE2E8F0),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFF24272C), Color(0xFF1C1E22)),
+        cardGradientColors = listOf(Color(0xFF24272C), Color(0xFF282C32)),
+        designStyle = DesignStyle.NEUMORPHISM,
+        description = "暗黑岩板新拟态 · 幽深凹凸浮雕 · 科技极简质感"
+    )
+
+    /** 20. 北欧蓝毛毡（毛毡风格） —— 柔灰蓝底 + 粗纺丹宁蓝 + 暖杏白 */
+    val feltNordicBlue = ThemePreset(
+        id = "sheji_felt_nordic_blue",
+        name = "北欧毛毡",
+        style = "felt",
+        categoryName = "毛毡风格",
+        primaryColor = Color(0xFF2B5876),
+        secondaryColor = Color(0xFFE67E22),
+        bgColor = Color(0xFFEBF1F7),
+        surfaceColor = Color(0xFFF7FAFD),
+        textColor = Color(0xFF1E2F3E),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFEBF1F7), Color(0xFFDFE8F2)),
+        cardGradientColors = listOf(Color(0xFFF7FAFD), Color(0xFFEBF1F7)),
+        designStyle = DesignStyle.FELT_CRAFT,
+        description = "柔灰蓝羊毛 · 粗纺丹宁质感 · 北欧温润手作"
+    )
+
+    /** 21. 摩卡羊毛毡（毛毡风格） —— 暖燕麦摩卡底 + 焦糖浓缩棕 + 奶白针织 */
+    val feltMocha = ThemePreset(
+        id = "sheji_felt_mocha",
+        name = "摩卡毛毡",
+        style = "felt",
+        categoryName = "毛毡风格",
+        primaryColor = Color(0xFF784421),
+        secondaryColor = Color(0xFFC08261),
+        bgColor = Color(0xFFF6EFE9),
+        surfaceColor = Color(0xFFFFFDFB),
+        textColor = Color(0xFF382318),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFF6EFE9), Color(0xFFEDE0D4)),
+        cardGradientColors = listOf(Color(0xFFFFFDFB), Color(0xFFF6EFE9)),
+        designStyle = DesignStyle.FELT_CRAFT,
+        description = "焦糖摩卡羊毛 · 粗纺暖棕质感 · 温暖复古针织"
+    )
+
+    /** 22. 黑白手绘漫（手绘风格） —— 极简漫画稿纸 + 钢笔手绘墨黑 + 网点灰 */
+    val handDrawnComic = ThemePreset(
+        id = "sheji_hand_drawn_comic",
+        name = "黑白漫画手绘",
+        style = "handdrawn",
+        categoryName = "手绘风格",
+        primaryColor = Color(0xFF18181B),
+        secondaryColor = Color(0xFF71717A),
+        bgColor = Color(0xFFFAFAFA),
+        surfaceColor = Color(0xFFFFFFFF),
+        textColor = Color(0xFF09090B),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFFAFAFA), Color(0xFFF4F4F5)),
+        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFFAFAFA)),
+        designStyle = DesignStyle.HAND_DRAWN,
+        description = "纯净原稿底 · 粗粝钢笔墨线 · 热血日漫速写风"
+    )
+
+    /** 23. 粉彩涂鸦（手绘风格） —— 奶油素描底 + 马卡龙粉彩 + 鹅黄记号 */
+    val handDrawnPastel = ThemePreset(
+        id = "sheji_hand_drawn_pastel",
+        name = "粉彩涂鸦",
+        style = "handdrawn",
+        categoryName = "手绘风格",
+        primaryColor = Color(0xFFFF6584),
+        secondaryColor = Color(0xFFFECA57),
+        bgColor = Color(0xFFFFFDF9),
+        surfaceColor = Color(0xFFFFFFFF),
+        textColor = Color(0xFF2C3E50),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFFFFDF9), Color(0xFFFFF5EE)),
+        cardGradientColors = listOf(Color(0xFFFFFFFF), Color(0xFFFFF8F4)),
+        designStyle = DesignStyle.HAND_DRAWN,
+        description = "治愈系彩色粉笔涂鸦 · 马卡龙柔彩 · 随性插画线条"
+    )
+
+    /** 24. 冰魄新拟态（新拟态风格） —— 柔冷冰青底 + 宝石湖蓝 + 纯净微光浮雕 */
+    val neuIceBlue = ThemePreset(
+        id = "sheji_neu_ice_blue",
+        name = "冰魄新拟态",
+        style = "neu",
+        categoryName = "新拟态",
+        primaryColor = Color(0xFF0284C7),
+        secondaryColor = Color(0xFF38BDF8),
+        bgColor = Color(0xFFE6ECF5),
+        surfaceColor = Color(0xFFE6ECF5),
+        textColor = Color(0xFF1E293B),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFE6ECF5), Color(0xFFDCE4F0)),
+        cardGradientColors = listOf(Color(0xFFE6ECF5), Color(0xFFE1E8F2)),
+        designStyle = DesignStyle.NEUMORPHISM,
+        description = "冷冰青微晶底 · 凹凸雕琢立体光影 · 现代科技轻拟物"
+    )
+
+    /** 25. 柔粉新拟态（新拟态风格） —— 珍珠柔粉底 + 玫瑰金 + 优雅软浮雕 */
+    val neuPearlPink = ThemePreset(
+        id = "sheji_neu_pearl_pink",
+        name = "柔粉新拟态",
+        style = "neu",
+        categoryName = "新拟态",
+        primaryColor = Color(0xFFE11D48),
+        secondaryColor = Color(0xFFFB7185),
+        bgColor = Color(0xFFF5EDF0),
+        surfaceColor = Color(0xFFF5EDF0),
+        textColor = Color(0xFF3B1D28),
+        atmosphereEffect = AtmosphereEffect.NONE,
+        gradientColors = listOf(Color(0xFFF5EDF0), Color(0xFFEFE4E8)),
+        cardGradientColors = listOf(Color(0xFFF5EDF0), Color(0xFFF7EFF2)),
+        designStyle = DesignStyle.NEUMORPHISM,
+        description = "珍珠柔粉同色底 · 柔和内陷隆起光影 · 优雅精致浮雕"
+    )
+
+    /** 26. 柔光拟物 GLOSS UI —— 浅灰底 + iOS蓝 + 高光渐变 */
     val glossUi = ThemePreset(
         id = "sheji_gloss_ui",
         name = "柔光拟物",
@@ -344,19 +545,22 @@ object ThemePresetsRepository {
     val classicTheme = glossUi
 
     // —— 分类列表（供主题切换弹窗） ——
-    val shejishiThemes: List<ThemePreset> = listOf(
-        glossUi, clayCute, guochao, darkNeon, minimalCream, hkRetro, neumorphism, handDrawn,
-        bentoGrid, liquidGlassNew, neoBrutalism, frutigerAero, dopamine, swissPoster, flatIllustration
+    val feltThemes: List<ThemePreset> = listOf(feltWarmOat, feltForest, feltNordicBlue, feltMocha)
+    val handDrawnThemes: List<ThemePreset> = listOf(handDrawn, handDrawnNotebook, handDrawnComic, handDrawnPastel)
+    val neuThemes: List<ThemePreset> = listOf(neuSoftWhite, neuDarkSlate, neumorphism, neuIceBlue, neuPearlPink)
+    val classicThemes: List<ThemePreset> = listOf(
+        clayCute, guochao, darkNeon, minimalCream, hkRetro, bentoGrid,
+        liquidGlassNew, neoBrutalism, frutigerAero, dopamine, swissPoster, flatIllustration
     )
+
+    val shejishiThemes: List<ThemePreset> = listOf(glossUi) + feltThemes + handDrawnThemes + neuThemes + classicThemes
 
     // 兼容旧字段名
     val clayThemes: List<ThemePreset> = listOf(clayCute)
-    val handDrawnThemes: List<ThemePreset> = listOf(handDrawn)
     val freshThemes: List<ThemePreset> = emptyList()
     val glassThemes: List<ThemePreset> = listOf(liquidGlassNew)
     val iosThemes: List<ThemePreset> = emptyList()
     val minimalThemes: List<ThemePreset> = listOf(minimalCream, swissPoster)
-    val neuThemes: List<ThemePreset> = listOf(neumorphism)
     val darkThemes: List<ThemePreset> = listOf(darkNeon)
     val designStyleThemes: List<ThemePreset> = emptyList()
     val gradientThemes: List<ThemePreset> = listOf(liquidGlassNew, frutigerAero)
