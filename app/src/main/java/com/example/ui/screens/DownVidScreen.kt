@@ -306,8 +306,8 @@ fun DownVidScreen(
     var isParsing by remember { mutableStateOf(false) }
     var currentResult by remember { mutableStateOf<VideoParseResult?>(null) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var selectedTab by remember { mutableIntStateOf(0) } // 0: 解析历史, 1: 使用帮助（v1.7.12："支持平台"展示 Tab 已删除，平台解析支持不受影响）
-    // v1.5.8：批量模式 —— 多链接批量解析下载 + 视频抽帧
+    var selectedTab by remember { mutableIntStateOf(0) } // 0: 解析历史, 1: 最火开源仓库, 2: 使用帮助
+    var repoSearchQuery by remember { mutableStateOf("") }
     var isBatchMode by remember { mutableStateOf(false) }
     var batchInput by remember { mutableStateOf("") }
     var batchProgress by remember { mutableStateOf("") } // 如 "3/10"
@@ -1643,7 +1643,7 @@ fun DownVidScreen(
                 contentColor = themeColors.primary,
                 edgePadding = 8.dp
             ) {
-                listOf("📂 解析历史 (${historyList.size})", "💡 使用技巧").forEachIndexed { index, title ->
+                listOf("📂 解析历史 (${historyList.size})", "🔥 最火去水印项目", "💡 使用技巧").forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTab == index,
                         onClick = { selectedTab = index },
@@ -1660,7 +1660,7 @@ fun DownVidScreen(
             }
         }
 
-        // ---- Tab 0: 历史记录（v1.7.12：原"支持平台"Tab 已删除，仅保留解析支持） ----
+        // ---- Tab 0: 历史记录 ----
         if (selectedTab == 0) {
             if (historyList.isEmpty()) {
                 item {
@@ -1730,8 +1730,96 @@ fun DownVidScreen(
             }
         }
 
-        // ---- Tab 1: 使用技巧 ----
+        // ---- Tab 1: 最火开源去水印仓库 ----
         if (selectedTab == 1) {
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f))
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Filled.Search,
+                                contentDescription = null,
+                                tint = themeColors.primary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                "搜索 GitHub 最火去水印项目",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = themeColors.text
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = repoSearchQuery,
+                            onValueChange = { repoSearchQuery = it },
+                            placeholder = { Text("输入项目名、技术或支持平台...", fontSize = 12.sp, color = Color.Gray) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = LocalThemeUiColors.current.surface,
+                                unfocusedContainerColor = LocalThemeUiColors.current.surface
+                            )
+                        )
+                    }
+                }
+            }
+
+            val filteredRepos = HOT_WATERMARK_REPOS.filter {
+                val q = repoSearchQuery.trim().lowercase()
+                q.isEmpty() || it.name.lowercase().contains(q) ||
+                    it.author.lowercase().contains(q) ||
+                    it.tag.lowercase().contains(q) ||
+                    it.desc.lowercase().contains(q) ||
+                    it.features.any { f -> f.lowercase().contains(q) }
+            }
+
+            if (filteredRepos.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(30.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("未找到相关去水印项目，换个关键词试试~", fontSize = 13.sp, color = Color.Gray)
+                    }
+                }
+            } else {
+                items(filteredRepos, key = { it.name }) { repo ->
+                    HotWatermarkRepoCard(
+                        repo = repo,
+                        themeColors = themeColors,
+                        onOpen = {
+                            try {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(repo.url)).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                context.startActivity(intent)
+                            } catch (_: Exception) {
+                                Toast.makeText(context, "无法打开浏览器", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        onCopy = {
+                            val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                            cm.setPrimaryClip(ClipData.newPlainText("RepoURL", repo.url))
+                            Toast.makeText(context, "已复制项目地址: ${repo.url}", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
+            }
+        }
+
+        // ---- Tab 2: 使用技巧 ----
+        if (selectedTab == 2) {
             item {
                 Card(
                     modifier = Modifier
@@ -1946,5 +2034,246 @@ private fun AutoToggleChip(
                 uncheckedTrackColor = LocalThemeUiColors.current.border
             )
         )
+    }
+}
+
+/**
+ * GitHub 最火去水印/短视频解析开源项目数据模型
+ */
+data class HotWatermarkRepo(
+    val name: String,
+    val author: String,
+    val stars: String,
+    val license: String,
+    val tag: String,
+    val desc: String,
+    val features: List<String>,
+    val url: String
+)
+
+private val HOT_WATERMARK_REPOS = listOf(
+    HotWatermarkRepo(
+        name = "MediaCrawler",
+        author = "NanmiCoder",
+        stars = "35.8k",
+        license = "GPL-3.0",
+        tag = "全平台爬取与去水印",
+        desc = "全网最火爆的社交媒体无水印音视频/图文采集神器，覆盖主流平台，全自动绕过反爬与水印签名。",
+        features = listOf("小红书/抖音/快手/B站/微博", "Cookie自动管理", "无水印音视频直链", "批量异步爬取"),
+        url = "https://github.com/NanmiCoder/MediaCrawler"
+    ),
+    HotWatermarkRepo(
+        name = "video-subtitle-remover",
+        author = "YaoFANGUK",
+        stars = "8.9k",
+        license = "Apache-2.0",
+        tag = "AI硬字幕与文字水印擦除",
+        desc = "基于深度学习 AI 算法的无损硬字幕与静态/动态水印擦除工具，背景无痕自动智能填充重建。",
+        features = listOf("AI智能修复", "无损画质输出", "自动文字检测", "GPU硬件加速"),
+        url = "https://github.com/YaoFANGUK/video-subtitle-remover"
+    ),
+    HotWatermarkRepo(
+        name = "f2",
+        author = "Johnserf-Seed",
+        stars = "7.5k",
+        license = "Apache-2.0",
+        tag = "多平台媒体无水印提取",
+        desc = "轻量级、极速、跨平台的无水印音视频下载工具，本应用 playwm 替换算法灵感来源之一。",
+        features = listOf("抖音/TikTok/快手/Instagram", "无水印原画直达", "高并发异步下载", "跨平台支持"),
+        url = "https://github.com/Johnserf-Seed/f2"
+    ),
+    HotWatermarkRepo(
+        name = "parse-video-py",
+        author = "wujunwei928",
+        stars = "6.2k",
+        license = "MIT",
+        tag = "Python短视频解析核心库",
+        desc = "全网短视频无水印解析的核心爬虫库，全面逆向主流短视频分享接口并提炼纯净无水印直链。",
+        features = listOf("抖音/皮皮虾/快手/微博/西瓜", "MIT开放协议", "REST API支持", "纯净JSON输出"),
+        url = "https://github.com/wujunwei928/parse-video-py"
+    ),
+    HotWatermarkRepo(
+        name = "Douyin_TikTok_Download_API",
+        author = "Evil0ctal",
+        stars = "5.1k",
+        license = "GPL-3.0",
+        tag = "高性能API微服务",
+        desc = "基于 FastAPI + PyWebIO 打造的高性能去水印异步服务接口，开箱即用支持 Web 批量解析与 Docker 部署。",
+        features = listOf("FastAPI微服务", "Docker一键部署", "批量无水印解析", "Web可视化UI"),
+        url = "https://github.com/Evil0ctal/Douyin_TikTok_Download_API"
+    ),
+    HotWatermarkRepo(
+        name = "VideoWatermarkerRemover",
+        author = "jinwyp",
+        stars = "3.2k",
+        license = "MIT",
+        tag = "OpenCV图像修复去水印",
+        desc = "基于 Python + OpenCV Inpainting 技术的本地视频去水印神器，支持鼠标手动与预设框选擦除。",
+        features = listOf("OpenCV图像修复", "固定角标擦除", "台标字幕清理", "本地离线运行"),
+        url = "https://github.com/jinwyp/VideoWatermarkerRemover"
+    ),
+    HotWatermarkRepo(
+        name = "DouyinDownloader",
+        author = "Ortonzhang",
+        stars = "2.8k",
+        license = "MIT",
+        tag = "全栈Web无水印下载",
+        desc = "前后端分离的高清无水印短视频下载应用，支持多分辨率选择与复杂重定向分享链接深度解析。",
+        features = listOf("React+Node.js", "HDR画质解析", "图集无水印打包", "优雅交互界面"),
+        url = "https://github.com/Ortonzhang/DouyinDownloader"
+    ),
+    HotWatermarkRepo(
+        name = "watermark-remover-server",
+        author = "xiaofeiwuuu",
+        stars = "1.9k",
+        license = "MIT",
+        tag = "Node.js微服务",
+        desc = "基于 Node.js 的短视频去水印解析微服务，轻量极速，支持主流社交平台原画提取。",
+        features = listOf("Node.js轻量服务", "多平台统一结构", "无水印原画直连", "低内存占用"),
+        url = "https://github.com/xiaofeiwuuu/watermark-remover-server"
+    )
+)
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun HotWatermarkRepoCard(
+    repo: HotWatermarkRepo,
+    themeColors: ThemeUiColors,
+    onOpen: () -> Unit,
+    onCopy: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.94f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            // 顶栏：项目名称 + Star 徽章 + License
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(themeColors.primary.copy(alpha = 0.12f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Filled.RocketLaunch,
+                        contentDescription = null,
+                        tint = themeColors.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = repo.name,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = themeColors.text
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = Color(0xFFF59E0B).copy(alpha = 0.15f)
+                        ) {
+                            Text(
+                                text = "⭐ ${repo.stars}",
+                                fontSize = 10.5.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFD97706),
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+                    Text(
+                        text = "by ${repo.author} · ${repo.license}",
+                        fontSize = 11.5.sp,
+                        color = themeColors.textMuted
+                    )
+                }
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = themeColors.primary.copy(alpha = 0.1f)
+                ) {
+                    Text(
+                        text = repo.tag,
+                        fontSize = 10.5.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = themeColors.primary,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // 描述
+            Text(
+                text = repo.desc,
+                fontSize = 12.5.sp,
+                color = themeColors.text.copy(alpha = 0.85f),
+                lineHeight = 17.sp
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // 特性标签列表
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                repo.features.forEach { feat ->
+                    Surface(
+                        shape = RoundedCornerShape(6.dp),
+                        color = Color.Black.copy(alpha = 0.04f)
+                    ) {
+                        Text(
+                            text = feat,
+                            fontSize = 10.sp,
+                            color = Color.DarkGray,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 操作按钮
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(
+                    onClick = onOpen,
+                    modifier = Modifier.weight(1f).height(38.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = themeColors.primary),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Icon(Icons.Filled.OpenInBrowser, contentDescription = null, modifier = Modifier.size(15.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("前往 GitHub 仓库", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                }
+                OutlinedButton(
+                    onClick = onCopy,
+                    modifier = Modifier.weight(1f).height(38.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Icon(Icons.Filled.ContentCopy, contentDescription = null, modifier = Modifier.size(14.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("复制仓库地址", fontSize = 12.sp)
+                }
+            }
+        }
     }
 }

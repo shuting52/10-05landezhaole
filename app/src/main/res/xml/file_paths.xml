@@ -4,6 +4,9 @@
 <paths>
     <!-- 更新下载缓存目录（downloadWithProgress 保存 latest.apk 的位置） -->
     <cache-path name="update_cache" path="update/" />
+    <!-- 软件库应用内下载的 APK 缓存目录 -->
+    <cache-path name="all_cache" path="." />
+    <external-cache-path name="all_external_cache" path="." />
     <!-- 签名冲突时拷贝到公共下载目录的安装包 -->
     <external-path name="external_downloads" path="Download/" />
     <external-files-path name="external_files" path="." />

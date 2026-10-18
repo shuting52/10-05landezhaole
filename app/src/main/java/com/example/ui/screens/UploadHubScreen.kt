@@ -1,11 +1,13 @@
 package com.example.ui.screens
 
-import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
 import android.widget.Toast
+import androidx.core.content.FileProvider
+import java.io.File
+import java.io.FileOutputStream
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -521,9 +523,125 @@ private fun openDownloadOutputStream(
 }
 
 /**
- * 下载 Appteka 真实 APK 到系统 Download 文件夹
- * v1.7.8：改用 OkHttp 直接下载（替代 DownloadManager），完全控制 headers 和重定向，
- * 解决 DownloadManager 因缺 UA/Referer 被服务器拒绝导致的下载失败
+ * 免调用系统 DownloadManager，在应用内直接拉起系统安装器执行真实安装
+ */
+private fun installApkDirectly(context: Context, apkFile: File): Boolean {
+    val uri = try {
+        FileProvider.getUriForFile(context, context.packageName + ".fileprovider", apkFile)
+    } catch (e: Exception) {
+        return false
+    }
+    val intents = listOf(
+        Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "application/vnd.android.package-archive")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        },
+        Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
+            setData(uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+    )
+    for (intent in intents) {
+        try {
+            if (intent.resolveActivity(context.packageManager) != null) {
+                context.startActivity(intent)
+                return true
+            }
+        } catch (_: Exception) {}
+    }
+    try {
+        val directIntent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "application/vnd.android.package-archive")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        context.startActivity(directIntent)
+        return true
+    } catch (_: Exception) {}
+    return false
+}
+
+/**
+ * 软件版块通用：应用内直接高速下载并触发真实安装（彻底免去手机内容下载管理器与通知栏确认）
+ */
+private fun downloadAndInstallResourceInApp(
+    context: Context,
+    title: String,
+    url: String,
+    fileName: String?,
+    isApk: Boolean
+) {
+    if (url.isBlank()) {
+        Toast.makeText(context, "下载地址为空", Toast.LENGTH_SHORT).show()
+        return
+    }
+    CoroutineScope(Dispatchers.IO).launch {
+        withContext(Dispatchers.Main) {
+            Toast.makeText(context, "🚀 正在应用内直接高速下载「$title」…", Toast.LENGTH_SHORT).show()
+        }
+        val safeName = (fileName?.ifBlank { null } ?: url.substringAfterLast('/').ifBlank { "download.bin" })
+            .replace(" ", "_")
+            .replace(Regex("[\\\\/:*?\"<>|]"), "_")
+            .let { if (isApk && !it.endsWith(".apk", true)) "$it.apk" else it }
+
+        val downloadDir = File(context.cacheDir, "apk_downloads").apply { mkdirs() }
+        val targetFile = File(downloadDir, safeName)
+
+        val client = OkHttpClient.Builder()
+            .connectTimeout(20, TimeUnit.SECONDS)
+            .readTimeout(180, TimeUnit.SECONDS)
+            .followRedirects(true)
+            .followSslRedirects(true)
+            .build()
+
+        val request = Request.Builder()
+            .url(url)
+            .header("User-Agent", "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/126.0 Mobile Safari/537.36")
+            .build()
+
+        try {
+            val response = client.newCall(request).execute()
+            if (!response.isSuccessful) {
+                throw Exception("HTTP ${response.code}")
+            }
+            val body = response.body ?: throw Exception("响应内容为空")
+            targetFile.outputStream().use { out ->
+                body.byteStream().use { input ->
+                    input.copyTo(out)
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                if (isApk) {
+                    Toast.makeText(context, "✅ 「$title」下载完成，正在拉起真实安装…", Toast.LENGTH_SHORT).show()
+                    val success = installApkDirectly(context, targetFile)
+                    if (!success) {
+                        Toast.makeText(context, "已下载完成，安装包就绪: ${targetFile.name}", Toast.LENGTH_LONG).show()
+                    }
+                } else {
+                    Toast.makeText(context, "✅ 「$title」下载完成！已保存在本地应用空间", Toast.LENGTH_LONG).show()
+                }
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    context.startActivity(intent)
+                    Toast.makeText(context, "已切换外部浏览器下载", Toast.LENGTH_SHORT).show()
+                } catch (_: Exception) {
+                    Toast.makeText(context, "下载失败：${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+}
+
+/**
+ * 下载 Appteka 真实 APK 并在应用内直接拉起真实安装（免调用手机 DownloadManager）
  */
 private fun downloadApptekaApk(
     context: Context,
@@ -549,13 +667,17 @@ private fun downloadApptekaApk(
                 .replace(Regex("[\\\\/:*?\"<>|]"), "_")
 
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "开始下载 ${item.label}…", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "🚀 正在应用内直接高速下载 ${item.label}…", Toast.LENGTH_SHORT).show()
             }
+
+            // 保存到应用缓存私有目录供 FileProvider 实时真实安装
+            val downloadDir = File(context.cacheDir, "apk_downloads").apply { mkdirs() }
+            val apkFile = File(downloadDir, safeName)
 
             // OkHttp 直接下载，带 Appteka UA 和 Referer，自动跟随重定向
             val client = OkHttpClient.Builder()
-                .connectTimeout(15, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(180, TimeUnit.SECONDS)
                 .followRedirects(true)
                 .followSslRedirects(true)
                 .build()
@@ -570,42 +692,21 @@ private fun downloadApptekaApk(
                     throw Exception("HTTP ${resp.code}")
                 }
                 val body = resp.body ?: throw Exception("空响应")
-                // 保存到 Download 文件夹（v1.7.9：Android 10+ 走 MediaStore，修复分区存储 EACCES）
-                val (downloadOut, downloadUri) = openDownloadOutputStream(
-                    context, safeName, "application/vnd.android.package-archive"
-                )
-                try {
+                apkFile.outputStream().use { fileOut ->
                     body.byteStream().use { input ->
-                        downloadOut.use { output -> input.copyTo(output) }
+                        input.copyTo(fileOut)
                     }
-                } catch (e: Exception) {
-                    // 下载中断：删掉残留条目，避免留下坏包
-                    if (downloadUri != null) {
-                        try { context.contentResolver.delete(downloadUri, null, null) } catch (_: Exception) {}
-                    }
-                    throw e
-                }
-                // 低版本才需要通知媒体库扫描；MediaStore 写入的已自动索引
-                if (downloadUri == null) {
-                    try {
-                        val legacyFile = java.io.File(
-                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                            safeName
-                        )
-                        android.media.MediaScannerConnection.scanFile(
-                            context,
-                            arrayOf(legacyFile.absolutePath),
-                            arrayOf("application/vnd.android.package-archive"),
-                            null
-                        )
-                    } catch (_: Exception) { }
                 }
             }
 
             withContext(Dispatchers.Main) {
                 onProgress(false)
                 onCompleted()
-                Toast.makeText(context, "已下载 ${item.label} 到「下载」文件夹", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "🎉 ${item.label} 下载成功，正在拉起真实安装…", Toast.LENGTH_SHORT).show()
+                val installOk = installApkDirectly(context, apkFile)
+                if (!installOk) {
+                    Toast.makeText(context, "安装包已就绪：${apkFile.name}", Toast.LENGTH_LONG).show()
+                }
             }
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {
@@ -629,6 +730,7 @@ private fun downloadApptekaApk(
         }
     }
 }
+
 
 /**
  * 软件版块搜索输入栏
@@ -1275,30 +1377,13 @@ fun UploadHubScreen(
                 }
             },
             onDownload = { url, fileName ->
-                try {
-                    val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                    val safeName = (fileName?.ifBlank { null } ?: url.substringAfterLast('/').ifBlank { "download.bin" })
-                        .replace(" ", "_")
-                        .replace(Regex("[\\\\/:*?\"<>|]"), "_")
-                    val request = DownloadManager.Request(Uri.parse(url))
-                        .setTitle("懒得找了 · ${res.title}")
-                        .setDescription("正在下载 $safeName")
-                        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                        .setAllowedOverMetered(true)
-                        .setMimeType(
-                            when {
-                                url.endsWith(".apk", true) -> "application/vnd.android.package-archive"
-                                url.endsWith(".zip", true) -> "application/zip"
-                                url.endsWith(".md", true) -> "text/markdown"
-                                else -> "application/octet-stream"
-                            }
-                        )
-                        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, safeName)
-                    dm.enqueue(request)
-                    Toast.makeText(context, "已开始下载到手机「下载」文件夹，完成后可在通知栏查看", Toast.LENGTH_LONG).show()
-                } catch (e: Exception) {
-                    Toast.makeText(context, "下载失败，请稍后重试", Toast.LENGTH_SHORT).show()
-                }
+                downloadAndInstallResourceInApp(
+                    context = context,
+                    title = res.title,
+                    url = url,
+                    fileName = fileName,
+                    isApk = url.endsWith(".apk", true)
+                )
             }
         )
     }
@@ -1330,28 +1415,15 @@ private fun SkillGridCard(
     val isMd = fileLink.endsWith(".md", ignoreCase = true)
 
     fun downloadSkill(url: String) {
-        try {
-            val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-            val ext = if (isZip) ".zip" else if (isMd) ".md" else ""
-            val safeName = (res.title + ext).replace(" ", "_").replace(Regex("[\\\\/:*?\"<>|]"), "_")
-            val request = DownloadManager.Request(Uri.parse(url))
-                .setTitle("懒得找了 · ${res.title}")
-                .setDescription("正在下载技能包 $safeName")
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                .setAllowedOverMetered(true)
-                .setMimeType(if (isZip) "application/zip" else if (isMd) "text/markdown" else "application/octet-stream")
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, safeName)
-            dm.enqueue(request)
-            Toast.makeText(context, "技能包已开始下载到手机「下载」文件夹", Toast.LENGTH_LONG).show()
-        } catch (e: Exception) {
-            try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                context.startActivity(intent)
-            } catch (e2: Exception) {
-                Toast.makeText(context, "下载失败，请稍后重试", Toast.LENGTH_SHORT).show()
-            }
-        }
+        val ext = if (isZip) ".zip" else if (isMd) ".md" else ""
+        val safeName = (res.title + ext).replace(" ", "_").replace(Regex("[\\\\/:*?\"<>|]"), "_")
+        downloadAndInstallResourceInApp(
+            context = context,
+            title = res.title,
+            url = url,
+            fileName = safeName,
+            isApk = false
+        )
     }
 
     fun jumpSkill(url: String) {
@@ -1576,36 +1648,13 @@ private fun SoftwareGridCard(
     val iconSources = res.iconUrl.ifBlank { autoFaviconUrl(res.url.ifBlank { res.fileUrl }) }
 
     fun downloadToLocal(url: String, fileName: String?) {
-        try {
-            val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-            val safeName = (fileName?.ifBlank { null } ?: url.substringAfterLast('/').ifBlank { "download.bin" })
-                .replace(" ", "_")
-                .replace(Regex("[\\\\/:*?\"<>|]"), "_")
-            val request = DownloadManager.Request(Uri.parse(url))
-                .setTitle("懒得找了 · ${res.title}")
-                .setDescription("正在下载 $safeName")
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                .setAllowedOverMetered(true)
-                .setMimeType(
-                    when {
-                        isApk -> "application/vnd.android.package-archive"
-                        isZip -> "application/zip"
-                        isMd -> "text/markdown"
-                        else -> "application/octet-stream"
-                    }
-                )
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, safeName)
-            dm.enqueue(request)
-            Toast.makeText(context, "已开始下载到手机「下载」文件夹", Toast.LENGTH_LONG).show()
-        } catch (e: Exception) {
-            try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                context.startActivity(intent)
-            } catch (e2: Exception) {
-                Toast.makeText(context, "下载失败，请稍后重试", Toast.LENGTH_SHORT).show()
-            }
-        }
+        downloadAndInstallResourceInApp(
+            context = context,
+            title = res.title,
+            url = url,
+            fileName = fileName,
+            isApk = isApk
+        )
     }
 
     var downloadProgress by remember(res.id) { mutableStateOf(0f) }
@@ -1939,36 +1988,13 @@ private fun SoftwareHorizontalCard(
     val themeSecondary = MaterialTheme.colorScheme.secondary
 
     fun downloadToLocal(url: String, fileName: String?) {
-        try {
-            val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-            val safeName = (fileName?.ifBlank { null } ?: url.substringAfterLast('/').ifBlank { "download.bin" })
-                .replace(" ", "_")
-                .replace(Regex("[\\\\/:*?\"<>|]"), "_")
-            val request = DownloadManager.Request(Uri.parse(url))
-                .setTitle("懒得找了 · ${res.title}")
-                .setDescription("正在下载 $safeName")
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                .setAllowedOverMetered(true)
-                .setMimeType(
-                    when {
-                        isApk -> "application/vnd.android.package-archive"
-                        isZip -> "application/zip"
-                        isMd -> "text/markdown"
-                        else -> "application/octet-stream"
-                    }
-                )
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, safeName)
-            dm.enqueue(request)
-            Toast.makeText(context, "已开始下载到手机「下载」文件夹", Toast.LENGTH_LONG).show()
-        } catch (e: Exception) {
-            try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                context.startActivity(intent)
-            } catch (e2: Exception) {
-                Toast.makeText(context, "下载失败，请稍后重试", Toast.LENGTH_SHORT).show()
-            }
-        }
+        downloadAndInstallResourceInApp(
+            context = context,
+            title = res.title,
+            url = url,
+            fileName = fileName,
+            isApk = isApk
+        )
     }
 
     val onCardClick = {
@@ -2114,36 +2140,13 @@ private fun ResourceFileCard(
     }
 
     fun downloadToLocal(url: String, fileName: String?) {
-        try {
-            val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-            val safeName = (fileName?.ifBlank { null } ?: url.substringAfterLast('/').ifBlank { "download.bin" })
-                .replace(" ", "_")
-                .replace(Regex("[\\\\/:*?\"<>|]"), "_")
-            val request = DownloadManager.Request(Uri.parse(url))
-                .setTitle("懒得找了 · ${res.title}")
-                .setDescription("正在下载 $safeName")
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                .setAllowedOverMetered(true)
-                .setMimeType(
-                    when {
-                        isApk -> "application/vnd.android.package-archive"
-                        isZip -> "application/zip"
-                        isMd -> "text/markdown"
-                        else -> "application/octet-stream"
-                    }
-                )
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, safeName)
-            dm.enqueue(request)
-            Toast.makeText(context, "已开始下载到手机「下载」文件夹，完成后可在通知栏查看", Toast.LENGTH_LONG).show()
-        } catch (e: Exception) {
-            try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                context.startActivity(intent)
-            } catch (e2: Exception) {
-                Toast.makeText(context, "下载失败，请稍后重试", Toast.LENGTH_SHORT).show()
-            }
-        }
+        downloadAndInstallResourceInApp(
+            context = context,
+            title = res.title,
+            url = url,
+            fileName = fileName,
+            isApk = isApk
+        )
     }
 
     val onCardClick = {
