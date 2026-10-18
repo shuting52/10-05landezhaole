@@ -54,24 +54,30 @@ val LocalUiverseState = staticCompositionLocalOf { ActiveUiverseState() }
 // 关键组件（卡片/底栏/按钮/标题/图标）改为从此色板读色，切换主题时 UI 自动跟随变色。
 // ============================================================
 data class ThemeUiColors(
-    val primary: Color = Color(0xFF007AFF),        // iOS蓝
-    val secondary: Color = Color(0xFF0062CC),
-    val background: Color = Color(0xFFE9EAEC),     // 浅灰底
+    // v1.7.19：Frutiger Aero 千禧复兴皮肤（fa-blue/fa-sky/fa-ink）
+    val primary: Color = Color(0xFF00A8E8),        // 天空蓝
+    val secondary: Color = Color(0xFF0090C9),      // 深海蓝
+    val background: Color = Color(0xFFE8F9FF),     // 最浅天空
     val surface: Color = Color(0xFFFFFFFF),
-    val text: Color = Color(0xFF3C3C3C),           // 墨灰
-    val textMuted: Color = Color(0xFF8E8E93),
-    val accent: Color = Color(0xFF007AFF),
-    val border: Color = Color(0xFF007AFF).copy(alpha = 0.35f),
-    // 卡片渐变（白→浅灰，高光感）
-    val cardGradient: List<Color> = listOf(Color(0xFFFFFFFF), Color(0xFFF6F7F8)),
-    // 背景渐变（固定值）
-    val backgroundGradient: List<Color> = listOf(Color(0xFFF7F8F9), Color(0xFFE9EAEC)),
+    val text: Color = Color(0xFF0A2540),           // 墨蓝
+    val textMuted: Color = Color(0xFF5B7A90),      // 浅灰蓝
+    val accent: Color = Color(0xFF00A8E8),
+    val border: Color = Color(0xFF00A8E8).copy(alpha = 0.35f),
+    // 卡片渐变（玻璃白→浅天空，高光感）
+    val cardGradient: List<Color> = listOf(Color(0xFFFFFFFF), Color(0xFFE8F9FF)),
+    // 背景渐变（Frutiger Aero 天空：蓝→浅蓝→极浅）
+    val backgroundGradient: List<Color> = listOf(
+        Color(0xFF7EC8F7),
+        Color(0xFFBDE4FB),
+        Color(0xFFDFF3FE),
+        Color(0xFFE8F9FF)
+    ),
     val designStyle: DesignStyle = DesignStyle.SKEUOMORPHISM
 )
 
 val LocalThemeUiColors = staticCompositionLocalOf { ThemeUiColors() }
 
-// v1.7.17：主题预设已删除，仅保留固定色板（柔光拟物 GLOSS UI）
+// v1.7.19：新皮肤 Frutiger Aero 千禧复兴（天空蓝+玻璃质感），主题预设已删除，仅保留固定色板
 
 @Composable
 fun MyApplicationTheme(
