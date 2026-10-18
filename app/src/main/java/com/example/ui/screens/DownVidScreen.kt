@@ -431,20 +431,21 @@ fun DownVidScreen(
                     if (historyList.none { it.originalLink == target }) {
                         historyList.add(0, result)
                     }
-                    // v1.4.34：解析成功后自动下载（开关控制；视频用默认最高画质，附带图片一并下载）
+                    // 视频/图片自动分析与精准下载：如果分析出视频，仅下载视频，避免视频被作为图片保存
                     if (autoDownloadEnabled) {
                         if (result.videoUrls.isNotEmpty()) {
                             val bestUrl = result.qualityOptions.firstOrNull()?.second
                                 ?: result.videoUrls.first()
                             triggerDownload(bestUrl, "DownVid_${System.currentTimeMillis()}.mp4")
-                            if (result.imageUrls.isNotEmpty()) {
-                                triggerImageDownload(result.imageUrls)
-                            }
                         } else if (result.imageUrls.isNotEmpty()) {
                             triggerImageDownload(result.imageUrls)
                         }
                     } else {
-                        Toast.makeText(context, "🎉 解析成功，可一键下载！", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            if (result.videoUrls.isNotEmpty()) "🎉 视频分析成功，可一键下载 MP4 视频！" else "🎉 图文分析成功，可一键保存图片！",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } else {
                     // 明确失败：不展示虚假下载按钮
@@ -508,13 +509,12 @@ fun DownVidScreen(
                         if (historyList.none { it.originalLink == target }) {
                             historyList.add(0, result)
                         }
-                        // 批量模式默认全部下载
+                        // 批量模式：自动分析视频与图文，视频下载为 MP4，仅纯图文才下载为图片
                         if (result.videoUrls.isNotEmpty()) {
                             val bestUrl = result.qualityOptions.firstOrNull()?.second
                                 ?: result.videoUrls.first()
                             triggerDownload(bestUrl, "DownVid_batch_${System.currentTimeMillis()}_${index + 1}.mp4")
-                        }
-                        if (result.imageUrls.isNotEmpty()) {
+                        } else if (result.imageUrls.isNotEmpty()) {
                             triggerImageDownload(result.imageUrls)
                         }
                         successCount++
@@ -952,17 +952,30 @@ fun DownVidScreen(
                                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                                         )
                                     }
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Surface(
+                                        shape = RoundedCornerShape(6.dp),
+                                        color = if (isImagePost) Color(0xFFF59E0B).copy(alpha = 0.15f) else Color(0xFF10B981).copy(alpha = 0.15f)
+                                    ) {
+                                        Text(
+                                            text = if (isImagePost) "🖼️ 图集相册" else "🎥 视频媒体",
+                                            fontSize = 10.5.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (isImagePost) Color(0xFFD97706) else Color(0xFF059669),
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(6.dp))
                                     Text(
-                                        text = if (isImagePost) "图集预览" else "视频预览",
-                                        fontSize = 16.sp,
+                                        text = if (isImagePost) "图集内容" else "高清视频",
+                                        fontSize = 15.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = themeColors.text
                                     )
                                 }
                                 Text(
-                                    text = if (isImagePost) "图片列表与缩略图" else "无水印直链 · 点选画质下载",
-                                    fontSize = 12.sp,
+                                    text = if (isImagePost) "自动分析为图集 · 点击可多选/全选保存图片" else "自动分析为视频 · 无水印 MP4 直链已提取",
+                                    fontSize = 11.5.sp,
                                     color = themeColors.textMuted
                                 )
                             }
@@ -1191,7 +1204,7 @@ fun DownVidScreen(
                                             ) {
                                                 Icon(Icons.Filled.Movie, contentDescription = null, modifier = Modifier.size(15.dp))
                                                 Spacer(modifier = Modifier.width(4.dp))
-                                                Text("下载${selectedQuality.first}视频", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                                                Text("下载${selectedQuality.first}视频 (MP4)", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                                             }
                                             // v1.5.8：抽帧按钮
                                             Spacer(modifier = Modifier.width(8.dp))

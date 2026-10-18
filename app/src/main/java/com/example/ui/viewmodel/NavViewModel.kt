@@ -161,6 +161,20 @@ class NavViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
+        // 加载持久化主题
+        try {
+            val savedThemeId = appContext?.getSharedPreferences("lzdz_theme_prefs", Context.MODE_PRIVATE)
+                ?.getString("saved_theme_id", null)
+            if (!savedThemeId.isNullOrBlank()) {
+                ThemePresetsRepository.findById(savedThemeId)?.let { preset ->
+                    _uiState.value = _uiState.value.copy(
+                        currentTheme = preset,
+                        atmosphereEffect = preset.atmosphereEffect
+                    )
+                }
+            }
+        } catch (_: Exception) { }
+
         // Pre-seed some popular initial software and skills if empty
         viewModelScope.launch {
             seedInitialResources()
@@ -565,6 +579,12 @@ class NavViewModel(
             currentTheme = preset,
             atmosphereEffect = preset.atmosphereEffect
         )
+        try {
+            appContext?.getSharedPreferences("lzdz_theme_prefs", Context.MODE_PRIVATE)
+                ?.edit()
+                ?.putString("saved_theme_id", preset.id)
+                ?.apply()
+        } catch (_: Exception) { }
     }
 
     fun setAtmosphereEffect(effect: AtmosphereEffect) {

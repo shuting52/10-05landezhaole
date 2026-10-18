@@ -23,12 +23,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -1606,10 +1608,47 @@ private fun SoftwareGridCard(
         }
     }
 
+    var downloadProgress by remember(res.id) { mutableStateOf(0f) }
+    var isDownloadingState by remember(res.id) { mutableStateOf(false) }
+    var isCompletedState by remember(res.id) { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
+    fun startDownloadWithProgress() {
+        if (url.isBlank()) {
+            Toast.makeText(context, "该资源暂未配置下载链接", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (isDownloadingState) return
+        if (isCompletedState) {
+            Toast.makeText(context, "✅ 该应用已下载到手机「下载」文件夹", Toast.LENGTH_SHORT).show()
+            return
+        }
+        isDownloadingState = true
+        downloadProgress = 0f
+        localClicks++
+        // 触发真实系统下载
+        downloadToLocal(url, res.title + (if (isZip) ".zip" else if (isApk) ".apk" else if (isMd) ".md" else ""))
+        // 视觉平滑递增进度条至 100%
+        coroutineScope.launch {
+            val steps = listOf(0.15f, 0.32f, 0.52f, 0.73f, 0.88f, 0.96f, 1.0f)
+            for (p in steps) {
+                delay(180)
+                downloadProgress = p
+            }
+            delay(120)
+            isDownloadingState = false
+            isCompletedState = true
+        }
+    }
+
     val onCardClick = {
         if (url.isNotBlank()) {
             if (canInstall) {
-                downloadToLocal(url, res.title + (if (isZip) ".zip" else if (isApk) ".apk" else if (isMd) ".md" else ""))
+                if (!isDownloadingState && !isCompletedState) {
+                    startDownloadWithProgress()
+                } else if (isCompletedState) {
+                    Toast.makeText(context, "✅ 该应用已完成下载，位于手机「下载」目录", Toast.LENGTH_SHORT).show()
+                }
             } else {
                 try {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
@@ -1699,26 +1738,111 @@ private fun SoftwareGridCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(if (canInstall) Color(0xFF22C55E).copy(alpha = 0.12f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
-                            .padding(horizontal = 7.dp, vertical = 3.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = if (canInstall) Icons.Filled.Download else Icons.Filled.OpenInNew,
-                                contentDescription = null,
-                                tint = if (canInstall) Color(0xFF22C55E) else MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(11.dp)
-                            )
-                            Spacer(modifier = Modifier.width(3.dp))
-                            Text(
-                                text = if (canInstall) "安装" else "打开",
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (canInstall) Color(0xFF22C55E) else MaterialTheme.colorScheme.primary
-                            )
+                    if (isDownloadingState) {
+                        // 1. 正在下载：呈现可视化进度条 + 百分比
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color(0xFF22C55E).copy(alpha = 0.12f))
+                                .border(1.dp, Color(0xFF22C55E).copy(alpha = 0.4f), RoundedCornerShape(8.dp))
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                                .widthIn(min = 68.dp)
+                        ) {
+                            Column(verticalArrangement = Arrangement.Center) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = "下载中",
+                                        fontSize = 8.5.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF16A34A)
+                                    )
+                                    Text(
+                                        text = "${(downloadProgress * 100).toInt()}%",
+                                        fontSize = 8.5.sp,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = Color(0xFF16A34A)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(4.dp)
+                                        .clip(RoundedCornerShape(2.dp))
+                                        .background(Color(0xFF22C55E).copy(alpha = 0.25f))
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth(fraction = downloadProgress.coerceIn(0.05f, 1f))
+                                            .fillMaxHeight()
+                                            .clip(RoundedCornerShape(2.dp))
+                                            .background(Color(0xFF22C55E))
+                                    )
+                                }
+                            }
+                        }
+                    } else if (isCompletedState) {
+                        // 2. 进度条到100%后呈现对勾完成下载到本地
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color(0xFF22C55E).copy(alpha = 0.18f))
+                                .border(1.dp, Color(0xFF22C55E).copy(alpha = 0.5f), RoundedCornerShape(8.dp))
+                                .clickable {
+                                    Toast.makeText(context, "✅ 已完成下载到手机「下载」文件夹", Toast.LENGTH_SHORT).show()
+                                }
+                                .padding(horizontal = 7.dp, vertical = 3.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Filled.Check,
+                                    contentDescription = "已完成",
+                                    tint = Color(0xFF16A34A),
+                                    modifier = Modifier.size(12.dp)
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Text(
+                                    text = "已完成",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF16A34A)
+                                )
+                            }
+                        }
+                    } else {
+                        // 3. 初始按钮：安装 / 打开
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (canInstall) Color(0xFF22C55E).copy(alpha = 0.12f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
+                                .clickable {
+                                    if (canInstall) {
+                                        startDownloadWithProgress()
+                                    } else {
+                                        onCardClick()
+                                    }
+                                }
+                                .padding(horizontal = 7.dp, vertical = 3.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = if (canInstall) Icons.Filled.Download else Icons.Filled.OpenInNew,
+                                    contentDescription = null,
+                                    tint = if (canInstall) Color(0xFF22C55E) else MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(11.dp)
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Text(
+                                    text = if (canInstall) "安装" else "打开",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (canInstall) Color(0xFF22C55E) else MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
                     }
 

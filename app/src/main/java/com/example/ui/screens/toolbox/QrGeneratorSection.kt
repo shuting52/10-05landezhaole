@@ -74,7 +74,7 @@ fun QrGeneratorSection() {
             val bmp = Bitmap.createBitmap(640, 640, Bitmap.Config.RGB_565)
             for (x in 0 until 640) {
                 for (y in 0 until 640) {
-                    bmp.setPixel(x, y, if (matrix[x, y]) 0xFF1A1A1A.toInt() else 0xFFFFFFFF.toInt())
+                    bmp.setPixel(x, y, if (matrix.get(x, y)) 0xFF1A1A1A.toInt() else 0xFFFFFFFF.toInt())
                 }
             }
             bmp
