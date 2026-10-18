@@ -125,6 +125,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -807,9 +808,13 @@ fun MainScreen(
 // ---------------- 背景媒体静态层（v1.6.8：主题切换删除后保留自定义背景） ----------------
 @Composable
 private fun BgMediaStaticLayer(bgType: String, bgUrl: String, frosted: Boolean = false) {
-    // v1.7.17：透明磨砂效果（API 31+ 用系统模糊，低版本用半透明白叠加模拟）
+    // v1.7.17：透明磨砂效果（API 31+ 用 RenderEffect 真模糊，低版本用半透明白叠加模拟）
     val frostedBlur = if (frosted && android.os.Build.VERSION.SDK_INT >= 31) {
-        Modifier.blur(28.dp)
+        Modifier.graphicsLayer {
+            renderEffect = android.graphics.RenderEffect.createBlurEffect(
+                32f, 32f, android.graphics.Shader.TileMode.CLAMP
+            ).asComposeRenderEffect()
+        }
     } else {
         Modifier
     }

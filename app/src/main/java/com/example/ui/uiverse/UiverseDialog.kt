@@ -191,7 +191,7 @@ fun UiverseDialog(
                     .fillMaxWidth()
                     .height(44.dp)
                     .streamingBorder(
-                        borderWidth = 2.dp,
+                        strokeWidth = 2.dp,
                         cornerRadius = 14.dp
                     )
             ) {
