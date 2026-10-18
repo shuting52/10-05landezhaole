@@ -1,15 +1,16 @@
 {
   "version": {
-    "code": 225,
-    "name": "1.7.15",
+    "code": 226,
+    "name": "1.7.16",
     "changelog": [
-      "✨ v1.7.15 更新来啦～",
-      "feat(splash): 替换软件启动页为 3D 立方体旋转加载器 (CubeLoader3D)"
+      "✨ v1.7.16 更新来啦～",
+      "fix: 恢复 v1.7.15 主题内容并重新应用 GLOSS UI",
+      "feat: 新增柔光拟物 GLOSS UI 主题并设为默认"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.15-1792322030.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.15-1792322030.apk",
-    "lastBuildSha": "c25f939ad87ee42161a0575182232a43e7f017dc",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.16-1792323641.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.16-1792323641.apk",
+    "lastBuildSha": "9e19a0ba4d6d0eb02270c6ab31e2c041da564b5e",
     "apkSize": 24078680
   },
   "home": {
@@ -24344,10 +24345,11 @@
     "buttonText": "开始体验"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.15 已上线",
+    "title": "懒得找了 v1.7.16 已上线",
     "changelog": [
-      "✨ v1.7.15 更新来啦～",
-      "feat(splash): 替换软件启动页为 3D 立方体旋转加载器 (CubeLoader3D)"
+      "✨ v1.7.16 更新来啦～",
+      "fix: 恢复 v1.7.15 主题内容并重新应用 GLOSS UI",
+      "feat: 新增柔光拟物 GLOSS UI 主题并设为默认"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24409,10 +24411,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.15",
-      "code": 225,
-      "at": "2026-10-18T11:13:56Z",
-      "sha": "c25f939ad87ee42161a0575182232a43e7f017dc"
+      "version": "1.7.16",
+      "code": 226,
+      "at": "2026-10-18T11:40:47Z",
+      "sha": "9e19a0ba4d6d0eb02270c6ab31e2c041da564b5e"
     }
   },
   "_ai_notice": "内容由AI生成"
