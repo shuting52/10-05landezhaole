@@ -59,12 +59,18 @@ import androidx.compose.material.icons.filled.PlayArrow
 import java.net.URLEncoder
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
@@ -77,6 +83,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -90,6 +97,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -564,6 +575,558 @@ private fun installApkDirectly(context: Context, apkFile: File): Boolean {
 }
 
 /**
+ * ===== 波浪下载弹窗（v1.7.22）：软件/资源下载统一走应用内波浪进度弹窗 =====
+ * 状态机：DOWNLOADING → PAUSED / CANCELLED / FAILED → INSTALLING → DONE
+ * 支持暂停/继续（HTTP Range 断点续传）、取消、失败重试；APK 下载完成后自动拉起系统安装器。
+ */
+private enum class WaveDlState { IDLE, DOWNLOADING, PAUSED, CANCELLED, FAILED, INSTALLING, DONE }
+
+private data class WaveDownloadUi(
+    val visible: Boolean = false,
+    val state: WaveDlState = WaveDlState.IDLE,
+    val title: String = "",
+    val progress: Float = 0f,
+    val downloadedBytes: Long = 0L,
+    val totalBytes: Long = 0L,
+    val speedBps: Double = 0.0,
+    val error: String? = null,
+    val isApk: Boolean = false
+)
+
+private object WaveDownloadManager {
+    private val _ui = MutableStateFlow(WaveDownloadUi())
+    val ui: StateFlow<WaveDownloadUi> = _ui.asStateFlow()
+
+    private var call: Call? = null
+    private var job: Job? = null
+    private var appCtx: Context? = null
+    private var dlTitle = ""
+    private var dlUrl = ""
+    private var dlIsApk = false
+    private var targetFile: File? = null
+
+    fun start(context: Context, title: String, url: String, fileName: String?, isApk: Boolean) {
+        // 正在下载中则忽略重复触发
+        if (_ui.value.visible && _ui.value.state == WaveDlState.DOWNLOADING) return
+        job?.cancel()
+        call?.cancel()
+        appCtx = context.applicationContext
+        dlTitle = title
+        dlUrl = url
+        dlIsApk = isApk
+        val safeName = (fileName?.ifBlank { null } ?: url.substringAfterLast('/').ifBlank { "download.bin" })
+            .replace(" ", "_")
+            .replace(Regex("[\\\\/:*?\"<>|]"), "_")
+            .let { if (isApk && !it.endsWith(".apk", true)) "$it.apk" else it }
+        val downloadDir = File(context.cacheDir, "apk_downloads").apply { mkdirs() }
+        targetFile = File(downloadDir, safeName)
+        // 全新下载：删掉残留文件
+        if (targetFile!!.exists()) targetFile!!.delete()
+        _ui.value = WaveDownloadUi(
+            visible = true, state = WaveDlState.DOWNLOADING, title = title,
+            progress = 0f, downloadedBytes = 0L, totalBytes = 0L, speedBps = 0.0,
+            error = null, isApk = isApk
+        )
+        doDownload(0L)
+    }
+
+    fun pause() {
+        if (_ui.value.state != WaveDlState.DOWNLOADING) return
+        call?.cancel()
+        job?.cancel()
+        _ui.value = _ui.value.copy(state = WaveDlState.PAUSED)
+    }
+
+    fun resume() {
+        if (_ui.value.state != WaveDlState.PAUSED && _ui.value.state != WaveDlState.FAILED
+            && _ui.value.state != WaveDlState.CANCELLED) return
+        val offset = if (targetFile?.exists() == true) targetFile!!.length() else 0L
+        _ui.value = _ui.value.copy(state = WaveDlState.DOWNLOADING, error = null)
+        doDownload(offset)
+    }
+
+    fun cancel() {
+        call?.cancel()
+        job?.cancel()
+        try { targetFile?.delete() } catch (_: Exception) {}
+        _ui.value = _ui.value.copy(state = WaveDlState.CANCELLED, speedBps = 0.0)
+    }
+
+    fun dismiss() {
+        call?.cancel()
+        job?.cancel()
+        _ui.value = WaveDownloadUi()
+    }
+
+    /** DONE 状态再次拉起安装（APK） */
+    fun installAgain() {
+        val ctx = appCtx ?: return
+        val f = targetFile ?: return
+        if (!f.exists()) return
+        CoroutineScope(Dispatchers.Main).launch {
+            _ui.value = _ui.value.copy(state = WaveDlState.INSTALLING)
+            val ok = withContext(Dispatchers.IO) { installApkDirectly(ctx, f) }
+            _ui.value = _ui.value.copy(
+                state = WaveDlState.DONE,
+                error = if (ok) null else "安装器拉起失败，安装包已保存在应用缓存"
+            )
+        }
+    }
+
+    private fun doDownload(startOffset: Long) {
+        job = CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val client = OkHttpClient.Builder()
+                    .connectTimeout(20, TimeUnit.SECONDS)
+                    .readTimeout(180, TimeUnit.SECONDS)
+                    .followRedirects(true)
+                    .followSslRedirects(true)
+                    .build()
+                val reqBuilder = Request.Builder()
+                    .url(dlUrl)
+                    .header("User-Agent", "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/126.0 Mobile Safari/537.36")
+                if (startOffset > 0) reqBuilder.header("Range", "bytes=$startOffset-")
+                val c = client.newCall(reqBuilder.build())
+                call = c
+                val response = c.execute()
+                if (!response.isSuccessful && response.code != 206) {
+                    throw Exception("HTTP ${response.code}")
+                }
+                val body = response.body ?: throw Exception("响应内容为空")
+                val total: Long = if (startOffset > 0) {
+                    response.header("Content-Range")
+                        ?.substringAfterLast('/')?.toLongOrNull()
+                        ?: (body.contentLength() + startOffset)
+                } else {
+                    body.contentLength()
+                }
+                val file = targetFile ?: throw Exception("下载目录不可用")
+                var downloaded = startOffset
+                var lastTime = System.currentTimeMillis()
+                var lastBytes = downloaded
+                // 暂停/取消时直接抛 CancellationException，由调用方处理状态
+                body.byteStream().use { input ->
+                    (if (startOffset > 0) FileOutputStream(file, true) else file.outputStream()).use { out ->
+                        val buf = ByteArray(8192)
+                        while (true) {
+                            ensureActive()
+                            val n = input.read(buf)
+                            if (n == -1) break
+                            out.write(buf, 0, n)
+                            downloaded += n
+                            val now = System.currentTimeMillis()
+                            if (now - lastTime >= 250) {
+                                val dt = (now - lastTime) / 1000.0
+                                val speed = if (dt > 0) (downloaded - lastBytes) / dt else 0.0
+                                lastTime = now
+                                lastBytes = downloaded
+                                val p = if (total > 0) (downloaded.toFloat() / total).coerceIn(0f, 1f) else 0f
+                                _ui.value = _ui.value.copy(
+                                    progress = p, downloadedBytes = downloaded,
+                                    totalBytes = total, speedBps = speed
+                                )
+                            }
+                        }
+                    }
+                }
+                withContext(Dispatchers.Main) {
+                    _ui.value = _ui.value.copy(progress = 1f, downloadedBytes = total.coerceAtLeast(downloaded))
+                    if (dlIsApk) {
+                        _ui.value = _ui.value.copy(state = WaveDlState.INSTALLING)
+                        val ctx = appCtx
+                        val f = targetFile
+                        val ok = if (ctx != null && f != null && f.exists()) {
+                            installApkDirectly(ctx, f)
+                        } else false
+                        _ui.value = _ui.value.copy(
+                            state = WaveDlState.DONE,
+                            error = if (ok) null else "安装器拉起失败，安装包已保存在应用缓存"
+                        )
+                    } else {
+                        _ui.value = _ui.value.copy(state = WaveDlState.DONE)
+                    }
+                }
+            } catch (e: CancellationException) {
+                throw e // pause/cancel 主动取消，不改状态（调用方已设置）
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    if (_ui.value.state == WaveDlState.DOWNLOADING) {
+                        _ui.value = _ui.value.copy(
+                            state = WaveDlState.FAILED,
+                            error = e.message ?: "下载失败",
+                            speedBps = 0.0
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * 〰 波浪进度环：正弦波形环形路径，持续流动；spinning=true 时为安装中的旋转弧形
+ */
+@Composable
+private fun WaveProgressRing(
+    progress: Float,
+    ringColor: Color,
+    spinning: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val infinite = rememberInfiniteTransition(label = "waveRing")
+    val phase by infinite.animateFloat(
+        initialValue = 0f,
+        targetValue = (Math.PI * 2).toFloat(),
+        animationSpec = infiniteRepeatable(tween(2200, easing = LinearEasing), RepeatMode.Restart),
+        label = "wavePhase"
+    )
+    val rotation by infinite.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(tween(1100, easing = LinearEasing), RepeatMode.Restart),
+        label = "spinRot"
+    )
+    Canvas(modifier = modifier) {
+        val cx = size.width / 2f
+        val cy = size.height / 2f
+        val r = size.minDimension / 2f * 0.78f
+        val amp = size.minDimension * 0.045f
+        val waves = 10
+        val strokeW = size.minDimension * 0.058f
+        val startAngle = -Math.PI.toFloat() / 2f
+
+        fun wavePath(sweep: Float, a0: Float, ph: Float): Path {
+            val path = Path()
+            val steps = 140
+            val sweepRad = sweep * (Math.PI * 2).toFloat()
+            for (i in 0..steps) {
+                val a = a0 + sweepRad * i / steps
+                val rr = r + amp * kotlin.math.sin(a * waves + ph)
+                val x = cx + rr * kotlin.math.cos(a)
+                val y = cy + rr * kotlin.math.sin(a)
+                if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
+            }
+            if (sweep >= 0.999f) path.close()
+            return path
+        }
+
+        // 底环：完整波浪灰环
+        drawPath(
+            path = wavePath(1f, startAngle, phase),
+            color = Color(0xFFD1D5DB),
+            style = Stroke(width = strokeW, cap = StrokeCap.Round, join = StrokeJoin.Round)
+        )
+        // 进度波浪
+        if (spinning) {
+            val rot = Math.toRadians(rotation.toDouble()).toFloat()
+            drawPath(
+                path = wavePath(0.3f, startAngle + rot, phase),
+                color = ringColor,
+                style = Stroke(width = strokeW, cap = StrokeCap.Round, join = StrokeJoin.Round)
+            )
+        } else if (progress > 0.001f) {
+            drawPath(
+                path = wavePath(progress.coerceIn(0f, 1f), startAngle, phase),
+                color = ringColor,
+                style = Stroke(width = strokeW, cap = StrokeCap.Round, join = StrokeJoin.Round)
+            )
+        }
+    }
+}
+
+private fun formatSpeed(bps: Double): String {
+    if (bps <= 0) return "-- MB/s"
+    val mb = bps / (1024 * 1024)
+    return if (mb >= 1000) String.format(Locale.getDefault(), "%.1f GB/s", mb / 1024)
+    else String.format(Locale.getDefault(), "%.1f MB/s", mb)
+}
+
+/**
+ * 波浪下载弹窗：标题 + 状态文案 + 大小/速率 + 波浪进度环 + 百分比 + 操作按钮
+ * 样式对标用户确认的版本更新弹窗 HTML（毛玻璃白卡、圆角 24、波浪环）
+ */
+@Composable
+private fun WaveDownloadDialog() {
+    val ui by WaveDownloadManager.ui.collectAsState()
+    if (!ui.visible) return
+
+    val ringColor = when (ui.state) {
+        WaveDlState.FAILED -> Color(0xFFEF4444)
+        WaveDlState.DONE -> Color(0xFF22C55E)
+        else -> Color(0xFF3B82F6)
+    }
+    val statusText = when (ui.state) {
+        WaveDlState.DOWNLOADING -> "正在下载 ${ui.title}"
+        WaveDlState.PAUSED -> "已暂停 · ${ui.title}（${(ui.progress * 100).toInt()}%）"
+        WaveDlState.CANCELLED -> "已取消下载"
+        WaveDlState.FAILED -> "网络连接失败，请重试"
+        WaveDlState.INSTALLING -> "正在安装..."
+        WaveDlState.DONE -> if (ui.isApk) "下载完成，可安装" else "下载完成"
+        else -> ""
+    }
+    val isError = ui.state == WaveDlState.FAILED
+    val metaText = when (ui.state) {
+        WaveDlState.DOWNLOADING ->
+            "${formatAppSize(ui.downloadedBytes)} / ${formatAppSize(ui.totalBytes)} · ${formatSpeed(ui.speedBps)}"
+        WaveDlState.PAUSED ->
+            "${formatAppSize(ui.downloadedBytes)} / ${formatAppSize(ui.totalBytes)} · 已暂停"
+        WaveDlState.CANCELLED ->
+            "${formatAppSize(ui.downloadedBytes)} / ${formatAppSize(ui.totalBytes)} · 已停止"
+        WaveDlState.FAILED ->
+            "${formatAppSize(ui.downloadedBytes)} / ${formatAppSize(ui.totalBytes)} · 连接已断开"
+        WaveDlState.INSTALLING ->
+            "${formatAppSize(ui.totalBytes)} / ${formatAppSize(ui.totalBytes)} · 校验完成"
+        WaveDlState.DONE ->
+            if (ui.error != null) ui.error!!
+            else if (ui.isApk) "${formatAppSize(ui.totalBytes)} · 安装包就绪"
+            else "${formatAppSize(ui.totalBytes)} · 已保存到本地"
+        else -> ""
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.35f))
+    ) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .width(320.dp)
+                .background(Color.White.copy(alpha = 0.92f), RoundedCornerShape(24.dp))
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // 顶部：标题 + 关闭
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Filled.Download,
+                        contentDescription = null,
+                        tint = Color(0xFF111827),
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = if (ui.isApk) "下载安装" else "下载文件",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF111827),
+                        maxLines = 1
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        if (ui.state == WaveDlState.DOWNLOADING || ui.state == WaveDlState.PAUSED) {
+                            WaveDownloadManager.cancel()
+                        } else {
+                            WaveDownloadManager.dismiss()
+                        }
+                    },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Text(text = "×", fontSize = 22.sp, color = Color(0xFF9CA3AF))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            // 状态文案
+            Text(
+                text = statusText,
+                fontSize = 14.sp,
+                color = if (isError) Color(0xFFEF4444) else Color(0xFF6B7280),
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 2
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            // 大小 / 速率
+            Text(
+                text = metaText,
+                fontSize = 12.sp,
+                color = Color(0xFF9CA3AF),
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 2
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // 波浪进度环
+            Box(
+                modifier = Modifier.size(160.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                WaveProgressRing(
+                    progress = ui.progress,
+                    ringColor = ringColor,
+                    spinning = ui.state == WaveDlState.INSTALLING,
+                    modifier = Modifier.fillMaxSize()
+                )
+                if (ui.state == WaveDlState.DONE && ui.error == null) {
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = null,
+                        tint = Color(0xFF22C55E),
+                        modifier = Modifier.size(40.dp)
+                    )
+                } else if (ui.state != WaveDlState.INSTALLING) {
+                    Text(
+                        text = "${(ui.progress * 100).toInt()}%",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF111827)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "${(ui.progress * 100).toInt()}%",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF111827)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // 底部按钮组
+            when (ui.state) {
+                WaveDlState.DOWNLOADING -> {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        WaveDialogButton(
+                            text = "⏸ 暂停",
+                            bgColor = Color(0xFFF3F4F6),
+                            textColor = Color(0xFF4B5563),
+                            onClick = { WaveDownloadManager.pause() },
+                            modifier = Modifier.weight(1f)
+                        )
+                        WaveDialogButton(
+                            text = "取消下载",
+                            bgColor = Color(0xFFE0E7FF),
+                            textColor = Color(0xFF3B82F6),
+                            onClick = { WaveDownloadManager.cancel() },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+                WaveDlState.PAUSED -> {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        WaveDialogButton(
+                            text = "▶ 继续",
+                            bgColor = Color(0xFF3B82F6),
+                            textColor = Color.White,
+                            onClick = { WaveDownloadManager.resume() },
+                            modifier = Modifier.weight(1f)
+                        )
+                        WaveDialogButton(
+                            text = "取消下载",
+                            bgColor = Color(0xFFE0E7FF),
+                            textColor = Color(0xFF3B82F6),
+                            onClick = { WaveDownloadManager.cancel() },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+                WaveDlState.CANCELLED -> {
+                    WaveDialogButton(
+                        text = "重新下载",
+                        bgColor = Color(0xFFFEE2E2),
+                        textColor = Color(0xFFEF4444),
+                        onClick = { WaveDownloadManager.resume() },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                WaveDlState.FAILED -> {
+                    WaveDialogButton(
+                        text = "重试",
+                        bgColor = Color(0xFFFEE2E2),
+                        textColor = Color(0xFFEF4444),
+                        onClick = { WaveDownloadManager.resume() },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                WaveDlState.INSTALLING -> {
+                    WaveDialogButton(
+                        text = "安装中...",
+                        bgColor = Color(0xFFE0E7FF),
+                        textColor = Color(0xFF3B82F6),
+                        onClick = {},
+                        enabled = false,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                WaveDlState.DONE -> {
+                    if (ui.isApk) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            WaveDialogButton(
+                                text = "完成",
+                                bgColor = Color(0xFFF3F4F6),
+                                textColor = Color(0xFF4B5563),
+                                onClick = { WaveDownloadManager.dismiss() },
+                                modifier = Modifier.weight(1f)
+                            )
+                            WaveDialogButton(
+                                text = "立即安装",
+                                bgColor = Color(0xFF3B82F6),
+                                textColor = Color.White,
+                                onClick = { WaveDownloadManager.installAgain() },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    } else {
+                        WaveDialogButton(
+                            text = "完成",
+                            bgColor = Color(0xFF3B82F6),
+                            textColor = Color.White,
+                            onClick = { WaveDownloadManager.dismiss() },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+                else -> {}
+            }
+        }
+    }
+}
+
+@Composable
+private fun WaveDialogButton(
+    text: String,
+    bgColor: Color,
+    textColor: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
+) {
+    Box(
+        modifier = modifier
+            .background(
+                bgColor.copy(alpha = if (enabled) 1f else 0.5f),
+                RoundedCornerShape(99.dp)
+            )
+            .clickable(enabled = enabled, onClick = onClick)
+            .padding(vertical = 14.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = textColor.copy(alpha = if (enabled) 1f else 0.5f)
+        )
+    }
+}
+
+/**
  * 软件版块通用：应用内直接高速下载并触发真实安装（彻底免去手机内容下载管理器与通知栏确认）
  */
 private fun downloadAndInstallResourceInApp(
@@ -577,60 +1140,8 @@ private fun downloadAndInstallResourceInApp(
         Toast.makeText(context, "下载地址为空", Toast.LENGTH_SHORT).show()
         return
     }
-    CoroutineScope(Dispatchers.IO).launch {
-        withContext(Dispatchers.Main) {
-            Toast.makeText(context, "🚀 正在应用内直接高速下载「$title」…", Toast.LENGTH_SHORT).show()
-        }
-        val safeName = (fileName?.ifBlank { null } ?: url.substringAfterLast('/').ifBlank { "download.bin" })
-            .replace(" ", "_")
-            .replace(Regex("[\\\\/:*?\"<>|]"), "_")
-            .let { if (isApk && !it.endsWith(".apk", true)) "$it.apk" else it }
-
-        val downloadDir = File(context.cacheDir, "apk_downloads").apply { mkdirs() }
-        val targetFile = File(downloadDir, safeName)
-
-        val client = OkHttpClient.Builder()
-            .connectTimeout(20, TimeUnit.SECONDS)
-            .readTimeout(180, TimeUnit.SECONDS)
-            .followRedirects(true)
-            .followSslRedirects(true)
-            .build()
-
-        val request = Request.Builder()
-            .url(url)
-            .header("User-Agent", "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/126.0 Mobile Safari/537.36")
-            .build()
-
-        try {
-            val response = client.newCall(request).execute()
-            if (!response.isSuccessful) {
-                throw Exception("HTTP ${response.code}")
-            }
-            val body = response.body ?: throw Exception("响应内容为空")
-            targetFile.outputStream().use { out ->
-                body.byteStream().use { input ->
-                    input.copyTo(out)
-                }
-            }
-
-            withContext(Dispatchers.Main) {
-                if (isApk) {
-                    Toast.makeText(context, "✅ 「$title」下载完成，正在拉起真实安装…", Toast.LENGTH_SHORT).show()
-                    val success = installApkDirectly(context, targetFile)
-                    if (!success) {
-                        Toast.makeText(context, "已下载完成，安装包就绪: ${targetFile.name}", Toast.LENGTH_LONG).show()
-                    }
-                } else {
-                    Toast.makeText(context, "✅ 「$title」下载完成！已保存在本地应用空间", Toast.LENGTH_LONG).show()
-                }
-            }
-        } catch (e: Exception) {
-            // v1.7.20：应用内下载失败只提示错误，不再跳转浏览器（用户需求）
-            withContext(Dispatchers.Main) {
-                Toast.makeText(context, "下载失败：${e.message}，请检查网络后重试", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
+    // v1.7.22：统一走波浪进度弹窗（应用内下载+安装），不再用 Toast 提示
+    WaveDownloadManager.start(context, title, url, fileName, isApk)
 }
 
 /**
@@ -1367,6 +1878,9 @@ fun UploadHubScreen(
             }
         )
     }
+
+    // v1.7.22：波浪下载弹窗（应用内下载+安装统一入口）
+    WaveDownloadDialog()
 }
 
 /** Skill 技能包卡片（v1.0.12：取消横屏滑动，改为竖排全宽卡片；取消 icon 图标功能）：

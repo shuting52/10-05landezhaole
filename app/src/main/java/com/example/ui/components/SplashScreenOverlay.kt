@@ -419,6 +419,11 @@ private fun CubeLoaderSplashContent(
         modifier = Modifier
             .fillMaxSize()
             .background(Brush.verticalGradient(theme.backgroundGradient))
+            // v1.7.22：吞掉所有点击（空实现），防止穿透到下层触发主题弹窗等（用户需求：点击不触发任何东西）
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { }
     ) {
         // 倒计时：只显示数字（右上角，无「跳过」）
         Box(
