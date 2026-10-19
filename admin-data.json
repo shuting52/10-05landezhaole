@@ -24085,20 +24085,6 @@
       "badgeType": ""
     },
     {
-      "id": "sw_musi2585gqyw",
-      "type": "software",
-      "title": "PixelLab_2.1.6",
-      "desc": "PixelLab_2.1.6 老牌做字效软件",
-      "url": "",
-      "author": "",
-      "badge": "最新版",
-      "tags": "软件 安装包 APK",
-      "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/1791038387911_PixelLab_2.1.6_kill.apk",
-      "previewUrl": "",
-      "iconUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/uploads/1791073972405_Screenshot_2026_1003_225846.png",
-      "mode": "file"
-    },
-    {
       "id": "sw_musifqfbx6bi",
       "type": "software",
       "title": "豆包去水印",
@@ -24124,20 +24110,6 @@
       "apkUrl": "",
       "previewUrl": "",
       "iconUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/uploads/1791073928830_Screenshot_2026_1004_083126.png",
-      "mode": "file"
-    },
-    {
-      "id": "sw_mut3dyibunmd",
-      "type": "software",
-      "title": "幸运破解器_1.0.6",
-      "desc": "幸运破解器 能移除谷歌广告",
-      "url": "",
-      "author": "",
-      "badge": "最新版",
-      "tags": "软件",
-      "apkUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/apk/1791074195617_Proxy server for inapp purchases_1.0.6.apk",
-      "previewUrl": "",
-      "iconUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/uploads/1791074276565_Screenshot_2026_1004_083747.png",
       "mode": "file"
     }
   ],
