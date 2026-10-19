@@ -195,12 +195,24 @@ fun MainScreen(
     var updateDialogDismissed by remember { mutableStateOf(false) }
     var welcomeDialogDismissed by remember { mutableStateOf(false) }
     var showShutdownDialog by remember { mutableStateOf(false) }
+    // v1.7.23：版本刚升级时压住欢迎弹窗（大改动本身已是通知，不再弹欢迎公告）
+    var suppressWelcomeOnUpgrade by remember { mutableStateOf(false) }
 
     // 启动时恢复自定义背景（跨重启持久）
     LaunchedEffect(Unit) {
-        val prefs = context.getSharedPreferences("lzdz_bg_prefs", Context.MODE_PRIVATE)
-        val type = prefs.getString("bg_type", "none") ?: "none"
-        val path = prefs.getString("bg_path", "") ?: ""
+        // v1.7.23：检测版本变更，刚升级则本次不弹欢迎弹窗
+        try {
+            val prefs = context.getSharedPreferences("lzdz_prefs", Context.MODE_PRIVATE)
+            val currentCode = context.packageManager.getPackageInfo(context.packageName, 0).versionCode
+            val lastCode = prefs.getInt("last_version_code", -1)
+            if (lastCode != -1 && lastCode != currentCode) {
+                suppressWelcomeOnUpgrade = true
+            }
+            prefs.edit().putInt("last_version_code", currentCode).apply()
+        } catch (_: Exception) {}
+        val bgPrefs = context.getSharedPreferences("lzdz_bg_prefs", Context.MODE_PRIVATE)
+        val type = bgPrefs.getString("bg_type", "none") ?: "none"
+        val path = bgPrefs.getString("bg_path", "") ?: ""
         if (type != "none" && path.isNotBlank()) {
             viewModel.setLocalBgMedia(type, "file://$path")
         }
@@ -593,8 +605,9 @@ fun MainScreen(
 
         // 云端欢迎界面弹窗：仅开屏结束后才展示（避免开屏期间弹窗盖在开屏之上）
         // v1.7.2：改为可爱卡通动态绘制弹窗（底部滑入 + 表情摇摆 + 粉紫渐变），欢迎语每行一条独立呈现
+        // v1.7.23：刚版本升级时不弹（大改动本身已是通知）
         val cloudWelcome = uiState.cloudWelcome
-        if (uiState.isCloudReady && !uiState.isSplashVisible && cloudWelcome?.enabled == true && !welcomeDialogDismissed) {
+        if (uiState.isCloudReady && !uiState.isSplashVisible && cloudWelcome?.enabled == true && !welcomeDialogDismissed && !suppressWelcomeOnUpgrade) {
             CuteWelcomeDialog(
                 welcome = cloudWelcome,
                 onDismiss = { welcomeDialogDismissed = true }
