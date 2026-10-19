@@ -24293,13 +24293,13 @@
     "bgColor": "#0A192F"
   },
   "welcome": {
-    "enabled": false,
-    "title": "",
-    "welcomeText": "嗨～欢迎回家！愿你在这里发现更多宝藏！",
-    "content": "为期一周不断迭代优化的新版本终于上线啦～\n新应用可能存在小Bug，欢迎宝贝们及时反馈\n收录站资源丰富，很多资源都可以白嫖哦\n发现Bug请第一时间反馈，我会尽快处理",
+    "enabled": true,
+    "title": "软件区变动通知",
+    "welcomeText": "软件区整理了一下～",
+    "content": "以下软件已下架：\n• 幸运破解器\n• PixelLab\n• 简影\n\n✅「豆包去水印」已恢复上架（v3.6），下载链接已修复，可正常下载安装。\n\n当前软件区：Geek Uninstaller、Everything 极速搜盘、豆包去水印",
     "ratio": "compact",
-    "imageUrl": "https://raw.githubusercontent.com/shuting52/landezhaole10-02/main/dist/uploads/1790957869214_Screenshot_2026_0908_002006.png",
-    "buttonText": "开始体验"
+    "imageUrl": "",
+    "buttonText": "知道了"
   },
   "updateDialog": {
     "title": "懒得找了 v1.7.21 已上线",
