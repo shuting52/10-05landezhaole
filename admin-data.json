@@ -1746,6 +1746,32 @@
         ],
         "cards": [
           {
+            "id": "site_new_1792544663136_1",
+            "title": "Ashna AI · GPT 6 Astra",
+            "url": "https://app.ashna.ai/chat/6ad80c78ae3df20b5368eb8b?agent=gpt-6-astra",
+            "icon": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/icon-ashna-ai.png",
+            "fallbackText": "A",
+            "badge": "NEW",
+            "badgeType": "new",
+            "desc": "GPT 6 Astra 智能对话助手",
+            "categoryId": "ai_models",
+            "subcatId": "models",
+            "highlights": "GPT 6 Astra 智能对话助手"
+          },
+          {
+            "id": "site_new_1792544663136_2",
+            "title": "Notion AI",
+            "url": "https://app.notion.com/chat?t=40071a005d338092bbb000a9c5c181fd",
+            "icon": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/uploads/icon-notion-ai.png",
+            "fallbackText": "N",
+            "badge": "NEW",
+            "badgeType": "new",
+            "desc": "Notion AI 工作区智能对话",
+            "categoryId": "ai_models",
+            "subcatId": "models",
+            "highlights": "Notion AI 工作区智能对话"
+          },
+          {
             "id": "site_api_002",
             "title": "Google AI Studio",
             "url": "https://aistudio.google.com",
