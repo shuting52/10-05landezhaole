@@ -425,22 +425,26 @@ private fun CubeLoaderSplashContent(
                 indication = null
             ) { }
     ) {
-        // 倒计时：只显示数字（右上角，无「跳过」）
+        // 倒计时：右上角「跳过」按钮（v1.7.24：支持手动关闭，点击直接进入）
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .statusBarsPadding()
                 .padding(top = 16.dp, end = 20.dp)
-                .size(44.dp)
-                .clip(CircleShape)
+                .clip(RoundedCornerShape(22.dp))
                 .background(Color.White.copy(alpha = 0.65f))
-                .border(1.dp, theme.primary.copy(alpha = 0.4f), CircleShape),
+                .border(1.dp, theme.primary.copy(alpha = 0.4f), RoundedCornerShape(22.dp))
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) { onDismiss() }
+                .padding(horizontal = 14.dp, vertical = 8.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "$countdownSeconds",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Black,
+                text = "跳过 $countdownSeconds",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
                 color = theme.primary
             )
         }
