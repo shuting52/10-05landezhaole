@@ -1,16 +1,16 @@
 {
   "version": {
-    "code": 246,
-    "name": "1.7.36",
+    "code": 247,
+    "name": "1.7.37",
     "changelog": [
-      "✨ v1.7.36 更新来啦～",
-      "feat: 新增「极光流体」主题"
+      "✨ v1.7.37 更新来啦～",
+      "feat: 删除三个主题，固定浅蓝静态渐变背景"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.36-1792679546.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.36-1792679546.apk",
-    "lastBuildSha": "512edf8237df0a2dc0cea704f0d8e5da999e392d",
-    "apkSize": 24078672
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.37-1792680909.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.37-1792680909.apk",
+    "lastBuildSha": "ffff03d5dbcb9e2660ccf06b409db073ce2ecea5",
+    "apkSize": 24062288
   },
   "home": {
     "categories": [
@@ -24328,10 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.36 已上线",
+    "title": "懒得找了 v1.7.37 已上线",
     "changelog": [
-      "✨ v1.7.36 更新来啦～",
-      "feat: 新增「极光流体」主题"
+      "✨ v1.7.37 更新来啦～",
+      "feat: 删除三个主题，固定浅蓝静态渐变背景"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24402,10 +24402,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.36",
-      "code": 246,
-      "at": "2026-10-22T14:32:34Z",
-      "sha": "512edf8237df0a2dc0cea704f0d8e5da999e392d"
+      "version": "1.7.37",
+      "code": 247,
+      "at": "2026-10-22T14:55:16Z",
+      "sha": "ffff03d5dbcb9e2660ccf06b409db073ce2ecea5"
     }
   },
   "_ai_notice": "内容由AI生成"
