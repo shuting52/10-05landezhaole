@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.example.ui.components.LiquidGlassDialogShell
 import com.example.ui.components.streamingBorder
 import com.example.ui.theme.LocalThemeUiColors
+import com.example.ui.theme.AppTheme
 
 /**
  * v1.7.17：自定义背景弹窗（主题预设已全部删除）
@@ -51,7 +52,10 @@ fun UiverseDialog(
     onPickLocalImage: () -> Unit = {},
     onPickLocalVideo: () -> Unit = {},
     onClearLocalBgMedia: () -> Unit = {},
-    onToggleFrosted: (Boolean) -> Unit = {}
+    onToggleFrosted: (Boolean) -> Unit = {},
+    // v1.7.27：App 主题选择
+    appTheme: AppTheme = AppTheme.AERO,
+    onThemeChange: (AppTheme) -> Unit = {}
 ) {
     if (!isOpen) return
 
@@ -59,8 +63,8 @@ fun UiverseDialog(
 
     LiquidGlassDialogShell(
         onDismissRequest = onClose,
-        title = "自定义背景",
-        subtitle = "上传喜欢的图片或视频作为全软件背景",
+        title = "主题外观",
+        subtitle = "选择喜欢的 App 主题风格",
         centerTitle = true
     ) {
         Column(
@@ -69,6 +73,66 @@ fun UiverseDialog(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // v1.7.27：主题选择
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(Color.White.copy(alpha = 0.85f))
+                    .border(1.dp, currentUiColors.primary.copy(alpha = 0.25f), RoundedCornerShape(18.dp))
+                    .padding(16.dp)
+            ) {
+                Text("App 主题", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1E293B))
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    AppTheme.values().forEach { theme ->
+                        val selected = appTheme == theme
+                        Surface(
+                            onClick = { onThemeChange(theme) },
+                            shape = RoundedCornerShape(14.dp),
+                            color = if (selected) currentUiColors.primary.copy(alpha = 0.12f) else Color(0xFFF1F5F9),
+                            border = if (selected) androidx.compose.foundation.BorderStroke(2.dp, currentUiColors.primary) else null,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                // 主题色预览条
+                                Row(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(
+                                            when (theme) {
+                                                AppTheme.AERO -> Color(0xFF00A8E8)
+                                                AppTheme.LEVER -> Color(0xFF1269EF)
+                                            }
+                                        )
+                                        .padding(horizontal = 16.dp, vertical = 6.dp)
+                                ) {
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    theme.displayName,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (selected) currentUiColors.primary else Color(0xFF1E293B)
+                                )
+                                Text(
+                                    theme.desc,
+                                    fontSize = 10.5.sp,
+                                    color = Color(0xFF64748B),
+                                    lineHeight = 14.sp
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
             // 自定义背景卡片
             Column(
                 modifier = Modifier

@@ -77,16 +77,50 @@ data class ThemeUiColors(
 
 val LocalThemeUiColors = staticCompositionLocalOf { ThemeUiColors() }
 
-// v1.7.19：新皮肤 Frutiger Aero 千禧复兴（天空蓝+玻璃质感），主题预设已删除，仅保留固定色板
+// ============================================================
+// v1.7.27：App 主题（LEVER UI 拨杆玩具风加入）
+// ============================================================
+enum class AppTheme(val displayName: String, val desc: String) {
+    AERO("Frutiger Aero", "千禧复兴 · 天空蓝玻璃质感"),
+    LEVER("LEVER UI", "拨杆玩具风 · 硬阴影按压回弹")
+}
+
+/** LEVER UI 色板（源自用户提供的 LEVER UI 拨杆组件库 HTML） */
+fun leverUiColors() = ThemeUiColors(
+    primary = Color(0xFF1269EF),        // 拨杆蓝
+    secondary = Color(0xFF0D4FC0),      // 拨杆深蓝
+    background = Color(0xFFDCEBF9),     // 纸蓝
+    surface = Color(0xFFFFFFFF),
+    text = Color(0xFF085991),           // 墨水蓝
+    textMuted = Color(0xFF3D7CA8),
+    accent = Color(0xFFED487E),         // 拨杆粉
+    border = Color(0xFF1A4766).copy(alpha = 0.35f),  // 深海
+    cardGradient = listOf(Color(0xFFFFFFFF), Color(0xFFB7DFFB)),
+    backgroundGradient = listOf(
+        Color(0xFFB7DFFB),
+        Color(0xFFDCEBF9),
+        Color(0xFFDCEBF9)
+    ),
+    designStyle = DesignStyle.CLAYMORPHISM  // 玩具质感最接近粘土拟态
+)
+
+/** Frutiger Aero 色板（默认） */
+fun aeroUiColors() = ThemeUiColors()
+
+val LocalAppTheme = staticCompositionLocalOf { AppTheme.AERO }
 
 @Composable
 fun MyApplicationTheme(
     uiverseState: ActiveUiverseState = ActiveUiverseState(),
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
+    appTheme: AppTheme = AppTheme.AERO,
     content: @Composable () -> Unit
 ) {
-    val uiColors = ThemeUiColors()
+    val uiColors = when (appTheme) {
+        AppTheme.AERO -> aeroUiColors()
+        AppTheme.LEVER -> leverUiColors()
+    }
     val colorScheme = lightColorScheme(
         primary = uiColors.primary,
         secondary = uiColors.secondary,
@@ -100,7 +134,8 @@ fun MyApplicationTheme(
 
     CompositionLocalProvider(
         LocalUiverseState provides uiverseState,
-        LocalThemeUiColors provides uiColors
+        LocalThemeUiColors provides uiColors,
+        LocalAppTheme provides appTheme
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

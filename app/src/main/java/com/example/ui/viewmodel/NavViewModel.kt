@@ -38,6 +38,7 @@ import java.net.URLEncoder
 
 import com.example.data.local.db.UploadedResourceEntity
 import com.example.ui.theme.AtmosphereEffect
+import com.example.ui.theme.AppTheme
 import com.example.ui.uiverse.ActiveUiverseState
 import com.example.ui.uiverse.UiKitPreset
 import com.example.ui.uiverse.UiverseItem
@@ -64,6 +65,7 @@ data class NavUiState(
     // v1.2.0：动态效果主题
     val dynamicEffect: DynamicEffectPreset = DynamicEffectPreset.NONE,
     val isThemeDialogVisible: Boolean = false,
+    val appTheme: AppTheme = AppTheme.AERO,  // v1.7.27：App 主题（AERO/LEVER）
     val activeUiverseState: ActiveUiverseState = ActiveUiverseState(),
     val categories: List<NavCategory> = NavData.categories,
     val selectedCategoryId: String = NavData.categories.firstOrNull()?.id ?: "ai_models",
@@ -572,6 +574,25 @@ class NavViewModel(
 
     fun setThemeDialogVisible(visible: Boolean) {
         _uiState.value = _uiState.value.copy(isThemeDialogVisible = visible)
+    }
+
+    // v1.7.27：切换 App 主题并持久化
+    fun setAppTheme(theme: AppTheme) {
+        _uiState.value = _uiState.value.copy(appTheme = theme)
+        try {
+            appContext?.getSharedPreferences("lzdz_prefs", Context.MODE_PRIVATE)
+                ?.edit()?.putString("app_theme", theme.name)?.apply()
+        } catch (_: Exception) { }
+    }
+
+    // v1.7.27：启动时恢复主题
+    fun restoreAppTheme() {
+        try {
+            val name = appContext?.getSharedPreferences("lzdz_prefs", Context.MODE_PRIVATE)
+                ?.getString("app_theme", AppTheme.AERO.name) ?: AppTheme.AERO.name
+            val theme = try { AppTheme.valueOf(name) } catch (_: Exception) { AppTheme.AERO }
+            _uiState.value = _uiState.value.copy(appTheme = theme)
+        } catch (_: Exception) { }
     }
 
     fun applyUiverseKit(kit: UiKitPreset) {
