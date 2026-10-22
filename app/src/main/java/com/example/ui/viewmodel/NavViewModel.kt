@@ -585,11 +585,20 @@ class NavViewModel(
         } catch (_: Exception) { }
     }
 
-    // v1.7.27：启动时恢复主题
+    // v1.7.33：升级后首次启动切换到新版默认液态玻璃主题，之后继续尊重用户的主题选择。
     fun restoreAppTheme() {
         try {
-            val name = appContext?.getSharedPreferences("lzdz_prefs", Context.MODE_PRIVATE)
-                ?.getString("app_theme", AppTheme.AERO.name) ?: AppTheme.AERO.name
+            val prefs = appContext?.getSharedPreferences("lzdz_prefs", Context.MODE_PRIVATE)
+            val migrationKey = "theme_default_liquid_glass_1_7_33"
+            if (prefs != null && !prefs.getBoolean(migrationKey, false)) {
+                prefs.edit()
+                    .putString("app_theme", AppTheme.AERO.name)
+                    .putBoolean(migrationKey, true)
+                    .apply()
+                _uiState.value = _uiState.value.copy(appTheme = AppTheme.AERO)
+                return
+            }
+            val name = prefs?.getString("app_theme", AppTheme.AERO.name) ?: AppTheme.AERO.name
             val theme = try { AppTheme.valueOf(name) } catch (_: Exception) { AppTheme.AERO }
             _uiState.value = _uiState.value.copy(appTheme = theme)
         } catch (_: Exception) { }
