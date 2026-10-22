@@ -1,18 +1,15 @@
 {
   "version": {
-    "code": 242,
-    "name": "1.7.32",
+    "code": 243,
+    "name": "1.7.33",
     "changelog": [
-      "✨ v1.7.32 更新来啦～",
-      "feat: 工具链接 App 内 WebView 打开",
-      "feat: 云端工具只在环形菜单内展示",
-      "fix: 重写 InAppWebViewDialog 使用标准导入",
-      "feat: 工具箱云端工具只在环形内展示 + App内WebView打开"
+      "✨ v1.7.33 更新来啦～",
+      "fix(theme): migrate existing installs to liquid glass default"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.32-1792663747.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.32-1792663747.apk",
-    "lastBuildSha": "d3cd7a4adce73b744cb0e2d332d7913f580c725b",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.33-1792667693.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.33-1792667693.apk",
+    "lastBuildSha": "a58397a4820c1c614adf47e8e5944a43f74ea591",
     "apkSize": 24078672
   },
   "home": {
@@ -24331,13 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.32 已上线",
+    "title": "懒得找了 v1.7.33 已上线",
     "changelog": [
-      "✨ v1.7.32 更新来啦～",
-      "feat: 工具链接 App 内 WebView 打开",
-      "feat: 云端工具只在环形菜单内展示",
-      "fix: 重写 InAppWebViewDialog 使用标准导入",
-      "feat: 工具箱云端工具只在环形内展示 + App内WebView打开"
+      "✨ v1.7.33 更新来啦～",
+      "fix(theme): migrate existing installs to liquid glass default"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24408,10 +24402,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.32",
-      "code": 242,
-      "at": "2026-10-22T10:09:13Z",
-      "sha": "d3cd7a4adce73b744cb0e2d332d7913f580c725b"
+      "version": "1.7.33",
+      "code": 243,
+      "at": "2026-10-22T11:15:00Z",
+      "sha": "a58397a4820c1c614adf47e8e5944a43f74ea591"
     }
   },
   "_ai_notice": "内容由AI生成"
