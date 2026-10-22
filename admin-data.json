@@ -24350,6 +24350,14 @@
   },
   "tools": [
     {
+      "id": "liquid-theme-preview",
+      "name": "液态玻璃主题预览",
+      "desc": "10 套液态主题 × 本 App 界面实时预览",
+      "url": "https://shuting52.github.io/app-gallery/landezhaole-theme-preview.html",
+      "icon": "💧",
+      "badge": "NEW"
+    },
+    {
       "id": "sana-ai",
       "name": "Sana AI 生图",
       "desc": "NVIDIA 高效 AI 生图/视频模型 · 在线体验",
