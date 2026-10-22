@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 249,
-    "name": "1.7.39",
+    "code": 250,
+    "name": "1.7.40",
     "changelog": [
-      "✨ v1.7.39 更新来啦～",
-      "移除 Liquid Glass 主题并恢复原界面样式"
+      "✨ v1.7.40 更新来啦～",
+      "feat: Liquid Glass 默认主题（对标 Vue 版 token）"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.39-1792682837.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.39-1792682837.apk",
-    "lastBuildSha": "43cd4700e9e46f018ffdfb625185ad3b9e04e099",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.40-1792684350.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.40-1792684350.apk",
+    "lastBuildSha": "ccc99e9467225deb4c5d635f9875c40aa32b9167",
     "apkSize": 24062292
   },
   "home": {
@@ -24328,10 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.39 已上线",
+    "title": "懒得找了 v1.7.40 已上线",
     "changelog": [
-      "✨ v1.7.39 更新来啦～",
-      "移除 Liquid Glass 主题并恢复原界面样式"
+      "✨ v1.7.40 更新来啦～",
+      "feat: Liquid Glass 默认主题（对标 Vue 版 token）"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24402,10 +24402,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.39",
-      "code": 249,
-      "at": "2026-10-22T15:27:23Z",
-      "sha": "43cd4700e9e46f018ffdfb625185ad3b9e04e099"
+      "version": "1.7.40",
+      "code": 250,
+      "at": "2026-10-22T15:52:38Z",
+      "sha": "ccc99e9467225deb4c5d635f9875c40aa32b9167"
     }
   },
   "_ai_notice": "内容由AI生成"
