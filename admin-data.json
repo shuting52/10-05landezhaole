@@ -1,15 +1,16 @@
 {
   "version": {
-    "code": 237,
-    "name": "1.7.27",
+    "code": 238,
+    "name": "1.7.28",
     "changelog": [
-      "✨ v1.7.27 更新来啦～",
-      "feat: 新增 LEVER UI 主题"
+      "✨ v1.7.28 更新来啦～",
+      "Apply Liquid Glass background on home screen",
+      "Apply liquid glass theme"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.27-1792635106.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.27-1792635106.apk",
-    "lastBuildSha": "01d5ee7d47f0f924528ee594666e8ed626cc3d6e",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.28-1792640273.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.28-1792640273.apk",
+    "lastBuildSha": "bdc6649a06e4c721484be7b72df1773660e800ad",
     "apkSize": 24062288
   },
   "home": {
@@ -24328,10 +24329,11 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.27 已上线",
+    "title": "懒得找了 v1.7.28 已上线",
     "changelog": [
-      "✨ v1.7.27 更新来啦～",
-      "feat: 新增 LEVER UI 主题"
+      "✨ v1.7.28 更新来啦～",
+      "Apply Liquid Glass background on home screen",
+      "Apply liquid glass theme"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24393,10 +24395,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.27",
-      "code": 237,
-      "at": "2026-10-22T02:11:53Z",
-      "sha": "01d5ee7d47f0f924528ee594666e8ed626cc3d6e"
+      "version": "1.7.28",
+      "code": 238,
+      "at": "2026-10-22T03:38:00Z",
+      "sha": "bdc6649a06e4c721484be7b72df1773660e800ad"
     }
   },
   "_ai_notice": "内容由AI生成"
