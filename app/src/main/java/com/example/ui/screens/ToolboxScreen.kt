@@ -9,7 +9,6 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
@@ -133,9 +132,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.viewinterop.AndroidView
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import kotlinx.coroutines.launch
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -347,8 +343,6 @@ fun ToolboxScreen(
     var showAddRingToolDialog by remember { mutableStateOf(false) }
     // 环形菜单底部抽屉状态（对应 rm-sheet）
     var sheetGroupIndex by remember { mutableStateOf<Int?>(null) }
-    // v1.7.30：App 内 WebView 打开工具链接（不跳外部浏览器）
-    var inAppWebUrl by remember { mutableStateOf<String?>(null) }
     // 呈现方式 & 按住时触发的动态效果（本地持久化保存用户的选择）
     val context = androidx.compose.ui.platform.LocalContext.current
     val ringPrefs = remember { context.getSharedPreferences("lzdz_ring_custom_tools", Context.MODE_PRIVATE) }
@@ -466,8 +460,13 @@ fun ToolboxScreen(
                 onSelectGroup = { index -> sheetGroupIndex = index },
                 onDirectOpenTool = { tab -> activeTool = tab },
                 onOpenExternalUrl = { url ->
-                    // v1.7.30：App 内 WebView 打开，不跳外部浏览器
-                    inAppWebUrl = url
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "无法打开链接：$url", Toast.LENGTH_SHORT).show()
+                    }
                 }
             )
 
@@ -490,18 +489,15 @@ fun ToolboxScreen(
             },
             onOpenExternalUrl = { url ->
                 sheetGroupIndex = null
-                // v1.7.30：App 内 WebView 打开，不跳外部浏览器
-                inAppWebUrl = url
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    Toast.makeText(context, "无法打开链接：$url", Toast.LENGTH_SHORT).show()
+                }
             }
         )
-
-        // v1.7.30：App 内 WebView 弹窗
-        if (inAppWebUrl != null) {
-            InAppWebViewDialog(
-                url = inAppWebUrl!!,
-                onClose = { inAppWebUrl = null }
-            )
-        }
 
         // 点击「加工具」或新环形「+」槽位弹出的新增环形工具窗口（满 8 个自动生成下一环）
         if (showAddRingToolDialog) {
@@ -3148,65 +3144,6 @@ private fun OfflineTreasureScreenView() {
     ) {
         item {
             OfflineTreasureSection()
-        }
-    }
-}
-
-/**
- * v1.7.30：App 内 WebView 弹窗（工具链接不跳外部浏览器）
- */
-@Composable
-private fun InAppWebViewDialog(
-    url: String,
-    onClose: () -> Unit
-) {
-    val themeColors = com.example.ui.theme.LocalThemeUiColors.current
-    Dialog(
-        onDismissRequest = onClose,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-        ) {
-            // 顶部栏
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(themeColors.primary)
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onClose) {
-                    Icon(
-                        Icons.Filled.ArrowBack,
-                        contentDescription = "返回",
-                        tint = Color.White
-                    )
-                }
-                Text(
-                    text = url.take(50),
-                    color = Color.White,
-                    fontSize = 12.sp,
-                    maxLines = 1,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            // WebView
-            AndroidView(
-                factory = { ctx ->
-                    WebView(ctx).apply {
-                        settings.javaScriptEnabled = true
-                        settings.domStorageEnabled = true
-                        settings.loadWithOverviewMode = true
-                        settings.useWideViewPort = true
-                        webViewClient = WebViewClient()
-                        loadUrl(url)
-                    }
-                },
-                modifier = Modifier.fillMaxSize()
-            )
         }
     }
 }
