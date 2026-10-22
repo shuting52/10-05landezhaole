@@ -82,7 +82,9 @@ val LocalThemeUiColors = staticCompositionLocalOf { ThemeUiColors() }
 // 不再提供 Liquid Glass / LEVER UI / 极光流体 三个主题选项。
 // ============================================================
 
-/** 浅蓝主题：天空蓝主色 + 浅蓝静态渐变背景（固定，不可切换） */
+/** 2026-10-22 Liquid Glass 默认主题：天空蓝主色 + 玻璃拟态（用户指定为软件默认主题）
+ * 玻璃配方（用户收藏）：加大模糊感 / 提高饱和度不发灰 / 叠白 10% / 1px 亮边 / 边缘折射；
+ * 背景配方：大块柔和形状（水面/云朵感，大于模糊范围）、主色一两种、文字下方别太亮。 */
 fun defaultUiColors() = ThemeUiColors(
     primary = Color(0xFF00A8E8),        // 天空蓝
     secondary = Color(0xFF0090C9),      // 深海蓝
@@ -92,8 +94,13 @@ fun defaultUiColors() = ThemeUiColors(
     textMuted = Color(0xFF5B7A90),      // 浅灰蓝
     accent = Color(0xFF00A8E8),
     border = Color(0xFF00A8E8).copy(alpha = 0.35f),
-    cardGradient = listOf(Color(0xFFFFFFFF), Color(0xFFE8F9FF)),
-    // 浅蓝静态渐变背景：蓝 → 浅蓝 → 极浅
+    // 玻璃卡片渐变：白 17% → 白 5% → 白 10%（对标 LiquidGlass.vue 的 glass-tint）
+    cardGradient = listOf(
+        Color(0x2BFFFFFF),
+        Color(0x0DFFFFFF),
+        Color(0x1AFFFFFF)
+    ),
+    // 浅蓝静态渐变背景基底：蓝 → 浅蓝 → 极浅（GlobalWindBackground 在此之上叠大块柔和色块）
     backgroundGradient = listOf(
         Color(0xFF7EC8F7),
         Color(0xFFBDE4FB),

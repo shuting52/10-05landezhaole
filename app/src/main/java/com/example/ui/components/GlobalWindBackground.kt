@@ -57,8 +57,10 @@ val WindPeach4 = Color(0xFFFAC097)
 val WindPeach5 = Color(0xFFFAC39C)
 
 /**
- * 全局静态渐变背景（2026-10-22 重写：删除主题切换后，背景改为浅蓝色静态渐变）
- * - 默认：主题 backgroundGradient 浅蓝静态渐变，无任何动画
+ * 全局玻璃背景（2026-10-22 重写：Liquid Glass 默认主题背景，按用户收藏配方）
+ * - 基底：主题 backgroundGradient 浅蓝静态渐变，无动画
+ * - 色块：大块柔和形状（云朵/水面感），尺寸大于模糊范围，主色一两种（天空蓝+青），
+ *   透明度压低保证文字下方不太亮；全部静态
  * - 保留：用户自定义背景媒体（图片/视频）
  */
 @Composable
@@ -75,13 +77,60 @@ fun GlobalWindBackground(
     val themePrimaryColor: Color = theme.primary
 
     Box(modifier = modifier.fillMaxSize()) {
-        // ========== 1. 静态浅蓝渐变背景 ==========
+        // ========== 1. 静态玻璃背景：渐变基底 + 大块柔和色块 ==========
         Canvas(modifier = Modifier.fillMaxSize()) {
+            val w = size.width
+            val h = size.height
+            // 基底：浅蓝静态渐变
             drawRect(
                 brush = Brush.verticalGradient(
                     colors = if (themeGradientColors.size >= 2) themeGradientColors
                     else listOf(theme.background, theme.background)
                 )
+            )
+            // 大块柔和色块（云朵/水面感）：天空蓝 + 青，主色两种，静态，尺寸远大于模糊范围
+            val blobR = maxOf(w, h) * 0.55f
+            // 左上云朵：天空蓝柔光
+            drawCircle(
+                brush = Brush.radialGradient(
+                    colors = listOf(
+                        Color(0xFF4FB8F0).copy(alpha = 0.38f),
+                        Color(0xFF4FB8F0).copy(alpha = 0.12f),
+                        Color.Transparent
+                    ),
+                    center = Offset(w * 0.22f, h * 0.18f),
+                    radius = blobR
+                ),
+                radius = blobR,
+                center = Offset(w * 0.22f, h * 0.18f)
+            )
+            // 右中水面：青色柔光
+            drawCircle(
+                brush = Brush.radialGradient(
+                    colors = listOf(
+                        Color(0xFF38D6C8).copy(alpha = 0.30f),
+                        Color(0xFF38D6C8).copy(alpha = 0.10f),
+                        Color.Transparent
+                    ),
+                    center = Offset(w * 0.80f, h * 0.52f),
+                    radius = blobR * 0.9f
+                ),
+                radius = blobR * 0.9f,
+                center = Offset(w * 0.80f, h * 0.52f)
+            )
+            // 底部云絮：白色柔光（提亮但压低透明度，文字下方不太亮）
+            drawCircle(
+                brush = Brush.radialGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = 0.35f),
+                        Color.White.copy(alpha = 0.10f),
+                        Color.Transparent
+                    ),
+                    center = Offset(w * 0.45f, h * 0.88f),
+                    radius = blobR * 0.8f
+                ),
+                radius = blobR * 0.8f,
+                center = Offset(w * 0.45f, h * 0.88f)
             )
         }
 
