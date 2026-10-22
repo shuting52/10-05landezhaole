@@ -117,7 +117,9 @@ fun CustomRadioBottomNav(
     selectedTab: AppBottomTab,
     onTabSelected: (AppBottomTab) -> Unit,
     modifier: Modifier = Modifier,
-    uiText: com.example.data.remote.UiTextDto? = null
+    uiText: com.example.data.remote.UiTextDto? = null,
+    // 支付宝式"假"液态玻璃红点徽标：tab -> 徽标文字（如 "3"），空 map 即不显示
+    badges: Map<AppBottomTab, String> = emptyMap()
 ) {
     // v1.4.13：图4风格重写 —— 白色圆角容器 + 黄色高亮选中 pill（主题跟随）
     val themeColors = com.example.ui.theme.LocalThemeUiColors.current
@@ -183,12 +185,10 @@ fun CustomRadioBottomNav(
         )
     )
 
-    val isLiquidGlass = themeColors.designStyle == DesignStyle.LIQUID_GLASS || themeColors.designStyle == DesignStyle.AURORA
+    // 2026-10-22 支付宝式"假"液态玻璃：磨砂玻璃底座 + 图标/红点在顶层保持锐利（不参与折射）
     val highlightColor = themeColors.secondary
-    // 明亮的选中胶囊配深色前景，维持小字号标签的清晰对比。
-    val selectedTextColor = if (isLiquidGlass) Color(0xFF111726) else themeColors.text
-    val unselectedColor = if (isLiquidGlass) themeColors.textMuted.copy(alpha = 0.82f)
-        else themeColors.text.copy(alpha = 0.45f)
+    val selectedTextColor = Color.White
+    val unselectedColor = themeColors.text.copy(alpha = 0.45f)
 
     Box(
         modifier = modifier
@@ -197,52 +197,45 @@ fun CustomRadioBottomNav(
             .navigationBarsPadding()
             // v1.4.20：整体缩小一号
             .padding(horizontal = 24.dp, vertical = 6.dp)
-            .shadow(14.dp, RoundedCornerShape(navCorner), ambientColor = Color.Black.copy(alpha = 0.22f))
+            .shadow(14.dp, RoundedCornerShape(navCorner), ambientColor = Color.Black.copy(alpha = 0.18f))
             .clip(RoundedCornerShape(navCorner))
+            // 假玻璃底：半透明白磨砂（透出背后内容），真模糊由系统层完成
             .background(
-                if (isLiquidGlass) {
-                    Brush.linearGradient(
-                        listOf(
-                            themeColors.surface.copy(alpha = 0.88f),
-                            Color(0xD21A2233),
-                            Color(0xE6101523)
-                        )
+                Brush.verticalGradient(
+                    listOf(
+                        Color.White.copy(alpha = 0.85f),
+                        Color(0xFFF0F9FF).copy(alpha = 0.72f)
                     )
-                } else {
-                    Brush.linearGradient(listOf(themeColors.surface, themeColors.surface))
-                }
+                )
             )
             .border(
                 1.dp,
-                if (isLiquidGlass) {
-                    Brush.linearGradient(
-                        listOf(
-                            Color.White.copy(alpha = 0.62f),
-                            themeColors.secondary.copy(alpha = 0.54f),
-                            themeColors.accent.copy(alpha = 0.52f),
-                            Color.White.copy(alpha = 0.34f)
-                        )
+                Brush.verticalGradient(
+                    listOf(
+                        Color.White.copy(alpha = 0.9f),
+                        themeColors.primary.copy(alpha = 0.25f)
                     )
-                } else {
-                    Brush.linearGradient(listOf(themeColors.primary.copy(alpha = 0.18f), themeColors.primary.copy(alpha = 0.18f)))
-                },
+                ),
                 RoundedCornerShape(navCorner)
             )
             .padding(horizontal = 6.dp, vertical = 5.dp)
     ) {
-        if (isLiquidGlass) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(
-                        Brush.horizontalGradient(
-                            listOf(Color.Transparent, Color.White.copy(alpha = 0.58f), themeColors.secondary.copy(alpha = 0.48f), Color.Transparent)
+        // 顶部高光线：玻璃厚度感
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth(0.86f)
+                .height(1.dp)
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(
+                            Color.Transparent,
+                            Color.White.copy(alpha = 0.95f),
+                            Color.Transparent
                         )
                     )
-            )
-        }
+                )
+        )
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -252,48 +245,49 @@ fun CustomRadioBottomNav(
                 val isSelected = selectedTab == item.tab
                 // 选中态背景色动画
                 val pillColor by animateColorAsState(
-                    targetValue = if (isSelected) {
-                        if (isLiquidGlass) highlightColor.copy(alpha = 0.84f) else highlightColor
-                    } else Color.Transparent,
+                    targetValue = if (isSelected) highlightColor else Color.Transparent,
                     animationSpec = tween(250),
                     label = "tabPill"
                 )
                 val pillShape = RoundedCornerShape(navPillCorner)
-                val pillBrush = if (isLiquidGlass && isSelected) {
-                    Brush.linearGradient(
-                        listOf(
-                            pillColor,
-                            themeColors.secondary.copy(alpha = 0.78f),
-                            themeColors.accent.copy(alpha = 0.62f)
-                        )
-                    )
-                } else {
-                    Brush.linearGradient(listOf(pillColor, pillColor))
-                }
                 Column(
                     modifier = Modifier
                         .weight(1f)
                         .clip(pillShape)
-                        .background(pillBrush)
-                        .then(
-                            if (isLiquidGlass && isSelected) {
-                                Modifier.border(
-                                    0.8.dp,
-                                    Brush.linearGradient(listOf(Color.White.copy(alpha = 0.66f), Color.White.copy(alpha = 0.12f))),
-                                    pillShape
-                                )
-                            } else Modifier
-                        )
+                        .background(pillColor)
                         .clickable { onTabSelected(item.tab) }
                         .padding(vertical = 5.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(
-                        imageVector = item.icon,
-                        contentDescription = item.title,
-                        tint = if (isSelected) selectedTextColor else unselectedColor,
-                        modifier = Modifier.size(18.dp)
-                    )
+                    // 假 z-index:9999 层：图标与红点徽标绘制在玻璃之上，保持锐利不被折射
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = item.icon,
+                            contentDescription = item.title,
+                            tint = if (isSelected) selectedTextColor else unselectedColor,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        badges[item.tab]?.let { badgeText ->
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .offset(x = 8.dp, y = (-6).dp)
+                                    .size(16.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFFFF3B30))
+                                    .border(1.5.dp, Color.White, CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = badgeText,
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                    }
                     Spacer(modifier = Modifier.height(1.dp))
                     Text(
                         text = item.title,
