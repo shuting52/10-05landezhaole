@@ -150,6 +150,7 @@ import com.example.ui.components.CategorySitesDialog
 import com.example.ui.components.CustomRadioBottomNav
 import com.example.ui.components.CuteWelcomeDialog
 import com.example.ui.components.HideAndSeekLoader
+import com.example.ui.components.GlobalWindBackground
 import com.example.ui.components.ResourceCard
 import com.example.ui.components.SaharaWaveButton
 import com.example.ui.components.SiteBrandIcon
@@ -269,15 +270,20 @@ fun MainScreen(
         val bgUrl = uiState.localBgMediaUri.ifBlank {
             uiState.cloudSettings?.bgMedia?.url.orEmpty()
         }
+        val hasCustomBgMedia = (bgType == "image" || bgType == "video") && bgUrl.isNotBlank()
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
+            // 默认主题背景此前没有接入全局背景组件；仅在未自定义图片/视频时显示液态玻璃效果。
+            if (!hasCustomBgMedia) {
+                GlobalWindBackground(modifier = Modifier.fillMaxSize()) {}
+            }
             // 自定义背景（图片/视频）静态底层展示
             // v1.7.10 修复：key 随 URL 变化，换背景时强制重建播放器/图片层
             // v1.7.17：透明磨砂效果
-            if ((bgType == "image" || bgType == "video") && bgUrl.isNotBlank()) {
+            if (hasCustomBgMedia) {
                 key(bgUrl, uiState.bgFrosted) {
                     BgMediaStaticLayer(bgType = bgType, bgUrl = bgUrl, frosted = uiState.bgFrosted)
                 }
