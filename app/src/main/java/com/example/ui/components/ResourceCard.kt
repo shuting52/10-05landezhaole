@@ -56,7 +56,6 @@ import com.example.data.model.NavCard
 import com.example.ui.theme.FlameRed
 import com.example.ui.theme.LocalThemeUiColors
 import com.example.ui.theme.LocalUiverseState
-import com.example.ui.theme.liquidGlass
 import com.example.ui.theme.SunsetOrange
 import com.example.ui.uiverse.CardStylePreset
 
@@ -92,15 +91,12 @@ fun ResourceCard(
     }.let {
         when {
             cardCompStyle != null -> cardCompStyle.cornerRadius
-            (themeUi.designStyle == DesignStyle.LIQUID_GLASS || themeUi.designStyle == DesignStyle.AURORA) && uiverse.cardStyle == CardStylePreset.DEFAULT -> 28.dp
+            themeUi.designStyle == DesignStyle.AURORA && uiverse.cardStyle == CardStylePreset.DEFAULT -> 28.dp
             else -> it
         }
     }
 
     val designStyle = themeUi.designStyle
-    val isLiquidGlassFamily = designStyle == DesignStyle.LIQUID_GLASS || designStyle == DesignStyle.AURORA
-    val useLiquidGlassSurface = isLiquidGlassFamily &&
-        uiverse.cardStyle == CardStylePreset.DEFAULT && cardCompStyle == null
 
     val cardShape = when {
         cardCompStyle != null -> RoundedCornerShape(cardCompStyle.cornerRadius)
@@ -113,7 +109,7 @@ fun ResourceCard(
         designStyle == DesignStyle.MINIMALISM -> RoundedCornerShape(6.dp)
         designStyle == DesignStyle.BAUHAUS -> RoundedCornerShape(4.dp)
         designStyle == DesignStyle.RETROFUTURISM -> RoundedCornerShape(10.dp)
-        designStyle == DesignStyle.LIQUID_GLASS || designStyle == DesignStyle.AURORA -> RoundedCornerShape(28.dp)
+        designStyle == DesignStyle.AURORA -> RoundedCornerShape(28.dp)
         designStyle == DesignStyle.GLASSMORPHISM -> RoundedCornerShape(18.dp)
         designStyle == DesignStyle.NEUMORPHISM -> RoundedCornerShape(16.dp)
         designStyle == DesignStyle.SKEUOMORPHISM -> RoundedCornerShape(12.dp)
@@ -137,7 +133,7 @@ fun ResourceCard(
         designStyle == DesignStyle.NEO_BRUTALISM -> 4.dp
         designStyle == DesignStyle.SKEUOMORPHISM -> 4.dp
         designStyle == DesignStyle.MATERIAL_DESIGN || designStyle == DesignStyle.NEUMORPHISM -> 3.dp
-        designStyle == DesignStyle.LIQUID_GLASS || designStyle == DesignStyle.AURORA -> 7.dp
+        designStyle == DesignStyle.AURORA -> 7.dp
         designStyle == DesignStyle.GLASSMORPHISM || designStyle == DesignStyle.RETROFUTURISM || designStyle == DesignStyle.ACID_GRAPHICS -> 2.dp
         uiverse.cardStyle == CardStylePreset.CYBERPUNK -> 4.dp
         uiverse.cardStyle == CardStylePreset.GLASSMORPHISM -> 6.dp
@@ -231,7 +227,6 @@ fun ResourceCard(
         designStyle == DesignStyle.MINIMALISM -> Modifier.border(0.8.dp, Color(0xFFE4E4E7), cardShape)
         designStyle == DesignStyle.BAUHAUS -> Modifier.border(2.dp, Color.Black, cardShape)
         designStyle == DesignStyle.RETROFUTURISM -> Modifier.border(1.5.dp, Brush.linearGradient(listOf(Color(0xFF00F0FF), Color(0xFFFF007F))), cardShape)
-        designStyle == DesignStyle.LIQUID_GLASS -> Modifier.border(1.4.dp, Brush.linearGradient(listOf(Color.White.copy(alpha = 0.95f), Color(0xFF00C6FF).copy(alpha = 0.5f))), cardShape)
         designStyle == DesignStyle.GLASSMORPHISM -> Modifier.border(1.2.dp, Color.White.copy(alpha = 0.45f), cardShape)
         designStyle == DesignStyle.NEUMORPHISM -> Modifier.border(1.2.dp, Brush.linearGradient(listOf(Color.White, Color(0xFFCBD5E1))), cardShape)
         designStyle == DesignStyle.SKEUOMORPHISM -> Modifier.border(1.5.dp, Brush.linearGradient(listOf(Color(0xFFD4AF37), Color(0xFF8B5A2B))), cardShape)
@@ -282,35 +277,19 @@ fun ResourceCard(
                     ambientColor = shadowSpotColor.copy(alpha = 0.2f)
                 )
                 .clip(cardShape)
-                // 2026-10-22 液态玻璃重写：玻璃主体改由 Modifier.liquidGlass() 按四步法绘制
-                .then(if (useLiquidGlassSurface) Modifier else cardBgModifier)
+                .then(cardBgModifier)
                 .then(
-                    if (useLiquidGlassSurface) {
-                        Modifier.liquidGlass(
-                            cornerRadius = 28.dp,
-                            tint = themeUi.secondary,
-                            refractionColors = listOf(
-                                Color.White.copy(alpha = 0.85f),
-                                themeUi.secondary.copy(alpha = 0.45f),
-                                Color.White.copy(alpha = 0.15f),
-                                themeUi.primary.copy(alpha = 0.45f),
-                                themeUi.accent.copy(alpha = 0.35f),
-                                Color.White.copy(alpha = 0.85f)
-                            )
-                        )
-                    } else {
-                        Modifier.streamingBorder(
-                            cornerRadius = cardCornerRadius,
-                            strokeWidth = 1.4.dp,
-                            glowWidth = 3.2.dp,
-                            accentColor = themeUi.primary,
-                            tailColor = themeUi.primary.copy(alpha = 0.45f),
-                            baseBorderColor = themeUi.border.copy(alpha = 0.35f),
-                            phaseOffset = (card.id.hashCode().let { if (it < 0) -it else it } % 360).toFloat(),
-                            showGlow = true,
-                            rainbow = true
-                        )
-                    }
+                    Modifier.streamingBorder(
+                        cornerRadius = cardCornerRadius,
+                        strokeWidth = 1.4.dp,
+                        glowWidth = 3.2.dp,
+                        accentColor = themeUi.primary,
+                        tailColor = themeUi.primary.copy(alpha = 0.45f),
+                        baseBorderColor = themeUi.border.copy(alpha = 0.35f),
+                        phaseOffset = (card.id.hashCode().let { if (it < 0) -it else it } % 360).toFloat(),
+                        showGlow = true,
+                        rainbow = true
+                    )
                 )
                 .combinedClickable(
                     onClick = { onCardClick(card) },
@@ -318,24 +297,23 @@ fun ResourceCard(
                 )
                 .padding(horizontal = 7.dp, vertical = 7.dp)
         ) {
-            // 液态玻璃：主体已由 Modifier.liquidGlass() 四步法绘制，此处不再叠加旧式 Box 图层。
-            if (!useLiquidGlassSurface) {
-                // 其他已选择的卡片风格沿用原有渲染。
-                RainbowSpinBackground(Modifier.fillMaxSize())
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.linearGradient(
-                                listOf(
-                                    Color.White.copy(alpha = 0.72f),
-                                    Color(0xFFF6F2FF).copy(alpha = 0.62f),
-                                    Color.White.copy(alpha = 0.76f)
-                                )
+
+            // 其他已选择的卡片风格沿用原有渲染。
+            RainbowSpinBackground(Modifier.fillMaxSize())
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                Color.White.copy(alpha = 0.72f),
+                                Color(0xFFF6F2FF).copy(alpha = 0.62f),
+                                Color.White.copy(alpha = 0.76f)
                             )
                         )
-                )
-            }
+                    )
+            )
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()

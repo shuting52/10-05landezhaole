@@ -945,57 +945,6 @@ private fun DesignStyleBackground(
                 }
             }
 
-            DesignStyle.LIQUID_GLASS -> {
-                // 2026-10-22 按用户四步法重写：背景搭配是关键 —— 大块柔和色块/渐变，
-                // 主色不超过两种（靛蓝→紫），三团低透明柔光色块缓慢漂移，衬托玻璃的通透。
-                val glassBase = backgroundColors.ifEmpty { listOf(baseColor, baseColor) }
-                drawRect(
-                    brush = Brush.linearGradient(
-                        colors = glassBase,
-                        start = Offset(w * 0.85f, 0f),
-                        end = Offset(w * 0.15f, h)
-                    )
-                )
-                val driftX = sin(ringSpinPhase * 0.30f) * w * 0.03f
-                val driftY = cos(ringSpinPhase * 0.24f) * h * 0.02f
-                val blobR = maxOf(w, h) * 0.55f
-                // 柔光色块 A：珊瑚（左下）
-                drawRect(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            primaryColor.copy(alpha = 0.34f),
-                            primaryColor.copy(alpha = 0.12f),
-                            Color.Transparent
-                        ),
-                        center = Offset(w * 0.12f + driftX, h * 0.78f + driftY),
-                        radius = blobR
-                    )
-                )
-                // 柔光色块 B：冰青（右上）
-                drawRect(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            secondaryColor.copy(alpha = 0.30f),
-                            secondaryColor.copy(alpha = 0.10f),
-                            Color.Transparent
-                        ),
-                        center = Offset(w * 0.86f - driftX, h * 0.20f - driftY),
-                        radius = blobR * 0.9f
-                    )
-                )
-                // 柔光色块 C：暖金（右下微光）
-                drawRect(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            accentColor.copy(alpha = 0.22f),
-                            accentColor.copy(alpha = 0.07f),
-                            Color.Transparent
-                        ),
-                        center = Offset(w * 0.78f + driftY, h * 0.88f - driftX * 0.5f),
-                        radius = blobR * 0.7f
-                    )
-                )
-            }
             DesignStyle.AURORA -> {
                 // 2026-10-22 极光流体：对标用户微信主题截图 —— 曜石黑底上橙/青/紫
                 // 极光丝绸大面积流淌，饱和度拉满，缓慢漂移；卡片玻璃在其上产生强烈折射。

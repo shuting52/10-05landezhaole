@@ -118,7 +118,7 @@ fun CustomRadioBottomNav(
     onTabSelected: (AppBottomTab) -> Unit,
     modifier: Modifier = Modifier,
     uiText: com.example.data.remote.UiTextDto? = null,
-    // 支付宝式"假"液态玻璃红点徽标：tab -> 徽标文字（如 "3"），空 map 即不显示
+    // 底部导航红点徽标：tab -> 徽标文字（如 "3"），空 map 即不显示
     badges: Map<AppBottomTab, String> = emptyMap()
 ) {
     // v1.4.13：图4风格重写 —— 白色圆角容器 + 黄色高亮选中 pill（主题跟随）
@@ -128,13 +128,13 @@ fun CustomRadioBottomNav(
     val navCorner = when (themeColors.designStyle) {
         DesignStyle.HAND_DRAWN -> 24.dp
         DesignStyle.CARTOON -> 28.dp
-        DesignStyle.LIQUID_GLASS, DesignStyle.AURORA -> 28.dp
+        DesignStyle.AURORA -> 28.dp
         else -> 18.dp
     }
     val navPillCorner = when (themeColors.designStyle) {
         DesignStyle.HAND_DRAWN -> 16.dp
         DesignStyle.CARTOON -> 20.dp
-        DesignStyle.LIQUID_GLASS, DesignStyle.AURORA -> 18.dp
+        DesignStyle.AURORA -> 18.dp
         else -> 12.dp
     }
     val navItems = listOf(
@@ -185,7 +185,6 @@ fun CustomRadioBottomNav(
         )
     )
 
-    // 2026-10-22 支付宝式"假"液态玻璃：磨砂玻璃底座 + 图标/红点在顶层保持锐利（不参与折射）
     val highlightColor = themeColors.secondary
     val selectedTextColor = Color.White
     val unselectedColor = themeColors.text.copy(alpha = 0.45f)
@@ -199,43 +198,10 @@ fun CustomRadioBottomNav(
             .padding(horizontal = 24.dp, vertical = 6.dp)
             .shadow(14.dp, RoundedCornerShape(navCorner), ambientColor = Color.Black.copy(alpha = 0.18f))
             .clip(RoundedCornerShape(navCorner))
-            // 假玻璃底：半透明白磨砂（透出背后内容），真模糊由系统层完成
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color.White.copy(alpha = 0.85f),
-                        Color(0xFFF0F9FF).copy(alpha = 0.72f)
-                    )
-                )
-            )
-            .border(
-                1.dp,
-                Brush.verticalGradient(
-                    listOf(
-                        Color.White.copy(alpha = 0.9f),
-                        themeColors.primary.copy(alpha = 0.25f)
-                    )
-                ),
-                RoundedCornerShape(navCorner)
-            )
+            .background(themeColors.surface)
+            .border(1.dp, themeColors.border.copy(alpha = 0.3f), RoundedCornerShape(navCorner))
             .padding(horizontal = 6.dp, vertical = 5.dp)
     ) {
-        // 顶部高光线：玻璃厚度感
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .fillMaxWidth(0.86f)
-                .height(1.dp)
-                .background(
-                    Brush.horizontalGradient(
-                        listOf(
-                            Color.Transparent,
-                            Color.White.copy(alpha = 0.95f),
-                            Color.Transparent
-                        )
-                    )
-                )
-        )
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
