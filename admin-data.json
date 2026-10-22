@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 236,
-    "name": "1.7.26",
+    "code": 237,
+    "name": "1.7.27",
     "changelog": [
-      "✨ v1.7.26 更新来啦～",
-      "feat: 去水印Tab默认名改为懒得找了"
+      "✨ v1.7.27 更新来啦～",
+      "feat: 新增 LEVER UI 主题"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.26-1792634475.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.26-1792634475.apk",
-    "lastBuildSha": "8d5d0e708bdd697d525b227c9b7df6f9c6e30fa9",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.27-1792635106.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.27-1792635106.apk",
+    "lastBuildSha": "01d5ee7d47f0f924528ee594666e8ed626cc3d6e",
     "apkSize": 24062288
   },
   "home": {
@@ -24328,10 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.26 已上线",
+    "title": "懒得找了 v1.7.27 已上线",
     "changelog": [
-      "✨ v1.7.26 更新来啦～",
-      "feat: 去水印Tab默认名改为懒得找了"
+      "✨ v1.7.27 更新来啦～",
+      "feat: 新增 LEVER UI 主题"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24393,10 +24393,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.26",
-      "code": 236,
-      "at": "2026-10-22T02:01:21Z",
-      "sha": "8d5d0e708bdd697d525b227c9b7df6f9c6e30fa9"
+      "version": "1.7.27",
+      "code": 237,
+      "at": "2026-10-22T02:11:53Z",
+      "sha": "01d5ee7d47f0f924528ee594666e8ed626cc3d6e"
     }
   },
   "_ai_notice": "内容由AI生成"
