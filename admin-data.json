@@ -4,14 +4,15 @@
     "name": "1.7.32",
     "changelog": [
       "✨ v1.7.32 更新来啦～",
+      "feat: 工具链接 App 内 WebView 打开",
       "feat: 云端工具只在环形菜单内展示",
       "fix: 重写 InAppWebViewDialog 使用标准导入",
       "feat: 工具箱云端工具只在环形内展示 + App内WebView打开"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.32-1792663390.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.32-1792663390.apk",
-    "lastBuildSha": "5342d4caf7584cabd21455030e7cc2ae3ac9174f",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.32-1792663747.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.32-1792663747.apk",
+    "lastBuildSha": "d3cd7a4adce73b744cb0e2d332d7913f580c725b",
     "apkSize": 24078672
   },
   "home": {
@@ -24333,6 +24334,7 @@
     "title": "懒得找了 v1.7.32 已上线",
     "changelog": [
       "✨ v1.7.32 更新来啦～",
+      "feat: 工具链接 App 内 WebView 打开",
       "feat: 云端工具只在环形菜单内展示",
       "fix: 重写 InAppWebViewDialog 使用标准导入",
       "feat: 工具箱云端工具只在环形内展示 + App内WebView打开"
@@ -24408,8 +24410,8 @@
     "lastRelease": {
       "version": "1.7.32",
       "code": 242,
-      "at": "2026-10-22T10:03:16Z",
-      "sha": "5342d4caf7584cabd21455030e7cc2ae3ac9174f"
+      "at": "2026-10-22T10:09:13Z",
+      "sha": "d3cd7a4adce73b744cb0e2d332d7913f580c725b"
     }
   },
   "_ai_notice": "内容由AI生成"
