@@ -9,6 +9,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
@@ -132,6 +133,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.viewinterop.AndroidView
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import kotlinx.coroutines.launch
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -3147,6 +3151,7 @@ private fun OfflineTreasureScreenView() {
         }
     }
 }
+
 /**
  * v1.7.30：App 内 WebView 弹窗（工具链接不跳外部浏览器）
  */
@@ -3155,66 +3160,52 @@ private fun InAppWebViewDialog(
     url: String,
     onClose: () -> Unit
 ) {
-    androidx.compose.ui.window.Dialog(
+    val themeColors = com.example.ui.theme.LocalThemeUiColors.current
+    Dialog(
         onDismissRequest = onClose,
-        properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        androidx.compose.foundation.layout.Column(
-            modifier = androidx.compose.foundation.layout.Modifier
+        Column(
+            modifier = Modifier
                 .fillMaxSize()
-                .background(androidx.compose.ui.graphics.Color.White)
+                .background(Color.White)
         ) {
             // 顶部栏
-            androidx.compose.foundation.layout.Row(
-                modifier = androidx.compose.foundation.layout.Modifier
+            Row(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .background(com.example.ui.theme.LocalThemeUiColors.current.primary)
+                    .background(themeColors.primary)
                     .padding(horizontal = 8.dp, vertical = 8.dp),
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                androidx.compose.material3.IconButton(onClick = onClose) {
-                    androidx.compose.material3.Icon(
-                        androidx.compose.material.icons.Icons.Filled.ArrowBack,
+                IconButton(onClick = onClose) {
+                    Icon(
+                        Icons.Filled.ArrowBack,
                         contentDescription = "返回",
-                        tint = androidx.compose.ui.graphics.Color.White
+                        tint = Color.White
                     )
                 }
-                androidx.compose.material3.Text(
+                Text(
                     text = url.take(50),
-                    color = androidx.compose.ui.graphics.Color.White,
+                    color = Color.White,
                     fontSize = 12.sp,
                     maxLines = 1,
-                    modifier = androidx.compose.foundation.layout.Modifier.weight(1f)
+                    modifier = Modifier.weight(1f)
                 )
-                androidx.compose.material3.IconButton(
-                    onClick = {
-                        try {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            onClose()
-                        } catch (_: Exception) { }
-                    }
-                ) {
-                    androidx.compose.material3.Icon(
-                        androidx.compose.material.icons.Icons.Filled.OpenInBrowser,
-                        contentDescription = "外部打开",
-                        tint = androidx.compose.ui.graphics.Color.White
-                    )
-                }
             }
             // WebView
-            androidx.compose.ui.viewinterop.AndroidView(
+            AndroidView(
                 factory = { ctx ->
-                    android.webkit.WebView(ctx).apply {
+                    WebView(ctx).apply {
                         settings.javaScriptEnabled = true
                         settings.domStorageEnabled = true
                         settings.loadWithOverviewMode = true
                         settings.useWideViewPort = true
-                        webViewClient = android.webkit.WebViewClient()
+                        webViewClient = WebViewClient()
                         loadUrl(url)
                     }
                 },
-                modifier = androidx.compose.foundation.layout.Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize()
             )
         }
     }
