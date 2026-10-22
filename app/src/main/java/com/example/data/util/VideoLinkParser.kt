@@ -191,129 +191,292 @@ object VideoLinkParser {
         urls.firstOrNull { it.isNotBlank() && !it.lowercase().endsWith(".webp") }
             ?: urls.firstOrNull { it.isNotBlank() } ?: ""
 
-    // ================= 抖音（深度解析 + 自动分类：视频直链 vs 图集原图） =================
+    // ================= 抖音（移植 short_videos/DouyinParser.php，MIT） =================
+    // 免 Cookie 详情接口：api.amemv.com/aweme/v1/aweme/detail/，视频/图集/实况通用
+    // 原画直链：vid 经 aweme.snssdk.com 302 解析
     private fun parseDouyin(shareUrl: String): MediaParseResult? {
         return try {
-            val finalUrl = getFinalRedirectUrl(shareUrl)
-            var videoId = extractDouyinId(finalUrl).ifBlank { extractDouyinId(shareUrl) }
-            val isNote = "/note/" in finalUrl || "/note/" in shareUrl
-            if (videoId.isBlank()) return null
-
-            var title: String? = null
-            var author: String? = null
-            var coverUrl: String? = null
-            var videoUrl = ""
-            val images = mutableListOf<String>()
-
-            // 1. 尝试 slidesinfo / iteminfo 官方接口
-            for (suffix in listOf("", "&request_source=200")) {
-                val api = "https://www.iesdouyin.com/web/api/v2/aweme/slidesinfo/?aweme_ids=%5B$videoId%5D$suffix"
-                val j = getJson(api, UA, "https://www.iesdouyin.com/share/video/$videoId/")
-                val details = j?.optJSONArray("aweme_details")
-                if (details != null && details.length() > 0) {
-                    val item = details.getJSONObject(0)
-                    title = item.optString("desc", "").takeIf { it.isNotBlank() }
-                    author = item.optJSONObject("author")?.optString("nickname")?.takeIf { it.isNotBlank() }
-                    val video = item.optJSONObject("video")
-                    val playAddr = video?.optJSONObject("play_addr")
-                    val urlList = playAddr?.optJSONArray("url_list")
-                    if (urlList != null && urlList.length() > 0) {
-                        val noWm = urlList.optString(0).replace("playwm", "play")
-                        videoUrl = getRedirectLocation(noWm, UA) ?: noWm
-                    }
-                    val coverList = video?.optJSONObject("cover")?.optJSONArray("url_list")
-                    if (coverList != null) {
-                        val urls = (0 until coverList.length()).map { coverList.optString(it) }
-                        coverUrl = pickNonWebp(urls).takeIf { it.startsWith("http") }
-                    }
-                    val imgArr = item.optJSONArray("images")
-                    if (imgArr != null) {
-                        for (i in 0 until imgArr.length()) {
-                            val uList = imgArr.optJSONObject(i)?.optJSONArray("url_list") ?: continue
-                            val urls = (0 until uList.length()).map { uList.optString(it) }
-                            pickNonWebp(urls).takeIf { it.startsWith("http") }?.let { images.add(it) }
-                        }
-                    }
-                    break
-                }
+            var url = extractShareUrlSv(shareUrl) ?: return null
+            // 短链或无 ID 先跟随重定向
+            val host = try { java.net.URL(url).host.lowercase() } catch (_: Exception) { "" }
+            if (host == "v.douyin.com" || "douyin.com" !in host || extractAwemeIdSv(url).isBlank()) {
+                url = getFinalRedirectUrl(url)
             }
+            val awemeId = extractAwemeIdSv(url).ifBlank { return null }
+            if (!awemeId.matches(Regex("[1-9][0-9]{15,19}"))) return null
 
-            // 2. 网页 HTML 抽取（针对 _ROUTER_DATA / _SSR_DATA / 元数据）
-            val sharePath = if (isNote) "note" else "video"
-            val html = getString("https://www.iesdouyin.com/share/$sharePath/$videoId/", UA)
-            if (html != null) {
-                if (title == null) {
-                    title = Regex("""(?i)(?:property|name)\s*=\s*["']og:title["']\s+content\s*=\s*["']([^"']+)["']""")
-                        .find(html)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotBlank() }
-                }
-                if (coverUrl == null) {
-                    coverUrl = Regex("""(?i)(?:property|name)\s*=\s*["']og:image(?::url|:secure_url)?["']\s+content\s*=\s*["']([^"']+)["']""")
-                        .find(html)?.groupValues?.get(1)?.trim()?.takeIf { it.startsWith("http") }
-                }
-                if (videoUrl.isBlank()) {
-                    // 匹配 HTML 中的真实 play 视频直链
-                    Regex("""https?://[^\s"'<>\\]+?(?:playwm|play_addr|video/tos/|snssdk\.com/aweme/v1/play)[^\s"'<>\\]*""")
-                        .find(html)?.value?.let { v ->
-                            videoUrl = unescapeUrl(v).replace("playwm", "play")
-                        }
-                }
-            }
+            // 免 Cookie 详情接口
+            val apiUrl = "https://api.amemv.com/aweme/v1/aweme/detail/" +
+                "?aweme_id=$awemeId&aid=6383&device_platform=web&version_code=190500&version_name=19.5.0"
+            val jsonStr = getString(apiUrl, UA_MOBILE_SV) ?: return null
+            val root = try { JSONObject(jsonStr) } catch (_: Exception) { return null }
+            if (root.optInt("status_code", -1) != 0) return null
+            val detail = root.optJSONObject("aweme_detail") ?: return null
+            if (detail.optString("aweme_id") != awemeId) return null
 
-            // 3. 视频直链保底：抖音官方标准无水印视频直链
-            if (!isNote && videoUrl.isBlank()) {
-                videoUrl = "https://aweme.snssdk.com/aweme/v1/play/?video_id=$videoId&ratio=1080p&line=0"
-            }
-
-            // 4. 严格自动分类：如果是视频，绝不能当成图集保存
-            if (!isNote && videoUrl.isNotBlank()) {
-                return MediaParseResult(
-                    videoUrls = listOf(videoUrl),
-                    imageUrls = emptyList(), // 视频模式下清空图片，防止被误识别为图集保存
-                    coverUrl = coverUrl ?: "https://p3-sign.douyinpic.com/tos-cn-p-0015/$videoId",
-                    title = title ?: "抖音短视频 · $videoId",
-                    author = author ?: "抖音作者",
-                    platform = "抖音",
-                    qualityOptions = listOf("原画高清" to videoUrl)
-                )
-            } else if (isNote && images.isNotEmpty()) {
-                // 图集模式（/note/ 真实多图）
-                return MediaParseResult(
-                    videoUrls = emptyList(),
-                    imageUrls = images.distinct().take(20),
-                    coverUrl = coverUrl ?: images.firstOrNull(),
-                    title = title ?: "抖音精选图集 · $videoId",
-                    author = author ?: "抖音作者",
-                    platform = "抖音"
-                )
-            }
-
-            if (videoUrl.isNotBlank()) {
-                MediaParseResult(
-                    videoUrls = listOf(videoUrl),
-                    imageUrls = emptyList(),
-                    coverUrl = coverUrl,
-                    title = title ?: "抖音短视频 · $videoId",
-                    author = author ?: "抖音作者",
-                    platform = "抖音",
-                    qualityOptions = listOf("原画高清" to videoUrl)
-                )
-            } else null
+            formatDouyinDetail(detail, awemeId)
         } catch (_: Exception) { null }
     }
 
-    private fun extractDouyinId(url: String): String {
+    private val UA_MOBILE_SV =
+        "Mozilla/5.0 (Linux; Android 13; 2210132C Build/TKQ1.220829.002) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Mobile Safari/537.36"
+    private val UA_DESKTOP_SV =
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+
+    /** 从分享文本提取首个 http(s) 链接 */
+    private fun extractShareUrlSv(text: String): String? {
+        val m = Regex("https?://[^\\s\"'<>]+", RegexOption.IGNORE_CASE).find(text) ?: return null
+        return m.value.trimEnd('\'', '"', '，', '。', '；', ',', '.', ';')
+    }
+
+    /** 提取 aweme_id（数字 ID） */
+    private fun extractAwemeIdSv(url: String): String {
         return try {
             val u = java.net.URL(url)
-            val query = u.query ?: ""
-            // modal_id 参数（精选页）
-            Regex("[?&]modal_id=(\\d+)").find("?$query")?.groupValues?.get(1)?.let { return it }
-            val path = u.path.trim('/').trim()
-            if (path.isEmpty()) return ""
-            // /video/{id} / /note/{id} / /share/video/{id}
-            val last = path.split("/").last()
-            if (last.matches(Regex("\\d{10,25}"))) return last
-            ""
+            // /video/{id} / /note/{id}
+            val last = u.path.trim('/').split("/").lastOrNull() ?: ""
+            if (last.matches(Regex("\\d{16,20}"))) return last
+            // query 参数
+            Regex("[?&](?:aweme_id|modal_id)=(\\d{16,20})").find(url)?.groupValues?.get(1) ?: ""
         } catch (_: Exception) { "" }
+    }
+
+    /** 格式化抖音详情 JSON → MediaParseResult */
+    private fun formatDouyinDetail(detail: JSONObject, awemeId: String): MediaParseResult? {
+        val title = detail.optString("desc", "")
+        val authorObj = detail.optJSONObject("author")
+        val author = authorObj?.optString("nickname")?.takeIf { it.isNotBlank() }
+
+        // 封面
+        val coverUrl = pickDouyinCover(detail)
+
+        // 图集 / 实况
+        var imagesJson = detail.optJSONArray("images")
+        if (imagesJson == null || imagesJson.length() == 0) {
+            imagesJson = detail.optJSONArray("image_list")
+        }
+        if (imagesJson != null && imagesJson.length() > 0) {
+            val images = mutableListOf<String>()
+            val livePhotos = mutableListOf<LivePhoto>()
+            for (i in 0 until imagesJson.length()) {
+                val img = imagesJson.optJSONObject(i) ?: continue
+                val imgUrl = pickDouyinImageUrl(img) ?: continue
+                images.add(imgUrl)
+                // 实况视频
+                val videoInfo = img.optJSONObject("video")
+                var liveVideoUrl = extractLiveVideoUrl(videoInfo)
+                if (liveVideoUrl != null) {
+                    liveVideoUrl = liveVideoUrl.replace("playwm", "play")
+                    // vid 转原画
+                    val vid = extractVid(videoInfo)
+                    val resolved = if (vid != null) resolveOriginalUrl(vid) else null
+                    livePhotos.add(LivePhoto(imgUrl, (resolved ?: liveVideoUrl).let { ensureMp4(it) }))
+                }
+            }
+            if (livePhotos.isNotEmpty()) {
+                return MediaParseResult(
+                    videoUrls = emptyList(),
+                    imageUrls = images.distinct(),
+                    coverUrl = coverUrl ?: images.firstOrNull(),
+                    title = title.ifBlank { "抖音实况 · $awemeId" },
+                    author = author ?: "抖音作者",
+                    platform = "抖音",
+                    livePhotos = livePhotos
+                )
+            }
+            return MediaParseResult(
+                videoUrls = emptyList(),
+                imageUrls = images.distinct().take(20),
+                coverUrl = coverUrl ?: images.firstOrNull(),
+                title = title.ifBlank { "抖音精选图集 · $awemeId" },
+                author = author ?: "抖音作者",
+                platform = "抖音"
+            )
+        }
+
+        // 视频
+        val video = detail.optJSONObject("video") ?: return null
+        val (bestUrl, backups, gearName) = extractBestVideo(video)
+        var main = bestUrl?.replace("playwm", "play")?.let { toHttps(it) }
+        // 原画优先：vid 302 解析
+        val vid = extractVid(video)
+        var quality = gearName
+        if (vid != null) {
+            val original = resolveOriginalUrl(vid)
+            if (original != null) {
+                if (main != null && main != original) {
+                    // 原 main 降为备选
+                }
+                main = original
+                quality = "original"
+            }
+        }
+        main = main?.let { ensureMp4(it) } ?: return null
+        val finalBackups = backups.mapNotNull {
+            val c = ensureMp4(toHttps(it.replace("playwm", "play")))
+            if (c != main) c else null
+        }.distinct()
+
+        return MediaParseResult(
+            videoUrls = listOf(main),
+            imageUrls = emptyList(),
+            coverUrl = coverUrl,
+            title = title.ifBlank { "抖音短视频 · $awemeId" },
+            author = author ?: "抖音作者",
+            platform = "抖音",
+            qualityOptions = listOf((if (quality == "original") "原画" else quality.ifBlank { "高清" }) to main) +
+                finalBackups.take(3).mapIndexed { idx, u -> "备选${idx + 1}" to u }
+        )
+    }
+
+    /** 从 bit_rate 列表选最高画质 */
+    private fun extractBestVideo(video: JSONObject): Triple<String?, List<String>, String> {
+        var bitRateList = video.optJSONArray("bitRateList")
+        if (bitRateList == null || bitRateList.length() == 0) {
+            bitRateList = video.optJSONArray("bit_rate")
+        }
+        var bestUrl: String? = null
+        var gearName = ""
+        val backups = mutableListOf<String>()
+        if (bitRateList != null && bitRateList.length() > 0) {
+            // 按 bitRate 降序
+            val items = (0 until bitRateList.length()).mapNotNull { bitRateList.optJSONObject(it) }
+                .sortedByDescending { it.optLong("bitRate", it.optLong("bit_rate", 0)) }
+            for (item in items) {
+                val candidates = collectPlayUrls(item)
+                if (candidates.isEmpty()) continue
+                // 优先 v3-web
+                val v3 = candidates.firstOrNull { "v3-web" in it }
+                val v26 = candidates.firstOrNull { "v26-web" in it }
+                val best = v3 ?: v26 ?: candidates[0]
+                if (bestUrl == null) {
+                    bestUrl = best
+                    gearName = item.optString("gearName", item.optString("gear_name", ""))
+                }
+                for (c in candidates) {
+                    if (c != bestUrl && c !in backups) backups.add(c)
+                }
+                if (bestUrl != null && backups.isNotEmpty()) break
+            }
+        }
+        if (bestUrl == null) {
+            // 兜底：play_addr.url_list[0]
+            val playAddr = video.optJSONObject("play_addr")
+            val urlList = playAddr?.optJSONArray("url_list")
+            if (urlList != null && urlList.length() > 0) {
+                bestUrl = urlList.optString(0)
+            }
+        }
+        return Triple(bestUrl, backups, gearName)
+    }
+
+    /** 收集 rateItem 中的播放地址候选 */
+    private fun collectPlayUrls(rateItem: JSONObject): List<String> {
+        val result = mutableListOf<String>()
+        // play_addr.url_list
+        val playAddr = rateItem.optJSONObject("play_addr")
+        val urlList = playAddr?.optJSONArray("url_list")
+        if (urlList != null) {
+            for (i in 0 until urlList.length()) {
+                urlList.optString(i)?.takeIf { it.startsWith("http") }?.let { result.add(it) }
+            }
+        }
+        // 直接 url_list
+        val directList = rateItem.optJSONArray("url_list")
+        if (directList != null) {
+            for (i in 0 until directList.length()) {
+                directList.optString(i)?.takeIf { it.startsWith("http") }?.let { result.add(it) }
+            }
+        }
+        return result.distinct()
+    }
+
+    /** 提取 vid（用于原画解析） */
+    private fun extractVid(videoInfo: JSONObject?): String? {
+        if (videoInfo == null) return null
+        // video_id / vid 字段
+        videoInfo.optString("vid")?.takeIf { it.isNotBlank() }?.let { return it }
+        videoInfo.optString("video_id")?.takeIf { it.isNotBlank() }?.let { return it }
+        // 从 play 地址提取 v0xxx
+        val playAddr = videoInfo.optJSONObject("play_addr")
+        val urlList = playAddr?.optJSONArray("url_list")
+        if (urlList != null) {
+            for (i in 0 until urlList.length()) {
+                val u = urlList.optString(i)
+                Regex("video_id=([a-z0-9]+)", RegexOption.IGNORE_CASE).find(u)?.groupValues?.get(1)?.let { return it }
+                Regex("/(v[a-z0-9]{20,})/", RegexOption.IGNORE_CASE).find(u)?.groupValues?.get(1)?.let { return it }
+            }
+        }
+        return null
+    }
+
+    /** vid → 原画直链（302 跟随） */
+    private fun resolveOriginalUrl(vid: String): String? {
+        return try {
+            val playUrl = "https://aweme.snssdk.com/aweme/v1/play/?video_id=$vid&ratio=1080p&line=0"
+            getRedirectLocation(playUrl, UA_DESKTOP_SV)?.let { toHttps(it) }
+        } catch (_: Exception) { null }
+    }
+
+    /** 图集单图取 URL */
+    private fun pickDouyinImageUrl(img: JSONObject): String? {
+        // urlList[0] / url_list[0]
+        img.optJSONArray("urlList")?.let {
+            if (it.length() > 0) {
+                val u = it.optString(0)
+                if (u.startsWith("http")) return toHttps(u)
+            }
+        }
+        img.optJSONArray("url_list")?.let {
+            for (i in 0 until it.length()) {
+                val u = it.optString(i)
+                if (u.startsWith("http") && "webp" !in u.lowercase()) return toHttps(u)
+            }
+            if (it.length() > 0) {
+                val u = it.optString(0)
+                if (u.startsWith("http")) return toHttps(u)
+            }
+        }
+        return null
+    }
+
+    /** 实况视频 URL 提取 */
+    private fun extractLiveVideoUrl(videoInfo: JSONObject?): String? {
+        if (videoInfo == null) return null
+        val playAddr = videoInfo.optJSONObject("play_addr")
+        val urlList = playAddr?.optJSONArray("url_list")
+        if (urlList != null && urlList.length() > 0) {
+            val u = urlList.optString(0)
+            if (u.startsWith("http")) return u
+        }
+        return null
+    }
+
+    /** 封面提取 */
+    private fun pickDouyinCover(detail: JSONObject): String? {
+        val video = detail.optJSONObject("video") ?: return null
+        val keys = listOf("originCover", "cover", "dynamicCover")
+        for (k in keys) {
+            val obj = video.optJSONObject(k) ?: continue
+            val urlList = obj.optJSONArray("url_list") ?: continue
+            for (i in 0 until urlList.length()) {
+                val u = urlList.optString(i)
+                if (u.startsWith("http") && "webp" !in u.lowercase()) return toHttps(u)
+            }
+        }
+        // detail.cover
+        detail.optString("cover")?.takeIf { it.startsWith("http") }?.let { return toHttps(it) }
+        return null
+    }
+
+    private fun toHttps(u: String): String {
+        return if (u.startsWith("http://")) "https://" + u.removePrefix("http://") else u
+    }
+
+    private fun ensureMp4(u: String): String {
+        return if ("mime_type=" in u) u
+        else if ("?" in u) "$u&mime_type=video_mp4"
+        else "$u?mime_type=video_mp4"
     }
 
     // ================= 快手（移植 parse-video-py/kuaishou.py，MIT） =================
