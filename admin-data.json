@@ -1,16 +1,15 @@
 {
   "version": {
-    "code": 245,
-    "name": "1.7.35",
+    "code": 246,
+    "name": "1.7.36",
     "changelog": [
-      "✨ v1.7.35 更新来啦～",
-      "feat: Liquid Glass 主题按四步法重写",
-      "sync: 新增液态玻璃主题预览工具入口"
+      "✨ v1.7.36 更新来啦～",
+      "feat: 新增「极光流体」主题"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.35-1792676436.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.35-1792676436.apk",
-    "lastBuildSha": "fd117255c24c24ef62e21bd5a999c60d0e370467",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.36-1792679546.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.36-1792679546.apk",
+    "lastBuildSha": "512edf8237df0a2dc0cea704f0d8e5da999e392d",
     "apkSize": 24078672
   },
   "home": {
@@ -24329,11 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.35 已上线",
+    "title": "懒得找了 v1.7.36 已上线",
     "changelog": [
-      "✨ v1.7.35 更新来啦～",
-      "feat: Liquid Glass 主题按四步法重写",
-      "sync: 新增液态玻璃主题预览工具入口"
+      "✨ v1.7.36 更新来啦～",
+      "feat: 新增「极光流体」主题"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24404,10 +24402,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.35",
-      "code": 245,
-      "at": "2026-10-22T13:40:42Z",
-      "sha": "fd117255c24c24ef62e21bd5a999c60d0e370467"
+      "version": "1.7.36",
+      "code": 246,
+      "at": "2026-10-22T14:32:34Z",
+      "sha": "512edf8237df0a2dc0cea704f0d8e5da999e392d"
     }
   },
   "_ai_notice": "内容由AI生成"
