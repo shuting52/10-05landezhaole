@@ -368,10 +368,10 @@ fun DownVidScreen(
     fun triggerDownload(url: String, filename: String) {        try {
             val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
             val request = DownloadManager.Request(Uri.parse(url)).apply {
-                setTitle("DownVid · $filename")
+                setTitle("懒得找了 · $filename")
                 setDescription("正在保存到相册/本地存储...")
                 setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "DownVid/$filename")
+                setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "懒得找了/$filename")
                 setAllowedOverMetered(true)
                 setAllowedOverRoaming(true)
             }

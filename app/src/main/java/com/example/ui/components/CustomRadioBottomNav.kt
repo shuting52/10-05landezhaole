@@ -154,7 +154,7 @@ fun CustomRadioBottomNav(
         ),
         BottomNavTabItem(
             tab = AppBottomTab.SKILL,
-            title = if (uiText?.tabSkill.isNullOrBlank() || uiText?.tabSkill == "资源" || uiText?.tabSkill == "懒得KunBox" || uiText?.tabSkill == "懒得连了" || uiText?.tabSkill == "AI前言" || uiText?.tabSkill == "DownVid" || uiText?.tabSkill == "去水印") "懒得找了" else uiText!!.tabSkill,
+            title = if (uiText?.tabSkill.isNullOrBlank() || uiText?.tabSkill == "资源" || uiText?.tabSkill == "懒得KunBox" || uiText?.tabSkill == "懒得连了" || uiText?.tabSkill == "AI前言" || uiText?.tabSkill == "DownVid") "去水印" else uiText!!.tabSkill,
             icon = Icons.Filled.PlayArrow,
             color = themeColors.primary,
             gradient = listOf(themeColors.primary, themeColors.secondary),
