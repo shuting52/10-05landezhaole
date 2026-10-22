@@ -5,10 +5,14 @@ package com.example.ui.screens
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.compose.ui.viewinterop.AndroidView
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
@@ -337,6 +341,8 @@ fun ToolboxScreen(
 ) {
     // 弹窗交互：点击工具弹出独立 CSS 动态窗口
     var activeTool by remember { mutableStateOf<ToolboxTab?>(null) }
+    // v1.7.30：App 内 WebView 打开工具链接
+    var webViewUrl by remember { mutableStateOf<String?>(null) }
     // 点击中心「懒 得 找 了」打开情感语录功能弹窗
     var showEmotionalQuotesDialog by remember { mutableStateOf(false) }
     // 手动向环形工具箱新增自定义工具弹窗
@@ -460,13 +466,7 @@ fun ToolboxScreen(
                 onSelectGroup = { index -> sheetGroupIndex = index },
                 onDirectOpenTool = { tab -> activeTool = tab },
                 onOpenExternalUrl = { url ->
-                    try {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        context.startActivity(intent)
-                    } catch (e: Exception) {
-                        Toast.makeText(context, "无法打开链接：$url", Toast.LENGTH_SHORT).show()
-                    }
+                    webViewUrl = url
                 }
             )
 
@@ -489,15 +489,14 @@ fun ToolboxScreen(
             },
             onOpenExternalUrl = { url ->
                 sheetGroupIndex = null
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    context.startActivity(intent)
-                } catch (e: Exception) {
-                    Toast.makeText(context, "无法打开链接：$url", Toast.LENGTH_SHORT).show()
-                }
+                webViewUrl = url
             }
         )
+
+        // v1.7.30：App 内 WebView
+        if (webViewUrl != null) {
+            ToolWebView(url = webViewUrl!!, onClose = { webViewUrl = null })
+        }
 
         // 点击「加工具」或新环形「+」槽位弹出的新增环形工具窗口（满 8 个自动生成下一环）
         if (showAddRingToolDialog) {
@@ -3144,6 +3143,35 @@ private fun OfflineTreasureScreenView() {
     ) {
         item {
             OfflineTreasureSection()
+        }
+    }
+}
+
+@Composable
+private fun ToolWebView(url: String, onClose: () -> Unit) {
+    val themeColors = com.example.ui.theme.LocalThemeUiColors.current
+    Dialog(onDismissRequest = onClose, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        Column(Modifier.fillMaxSize().background(Color.White)) {
+            Row(
+                Modifier.fillMaxWidth().background(themeColors.primary).padding(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onClose) {
+                    Icon(Icons.Filled.ArrowBack, "返回", tint = Color.White)
+                }
+                Text(url.take(40), color = Color.White, fontSize = 12.sp, maxLines = 1, modifier = Modifier.weight(1f))
+            }
+            AndroidView(
+                factory = { c ->
+                    WebView(c).apply {
+                        settings.javaScriptEnabled = true
+                        settings.domStorageEnabled = true
+                        webViewClient = WebViewClient()
+                        loadUrl(url)
+                    }
+                },
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }
