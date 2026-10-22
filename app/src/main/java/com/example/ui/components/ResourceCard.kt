@@ -306,9 +306,10 @@ fun ResourceCard(
                         .background(
                             Brush.linearGradient(
                                 listOf(
-                                    Color.White.copy(alpha = 0.10f),
-                                    themeUi.secondary.copy(alpha = 0.05f),
-                                    Color(0xFF171421).copy(alpha = 0.14f)
+                                    Color.White.copy(alpha = 0.13f),
+                                    themeUi.secondary.copy(alpha = 0.08f),
+                                    themeUi.surface.copy(alpha = 0.24f),
+                                    themeUi.accent.copy(alpha = 0.09f)
                                 )
                             )
                         )
@@ -319,13 +320,30 @@ fun ResourceCard(
                         .background(
                             Brush.linearGradient(
                                 listOf(
-                                    Color.White.copy(alpha = 0.24f),
-                                    Color.White.copy(alpha = 0.07f),
+                                    Color.White.copy(alpha = 0.22f),
+                                    Color.White.copy(alpha = 0.06f),
                                     Color.Transparent,
-                                    Color.Transparent,
-                                    themeUi.accent.copy(alpha = 0.13f)
+                                    themeUi.secondary.copy(alpha = 0.035f),
+                                    themeUi.accent.copy(alpha = 0.11f)
                                 )
                             )
+                        )
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(1.dp)
+                        .border(
+                            0.7.dp,
+                            Brush.linearGradient(
+                                listOf(
+                                    Color.White.copy(alpha = 0.30f),
+                                    Color.Transparent,
+                                    themeUi.secondary.copy(alpha = 0.20f),
+                                    themeUi.accent.copy(alpha = 0.18f)
+                                )
+                            ),
+                            cardShape
                         )
                 )
                 Box(

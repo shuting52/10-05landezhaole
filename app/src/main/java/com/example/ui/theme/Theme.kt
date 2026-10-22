@@ -104,27 +104,26 @@ fun leverUiColors() = ThemeUiColors(
     designStyle = DesignStyle.CLAYMORPHISM  // 玩具质感最接近粘土拟态
 )
 
-/** 默认液态玻璃色板：炭黑透光底、珊瑚橙与冰青折射高光 */
+/** Liquid Glass：深海靛蓝底色，珊瑚、冰青与暖金形成克制的彩色折射。 */
 fun aeroUiColors() = ThemeUiColors(
-    primary = Color(0xFFFF647D),
-    secondary = Color(0xFF62E4DE),
-    background = Color(0xFF11131B),
-    surface = Color(0xD11B1A27),
-    text = Color(0xFFFFF8FB),
-    textMuted = Color(0xFFD9D3E0),
-    accent = Color(0xFFFFA15F),
-    border = Color.White.copy(alpha = 0.42f),
-    // 深色半透底保留背后的彩色流光，再叠加玻璃边缘与斜向高光。
+    primary = Color(0xFFFF7890),
+    secondary = Color(0xFF78E7E0),
+    background = Color(0xFF0B0F1A),
+    surface = Color(0xE61B2233),
+    text = Color(0xFFF7F8FC),
+    textMuted = Color(0xFFC4CAD8),
+    accent = Color(0xFFFFC17D),
+    border = Color.White.copy(alpha = 0.30f),
     cardGradient = listOf(
-        Color(0xB8171925),
-        Color(0x981B1826),
-        Color(0xA0162730)
+        Color(0xCC273047),
+        Color(0xB51A2234),
+        Color(0xC51B1D2C)
     ),
     backgroundGradient = listOf(
-        Color(0xFF11131B),
-        Color(0xFF29202D),
-        Color(0xFF15243A),
-        Color(0xFF11131B)
+        Color(0xFF0A0E18),
+        Color(0xFF172034),
+        Color(0xFF21192D),
+        Color(0xFF0C1422)
     ),
     designStyle = DesignStyle.LIQUID_GLASS
 )
@@ -143,16 +142,40 @@ fun MyApplicationTheme(
         AppTheme.AERO -> aeroUiColors()
         AppTheme.LEVER -> leverUiColors()
     }
-    val colorScheme = lightColorScheme(
-        primary = uiColors.primary,
-        secondary = uiColors.secondary,
-        background = uiColors.background,
-        surface = uiColors.surface,
-        onPrimary = Color.White,
-        onSecondary = Color.White,
-        onBackground = uiColors.text,
-        onSurface = uiColors.text
-    )
+    val colorScheme = when (appTheme) {
+        AppTheme.AERO -> darkColorScheme(
+            primary = uiColors.primary,
+            onPrimary = Color(0xFF2B1119),
+            primaryContainer = Color(0xFF633346),
+            onPrimaryContainer = Color(0xFFFFD9E0),
+            secondary = uiColors.secondary,
+            onSecondary = Color(0xFF0B2527),
+            secondaryContainer = Color(0xFF21464A),
+            onSecondaryContainer = Color(0xFFB5F5EF),
+            tertiary = uiColors.accent,
+            onTertiary = Color(0xFF2A1B0B),
+            background = uiColors.background,
+            onBackground = uiColors.text,
+            surface = uiColors.surface,
+            onSurface = uiColors.text,
+            surfaceVariant = Color(0xFF252B3C),
+            onSurfaceVariant = uiColors.textMuted,
+            outline = uiColors.border,
+            outlineVariant = Color.White.copy(alpha = 0.16f),
+            error = Color(0xFFFF8A8A),
+            onError = Color(0xFF3A0909)
+        )
+        AppTheme.LEVER -> lightColorScheme(
+            primary = uiColors.primary,
+            secondary = uiColors.secondary,
+            background = uiColors.background,
+            surface = uiColors.surface,
+            onPrimary = Color.White,
+            onSecondary = Color.White,
+            onBackground = uiColors.text,
+            onSurface = uiColors.text
+        )
+    }
 
     CompositionLocalProvider(
         LocalUiverseState provides uiverseState,

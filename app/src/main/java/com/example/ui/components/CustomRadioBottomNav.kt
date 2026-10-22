@@ -185,7 +185,8 @@ fun CustomRadioBottomNav(
 
     val isLiquidGlass = themeColors.designStyle == DesignStyle.LIQUID_GLASS
     val highlightColor = themeColors.secondary
-    val selectedTextColor = themeColors.text
+    // 明亮的选中胶囊配深色前景，维持小字号标签的清晰对比。
+    val selectedTextColor = if (isLiquidGlass) Color(0xFF111726) else themeColors.text
     val unselectedColor = if (isLiquidGlass) themeColors.textMuted.copy(alpha = 0.82f)
         else themeColors.text.copy(alpha = 0.45f)
 
@@ -196,15 +197,15 @@ fun CustomRadioBottomNav(
             .navigationBarsPadding()
             // v1.4.20：整体缩小一号
             .padding(horizontal = 24.dp, vertical = 6.dp)
-            .shadow(6.dp, RoundedCornerShape(navCorner), ambientColor = Color.Black.copy(alpha = 0.08f))
+            .shadow(14.dp, RoundedCornerShape(navCorner), ambientColor = Color.Black.copy(alpha = 0.22f))
             .clip(RoundedCornerShape(navCorner))
             .background(
                 if (isLiquidGlass) {
                     Brush.linearGradient(
                         listOf(
-                            themeColors.surface.copy(alpha = 0.82f),
-                            Color(0xB71A1B29),
-                            Color(0xC51A1723)
+                            themeColors.surface.copy(alpha = 0.88f),
+                            Color(0xD21A2233),
+                            Color(0xE6101523)
                         )
                     )
                 } else {
@@ -252,16 +253,37 @@ fun CustomRadioBottomNav(
                 // 选中态背景色动画
                 val pillColor by animateColorAsState(
                     targetValue = if (isSelected) {
-                        if (isLiquidGlass) highlightColor.copy(alpha = 0.38f) else highlightColor
+                        if (isLiquidGlass) highlightColor.copy(alpha = 0.84f) else highlightColor
                     } else Color.Transparent,
                     animationSpec = tween(250),
                     label = "tabPill"
                 )
+                val pillShape = RoundedCornerShape(navPillCorner)
+                val pillBrush = if (isLiquidGlass && isSelected) {
+                    Brush.linearGradient(
+                        listOf(
+                            pillColor,
+                            themeColors.secondary.copy(alpha = 0.78f),
+                            themeColors.accent.copy(alpha = 0.62f)
+                        )
+                    )
+                } else {
+                    Brush.linearGradient(listOf(pillColor, pillColor))
+                }
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(navPillCorner))
-                        .background(pillColor)
+                        .clip(pillShape)
+                        .background(pillBrush)
+                        .then(
+                            if (isLiquidGlass && isSelected) {
+                                Modifier.border(
+                                    0.8.dp,
+                                    Brush.linearGradient(listOf(Color.White.copy(alpha = 0.66f), Color.White.copy(alpha = 0.12f))),
+                                    pillShape
+                                )
+                            } else Modifier
+                        )
                         .clickable { onTabSelected(item.tab) }
                         .padding(vertical = 5.dp),
                     horizontalAlignment = Alignment.CenterHorizontally

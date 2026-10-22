@@ -168,8 +168,10 @@ fun GlobalWindBackground(
                 DesignStyleBackground(
                     style = designStyle,
                     baseColor = activeBg,
+                    backgroundColors = themeGradientColors,
                     primaryColor = activePrimary,
-                    secondaryColor = themePrimaryColor,
+                    secondaryColor = theme.secondary,
+                    accentColor = theme.accent,
                     windShift = windShift,
                     slay1Angle = slay1Angle,
                     slay2Angle = slay2Angle,
@@ -1270,8 +1272,10 @@ private fun DynamicEffectBackground(
 private fun DesignStyleBackground(
     style: DesignStyle,
     baseColor: Color,
+    backgroundColors: List<Color>,
     primaryColor: Color,
     secondaryColor: Color,
+    accentColor: Color,
     windShift: Float,
     slay1Angle: Float,
     slay2Angle: Float,
@@ -1530,53 +1534,92 @@ private fun DesignStyleBackground(
             }
 
             DesignStyle.LIQUID_GLASS -> {
-                // 炭黑底上叠加珊瑚红、熔橙、钴蓝与青绿，呼应用户提供的立体液态玻璃参考图。
+                // 深海靛蓝底上叠加珊瑚、冰青与暖金折射，动画只做缓慢漂移，避免背景喧宾夺主。
+                val glassBase = backgroundColors.ifEmpty { listOf(baseColor, baseColor) }
                 drawRect(
                     brush = Brush.linearGradient(
-                        colors = listOf(Color(0xFF11131B), Color(0xFF211720), Color(0xFF111827)),
+                        colors = glassBase,
                         start = Offset(w * 0.92f, 0f),
                         end = Offset(w * 0.08f, h)
                     )
                 )
-                val glowRadius = maxOf(w, h) * 0.70f
+                val driftX = sin(ringSpinPhase * 0.34f) * w * 0.025f
+                val driftY = cos(ringSpinPhase * 0.28f) * h * 0.018f
+                val glowRadius = maxOf(w, h) * (0.56f + glowPulse * 0.035f)
+                val coolBlue = Color(0xFF718DFF)
+                val violet = Color(0xFFB28BEA)
+
                 drawRect(
                     brush = Brush.radialGradient(
-                        colors = listOf(Color(0xFFFF8A3D).copy(alpha = 0.94f), Color(0xFFFF634B).copy(alpha = 0.48f), Color.Transparent),
-                        center = Offset(w * 0.10f, h * 0.72f),
-                        radius = glowRadius
+                        colors = listOf(accentColor.copy(alpha = 0.72f), accentColor.copy(alpha = 0.28f), Color.Transparent),
+                        center = Offset(w * 0.08f + driftX, h * 0.76f + driftY),
+                        radius = glowRadius * 0.94f
                     )
                 )
                 drawRect(
                     brush = Brush.radialGradient(
-                        colors = listOf(Color(0xFFFF3658).copy(alpha = 0.90f), Color(0xFFEF3C79).copy(alpha = 0.42f), Color.Transparent),
-                        center = Offset(w * 0.86f, h * 0.58f),
-                        radius = glowRadius * 0.92f
+                        colors = listOf(primaryColor.copy(alpha = 0.78f), primaryColor.copy(alpha = 0.27f), Color.Transparent),
+                        center = Offset(w * 0.88f - driftX, h * 0.57f - driftY),
+                        radius = glowRadius * 0.88f
                     )
                 )
                 drawRect(
                     brush = Brush.radialGradient(
-                        colors = listOf(Color(0xFF315FDB).copy(alpha = 0.76f), Color(0xFF3553B4).copy(alpha = 0.30f), Color.Transparent),
-                        center = Offset(w * 0.48f, h * 0.38f),
-                        radius = glowRadius * 0.76f
+                        colors = listOf(coolBlue.copy(alpha = 0.52f), coolBlue.copy(alpha = 0.16f), Color.Transparent),
+                        center = Offset(w * 0.48f - driftX * 0.4f, h * 0.35f + driftY),
+                        radius = glowRadius * 0.72f
                     )
                 )
                 drawRect(
                     brush = Brush.radialGradient(
-                        colors = listOf(Color(0xFF23D6C5).copy(alpha = 0.68f), Color(0xFF18AAB8).copy(alpha = 0.26f), Color.Transparent),
-                        center = Offset(w * 0.17f, h * 0.43f),
-                        radius = glowRadius * 0.52f
+                        colors = listOf(secondaryColor.copy(alpha = 0.52f), secondaryColor.copy(alpha = 0.17f), Color.Transparent),
+                        center = Offset(w * 0.13f + driftX * 0.6f, h * 0.42f - driftY),
+                        radius = glowRadius * 0.56f
                     )
                 )
                 drawRect(
                     brush = Brush.radialGradient(
-                        colors = listOf(Color(0xFFB84CB8).copy(alpha = 0.48f), Color.Transparent),
-                        center = Offset(w * 0.78f, h * 0.13f),
-                        radius = glowRadius * 0.48f
+                        colors = listOf(violet.copy(alpha = 0.32f), Color.Transparent),
+                        center = Offset(w * 0.80f - driftX * 0.4f, h * 0.12f + driftY),
+                        radius = glowRadius * 0.45f
                     )
                 )
 
-                // 宽幅弧形折射带轻轻漂移，给色层增加流动与立体高光感。
-                val drift = sin(ringSpinPhase * 0.42f) * h * 0.018f
+                // 一颗低对比度的玻璃光球：柔亮内芯、冷暖边缘与双道高光共同塑出厚度。
+                val orbCenter = Offset(w * 0.82f - driftX, h * 0.24f + driftY)
+                val orbRadius = minOf(w, h) * 0.16f
+                drawCircle(
+                    color = Color(0xFF070A12).copy(alpha = 0.24f),
+                    radius = orbRadius * 1.08f,
+                    center = orbCenter + Offset(4.dp.toPx(), 8.dp.toPx())
+                )
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color.White.copy(alpha = 0.20f), secondaryColor.copy(alpha = 0.11f), primaryColor.copy(alpha = 0.07f), Color.Transparent),
+                        center = orbCenter - Offset(orbRadius * 0.30f, orbRadius * 0.34f),
+                        radius = orbRadius * 1.35f
+                    ),
+                    radius = orbRadius,
+                    center = orbCenter
+                )
+                drawCircle(
+                    brush = Brush.sweepGradient(
+                        colors = listOf(Color.White.copy(alpha = 0.48f), secondaryColor.copy(alpha = 0.26f), Color.Transparent, accentColor.copy(alpha = 0.22f), Color.White.copy(alpha = 0.48f)),
+                        center = orbCenter
+                    ),
+                    radius = orbRadius,
+                    center = orbCenter,
+                    style = Stroke(width = 1.2.dp.toPx())
+                )
+                drawCircle(
+                    color = Color.White.copy(alpha = 0.22f),
+                    radius = orbRadius * 0.78f,
+                    center = orbCenter - Offset(orbRadius * 0.12f, orbRadius * 0.13f),
+                    style = Stroke(width = 0.7.dp.toPx())
+                )
+
+                // 多层弧线模拟液体折射：柔和阴影、彩色厚边、细窄镜面高光。
+                val drift = sin(ringSpinPhase * 0.42f) * h * 0.014f
                 val fluidSweep = Path().apply {
                     moveTo(-w * 0.16f, h * 0.76f + drift)
                     cubicTo(w * 0.10f, h * 0.58f + drift, w * 0.25f, h * 0.48f + drift, w * 0.43f, h * 0.59f + drift)
@@ -1586,30 +1629,40 @@ private fun DesignStyleBackground(
                 drawPath(
                     path = fluidSweep,
                     brush = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFF39E6D2).copy(alpha = 0.27f),
-                            Color(0xFF4276F4).copy(alpha = 0.25f),
-                            Color(0xFFFF6B6D).copy(alpha = 0.31f),
-                            Color(0xFFFFB15F).copy(alpha = 0.24f)
-                        ),
-                        start = Offset(0f, h * 0.64f),
-                        end = Offset(w, h * 0.38f)
+                        colors = listOf(Color(0xFF10172A).copy(alpha = 0.30f), primaryColor.copy(alpha = 0.24f), secondaryColor.copy(alpha = 0.20f), Color(0xFF11182A).copy(alpha = 0.26f)),
+                        start = Offset(0f, h * 0.70f),
+                        end = Offset(w, h * 0.34f)
                     ),
-                    style = Stroke(width = 54.dp.toPx())
+                    style = Stroke(width = 72.dp.toPx())
                 )
                 drawPath(
                     path = fluidSweep,
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            Color.White.copy(alpha = 0.12f),
-                            Color(0xFFB7FFF4).copy(alpha = 0.28f),
-                            Color.White.copy(alpha = 0.22f),
-                            Color(0xFFFFD6BC).copy(alpha = 0.24f)
+                            secondaryColor.copy(alpha = 0.31f),
+                            coolBlue.copy(alpha = 0.28f),
+                            primaryColor.copy(alpha = 0.32f),
+                            accentColor.copy(alpha = 0.26f)
                         ),
                         start = Offset(0f, h * 0.64f),
                         end = Offset(w, h * 0.38f)
                     ),
-                    style = Stroke(width = 2.dp.toPx())
+                    style = Stroke(width = 44.dp.toPx())
+                )
+                drawPath(
+                    path = fluidSweep,
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.08f),
+                            Color.White.copy(alpha = 0.32f),
+                            secondaryColor.copy(alpha = 0.30f),
+                            Color.White.copy(alpha = 0.20f),
+                            accentColor.copy(alpha = 0.27f)
+                        ),
+                        start = Offset(0f, h * 0.64f),
+                        end = Offset(w, h * 0.38f)
+                    ),
+                    style = Stroke(width = 1.8.dp.toPx())
                 )
             }
 
