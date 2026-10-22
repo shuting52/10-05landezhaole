@@ -64,8 +64,6 @@ class MainActivity : ComponentActivity() {
         val remoteConfigRepository = RemoteConfigRepository(applicationContext)
         val factory = NavViewModelFactory(repository, remoteConfigRepository, application)
         val viewModel = ViewModelProvider(this, factory)[NavViewModel::class.java]
-        // v1.7.27：恢复用户选择的 App 主题
-        viewModel.restoreAppTheme()
 
         setContent {
             val uiState = viewModel.uiState.collectAsState().value
@@ -89,8 +87,7 @@ class MainActivity : ComponentActivity() {
                 LocalStreamingBorderAngle provides streamingBorderAngle
             ) {
                 MyApplicationTheme(
-                    uiverseState = uiState.activeUiverseState,
-                    appTheme = uiState.appTheme
+                    uiverseState = uiState.activeUiverseState
                 ) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),

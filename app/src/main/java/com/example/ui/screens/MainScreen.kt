@@ -806,10 +806,7 @@ fun MainScreen(
                 onPickLocalImage = { pickBgImageLauncher.launch("image/*") },
                 onPickLocalVideo = { pickBgVideoLauncher.launch("video/*") },
                 onClearLocalBgMedia = { clearCustomBackground() },
-                onToggleFrosted = { viewModel.setBgFrosted(it) },
-                // v1.7.27：App 主题选择
-                appTheme = uiState.appTheme,
-                onThemeChange = { viewModel.setAppTheme(it) }
+                onToggleFrosted = { viewModel.setBgFrosted(it) }
             )
         }
 

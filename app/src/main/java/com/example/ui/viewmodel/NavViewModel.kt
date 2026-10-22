@@ -38,7 +38,6 @@ import java.net.URLEncoder
 
 import com.example.data.local.db.UploadedResourceEntity
 import com.example.ui.theme.AtmosphereEffect
-import com.example.ui.theme.AppTheme
 import com.example.ui.uiverse.ActiveUiverseState
 import com.example.ui.uiverse.UiKitPreset
 import com.example.ui.uiverse.UiverseItem
@@ -65,7 +64,6 @@ data class NavUiState(
     // v1.2.0：动态效果主题
     val dynamicEffect: DynamicEffectPreset = DynamicEffectPreset.NONE,
     val isThemeDialogVisible: Boolean = false,
-    val appTheme: AppTheme = AppTheme.AERO,  // v1.7.27：App 主题（AERO/LEVER）
     val activeUiverseState: ActiveUiverseState = ActiveUiverseState(),
     val categories: List<NavCategory> = NavData.categories,
     val selectedCategoryId: String = NavData.categories.firstOrNull()?.id ?: "ai_models",
@@ -576,33 +574,7 @@ class NavViewModel(
         _uiState.value = _uiState.value.copy(isThemeDialogVisible = visible)
     }
 
-    // v1.7.27：切换 App 主题并持久化
-    fun setAppTheme(theme: AppTheme) {
-        _uiState.value = _uiState.value.copy(appTheme = theme)
-        try {
-            appContext?.getSharedPreferences("lzdz_prefs", Context.MODE_PRIVATE)
-                ?.edit()?.putString("app_theme", theme.name)?.apply()
-        } catch (_: Exception) { }
-    }
 
-    // v1.7.33：升级后首次启动切换到新版默认液态玻璃主题，之后继续尊重用户的主题选择。
-    fun restoreAppTheme() {
-        try {
-            val prefs = appContext?.getSharedPreferences("lzdz_prefs", Context.MODE_PRIVATE)
-            val migrationKey = "theme_default_liquid_glass_1_7_33"
-            if (prefs != null && !prefs.getBoolean(migrationKey, false)) {
-                prefs.edit()
-                    .putString("app_theme", AppTheme.AERO.name)
-                    .putBoolean(migrationKey, true)
-                    .apply()
-                _uiState.value = _uiState.value.copy(appTheme = AppTheme.AERO)
-                return
-            }
-            val name = prefs?.getString("app_theme", AppTheme.AERO.name) ?: AppTheme.AERO.name
-            val theme = try { AppTheme.valueOf(name) } catch (_: Exception) { AppTheme.AERO }
-            _uiState.value = _uiState.value.copy(appTheme = theme)
-        } catch (_: Exception) { }
-    }
 
     fun applyUiverseKit(kit: UiKitPreset) {
         val newCardStyle = when (kit) {

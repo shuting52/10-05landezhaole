@@ -79,127 +79,52 @@ data class ThemeUiColors(
 val LocalThemeUiColors = staticCompositionLocalOf { ThemeUiColors() }
 
 // ============================================================
-// v1.7.27：App 主题（LEVER UI 拨杆玩具风加入）
+// 2026-10-22：删除主题切换（用户要求）。App 固定为浅蓝色静态渐变主题，
+// 不再提供 Liquid Glass / LEVER UI / 极光流体 三个主题选项。
 // ============================================================
-enum class AppTheme(val displayName: String, val desc: String) {
-    AERO("Liquid Glass", "液态玻璃 · 通透折射与厚度高光"),
-    LEVER("LEVER UI", "拨杆玩具风 · 硬阴影按压回弹"),
-    AURORA("极光流体", "微信式液态玻璃 · 极光丝绸折射")
-}
 
-/** LEVER UI 色板（源自用户提供的 LEVER UI 拨杆组件库 HTML） */
-fun leverUiColors() = ThemeUiColors(
-    primary = Color(0xFF1269EF),        // 拨杆蓝
-    secondary = Color(0xFF0D4FC0),      // 拨杆深蓝
-    background = Color(0xFFDCEBF9),     // 纸蓝
+/** 浅蓝主题：天空蓝主色 + 浅蓝静态渐变背景（固定，不可切换） */
+fun defaultUiColors() = ThemeUiColors(
+    primary = Color(0xFF00A8E8),        // 天空蓝
+    secondary = Color(0xFF0090C9),      // 深海蓝
+    background = Color(0xFFE8F9FF),     // 最浅天空
     surface = Color(0xFFFFFFFF),
-    text = Color(0xFF085991),           // 墨水蓝
-    textMuted = Color(0xFF3D7CA8),
-    accent = Color(0xFFED487E),         // 拨杆粉
-    border = Color(0xFF1A4766).copy(alpha = 0.35f),  // 深海
-    cardGradient = listOf(Color(0xFFFFFFFF), Color(0xFFB7DFFB)),
+    text = Color(0xFF0A2540),           // 墨蓝
+    textMuted = Color(0xFF5B7A90),      // 浅灰蓝
+    accent = Color(0xFF00A8E8),
+    border = Color(0xFF00A8E8).copy(alpha = 0.35f),
+    cardGradient = listOf(Color(0xFFFFFFFF), Color(0xFFE8F9FF)),
+    // 浅蓝静态渐变背景：蓝 → 浅蓝 → 极浅
     backgroundGradient = listOf(
-        Color(0xFFB7DFFB),
-        Color(0xFFDCEBF9),
-        Color(0xFFDCEBF9)
+        Color(0xFF7EC8F7),
+        Color(0xFFBDE4FB),
+        Color(0xFFE8F9FF)
     ),
-    designStyle = DesignStyle.CLAYMORPHISM  // 玩具质感最接近粘土拟态
+    designStyle = DesignStyle.GLASSMORPHISM
 )
-
-/** Liquid Glass：深海靛蓝底色，珊瑚、冰青与暖金形成克制的彩色折射。
- *  2026-10-22 按用户四步法重写：背景只用靛蓝→紫两种主色柔和渐变，
- *  卡片玻璃层由 Modifier.liquidGlass() 按“模糊增色/叠白/厚度/折射色散”四步绘制。 */
-fun aeroUiColors() = ThemeUiColors(
-    primary = Color(0xFFFF7A93),        // 折射珊瑚
-    secondary = Color(0xFF7DE8E0),      // 折射冰青
-    background = Color(0xFF0C1122),     // 深海靛蓝
-    surface = Color(0xFF151C33),
-    text = Color(0xFFF5F7FC),
-    textMuted = Color(0xFFA6AEC7),
-    accent = Color(0xFFFFC37E),         // 折射暖金
-    border = Color.White.copy(alpha = 0.35f),
-    // 卡片兜底渐变（玻璃主体由 liquidGlass 绘制，此处仅作非玻璃场景回退）
-    cardGradient = listOf(Color.White.copy(alpha = 0.16f), Color.White.copy(alpha = 0.07f)),
-    // 背景渐变：靛蓝 → 紫，两种主色，大块柔和
-    backgroundGradient = listOf(
-        Color(0xFF111832),
-        Color(0xFF1D1A3E)
-    ),
-    designStyle = DesignStyle.LIQUID_GLASS
-)
-
-/** 极光流体：曜石黑底上的橙/青/紫极光丝绸，卡片为通透折射玻璃（对标用户微信主题截图）。 */
-fun auroraUiColors() = ThemeUiColors(
-    primary = Color(0xFFFF6B4A),        // 极光橙
-    secondary = Color(0xFF2DD4BF),      // 极光青
-    background = Color(0xFF0A0A12),     // 曜石黑
-    surface = Color(0xFF14141F),
-    text = Color(0xFFFFFFFF),
-    textMuted = Color(0xFFB9B9CC),
-    accent = Color(0xFFA78BFA),         // 极光紫
-    border = Color.White.copy(alpha = 0.35f),
-    cardGradient = listOf(Color.White.copy(alpha = 0.16f), Color.White.copy(alpha = 0.07f)),
-    backgroundGradient = listOf(
-        Color(0xFF0D0D18),
-        Color(0xFF160F2A)
-    ),
-    designStyle = DesignStyle.AURORA
-)
-
-val LocalAppTheme = staticCompositionLocalOf { AppTheme.AERO }
 
 @Composable
 fun MyApplicationTheme(
     uiverseState: ActiveUiverseState = ActiveUiverseState(),
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
-    appTheme: AppTheme = AppTheme.AERO,
     content: @Composable () -> Unit
 ) {
-    val uiColors = when (appTheme) {
-        AppTheme.AERO -> aeroUiColors()
-        AppTheme.LEVER -> leverUiColors()
-        AppTheme.AURORA -> auroraUiColors()
-    }
-    val colorScheme = when (appTheme) {
-        AppTheme.AERO, AppTheme.AURORA -> darkColorScheme(
-            primary = uiColors.primary,
-            onPrimary = Color(0xFF2B1119),
-            primaryContainer = Color(0xFF633346),
-            onPrimaryContainer = Color(0xFFFFD9E0),
-            secondary = uiColors.secondary,
-            onSecondary = Color(0xFF0B2527),
-            secondaryContainer = Color(0xFF21464A),
-            onSecondaryContainer = Color(0xFFB5F5EF),
-            tertiary = uiColors.accent,
-            onTertiary = Color(0xFF2A1B0B),
-            background = uiColors.background,
-            onBackground = uiColors.text,
-            surface = uiColors.surface,
-            onSurface = uiColors.text,
-            surfaceVariant = Color(0xFF252B3C),
-            onSurfaceVariant = uiColors.textMuted,
-            outline = uiColors.border,
-            outlineVariant = Color.White.copy(alpha = 0.16f),
-            error = Color(0xFFFF8A8A),
-            onError = Color(0xFF3A0909)
-        )
-        AppTheme.LEVER -> lightColorScheme(
-            primary = uiColors.primary,
-            secondary = uiColors.secondary,
-            background = uiColors.background,
-            surface = uiColors.surface,
-            onPrimary = Color.White,
-            onSecondary = Color.White,
-            onBackground = uiColors.text,
-            onSurface = uiColors.text
-        )
-    }
+    val uiColors = defaultUiColors()
+    val colorScheme = lightColorScheme(
+        primary = uiColors.primary,
+        secondary = uiColors.secondary,
+        background = uiColors.background,
+        surface = uiColors.surface,
+        onPrimary = Color.White,
+        onSecondary = Color.White,
+        onBackground = uiColors.text,
+        onSurface = uiColors.text
+    )
 
     CompositionLocalProvider(
         LocalUiverseState provides uiverseState,
-        LocalThemeUiColors provides uiColors,
-        LocalAppTheme provides appTheme
+        LocalThemeUiColors provides uiColors
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
