@@ -2,15 +2,15 @@
 # -*- coding: utf-8 -*-
 """
 Auto Release · 检测与版本号推进
-在 GitHub Actions 中运行：判断 app 源码是否有新提交需要发布，
-若有则自动推进 versionCode/versionName（写回 app/build.gradle.kts），
+在 GitHub Actions 中运行：判断 app 源码、构建配置、后台 JSON 或站点批次是否有新提交需要发布，
+若有则自动推进 versionCode/versionName（写回 app/build.gradle.kts）；站点批次会先合并进 admin-data.json，
 并把结果输出到 $GITHUB_OUTPUT 供后续步骤使用。
 
 规则（遵循 AGENTS.md「版本严格对齐 / 四要素同步」）：
 1. 读取云端 admin-data.json 的 version.code（上次已发布版本）
 2. 读取 app/build.gradle.kts 的 versionCode（源码当前版本）
 3. 若 admin-data.json 记录 lastBuildSha == 当前 HEAD → 该提交已发布，跳过
-4. 若自 lastBuildSha 以来 app/** 源码有改动 → 需要发布：
+4. 若自 lastBuildSha 以来 app/**、构建配置、admin-data.json 或 sites_p*.json 有改动 → 需要发布：
    - 若源码 versionCode <= 云端 code → versionCode+1 且 versionName patch+1
    - 若源码 versionCode > 云端 code（开发者已手动升过）→ 直接采用源码版本
 5. 写回 build.gradle.kts 并输出 need=yes / newCode / newName
@@ -24,9 +24,31 @@ import sys
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 BUILD_FILE = os.path.join(REPO_ROOT, "app", "build.gradle.kts")
 ADMIN_FILE = os.path.join(REPO_ROOT, "admin-data.json")
+MERGE_SITES_FILE = os.path.join(REPO_ROOT, "merge_sites.py")
+RELEASE_PATHS = [
+    "app", "build.gradle.kts", "settings.gradle.kts", "gradle.properties",
+    "gradle/", "gradlew", "gradlew.bat", "admin-data.json", "sites_p*.json",
+]
+SITE_BATCH_RE = re.compile(r"sites_p\d+.*\.json$")
 
 def sh(cmd):
     return subprocess.run(cmd, shell=True, capture_output=True, text=True).stdout.strip()
+
+def changed_files(base, head):
+    """List release-relevant paths between the saved baseline and this push."""
+    if base:
+        args = ["git", "diff", "--name-only", f"{base}..{head}", "--", *RELEASE_PATHS]
+    else:
+        # First tracked release: use the current commit without assuming a previous build SHA.
+        args = [
+            "git", "diff-tree", "--root", "--no-commit-id", "--name-only",
+            "-r", head, "--", *RELEASE_PATHS,
+        ]
+    result = subprocess.run(args, cwd=REPO_ROOT, capture_output=True, text=True)
+    if result.returncode != 0:
+        print("::error::无法比较发布基线与当前提交：", result.stderr.strip())
+        sys.exit(1)
+    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
 
 def main():
     # 1. 云端版本（admin-data.json 是唯一真相源）
@@ -55,29 +77,44 @@ def main():
     if last_build_sha and last_build_sha == head:
         print("==> 当前 HEAD 已构建发布，跳过"); write_out(need="no"); return
 
-    # 4. 检查 app 源码自上次构建以来是否有改动
+    # 4. 检查源码、构建配置和云端内容数据自上次发布以来是否有改动。
     base = last_build_sha if last_build_sha else ""
     if base:
-        # 基线校验：仓库重建/force push 后旧 SHA 会失效，此时回退用 HEAD~1 作为基线
-        valid = sh(f"git cat-file -e {base}^{{commit}} 2>/dev/null && echo yes || echo no")
-        if valid != "yes":
+        check = subprocess.run(
+            ["git", "cat-file", "-e", f"{base}^{{commit}}"],
+            cwd=REPO_ROOT, capture_output=True, text=True,
+        )
+        if check.returncode != 0:
             print(f"  基线 {base[:10]} 无效（仓库可能重建），回退用 HEAD~1 作为基线")
-            base = sh("git rev-parse HEAD~1 2>/dev/null || echo ''").strip()
-        if base:
-            changed = sh(f"git diff --name-only {base}..HEAD -- app build.gradle.kts settings.gradle.kts gradle.properties gradle/ 2>/dev/null")
-        else:
-            changed = sh("git log --oneline -1 -- app 2>/dev/null")
-    else:
-        # 无 lastBuildSha：以仓库内已存在的 admin-data 版本为基准，有源码提交即视为需要发布
-        changed = sh("git log --oneline -1 -- app 2>/dev/null")
-    changed = [l for l in changed.splitlines() if l.strip()]
-    print("自上次构建以来的 app 改动:", len(changed), "个文件" if changed else "(无)")
+            parent = subprocess.run(
+                ["git", "rev-parse", "--verify", f"{head}~1"],
+                cwd=REPO_ROOT, capture_output=True, text=True,
+            )
+            base = parent.stdout.strip() if parent.returncode == 0 else ""
+
+    changed = changed_files(base, head)
+    site_batches = [path for path in changed if SITE_BATCH_RE.fullmatch(os.path.basename(path))]
+    if site_batches:
+        print("检测到站点批次更新，先按 URL 去重并合并到 admin-data.json：", ", ".join(site_batches))
+        merge = subprocess.run(
+            [sys.executable, MERGE_SITES_FILE, *(os.path.basename(path) for path in site_batches)],
+            cwd=REPO_ROOT, capture_output=True, text=True,
+        )
+        if merge.stdout:
+            print(merge.stdout, end="" if merge.stdout.endswith("\n") else "\n")
+        if merge.stderr:
+            print(merge.stderr, file=sys.stderr, end="" if merge.stderr.endswith("\n") else "\n")
+        if merge.returncode != 0:
+            print("::error::站点批次合并失败，停止本次发布")
+            sys.exit(merge.returncode)
+
+    print("自上次构建以来的发布相关改动:", len(changed), "个文件" if changed else "(无)")
     if changed:
         print("  示例:", "; ".join(changed[:3]))
 
-    # 无源码改动且源码版本 == 云端版本 → 无需发布
+    # 无发布相关内容改动且源码版本 == 云端版本 → 无需发布
     if not changed and src_code <= cloud_code:
-        print("==> app 源码无新改动，跳过"); write_out(need="no"); return
+        print("==> app 源码、构建配置与内容 JSON 均无新改动，跳过"); write_out(need="no"); return
 
     # 5. 推进版本
     if src_code <= cloud_code:

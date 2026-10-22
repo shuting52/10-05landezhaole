@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-合并新增站点 → admin-data.json
+合并新增站点 → admin-data.json（可传入要合并的批次文件名；不传则合并全部）
 规则（对齐 写死规则.md 规则4）：
   · 只增不删：原有站点一律保留
   · 自动去重：规范化 URL 作为唯一键（去协议、去 www、去尾部斜杠、去查询参数）
@@ -16,6 +16,7 @@ BATCHES = [
     os.path.join(BASE, "sites_p2_life.json"),
     os.path.join(BASE, "sites_p3_game.json"),
     os.path.join(BASE, "sites_p4_tools.json"),
+    os.path.join(BASE, "sites_p5_hot.json"),
 ]
 
 def norm_url(u):
@@ -29,6 +30,17 @@ def norm_url(u):
     return s
 
 def main():
+    selected_names = set(sys.argv[1:])
+    known_names = {os.path.basename(path) for path in BATCHES}
+    unknown_names = selected_names - known_names
+    if unknown_names:
+        print("[错误] 未知站点批次：", ", ".join(sorted(unknown_names)), file=sys.stderr)
+        sys.exit(2)
+    batch_files = [
+        path for path in BATCHES
+        if not selected_names or os.path.basename(path) in selected_names
+    ]
+
     with open(ADMIN, "r", encoding="utf-8") as f:
         data = json.load(f)
     cats = data["home"]["categories"]
@@ -47,7 +59,10 @@ def main():
     skipped_dup = 0
     skipped_nocat = 0
 
-    for bf in BATCHES:
+    for bf in batch_files:
+        if not os.path.isfile(bf):
+            print(f"  [提示] 批次文件不存在，跳过：{os.path.basename(bf)}")
+            continue
         with open(bf, "r", encoding="utf-8") as f:
             batch = json.load(f)
         for cat_id, sites in batch.items():

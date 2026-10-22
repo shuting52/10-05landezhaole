@@ -16,7 +16,7 @@ GitHub 仓库（唯一真相源）
 ├── dist/apk/            ← 本体 App 安装包
 ├── dist/uploads/        ← 云端素材：图片/视频/文档
 ├── app/                 ← 本体 Android 源码（Kotlin + Compose）
-└── .github/workflows/   ← CI：打 tag 自动构建本体并上传 dist/
+└── .github/workflows/   ← CI：main 推送 App / 后台数据变更时自动构建并发布新版本
 ```
 
 **核心机制**：云端 `admin-data.json` 为唯一真相源（内容/配置/版本）；本体 App 每 6 秒轮询「读」云端（同步内容、检测更新弹窗）。
@@ -43,7 +43,7 @@ GitHub 仓库（唯一真相源）
 ```
 
 ### CI 构建（推荐，免本地环境）
-在仓库创建一个 tag（如 `v1.7.9-fix`）即自动构建本体并上传到 `dist/`：
+推送 `main` 上的 App/Gradle 构建文件、`admin-data.json` 或 `sites_p*.json` 会触发 `.github/workflows/auto-release.yml`：自动合并站点批次、递增版本并构建发布 APK。旧版 tag 构建入口仍由 `.github/workflows/build.yml` 提供：
 ```
 GitHub API: POST /repos/shuting52/2026-9-21landezhaole/git/refs
   body: {"ref":"refs/tags/vX.Y.Z-tag","sha":"<main分支最新commit>"}
@@ -62,12 +62,11 @@ GitHub API → jsdelivr-testingcf → jsdelivr-cdn → jsdelivr-fastly → jsdel
 
 ## 四、标准工作流
 
-### A. 日常维护（改内容，不升版本）
-1. 读取 `admin-data.json`（GitHub Contents API 或镜像）
-2. 修改目标字段（分类/站点/软件/Skill/设置/开屏/欢迎/跑马灯…）
-3. 用 PUT Contents API 写回，commit message 形如 `sync: 应用并实时同步 <时间>`
-4. 完成后主动 purge jsDelivr：`GET https://purge.jsdelivr.net/gh/shuting52/2026-9-21landezhaole@main/admin-data.json`
-5. 本体数秒内无感生效（不弹窗）
+### A. 内容更新（推送后自动发布新版本）
+1. 修改 `admin-data.json` 中的后台内容，或更新 `sites_p*.json` 站点批次文件。
+2. 推送到 `main`；站点批次会先运行 `merge_sites.py`，按规范化 URL 去重并合并进 `admin-data.json`。
+3. `.github/workflows/auto-release.yml` 自动递增版本、构建并发布 APK，同步 `admin-data.json` 的版本信息、更新日志和下载地址；不要手动改版本四要素。
+4. App 仍会轮询云端数据；内容可以先随数据同步显示，新版本也会提示用户安装。自动发布提交使用 `GITHUB_TOKEN`，不会递归触发工作流。
 
 ### B. 发布新版本（触发本体更新弹窗）
 **必须四要素同步，缺一即违规：**
@@ -94,7 +93,7 @@ GitHub API → jsdelivr-testingcf → jsdelivr-cdn → jsdelivr-fastly → jsdel
 
 | 任务 | 怎么做 |
 |---|---|
-| 添加分类/站点 | 改 `admin-data.json → home.categories`，新增卡片；**不删已有站点、URL 去重**（规则4） |
+| 添加分类/站点 | 改 `admin-data.json → home.categories`，或更新 `sites_p*.json`；推送 `main` 后自动合并并发布，**不删已有站点、URL 去重**（规则4） |
 | 更新 App 名称/Slogan | 改 `settings.appName / settings.slogan` |
 | 更新欢迎弹窗/开屏 | 改 `welcome.* / splash.*` |
 | 发新版本弹更新窗 | 按「工作流 B」四要素同步 |

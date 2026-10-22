@@ -94,11 +94,12 @@ GitHub API → jsdelivr-testingcf → jsdelivr-cdn → jsdelivr-fastly → jsdel
 4. `admin-data.json` 中的 `version.apkUrl` / `version.apkUrlRaw` 与 `updateDialog` 同步指向新 APK 直链并刷新 jsDelivr CDN
 
 ### 方式 A：GitHub Actions 全自动发布（推荐）
-当向 `main` 分支推送 `app/**` 或 Gradle 构建配置改动时，`.github/workflows/auto-release.yml` 会自动触发：
-1. 运行 `.github/scripts/auto_release_check.py` 对比 `lastBuildSha` 与当前 `HEAD`，自动推进 `versionCode` 与 `versionName`。
-2. 编译签名生成 Release APK。
-3. 运行 `.github/scripts/auto_release_publish.py` 自动生成 Changelog、归档 APK 到 `dist/apk/`、回写 `admin-data.json`（含 `autoRelease` 状态），并在配置 `RELEASE_PAT` 时同步更新数据源仓库与刷新 jsDelivr 缓存。
-4. 也可在 GitHub Actions 页面手动点击 **Run workflow (`workflow_dispatch`)** 触发构建。
+推送到 `main` 的 `app/**`、Gradle 构建配置、`admin-data.json` 或 `sites_p*.json` 都会触发 `.github/workflows/auto-release.yml`：
+1. 若站点批次 JSON 有变化，先运行 `merge_sites.py`，按规范化 URL 去重并合并到 `admin-data.json`（包括 `sites_p5_hot.json`）。
+2. `.github/scripts/auto_release_check.py` 对比 `lastBuildSha` 与当前 `HEAD`；代码、构建配置或内容数据有改动时，自动推进 `versionCode` 与 `versionName`。
+3. 编译签名生成 Release APK。
+4. `.github/scripts/auto_release_publish.py` 将 APK 归档到 `dist/apk/`，更新 `admin-data.json` 的版本四要素、更新日志和 `autoRelease` 状态；若配置 `RELEASE_PAT`，还会尝试同步旧数据源。发布提交由 `GITHUB_TOKEN` 创建，不会递归触发本工作流。
+5. 也可在 GitHub Actions 页面手动点击 **Run workflow (`workflow_dispatch`)**。
 
 ### 方式 B：命令行一键发布脚本
 ```bash

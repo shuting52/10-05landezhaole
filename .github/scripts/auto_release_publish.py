@@ -83,7 +83,7 @@ def get_version_from_gradle():
 
 def build_changelog(base_sha):
     """自 base_sha 以来的 commit 摘要（过滤机器垃圾）"""
-    r = sh(f"git log --oneline {base_sha}..HEAD -- app/ build.gradle.kts settings.gradle.kts gradle.properties 2>/dev/null | head -30")
+    r = sh(f"git log --oneline {base_sha}..HEAD -- app/ build.gradle.kts settings.gradle.kts gradle.properties admin-data.json 'sites_p*.json' 2>/dev/null | head -30")
     lines = [l for l in r.stdout.splitlines() if l.strip()]
     items = []
     skip_kw = ["console:", "release:", "ci:", "merge", "Merge", "jekyll", "docs:", "chore"]
