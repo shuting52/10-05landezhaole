@@ -1534,135 +1534,54 @@ private fun DesignStyleBackground(
             }
 
             DesignStyle.LIQUID_GLASS -> {
-                // 深海靛蓝底上叠加珊瑚、冰青与暖金折射，动画只做缓慢漂移，避免背景喧宾夺主。
+                // 2026-10-22 按用户四步法重写：背景搭配是关键 —— 大块柔和色块/渐变，
+                // 主色不超过两种（靛蓝→紫），三团低透明柔光色块缓慢漂移，衬托玻璃的通透。
                 val glassBase = backgroundColors.ifEmpty { listOf(baseColor, baseColor) }
                 drawRect(
                     brush = Brush.linearGradient(
                         colors = glassBase,
-                        start = Offset(w * 0.92f, 0f),
-                        end = Offset(w * 0.08f, h)
+                        start = Offset(w * 0.85f, 0f),
+                        end = Offset(w * 0.15f, h)
                     )
                 )
-                val driftX = sin(ringSpinPhase * 0.34f) * w * 0.025f
-                val driftY = cos(ringSpinPhase * 0.28f) * h * 0.018f
-                val glowRadius = maxOf(w, h) * (0.56f + glowPulse * 0.035f)
-                val coolBlue = Color(0xFF718DFF)
-                val violet = Color(0xFFB28BEA)
-
+                val driftX = sin(ringSpinPhase * 0.30f) * w * 0.03f
+                val driftY = cos(ringSpinPhase * 0.24f) * h * 0.02f
+                val blobR = maxOf(w, h) * 0.55f
+                // 柔光色块 A：珊瑚（左下）
                 drawRect(
                     brush = Brush.radialGradient(
-                        colors = listOf(accentColor.copy(alpha = 0.72f), accentColor.copy(alpha = 0.28f), Color.Transparent),
-                        center = Offset(w * 0.08f + driftX, h * 0.76f + driftY),
-                        radius = glowRadius * 0.94f
-                    )
-                )
-                drawRect(
-                    brush = Brush.radialGradient(
-                        colors = listOf(primaryColor.copy(alpha = 0.78f), primaryColor.copy(alpha = 0.27f), Color.Transparent),
-                        center = Offset(w * 0.88f - driftX, h * 0.57f - driftY),
-                        radius = glowRadius * 0.88f
-                    )
-                )
-                drawRect(
-                    brush = Brush.radialGradient(
-                        colors = listOf(coolBlue.copy(alpha = 0.52f), coolBlue.copy(alpha = 0.16f), Color.Transparent),
-                        center = Offset(w * 0.48f - driftX * 0.4f, h * 0.35f + driftY),
-                        radius = glowRadius * 0.72f
-                    )
-                )
-                drawRect(
-                    brush = Brush.radialGradient(
-                        colors = listOf(secondaryColor.copy(alpha = 0.52f), secondaryColor.copy(alpha = 0.17f), Color.Transparent),
-                        center = Offset(w * 0.13f + driftX * 0.6f, h * 0.42f - driftY),
-                        radius = glowRadius * 0.56f
-                    )
-                )
-                drawRect(
-                    brush = Brush.radialGradient(
-                        colors = listOf(violet.copy(alpha = 0.32f), Color.Transparent),
-                        center = Offset(w * 0.80f - driftX * 0.4f, h * 0.12f + driftY),
-                        radius = glowRadius * 0.45f
-                    )
-                )
-
-                // 一颗低对比度的玻璃光球：柔亮内芯、冷暖边缘与双道高光共同塑出厚度。
-                val orbCenter = Offset(w * 0.82f - driftX, h * 0.24f + driftY)
-                val orbRadius = minOf(w, h) * 0.16f
-                drawCircle(
-                    color = Color(0xFF070A12).copy(alpha = 0.24f),
-                    radius = orbRadius * 1.08f,
-                    center = orbCenter + Offset(4.dp.toPx(), 8.dp.toPx())
-                )
-                drawCircle(
-                    brush = Brush.radialGradient(
-                        colors = listOf(Color.White.copy(alpha = 0.20f), secondaryColor.copy(alpha = 0.11f), primaryColor.copy(alpha = 0.07f), Color.Transparent),
-                        center = orbCenter - Offset(orbRadius * 0.30f, orbRadius * 0.34f),
-                        radius = orbRadius * 1.35f
-                    ),
-                    radius = orbRadius,
-                    center = orbCenter
-                )
-                drawCircle(
-                    brush = Brush.sweepGradient(
-                        colors = listOf(Color.White.copy(alpha = 0.48f), secondaryColor.copy(alpha = 0.26f), Color.Transparent, accentColor.copy(alpha = 0.22f), Color.White.copy(alpha = 0.48f)),
-                        center = orbCenter
-                    ),
-                    radius = orbRadius,
-                    center = orbCenter,
-                    style = Stroke(width = 1.2.dp.toPx())
-                )
-                drawCircle(
-                    color = Color.White.copy(alpha = 0.22f),
-                    radius = orbRadius * 0.78f,
-                    center = orbCenter - Offset(orbRadius * 0.12f, orbRadius * 0.13f),
-                    style = Stroke(width = 0.7.dp.toPx())
-                )
-
-                // 多层弧线模拟液体折射：柔和阴影、彩色厚边、细窄镜面高光。
-                val drift = sin(ringSpinPhase * 0.42f) * h * 0.014f
-                val fluidSweep = Path().apply {
-                    moveTo(-w * 0.16f, h * 0.76f + drift)
-                    cubicTo(w * 0.10f, h * 0.58f + drift, w * 0.25f, h * 0.48f + drift, w * 0.43f, h * 0.59f + drift)
-                    cubicTo(w * 0.62f, h * 0.71f + drift, w * 0.68f, h * 0.82f - drift, w * 0.82f, h * 0.67f - drift)
-                    cubicTo(w * 0.96f, h * 0.52f - drift, w * 1.04f, h * 0.32f - drift, w * 1.16f, h * 0.28f - drift)
-                }
-                drawPath(
-                    path = fluidSweep,
-                    brush = Brush.linearGradient(
-                        colors = listOf(Color(0xFF10172A).copy(alpha = 0.30f), primaryColor.copy(alpha = 0.24f), secondaryColor.copy(alpha = 0.20f), Color(0xFF11182A).copy(alpha = 0.26f)),
-                        start = Offset(0f, h * 0.70f),
-                        end = Offset(w, h * 0.34f)
-                    ),
-                    style = Stroke(width = 72.dp.toPx())
-                )
-                drawPath(
-                    path = fluidSweep,
-                    brush = Brush.linearGradient(
                         colors = listOf(
-                            secondaryColor.copy(alpha = 0.31f),
-                            coolBlue.copy(alpha = 0.28f),
-                            primaryColor.copy(alpha = 0.32f),
-                            accentColor.copy(alpha = 0.26f)
+                            primaryColor.copy(alpha = 0.34f),
+                            primaryColor.copy(alpha = 0.12f),
+                            Color.Transparent
                         ),
-                        start = Offset(0f, h * 0.64f),
-                        end = Offset(w, h * 0.38f)
-                    ),
-                    style = Stroke(width = 44.dp.toPx())
+                        center = Offset(w * 0.12f + driftX, h * 0.78f + driftY),
+                        radius = blobR
+                    )
                 )
-                drawPath(
-                    path = fluidSweep,
-                    brush = Brush.linearGradient(
+                // 柔光色块 B：冰青（右上）
+                drawRect(
+                    brush = Brush.radialGradient(
                         colors = listOf(
-                            Color.White.copy(alpha = 0.08f),
-                            Color.White.copy(alpha = 0.32f),
                             secondaryColor.copy(alpha = 0.30f),
-                            Color.White.copy(alpha = 0.20f),
-                            accentColor.copy(alpha = 0.27f)
+                            secondaryColor.copy(alpha = 0.10f),
+                            Color.Transparent
                         ),
-                        start = Offset(0f, h * 0.64f),
-                        end = Offset(w, h * 0.38f)
-                    ),
-                    style = Stroke(width = 1.8.dp.toPx())
+                        center = Offset(w * 0.86f - driftX, h * 0.20f - driftY),
+                        radius = blobR * 0.9f
+                    )
+                )
+                // 柔光色块 C：暖金（右下微光）
+                drawRect(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            accentColor.copy(alpha = 0.22f),
+                            accentColor.copy(alpha = 0.07f),
+                            Color.Transparent
+                        ),
+                        center = Offset(w * 0.78f + driftY, h * 0.88f - driftX * 0.5f),
+                        radius = blobR * 0.7f
+                    )
                 )
             }
 

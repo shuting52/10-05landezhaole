@@ -56,6 +56,7 @@ import com.example.data.model.NavCard
 import com.example.ui.theme.FlameRed
 import com.example.ui.theme.LocalThemeUiColors
 import com.example.ui.theme.LocalUiverseState
+import com.example.ui.theme.liquidGlass
 import com.example.ui.theme.SunsetOrange
 import com.example.ui.uiverse.CardStylePreset
 
@@ -280,17 +281,35 @@ fun ResourceCard(
                     ambientColor = shadowSpotColor.copy(alpha = 0.2f)
                 )
                 .clip(cardShape)
-                .then(cardBgModifier)
-                .streamingBorder(
-                    cornerRadius = cardCornerRadius,
-                    strokeWidth = if (useLiquidGlassSurface) 1.6.dp else 1.4.dp,
-                    glowWidth = 3.2.dp,
-                    accentColor = if (useLiquidGlassSurface) themeUi.secondary else themeUi.primary,
-                    tailColor = if (useLiquidGlassSurface) themeUi.accent.copy(alpha = 0.72f) else themeUi.primary.copy(alpha = 0.45f),
-                    baseBorderColor = if (useLiquidGlassSurface) Color.White.copy(alpha = 0.46f) else themeUi.border.copy(alpha = 0.35f),
-                    phaseOffset = (card.id.hashCode().let { if (it < 0) -it else it } % 360).toFloat(),
-                    showGlow = !useLiquidGlassSurface,
-                    rainbow = !useLiquidGlassSurface
+                // 2026-10-22 液态玻璃重写：玻璃主体改由 Modifier.liquidGlass() 按四步法绘制
+                .then(if (useLiquidGlassSurface) Modifier else cardBgModifier)
+                .then(
+                    if (useLiquidGlassSurface) {
+                        Modifier.liquidGlass(
+                            cornerRadius = 28.dp,
+                            tint = themeUi.secondary,
+                            refractionColors = listOf(
+                                Color.White.copy(alpha = 0.85f),
+                                themeUi.secondary.copy(alpha = 0.45f),
+                                Color.White.copy(alpha = 0.15f),
+                                themeUi.primary.copy(alpha = 0.45f),
+                                themeUi.accent.copy(alpha = 0.35f),
+                                Color.White.copy(alpha = 0.85f)
+                            )
+                        )
+                    } else {
+                        Modifier.streamingBorder(
+                            cornerRadius = cardCornerRadius,
+                            strokeWidth = 1.4.dp,
+                            glowWidth = 3.2.dp,
+                            accentColor = themeUi.primary,
+                            tailColor = themeUi.primary.copy(alpha = 0.45f),
+                            baseBorderColor = themeUi.border.copy(alpha = 0.35f),
+                            phaseOffset = (card.id.hashCode().let { if (it < 0) -it else it } % 360).toFloat(),
+                            showGlow = true,
+                            rainbow = true
+                        )
+                    }
                 )
                 .combinedClickable(
                     onClick = { onCardClick(card) },
@@ -298,72 +317,8 @@ fun ResourceCard(
                 )
                 .padding(horizontal = 7.dp, vertical = 7.dp)
         ) {
-            if (useLiquidGlassSurface) {
-                // 保留背景里的彩色折射，用深色玻璃底、斜向高光和双层亮边塑造厚度。
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.linearGradient(
-                                listOf(
-                                    Color.White.copy(alpha = 0.13f),
-                                    themeUi.secondary.copy(alpha = 0.08f),
-                                    themeUi.surface.copy(alpha = 0.24f),
-                                    themeUi.accent.copy(alpha = 0.09f)
-                                )
-                            )
-                        )
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.linearGradient(
-                                listOf(
-                                    Color.White.copy(alpha = 0.22f),
-                                    Color.White.copy(alpha = 0.06f),
-                                    Color.Transparent,
-                                    themeUi.secondary.copy(alpha = 0.035f),
-                                    themeUi.accent.copy(alpha = 0.11f)
-                                )
-                            )
-                        )
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(1.dp)
-                        .border(
-                            0.7.dp,
-                            Brush.linearGradient(
-                                listOf(
-                                    Color.White.copy(alpha = 0.30f),
-                                    Color.Transparent,
-                                    themeUi.secondary.copy(alpha = 0.20f),
-                                    themeUi.accent.copy(alpha = 0.18f)
-                                )
-                            ),
-                            cardShape
-                        )
-                )
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(
-                            Brush.horizontalGradient(
-                                listOf(
-                                    Color.Transparent,
-                                    Color.White.copy(alpha = 0.56f),
-                                    themeUi.secondary.copy(alpha = 0.52f),
-                                    Color.White.copy(alpha = 0.30f),
-                                    Color.Transparent
-                                )
-                            )
-                        )
-                )
-            } else {
+            // 液态玻璃：主体已由 Modifier.liquidGlass() 四步法绘制，此处不再叠加旧式 Box 图层。
+            if (!useLiquidGlassSurface) {
                 // 其他已选择的卡片风格沿用原有渲染。
                 RainbowSpinBackground(Modifier.fillMaxSize())
                 Box(

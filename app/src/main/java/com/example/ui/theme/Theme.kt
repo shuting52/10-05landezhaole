@@ -81,7 +81,7 @@ val LocalThemeUiColors = staticCompositionLocalOf { ThemeUiColors() }
 // v1.7.27：App 主题（LEVER UI 拨杆玩具风加入）
 // ============================================================
 enum class AppTheme(val displayName: String, val desc: String) {
-    AERO("Liquid Glass", "液态玻璃 · 炽色流光与立体透光卡片"),
+    AERO("Liquid Glass", "液态玻璃 · 通透折射与厚度高光"),
     LEVER("LEVER UI", "拨杆玩具风 · 硬阴影按压回弹")
 }
 
@@ -104,26 +104,24 @@ fun leverUiColors() = ThemeUiColors(
     designStyle = DesignStyle.CLAYMORPHISM  // 玩具质感最接近粘土拟态
 )
 
-/** Liquid Glass：深海靛蓝底色，珊瑚、冰青与暖金形成克制的彩色折射。 */
+/** Liquid Glass：深海靛蓝底色，珊瑚、冰青与暖金形成克制的彩色折射。
+ *  2026-10-22 按用户四步法重写：背景只用靛蓝→紫两种主色柔和渐变，
+ *  卡片玻璃层由 Modifier.liquidGlass() 按“模糊增色/叠白/厚度/折射色散”四步绘制。 */
 fun aeroUiColors() = ThemeUiColors(
-    primary = Color(0xFFFF7890),
-    secondary = Color(0xFF78E7E0),
-    background = Color(0xFF0B0F1A),
-    surface = Color(0xE61B2233),
-    text = Color(0xFFF7F8FC),
-    textMuted = Color(0xFFC4CAD8),
-    accent = Color(0xFFFFC17D),
-    border = Color.White.copy(alpha = 0.30f),
-    cardGradient = listOf(
-        Color(0xCC273047),
-        Color(0xB51A2234),
-        Color(0xC51B1D2C)
-    ),
+    primary = Color(0xFFFF7A93),        // 折射珊瑚
+    secondary = Color(0xFF7DE8E0),      // 折射冰青
+    background = Color(0xFF0C1122),     // 深海靛蓝
+    surface = Color(0xFF151C33),
+    text = Color(0xFFF5F7FC),
+    textMuted = Color(0xFFA6AEC7),
+    accent = Color(0xFFFFC37E),         // 折射暖金
+    border = Color.White.copy(alpha = 0.35f),
+    // 卡片兜底渐变（玻璃主体由 liquidGlass 绘制，此处仅作非玻璃场景回退）
+    cardGradient = listOf(Color.White.copy(alpha = 0.16f), Color.White.copy(alpha = 0.07f)),
+    // 背景渐变：靛蓝 → 紫，两种主色，大块柔和
     backgroundGradient = listOf(
-        Color(0xFF0A0E18),
-        Color(0xFF172034),
-        Color(0xFF21192D),
-        Color(0xFF0C1422)
+        Color(0xFF111832),
+        Color(0xFF1D1A3E)
     ),
     designStyle = DesignStyle.LIQUID_GLASS
 )
