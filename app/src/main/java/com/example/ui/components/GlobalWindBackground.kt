@@ -1530,27 +1530,47 @@ private fun DesignStyleBackground(
             }
 
             DesignStyle.LIQUID_GLASS -> {
-                // 7️⃣ 液态玻璃（v1.4.15修复：此前写死浅蓝底，主题切换背景不变；现从主题色派生）
+                // 深色基底与暖橙、莓粉、靛蓝的柔和光晕，取自默认主题参考样式。
                 drawRect(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            lerp(baseColor, secondaryColor, 0.10f),
-                            baseColor,
-                            lerp(baseColor, primaryColor, 0.06f)
-                        )
+                    brush = Brush.linearGradient(
+                        colors = listOf(Color(0xFF17172E), Color(0xFF39213E), Color(0xFF17223D)),
+                        start = Offset(w, 0f),
+                        end = Offset(0f, h)
                     )
                 )
-                // 动态液态高透光折射环（3 层水波纹扩散）
+                val glowRadius = maxOf(w, h) * 0.62f
+                drawRect(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color(0xFFFF9260).copy(alpha = 0.72f), Color(0xFFFF9260).copy(alpha = 0.20f), Color.Transparent),
+                        center = Offset(w * 0.14f, h * 0.20f),
+                        radius = glowRadius
+                    )
+                )
+                drawRect(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color(0xFFCF4877).copy(alpha = 0.64f), Color(0xFFCF4877).copy(alpha = 0.18f), Color.Transparent),
+                        center = Offset(w * 0.82f, h * 0.35f),
+                        radius = glowRadius
+                    )
+                )
+                drawRect(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color(0xFF435EB4).copy(alpha = 0.60f), Color(0xFF435EB4).copy(alpha = 0.16f), Color.Transparent),
+                        center = Offset(w * 0.55f, h * 0.88f),
+                        radius = glowRadius
+                    )
+                )
+                // 留下低对比度的折射波纹，让背景有层次但不抢内容。
                 val center = Offset(w * 0.50f, h * 0.42f)
                 for (i in 1..4) {
                     val waveR = ((40 + i * 45).dp.toPx() + sin(ringSpinPhase * 1.5f + i) * 16.dp.toPx()).coerceAtLeast(10f)
                     drawCircle(
                         brush = Brush.sweepGradient(
                             listOf(
-                                secondaryColor.copy(alpha = 0.35f),
-                                primaryColor.copy(alpha = 0.22f),
-                                secondaryColor.copy(alpha = 0.30f),
-                                secondaryColor.copy(alpha = 0.35f)
+                                secondaryColor.copy(alpha = 0.14f),
+                                primaryColor.copy(alpha = 0.08f),
+                                secondaryColor.copy(alpha = 0.12f),
+                                secondaryColor.copy(alpha = 0.14f)
                             ),
                             center = center
                         ),
@@ -1559,10 +1579,9 @@ private fun DesignStyleBackground(
                         style = Stroke(width = 3.5.dp.toPx())
                     )
                 }
-                // 游走的高光水珠
                 val dropPos = Offset(w * 0.70f + cos(ringSpinPhase) * 40f, h * 0.25f + sin(ringSpinPhase) * 25f)
-                drawCircle(Color.White.copy(alpha = 0.75f), radius = 16.dp.toPx(), center = dropPos)
-                drawCircle(secondaryColor.copy(alpha = 0.40f), radius = 16.dp.toPx(), center = dropPos, style = Stroke(2.dp.toPx()))
+                drawCircle(Color.White.copy(alpha = 0.24f), radius = 16.dp.toPx(), center = dropPos)
+                drawCircle(secondaryColor.copy(alpha = 0.20f), radius = 16.dp.toPx(), center = dropPos, style = Stroke(2.dp.toPx()))
             }
 
             DesignStyle.NEO_BRUTALISM -> {

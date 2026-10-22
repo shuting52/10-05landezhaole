@@ -91,6 +91,8 @@ fun ResourceCard(
     }.let { if (cardCompStyle != null) cardCompStyle.cornerRadius else it }
 
     val designStyle = themeUi.designStyle
+    val useLiquidGlassSurface = designStyle == DesignStyle.LIQUID_GLASS &&
+        uiverse.cardStyle == CardStylePreset.DEFAULT && cardCompStyle == null
 
     val cardShape = when {
         cardCompStyle != null -> RoundedCornerShape(cardCompStyle.cornerRadius)
@@ -103,7 +105,7 @@ fun ResourceCard(
         designStyle == DesignStyle.MINIMALISM -> RoundedCornerShape(6.dp)
         designStyle == DesignStyle.BAUHAUS -> RoundedCornerShape(4.dp)
         designStyle == DesignStyle.RETROFUTURISM -> RoundedCornerShape(10.dp)
-        designStyle == DesignStyle.LIQUID_GLASS -> RoundedCornerShape(20.dp)
+        designStyle == DesignStyle.LIQUID_GLASS -> RoundedCornerShape(28.dp)
         designStyle == DesignStyle.GLASSMORPHISM -> RoundedCornerShape(18.dp)
         designStyle == DesignStyle.NEUMORPHISM -> RoundedCornerShape(16.dp)
         designStyle == DesignStyle.SKEUOMORPHISM -> RoundedCornerShape(12.dp)
@@ -280,7 +282,8 @@ fun ResourceCard(
                     tailColor = themeUi.primary.copy(alpha = 0.45f),
                     baseBorderColor = themeUi.border.copy(alpha = 0.35f),
                     phaseOffset = (card.id.hashCode().let { if (it < 0) -it else it } % 360).toFloat(),
-                    showGlow = true
+                    showGlow = !useLiquidGlassSurface,
+                    rainbow = !useLiquidGlassSurface
                 )
                 .combinedClickable(
                     onClick = { onCardClick(card) },
@@ -288,21 +291,53 @@ fun ResourceCard(
                 )
                 .padding(horizontal = 7.dp, vertical = 7.dp)
         ) {
-            // v1.1.17 彩虹旋转渐变卡片背景 + 液体玻璃折射半透表层
-            RainbowSpinBackground(Modifier.fillMaxSize())
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.linearGradient(
-                            listOf(
-                                Color.White.copy(alpha = 0.72f),
-                                Color(0xFFF6F2FF).copy(alpha = 0.62f),
-                                Color.White.copy(alpha = 0.76f)
+            if (useLiquidGlassSurface) {
+                // 半透磨砂底与斜向柔亮高光；保留背景色透出，不再叠加彩虹旋转层。
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.linearGradient(
+                                listOf(
+                                    Color.White.copy(alpha = 0.20f),
+                                    Color.White.copy(alpha = 0.08f),
+                                    Color(0xFFCAAAFF).copy(alpha = 0.12f)
+                                )
                             )
                         )
-                    )
-            )
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.linearGradient(
+                                listOf(
+                                    Color.White.copy(alpha = 0.34f),
+                                    Color.White.copy(alpha = 0.08f),
+                                    Color.Transparent,
+                                    Color.Transparent,
+                                    Color(0xFFFFCEEA).copy(alpha = 0.16f)
+                                )
+                            )
+                        )
+                )
+            } else {
+                // 其他已选择的卡片风格沿用原有渲染。
+                RainbowSpinBackground(Modifier.fillMaxSize())
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.linearGradient(
+                                listOf(
+                                    Color.White.copy(alpha = 0.72f),
+                                    Color(0xFFF6F2FF).copy(alpha = 0.62f),
+                                    Color.White.copy(alpha = 0.76f)
+                                )
+                            )
+                        )
+                )
+            }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()

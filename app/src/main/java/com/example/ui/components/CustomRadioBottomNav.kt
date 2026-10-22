@@ -126,11 +126,13 @@ fun CustomRadioBottomNav(
     val navCorner = when (themeColors.designStyle) {
         DesignStyle.HAND_DRAWN -> 24.dp
         DesignStyle.CARTOON -> 28.dp
+        DesignStyle.LIQUID_GLASS -> 28.dp
         else -> 18.dp
     }
     val navPillCorner = when (themeColors.designStyle) {
         DesignStyle.HAND_DRAWN -> 16.dp
         DesignStyle.CARTOON -> 20.dp
+        DesignStyle.LIQUID_GLASS -> 18.dp
         else -> 12.dp
     }
     val navItems = listOf(
@@ -181,9 +183,11 @@ fun CustomRadioBottomNav(
         )
     )
 
+    val isLiquidGlass = themeColors.designStyle == DesignStyle.LIQUID_GLASS
     val highlightColor = themeColors.secondary
     val selectedTextColor = themeColors.text
-    val unselectedColor = themeColors.text.copy(alpha = 0.45f)
+    val unselectedColor = if (isLiquidGlass) themeColors.textMuted.copy(alpha = 0.82f)
+        else themeColors.text.copy(alpha = 0.45f)
 
     Box(
         modifier = modifier
@@ -194,8 +198,12 @@ fun CustomRadioBottomNav(
             .padding(horizontal = 24.dp, vertical = 6.dp)
             .shadow(6.dp, RoundedCornerShape(navCorner), ambientColor = Color.Black.copy(alpha = 0.08f))
             .clip(RoundedCornerShape(navCorner))
-            .background(themeColors.surface)
-            .border(1.dp, themeColors.primary.copy(alpha = 0.18f), RoundedCornerShape(navCorner))
+            .background(if (isLiquidGlass) themeColors.surface.copy(alpha = 0.84f) else themeColors.surface)
+            .border(
+                1.dp,
+                if (isLiquidGlass) Color.White.copy(alpha = 0.28f) else themeColors.primary.copy(alpha = 0.18f),
+                RoundedCornerShape(navCorner)
+            )
             .padding(horizontal = 6.dp, vertical = 5.dp)
     ) {
         Row(
@@ -207,7 +215,9 @@ fun CustomRadioBottomNav(
                 val isSelected = selectedTab == item.tab
                 // 选中态背景色动画
                 val pillColor by animateColorAsState(
-                    targetValue = if (isSelected) highlightColor else Color.Transparent,
+                    targetValue = if (isSelected) {
+                        if (isLiquidGlass) highlightColor.copy(alpha = 0.38f) else highlightColor
+                    } else Color.Transparent,
                     animationSpec = tween(250),
                     label = "tabPill"
                 )

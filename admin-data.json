@@ -24319,7 +24319,7 @@
     "bgColor": "#0A192F"
   },
   "welcome": {
-    "enabled": true,
+    "enabled": false,
     "title": "软件区变动通知",
     "welcomeText": "软件区整理了一下～",
     "content": "以下软件已下架：\n• 幸运破解器\n• PixelLab\n• 简影\n\n✅「豆包去水印」已恢复上架（v3.6），下载链接已修复，可正常下载安装。\n\n当前软件区：Geek Uninstaller、Everything 极速搜盘、豆包去水印",

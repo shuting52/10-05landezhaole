@@ -104,26 +104,26 @@ fun leverUiColors() = ThemeUiColors(
     designStyle = DesignStyle.CLAYMORPHISM  // 玩具质感最接近粘土拟态
 )
 
-/** 液态玻璃色板（默认） */
+/** 默认液态玻璃色板：深色渐层、暖粉高光与半透明玻璃卡片 */
 fun aeroUiColors() = ThemeUiColors(
-    primary = Color(0xFF5E58BC),
-    secondary = Color(0xFF7B69B8),
-    background = Color(0xFFF0ECF6),
-    surface = Color(0xFFFCFAFF),
-    text = Color(0xFF29263A),
-    textMuted = Color(0xFF706B82),
-    accent = Color(0xFFE47D99),
-    border = Color(0xFF8E7BC5).copy(alpha = 0.38f),
+    primary = Color(0xFFBE6383),
+    secondary = Color(0xFFAA7EC0),
+    background = Color(0xFF17172E),
+    surface = Color(0xFF39213E),
+    text = Color(0xFFFFFAFD),
+    textMuted = Color(0xFFD8CDD9),
+    accent = Color(0xFFFFA795),
+    border = Color.White.copy(alpha = 0.28f),
+    // 与参考样式一致：白色雾面、高光和淡紫折射层叠在深色背景上
     cardGradient = listOf(
-        Color(0xFFFFFCFF).copy(alpha = 0.90f),
-        Color(0xFFF4EFFB).copy(alpha = 0.72f),
-        Color(0xFFFCECF1).copy(alpha = 0.78f)
+        Color(0x33FFFFFF),
+        Color(0x14FFFFFF),
+        Color(0x1FCAAAFF)
     ),
     backgroundGradient = listOf(
-        Color(0xFFDCD6F2),
-        Color(0xFFF0DCEB),
-        Color(0xFFF9DFD6),
-        Color(0xFFF0ECF6)
+        Color(0xFF17172E),
+        Color(0xFF39213E),
+        Color(0xFF17223D)
     ),
     designStyle = DesignStyle.LIQUID_GLASS
 )
