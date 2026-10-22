@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 243,
-    "name": "1.7.33",
+    "code": 244,
+    "name": "1.7.34",
     "changelog": [
-      "✨ v1.7.33 更新来啦～",
-      "fix(theme): migrate existing installs to liquid glass default"
+      "✨ v1.7.34 更新来啦～",
+      "Redesign Liquid Glass UI theme"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.33-1792667693.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.33-1792667693.apk",
-    "lastBuildSha": "a58397a4820c1c614adf47e8e5944a43f74ea591",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.34-1792669234.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.34-1792669234.apk",
+    "lastBuildSha": "26b48f822cb6ebb21b35e1f0ff7e229b5af31d11",
     "apkSize": 24078672
   },
   "home": {
@@ -24328,10 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.33 已上线",
+    "title": "懒得找了 v1.7.34 已上线",
     "changelog": [
-      "✨ v1.7.33 更新来啦～",
-      "fix(theme): migrate existing installs to liquid glass default"
+      "✨ v1.7.34 更新来啦～",
+      "Redesign Liquid Glass UI theme"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24349,14 +24349,6 @@
     "url": "https://myip.ipip.net/"
   },
   "tools": [
-    {
-      "id": "liquid-theme-preview",
-      "name": "液态玻璃主题预览",
-      "desc": "10 套液态主题 × 本 App 界面实时预览",
-      "url": "https://shuting52.github.io/app-gallery/landezhaole-theme-preview.html",
-      "icon": "💧",
-      "badge": "NEW"
-    },
     {
       "id": "sana-ai",
       "name": "Sana AI 生图",
@@ -24410,10 +24402,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.33",
-      "code": 243,
-      "at": "2026-10-22T11:15:00Z",
-      "sha": "a58397a4820c1c614adf47e8e5944a43f74ea591"
+      "version": "1.7.34",
+      "code": 244,
+      "at": "2026-10-22T11:40:40Z",
+      "sha": "26b48f822cb6ebb21b35e1f0ff7e229b5af31d11"
     }
   },
   "_ai_notice": "内容由AI生成"
