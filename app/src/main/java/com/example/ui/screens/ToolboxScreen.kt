@@ -343,6 +343,8 @@ fun ToolboxScreen(
     var showAddRingToolDialog by remember { mutableStateOf(false) }
     // 环形菜单底部抽屉状态（对应 rm-sheet）
     var sheetGroupIndex by remember { mutableStateOf<Int?>(null) }
+    // v1.7.30：App 内 WebView 打开工具链接（不跳外部浏览器）
+    var inAppWebUrl by remember { mutableStateOf<String?>(null) }
     // 呈现方式 & 按住时触发的动态效果（本地持久化保存用户的选择）
     val context = androidx.compose.ui.platform.LocalContext.current
     val ringPrefs = remember { context.getSharedPreferences("lzdz_ring_custom_tools", Context.MODE_PRIVATE) }
@@ -460,21 +462,12 @@ fun ToolboxScreen(
                 onSelectGroup = { index -> sheetGroupIndex = index },
                 onDirectOpenTool = { tab -> activeTool = tab },
                 onOpenExternalUrl = { url ->
-                    try {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        context.startActivity(intent)
-                    } catch (e: Exception) {
-                        Toast.makeText(context, "无法打开链接：$url", Toast.LENGTH_SHORT).show()
-                    }
+                    // v1.7.30：App 内 WebView 打开，不跳外部浏览器
+                    inAppWebUrl = url
                 }
             )
 
-            // ===== 云端工具（控制台实时同步，直接平铺）=====
-            if (cloudTools.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                CloudToolGrid(cloudTools = cloudTools, context = context)
-            }
+            // v1.7.30：云端工具只在环形菜单内展示，不再平铺
             Spacer(modifier = Modifier.height(6.dp))
         }
 
@@ -493,15 +486,18 @@ fun ToolboxScreen(
             },
             onOpenExternalUrl = { url ->
                 sheetGroupIndex = null
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    context.startActivity(intent)
-                } catch (e: Exception) {
-                    Toast.makeText(context, "无法打开链接：$url", Toast.LENGTH_SHORT).show()
-                }
+                // v1.7.30：App 内 WebView 打开，不跳外部浏览器
+                inAppWebUrl = url
             }
         )
+
+        // v1.7.30：App 内 WebView 弹窗
+        if (inAppWebUrl != null) {
+            InAppWebViewDialog(
+                url = inAppWebUrl!!,
+                onClose = { inAppWebUrl = null }
+            )
+        }
 
         // 点击「加工具」或新环形「+」槽位弹出的新增环形工具窗口（满 8 个自动生成下一环）
         if (showAddRingToolDialog) {
@@ -3148,6 +3144,78 @@ private fun OfflineTreasureScreenView() {
     ) {
         item {
             OfflineTreasureSection()
+        }
+    }
+}
+/**
+ * v1.7.30：App 内 WebView 弹窗（工具链接不跳外部浏览器）
+ */
+@Composable
+private fun InAppWebViewDialog(
+    url: String,
+    onClose: () -> Unit
+) {
+    androidx.compose.ui.window.Dialog(
+        onDismissRequest = onClose,
+        properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        androidx.compose.foundation.layout.Column(
+            modifier = androidx.compose.foundation.layout.Modifier
+                .fillMaxSize()
+                .background(androidx.compose.ui.graphics.Color.White)
+        ) {
+            // 顶部栏
+            androidx.compose.foundation.layout.Row(
+                modifier = androidx.compose.foundation.layout.Modifier
+                    .fillMaxWidth()
+                    .background(com.example.ui.theme.LocalThemeUiColors.current.primary)
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            ) {
+                androidx.compose.material3.IconButton(onClick = onClose) {
+                    androidx.compose.material3.Icon(
+                        androidx.compose.material.icons.Icons.Filled.ArrowBack,
+                        contentDescription = "返回",
+                        tint = androidx.compose.ui.graphics.Color.White
+                    )
+                }
+                androidx.compose.material3.Text(
+                    text = url.take(50),
+                    color = androidx.compose.ui.graphics.Color.White,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    modifier = androidx.compose.foundation.layout.Modifier.weight(1f)
+                )
+                androidx.compose.material3.IconButton(
+                    onClick = {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            onClose()
+                        } catch (_: Exception) { }
+                    }
+                ) {
+                    androidx.compose.material3.Icon(
+                        androidx.compose.material.icons.Icons.Filled.OpenInBrowser,
+                        contentDescription = "外部打开",
+                        tint = androidx.compose.ui.graphics.Color.White
+                    )
+                }
+            }
+            // WebView
+            androidx.compose.ui.viewinterop.AndroidView(
+                factory = { ctx ->
+                    android.webkit.WebView(ctx).apply {
+                        settings.javaScriptEnabled = true
+                        settings.domStorageEnabled = true
+                        settings.loadWithOverviewMode = true
+                        settings.useWideViewPort = true
+                        webViewClient = android.webkit.WebViewClient()
+                        loadUrl(url)
+                    }
+                },
+                modifier = androidx.compose.foundation.layout.Modifier.fillMaxSize()
+            )
         }
     }
 }
