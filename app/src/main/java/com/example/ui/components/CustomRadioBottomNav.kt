@@ -198,22 +198,22 @@ fun CustomRadioBottomNav(
             .padding(horizontal = 24.dp, vertical = 6.dp)
             .shadow(14.dp, RoundedCornerShape(navCorner), ambientColor = Color.Black.copy(alpha = 0.18f))
             .clip(RoundedCornerShape(navCorner))
-            // 2026-10-22 Liquid Glass 底部导航（对标 LiquidGlass.vue token，浅色适配）：
-            // 蓝调玻璃底（提高饱和度不发灰）+ 白 17%→5%→10% tint + 1.2px 渐变亮边
+            // 2026-10-23 Liquid Glass 底部导航（对标预览页浅色 token）：
+            // 柔雾玻璃底 + 白 36%→15%→24% tint + 1.2px 浅色渐变亮边
             .background(
                 Brush.verticalGradient(
                     listOf(
-                        Color(0xFFF2FAFF).copy(alpha = 0.86f),
-                        Color(0xFFDCEFFD).copy(alpha = 0.82f)
+                        Color(0xFFF4FAFF).copy(alpha = 0.88f),
+                        Color(0xFFE2F0FC).copy(alpha = 0.84f)
                     )
                 )
             )
             .background(
                 Brush.linearGradient(
                     listOf(
-                        Color.White.copy(alpha = 0.17f),
-                        Color.White.copy(alpha = 0.05f),
-                        Color.White.copy(alpha = 0.10f)
+                        Color.White.copy(alpha = 0.36f),
+                        Color.White.copy(alpha = 0.15f),
+                        Color.White.copy(alpha = 0.24f)
                     )
                 )
             )
@@ -221,11 +221,11 @@ fun CustomRadioBottomNav(
                 1.2.dp,
                 Brush.linearGradient(
                     listOf(
-                        Color.White.copy(alpha = 0.95f),
-                        Color.White.copy(alpha = 0.22f),
-                        Color.White.copy(alpha = 0.05f),
-                        Color.White.copy(alpha = 0.12f),
-                        Color.White.copy(alpha = 0.78f)
+                        Color.White.copy(alpha = 0.98f),
+                        Color.White.copy(alpha = 0.55f),
+                        Color(0xFF5A82B4).copy(alpha = 0.13f),
+                        Color.White.copy(alpha = 0.38f),
+                        Color.White.copy(alpha = 0.90f)
                     )
                 ),
                 RoundedCornerShape(navCorner)

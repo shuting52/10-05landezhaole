@@ -231,11 +231,11 @@ fun ResourceCard(
             1.2.dp,
             Brush.linearGradient(
                 listOf(
-                    Color.White.copy(alpha = 0.95f),
-                    Color.White.copy(alpha = 0.22f),
-                    Color.White.copy(alpha = 0.05f),
-                    Color.White.copy(alpha = 0.12f),
-                    Color.White.copy(alpha = 0.78f)
+                    Color.White.copy(alpha = 0.98f),
+                    Color.White.copy(alpha = 0.55f),
+                    Color(0xFF5A82B4).copy(alpha = 0.13f),
+                    Color.White.copy(alpha = 0.38f),
+                    Color.White.copy(alpha = 0.90f)
                 )
             ),
             cardShape

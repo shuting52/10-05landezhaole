@@ -57,10 +57,9 @@ val WindPeach4 = Color(0xFFFAC097)
 val WindPeach5 = Color(0xFFFAC39C)
 
 /**
- * 全局玻璃背景（2026-10-22 重写：Liquid Glass 默认主题背景，按用户收藏配方）
- * - 基底：主题 backgroundGradient 浅蓝静态渐变，无动画
- * - 色块：大块柔和形状（云朵/水面感），尺寸大于模糊范围，主色一两种（天空蓝+青），
- *   透明度压低保证文字下方不太亮；全部静态
+ * 全局玻璃背景（2026-10-23 重写：对标可交互预览页浅色柔雾 wallpaper）
+ * - 基底：#B8D6EE 静态，无动画
+ * - 色块：四色大块柔和椭圆（暖黄/粉/青/薰衣草紫），尺寸远大于模糊范围，静态
  * - 保留：用户自定义背景媒体（图片/视频）
  */
 @Composable
@@ -72,65 +71,63 @@ fun GlobalWindBackground(
     content: @Composable BoxScope.() -> Unit
 ) {
     val theme = LocalThemeUiColors.current
-    // 背景渐变取自主题 backgroundGradient（浅蓝）
+    // 背景渐变取自主题 backgroundGradient（柔雾蓝基底）
     val themeGradientColors: List<Color> = theme.backgroundGradient
     val themePrimaryColor: Color = theme.primary
 
     Box(modifier = modifier.fillMaxSize()) {
-        // ========== 1. 静态玻璃背景：渐变基底 + 大块柔和色块 ==========
+        // ========== 1. 静态柔雾背景：基底 + 四色大块柔和色块 ==========
         Canvas(modifier = Modifier.fillMaxSize()) {
             val w = size.width
             val h = size.height
-            // 基底：浅蓝静态渐变
+            // 基底：柔雾蓝静态渐变
             drawRect(
                 brush = Brush.verticalGradient(
                     colors = if (themeGradientColors.size >= 2) themeGradientColors
                     else listOf(theme.background, theme.background)
                 )
             )
-            // 大块柔和色块（云朵/水面感）：天空蓝 + 青，主色两种，静态，尺寸远大于模糊范围
-            val blobR = maxOf(w, h) * 0.55f
-            // 左上云朵：天空蓝柔光
+            // 四色柔雾色块（对标预览页浅色 wallpaper）：暖黄 / 粉 / 青 / 薰衣草紫
+            val blobR = maxOf(w, h) * 0.38f
+            // 左上暖黄
             drawCircle(
                 brush = Brush.radialGradient(
-                    colors = listOf(
-                        Color(0xFF4FB8F0).copy(alpha = 0.38f),
-                        Color(0xFF4FB8F0).copy(alpha = 0.12f),
-                        Color.Transparent
-                    ),
-                    center = Offset(w * 0.22f, h * 0.18f),
+                    colors = listOf(Color(0xFFFFE5AC), Color.Transparent),
+                    center = Offset(w * 0.18f, h * 0.16f),
                     radius = blobR
                 ),
                 radius = blobR,
-                center = Offset(w * 0.22f, h * 0.18f)
+                center = Offset(w * 0.18f, h * 0.16f)
             )
-            // 右中水面：青色柔光
+            // 右上粉
             drawCircle(
                 brush = Brush.radialGradient(
-                    colors = listOf(
-                        Color(0xFF38D6C8).copy(alpha = 0.30f),
-                        Color(0xFF38D6C8).copy(alpha = 0.10f),
-                        Color.Transparent
-                    ),
-                    center = Offset(w * 0.80f, h * 0.52f),
-                    radius = blobR * 0.9f
+                    colors = listOf(Color(0xFFF4BFD2), Color.Transparent),
+                    center = Offset(w * 0.86f, h * 0.20f),
+                    radius = blobR
                 ),
-                radius = blobR * 0.9f,
-                center = Offset(w * 0.80f, h * 0.52f)
+                radius = blobR,
+                center = Offset(w * 0.86f, h * 0.20f)
             )
-            // 底部云絮：白色柔光（提亮但压低透明度，文字下方不太亮）
+            // 右下青
             drawCircle(
                 brush = Brush.radialGradient(
-                    colors = listOf(
-                        Color.White.copy(alpha = 0.35f),
-                        Color.White.copy(alpha = 0.10f),
-                        Color.Transparent
-                    ),
-                    center = Offset(w * 0.45f, h * 0.88f),
-                    radius = blobR * 0.8f
+                    colors = listOf(Color(0xFFA9D9EC), Color.Transparent),
+                    center = Offset(w * 0.72f, h * 0.79f),
+                    radius = blobR * 1.05f
                 ),
-                radius = blobR * 0.8f,
-                center = Offset(w * 0.45f, h * 0.88f)
+                radius = blobR * 1.05f,
+                center = Offset(w * 0.72f, h * 0.79f)
+            )
+            // 左下薰衣草紫
+            drawCircle(
+                brush = Brush.radialGradient(
+                    colors = listOf(Color(0xFFC6C8FF), Color.Transparent),
+                    center = Offset(w * 0.24f, h * 0.78f),
+                    radius = blobR
+                ),
+                radius = blobR,
+                center = Offset(w * 0.24f, h * 0.78f)
             )
         }
 

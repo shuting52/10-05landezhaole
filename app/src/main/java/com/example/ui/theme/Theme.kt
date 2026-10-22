@@ -82,28 +82,27 @@ val LocalThemeUiColors = staticCompositionLocalOf { ThemeUiColors() }
 // 不再提供 Liquid Glass / LEVER UI / 极光流体 三个主题选项。
 // ============================================================
 
-/** 2026-10-22 Liquid Glass 默认主题：天空蓝主色 + 玻璃拟态（用户指定为软件默认主题）
- * 玻璃配方（用户收藏）：加大模糊感 / 提高饱和度不发灰 / 叠白 10% / 1px 亮边 / 边缘折射；
- * 背景配方：大块柔和形状（水面/云朵感，大于模糊范围）、主色一两种、文字下方别太亮。 */
+/** 2026-10-23 Liquid Glass 默认主题（对标可交互预览页浅色 token）
+ * 玻璃 tint：白 36% → 白 15% → 白 24%；文字 #253C5C；背景基底 #B8D6EE + 四色柔雾色块 */
 fun defaultUiColors() = ThemeUiColors(
     primary = Color(0xFF00A8E8),        // 天空蓝
     secondary = Color(0xFF0090C9),      // 深海蓝
-    background = Color(0xFFE8F9FF),     // 最浅天空
+    background = Color(0xFFB8D6EE),     // 柔雾蓝（预览页浅色基底）
     surface = Color(0xFFFFFFFF),
-    text = Color(0xFF0A2540),           // 墨蓝
-    textMuted = Color(0xFF5B7A90),      // 浅灰蓝
+    text = Color(0xFF253C5C),           // 预览页浅色文字
+    textMuted = Color(0xFF253C5C).copy(alpha = 0.68f),
     accent = Color(0xFF00A8E8),
     border = Color(0xFF00A8E8).copy(alpha = 0.35f),
-    // 玻璃卡片渐变：白 17% → 白 5% → 白 10%（对标 LiquidGlass.vue 的 glass-tint）
+    // 玻璃卡片渐变：白 36% → 白 15% → 白 24%（预览页浅色 glass-tint）
     cardGradient = listOf(
-        Color(0x2BFFFFFF),
-        Color(0x0DFFFFFF),
-        Color(0x1AFFFFFF)
+        Color(0x5CFFFFFF),
+        Color(0x26FFFFFF),
+        Color(0x3DFFFFFF)
     ),
-    // 浅蓝静态渐变背景基底：蓝 → 浅蓝 → 极浅（GlobalWindBackground 在此之上叠大块柔和色块）
+    // 浅色柔雾背景基底：#B8D6EE → 浅 → 极浅（GlobalWindBackground 在此之上叠四色柔雾色块）
     backgroundGradient = listOf(
-        Color(0xFF7EC8F7),
-        Color(0xFFBDE4FB),
+        Color(0xFFB8D6EE),
+        Color(0xFFCFE6F7),
         Color(0xFFE8F9FF)
     ),
     designStyle = DesignStyle.GLASSMORPHISM
