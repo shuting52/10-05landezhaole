@@ -198,14 +198,50 @@ fun CustomRadioBottomNav(
             .padding(horizontal = 24.dp, vertical = 6.dp)
             .shadow(6.dp, RoundedCornerShape(navCorner), ambientColor = Color.Black.copy(alpha = 0.08f))
             .clip(RoundedCornerShape(navCorner))
-            .background(if (isLiquidGlass) themeColors.surface.copy(alpha = 0.84f) else themeColors.surface)
+            .background(
+                if (isLiquidGlass) {
+                    Brush.linearGradient(
+                        listOf(
+                            themeColors.surface.copy(alpha = 0.82f),
+                            Color(0xB71A1B29),
+                            Color(0xC51A1723)
+                        )
+                    )
+                } else {
+                    Brush.linearGradient(listOf(themeColors.surface, themeColors.surface))
+                }
+            )
             .border(
                 1.dp,
-                if (isLiquidGlass) Color.White.copy(alpha = 0.28f) else themeColors.primary.copy(alpha = 0.18f),
+                if (isLiquidGlass) {
+                    Brush.linearGradient(
+                        listOf(
+                            Color.White.copy(alpha = 0.62f),
+                            themeColors.secondary.copy(alpha = 0.54f),
+                            themeColors.accent.copy(alpha = 0.52f),
+                            Color.White.copy(alpha = 0.34f)
+                        )
+                    )
+                } else {
+                    Brush.linearGradient(listOf(themeColors.primary.copy(alpha = 0.18f), themeColors.primary.copy(alpha = 0.18f)))
+                },
                 RoundedCornerShape(navCorner)
             )
             .padding(horizontal = 6.dp, vertical = 5.dp)
     ) {
+        if (isLiquidGlass) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(Color.Transparent, Color.White.copy(alpha = 0.58f), themeColors.secondary.copy(alpha = 0.48f), Color.Transparent)
+                        )
+                    )
+            )
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,

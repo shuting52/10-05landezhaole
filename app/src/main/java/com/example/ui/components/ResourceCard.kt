@@ -88,7 +88,13 @@ fun ResourceCard(
         CardStylePreset.LUXURY_GOLD -> 12.dp
         CardStylePreset.CUSTOM -> (uiverse.customStyle?.cornerRadius ?: 50.dp)
         else -> 50.dp
-    }.let { if (cardCompStyle != null) cardCompStyle.cornerRadius else it }
+    }.let {
+        when {
+            cardCompStyle != null -> cardCompStyle.cornerRadius
+            themeUi.designStyle == DesignStyle.LIQUID_GLASS && uiverse.cardStyle == CardStylePreset.DEFAULT -> 28.dp
+            else -> it
+        }
+    }
 
     val designStyle = themeUi.designStyle
     val useLiquidGlassSurface = designStyle == DesignStyle.LIQUID_GLASS &&
@@ -129,7 +135,8 @@ fun ResourceCard(
         designStyle == DesignStyle.NEO_BRUTALISM -> 4.dp
         designStyle == DesignStyle.SKEUOMORPHISM -> 4.dp
         designStyle == DesignStyle.MATERIAL_DESIGN || designStyle == DesignStyle.NEUMORPHISM -> 3.dp
-        designStyle == DesignStyle.LIQUID_GLASS || designStyle == DesignStyle.GLASSMORPHISM || designStyle == DesignStyle.RETROFUTURISM || designStyle == DesignStyle.ACID_GRAPHICS -> 2.dp
+        designStyle == DesignStyle.LIQUID_GLASS -> 7.dp
+        designStyle == DesignStyle.GLASSMORPHISM || designStyle == DesignStyle.RETROFUTURISM || designStyle == DesignStyle.ACID_GRAPHICS -> 2.dp
         uiverse.cardStyle == CardStylePreset.CYBERPUNK -> 4.dp
         uiverse.cardStyle == CardStylePreset.GLASSMORPHISM -> 6.dp
         uiverse.cardStyle == CardStylePreset.NEUMORPHISM -> 4.dp
@@ -276,11 +283,11 @@ fun ResourceCard(
                 .then(cardBgModifier)
                 .streamingBorder(
                     cornerRadius = cardCornerRadius,
-                    strokeWidth = 1.4.dp,
+                    strokeWidth = if (useLiquidGlassSurface) 1.6.dp else 1.4.dp,
                     glowWidth = 3.2.dp,
-                    accentColor = themeUi.primary,
-                    tailColor = themeUi.primary.copy(alpha = 0.45f),
-                    baseBorderColor = themeUi.border.copy(alpha = 0.35f),
+                    accentColor = if (useLiquidGlassSurface) themeUi.secondary else themeUi.primary,
+                    tailColor = if (useLiquidGlassSurface) themeUi.accent.copy(alpha = 0.72f) else themeUi.primary.copy(alpha = 0.45f),
+                    baseBorderColor = if (useLiquidGlassSurface) Color.White.copy(alpha = 0.46f) else themeUi.border.copy(alpha = 0.35f),
                     phaseOffset = (card.id.hashCode().let { if (it < 0) -it else it } % 360).toFloat(),
                     showGlow = !useLiquidGlassSurface,
                     rainbow = !useLiquidGlassSurface
@@ -292,16 +299,16 @@ fun ResourceCard(
                 .padding(horizontal = 7.dp, vertical = 7.dp)
         ) {
             if (useLiquidGlassSurface) {
-                // 半透磨砂底与斜向柔亮高光；保留背景色透出，不再叠加彩虹旋转层。
+                // 保留背景里的彩色折射，用深色玻璃底、斜向高光和双层亮边塑造厚度。
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
                             Brush.linearGradient(
                                 listOf(
-                                    Color.White.copy(alpha = 0.20f),
-                                    Color.White.copy(alpha = 0.08f),
-                                    Color(0xFFCAAAFF).copy(alpha = 0.12f)
+                                    Color.White.copy(alpha = 0.10f),
+                                    themeUi.secondary.copy(alpha = 0.05f),
+                                    Color(0xFF171421).copy(alpha = 0.14f)
                                 )
                             )
                         )
@@ -312,11 +319,28 @@ fun ResourceCard(
                         .background(
                             Brush.linearGradient(
                                 listOf(
-                                    Color.White.copy(alpha = 0.34f),
-                                    Color.White.copy(alpha = 0.08f),
+                                    Color.White.copy(alpha = 0.24f),
+                                    Color.White.copy(alpha = 0.07f),
                                     Color.Transparent,
                                     Color.Transparent,
-                                    Color(0xFFFFCEEA).copy(alpha = 0.16f)
+                                    themeUi.accent.copy(alpha = 0.13f)
+                                )
+                            )
+                        )
+                )
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(
+                            Brush.horizontalGradient(
+                                listOf(
+                                    Color.Transparent,
+                                    Color.White.copy(alpha = 0.56f),
+                                    themeUi.secondary.copy(alpha = 0.52f),
+                                    Color.White.copy(alpha = 0.30f),
+                                    Color.Transparent
                                 )
                             )
                         )
