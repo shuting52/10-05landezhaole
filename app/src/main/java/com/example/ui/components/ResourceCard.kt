@@ -92,13 +92,14 @@ fun ResourceCard(
     }.let {
         when {
             cardCompStyle != null -> cardCompStyle.cornerRadius
-            themeUi.designStyle == DesignStyle.LIQUID_GLASS && uiverse.cardStyle == CardStylePreset.DEFAULT -> 28.dp
+            (themeUi.designStyle == DesignStyle.LIQUID_GLASS || themeUi.designStyle == DesignStyle.AURORA) && uiverse.cardStyle == CardStylePreset.DEFAULT -> 28.dp
             else -> it
         }
     }
 
     val designStyle = themeUi.designStyle
-    val useLiquidGlassSurface = designStyle == DesignStyle.LIQUID_GLASS &&
+    val isLiquidGlassFamily = designStyle == DesignStyle.LIQUID_GLASS || designStyle == DesignStyle.AURORA
+    val useLiquidGlassSurface = isLiquidGlassFamily &&
         uiverse.cardStyle == CardStylePreset.DEFAULT && cardCompStyle == null
 
     val cardShape = when {
@@ -112,7 +113,7 @@ fun ResourceCard(
         designStyle == DesignStyle.MINIMALISM -> RoundedCornerShape(6.dp)
         designStyle == DesignStyle.BAUHAUS -> RoundedCornerShape(4.dp)
         designStyle == DesignStyle.RETROFUTURISM -> RoundedCornerShape(10.dp)
-        designStyle == DesignStyle.LIQUID_GLASS -> RoundedCornerShape(28.dp)
+        designStyle == DesignStyle.LIQUID_GLASS || designStyle == DesignStyle.AURORA -> RoundedCornerShape(28.dp)
         designStyle == DesignStyle.GLASSMORPHISM -> RoundedCornerShape(18.dp)
         designStyle == DesignStyle.NEUMORPHISM -> RoundedCornerShape(16.dp)
         designStyle == DesignStyle.SKEUOMORPHISM -> RoundedCornerShape(12.dp)
@@ -136,7 +137,7 @@ fun ResourceCard(
         designStyle == DesignStyle.NEO_BRUTALISM -> 4.dp
         designStyle == DesignStyle.SKEUOMORPHISM -> 4.dp
         designStyle == DesignStyle.MATERIAL_DESIGN || designStyle == DesignStyle.NEUMORPHISM -> 3.dp
-        designStyle == DesignStyle.LIQUID_GLASS -> 7.dp
+        designStyle == DesignStyle.LIQUID_GLASS || designStyle == DesignStyle.AURORA -> 7.dp
         designStyle == DesignStyle.GLASSMORPHISM || designStyle == DesignStyle.RETROFUTURISM || designStyle == DesignStyle.ACID_GRAPHICS -> 2.dp
         uiverse.cardStyle == CardStylePreset.CYBERPUNK -> 4.dp
         uiverse.cardStyle == CardStylePreset.GLASSMORPHISM -> 6.dp

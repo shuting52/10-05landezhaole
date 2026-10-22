@@ -712,7 +712,7 @@ fun SiteBrandIcon(
         DesignStyle.MINIMALISM -> RoundedCornerShape(4.dp)
         DesignStyle.BAUHAUS -> RoundedCornerShape(2.dp)
         DesignStyle.RETROFUTURISM -> RoundedCornerShape(6.dp)
-        DesignStyle.LIQUID_GLASS -> RoundedCornerShape(16.dp)
+        DesignStyle.LIQUID_GLASS, DesignStyle.AURORA -> RoundedCornerShape(16.dp)
         DesignStyle.GLASSMORPHISM -> RoundedCornerShape(12.dp)
         DesignStyle.NEUMORPHISM -> RoundedCornerShape(12.dp)
         DesignStyle.SKEUOMORPHISM -> RoundedCornerShape(8.dp)
@@ -730,7 +730,7 @@ fun SiteBrandIcon(
         DesignStyle.ACID_GRAPHICS -> 1.8.dp to Brush.sweepGradient(listOf(Color.White, Color(0xFFCCFF00), Color(0xFFB026FF), Color.White))
         DesignStyle.SKEUOMORPHISM -> 1.4.dp to Brush.linearGradient(listOf(Color(0xFFD4AF37), Color(0xFF7A5424)))
         DesignStyle.GLASSMORPHISM -> 1.2.dp to Brush.linearGradient(listOf(Color.White.copy(alpha = 0.85f), Color.White.copy(alpha = 0.25f)))
-        DesignStyle.LIQUID_GLASS -> 1.4.dp to Brush.sweepGradient(listOf(Color.White, Color(0xFF00C6FF), Color.White))
+        DesignStyle.LIQUID_GLASS, DesignStyle.AURORA -> 1.4.dp to Brush.sweepGradient(listOf(Color.White, Color(0xFF00C6FF), Color.White))
         DesignStyle.CLAYMORPHISM -> 1.5.dp to Brush.linearGradient(listOf(Color.White.copy(alpha = 0.9f), Color(0xFFFF6584).copy(alpha = 0.6f)))
         DesignStyle.NEUMORPHISM -> 1.3.dp to Brush.linearGradient(listOf(Color.White.copy(alpha = 0.85f), Color(0xFFA3B1C6).copy(alpha = 0.5f)))
         DesignStyle.BAUHAUS -> 1.8.dp to Brush.linearGradient(listOf(Color.Black, Color(0xFFD62828)))
@@ -754,7 +754,7 @@ fun SiteBrandIcon(
         DesignStyle.NEUMORPHISM -> 3.dp
         DesignStyle.RETROFUTURISM -> 2.dp
         DesignStyle.ACID_GRAPHICS -> 2.dp
-        DesignStyle.LIQUID_GLASS -> 2.dp
+        DesignStyle.LIQUID_GLASS, DesignStyle.AURORA -> 2.dp
         DesignStyle.GLASSMORPHISM -> 1.5.dp
         else -> 1.5.dp
     }
@@ -766,7 +766,7 @@ fun SiteBrandIcon(
         DesignStyle.NEUMORPHISM -> Brush.linearGradient(listOf(Color(0xFFE8EDF5), Color(0xFFDCE2EC)))
         DesignStyle.GLASSMORPHISM -> Brush.linearGradient(listOf(Color.White.copy(alpha = 0.32f), Color.White.copy(alpha = 0.15f)))
         DesignStyle.CLAYMORPHISM -> Brush.linearGradient(listOf(Color(0xFFFF8DA1), Color(0xFFFF6584)))
-        DesignStyle.LIQUID_GLASS -> Brush.verticalGradient(listOf(Color(0xCC00C6FF), Color(0xEE0072FF)))
+        DesignStyle.LIQUID_GLASS, DesignStyle.AURORA -> Brush.verticalGradient(listOf(Color(0xCC00C6FF), Color(0xEE0072FF)))
         DesignStyle.NEO_BRUTALISM -> Brush.linearGradient(listOf(Color(0xFFFFDE59), Color(0xFFFFDE59)))
         DesignStyle.MINIMALISM -> Brush.linearGradient(listOf(Color(0xFFFAFAFA), Color(0xFFF4F4F5)))
         DesignStyle.BAUHAUS -> Brush.linearGradient(listOf(Color(0xFFFDFBF7), Color(0xFFF6EEDC)))

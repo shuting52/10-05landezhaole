@@ -32,6 +32,7 @@ enum class DesignStyle(val displayName: String, val desc: String) {
     GLASSMORPHISM("Glassmorphism 玻璃拟态", "模拟磨砂玻璃的质感，通过透明度和背景模糊创建层次感鲜明的毛玻璃效果。"),
     CLAYMORPHISM("Claymorphism 粘土拟态", "相比新拟态，它更像是Q版的3D风格：使用明亮的色彩、圆润的边角和厚实的阴影，如同玩具一般可爱。"),
     LIQUID_GLASS("Liquid Glass 液态玻璃", "被称为“动态的玻璃拟态”，增加了动态响应和光线折射效果，是玻璃拟态的进化版。"),
+    AURORA("Aurora 极光流体", "微信式液态玻璃：极光丝绸背景上的通透折射卡片。"),
     NEO_BRUTALISM("Neo-Brutalism 新粗野主义", "一种“反精致”的风格，使用粗重的边框、强烈的对比色和直接大胆的排版，极具视觉冲击力。"),
     MINIMALISM("Minimalism 极简主义", "“少即是多”。大量留白、无装饰的排版和有限的配色，只保留最核心的元素。"),
     BAUHAUS("Bauhaus 包豪斯风格", "强调形式服务于功能，喜欢使用基础的几何形状（圆形、方形、三角形）和红、黄、蓝三原色。"),
@@ -82,7 +83,8 @@ val LocalThemeUiColors = staticCompositionLocalOf { ThemeUiColors() }
 // ============================================================
 enum class AppTheme(val displayName: String, val desc: String) {
     AERO("Liquid Glass", "液态玻璃 · 通透折射与厚度高光"),
-    LEVER("LEVER UI", "拨杆玩具风 · 硬阴影按压回弹")
+    LEVER("LEVER UI", "拨杆玩具风 · 硬阴影按压回弹"),
+    AURORA("极光流体", "微信式液态玻璃 · 极光丝绸折射")
 }
 
 /** LEVER UI 色板（源自用户提供的 LEVER UI 拨杆组件库 HTML） */
@@ -126,6 +128,24 @@ fun aeroUiColors() = ThemeUiColors(
     designStyle = DesignStyle.LIQUID_GLASS
 )
 
+/** 极光流体：曜石黑底上的橙/青/紫极光丝绸，卡片为通透折射玻璃（对标用户微信主题截图）。 */
+fun auroraUiColors() = ThemeUiColors(
+    primary = Color(0xFFFF6B4A),        // 极光橙
+    secondary = Color(0xFF2DD4BF),      // 极光青
+    background = Color(0xFF0A0A12),     // 曜石黑
+    surface = Color(0xFF14141F),
+    text = Color(0xFFFFFFFF),
+    textMuted = Color(0xFFB9B9CC),
+    accent = Color(0xFFA78BFA),         // 极光紫
+    border = Color.White.copy(alpha = 0.35f),
+    cardGradient = listOf(Color.White.copy(alpha = 0.16f), Color.White.copy(alpha = 0.07f)),
+    backgroundGradient = listOf(
+        Color(0xFF0D0D18),
+        Color(0xFF160F2A)
+    ),
+    designStyle = DesignStyle.AURORA
+)
+
 val LocalAppTheme = staticCompositionLocalOf { AppTheme.AERO }
 
 @Composable
@@ -139,9 +159,10 @@ fun MyApplicationTheme(
     val uiColors = when (appTheme) {
         AppTheme.AERO -> aeroUiColors()
         AppTheme.LEVER -> leverUiColors()
+        AppTheme.AURORA -> auroraUiColors()
     }
     val colorScheme = when (appTheme) {
-        AppTheme.AERO -> darkColorScheme(
+        AppTheme.AERO, AppTheme.AURORA -> darkColorScheme(
             primary = uiColors.primary,
             onPrimary = Color(0xFF2B1119),
             primaryContainer = Color(0xFF633346),

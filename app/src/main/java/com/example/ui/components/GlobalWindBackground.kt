@@ -1584,6 +1584,76 @@ private fun DesignStyleBackground(
                     )
                 )
             }
+            DesignStyle.AURORA -> {
+                // 2026-10-22 极光流体：对标用户微信主题截图 —— 曜石黑底上橙/青/紫
+                // 极光丝绸大面积流淌，饱和度拉满，缓慢漂移；卡片玻璃在其上产生强烈折射。
+                drawRect(Color(0xFF0A0A12))
+                val driftX = sin(ringSpinPhase * 0.30f) * w * 0.04f
+                val driftY = cos(ringSpinPhase * 0.24f) * h * 0.03f
+                val blobR = maxOf(w, h) * 0.62f
+                // 极光橙（左下，大面积）
+                drawRect(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            primaryColor.copy(alpha = 0.62f),
+                            primaryColor.copy(alpha = 0.28f),
+                            Color.Transparent
+                        ),
+                        center = Offset(w * 0.18f + driftX, h * 0.72f + driftY),
+                        radius = blobR
+                    )
+                )
+                // 极光青（中上，丝绸带）
+                drawRect(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            secondaryColor.copy(alpha = 0.55f),
+                            secondaryColor.copy(alpha = 0.22f),
+                            Color.Transparent
+                        ),
+                        center = Offset(w * 0.55f - driftX, h * 0.30f - driftY),
+                        radius = blobR * 0.95f
+                    )
+                )
+                // 极光紫（右下）
+                drawRect(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            accentColor.copy(alpha = 0.58f),
+                            accentColor.copy(alpha = 0.24f),
+                            Color.Transparent
+                        ),
+                        center = Offset(w * 0.82f - driftY, h * 0.85f + driftX * 0.5f),
+                        radius = blobR * 0.85f
+                    )
+                )
+                // 粉霞点缀（右上）
+                drawRect(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            Color(0xFFEC4899).copy(alpha = 0.38f),
+                            Color(0xFFEC4899).copy(alpha = 0.12f),
+                            Color.Transparent
+                        ),
+                        center = Offset(w * 0.85f + driftX * 0.6f, h * 0.12f + driftY),
+                        radius = blobR * 0.55f
+                    )
+                )
+                // 斜向丝绸流光带（橙→青）
+                drawRect(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            primaryColor.copy(alpha = 0.30f),
+                            secondaryColor.copy(alpha = 0.28f),
+                            Color.Transparent
+                        ),
+                        start = Offset(w * 0.05f + driftX, h * 0.55f),
+                        end = Offset(w * 0.95f - driftX, h * 0.15f)
+                    )
+                )
+            }
+
 
             DesignStyle.NEO_BRUTALISM -> {
                 // 8️⃣ 新粗野主义：高能波普黄色底、3px纯黑粗边框、纯黑45°硬位移投影、波普半色调

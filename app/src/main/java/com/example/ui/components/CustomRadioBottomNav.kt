@@ -126,13 +126,13 @@ fun CustomRadioBottomNav(
     val navCorner = when (themeColors.designStyle) {
         DesignStyle.HAND_DRAWN -> 24.dp
         DesignStyle.CARTOON -> 28.dp
-        DesignStyle.LIQUID_GLASS -> 28.dp
+        DesignStyle.LIQUID_GLASS, DesignStyle.AURORA -> 28.dp
         else -> 18.dp
     }
     val navPillCorner = when (themeColors.designStyle) {
         DesignStyle.HAND_DRAWN -> 16.dp
         DesignStyle.CARTOON -> 20.dp
-        DesignStyle.LIQUID_GLASS -> 18.dp
+        DesignStyle.LIQUID_GLASS, DesignStyle.AURORA -> 18.dp
         else -> 12.dp
     }
     val navItems = listOf(
@@ -183,7 +183,7 @@ fun CustomRadioBottomNav(
         )
     )
 
-    val isLiquidGlass = themeColors.designStyle == DesignStyle.LIQUID_GLASS
+    val isLiquidGlass = themeColors.designStyle == DesignStyle.LIQUID_GLASS || themeColors.designStyle == DesignStyle.AURORA
     val highlightColor = themeColors.secondary
     // 明亮的选中胶囊配深色前景，维持小字号标签的清晰对比。
     val selectedTextColor = if (isLiquidGlass) Color(0xFF111726) else themeColors.text

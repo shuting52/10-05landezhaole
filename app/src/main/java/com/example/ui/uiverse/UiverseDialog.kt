@@ -109,6 +109,7 @@ fun UiverseDialog(
                                             when (theme) {
                                                 AppTheme.AERO -> Color(0xFF00A8E8)
                                                 AppTheme.LEVER -> Color(0xFF1269EF)
+                                                AppTheme.AURORA -> Color(0xFFFF6B4A)
                                             }
                                         )
                                         .padding(horizontal = 16.dp, vertical = 6.dp)
