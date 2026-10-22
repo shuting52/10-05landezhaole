@@ -81,7 +81,7 @@ val LocalThemeUiColors = staticCompositionLocalOf { ThemeUiColors() }
 // v1.7.27：App 主题（LEVER UI 拨杆玩具风加入）
 // ============================================================
 enum class AppTheme(val displayName: String, val desc: String) {
-    AERO("Frutiger Aero", "千禧复兴 · 天空蓝玻璃质感"),
+    AERO("Liquid Glass", "液态玻璃 · 柔雾渐层与折射高光"),
     LEVER("LEVER UI", "拨杆玩具风 · 硬阴影按压回弹")
 }
 
@@ -104,8 +104,29 @@ fun leverUiColors() = ThemeUiColors(
     designStyle = DesignStyle.CLAYMORPHISM  // 玩具质感最接近粘土拟态
 )
 
-/** Frutiger Aero 色板（默认） */
-fun aeroUiColors() = ThemeUiColors()
+/** 液态玻璃色板（默认） */
+fun aeroUiColors() = ThemeUiColors(
+    primary = Color(0xFF5E58BC),
+    secondary = Color(0xFF7B69B8),
+    background = Color(0xFFF0ECF6),
+    surface = Color(0xFFFCFAFF),
+    text = Color(0xFF29263A),
+    textMuted = Color(0xFF706B82),
+    accent = Color(0xFFE47D99),
+    border = Color(0xFF8E7BC5).copy(alpha = 0.38f),
+    cardGradient = listOf(
+        Color(0xFFFFFCFF).copy(alpha = 0.90f),
+        Color(0xFFF4EFFB).copy(alpha = 0.72f),
+        Color(0xFFFCECF1).copy(alpha = 0.78f)
+    ),
+    backgroundGradient = listOf(
+        Color(0xFFDCD6F2),
+        Color(0xFFF0DCEB),
+        Color(0xFFF9DFD6),
+        Color(0xFFF0ECF6)
+    ),
+    designStyle = DesignStyle.LIQUID_GLASS
+)
 
 val LocalAppTheme = staticCompositionLocalOf { AppTheme.AERO }
 
