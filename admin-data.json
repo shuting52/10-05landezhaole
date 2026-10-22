@@ -1,16 +1,15 @@
 {
   "version": {
-    "code": 238,
-    "name": "1.7.28",
+    "code": 239,
+    "name": "1.7.29",
     "changelog": [
-      "✨ v1.7.28 更新来啦～",
-      "Apply Liquid Glass background on home screen",
-      "Apply liquid glass theme"
+      "✨ v1.7.29 更新来啦～",
+      "fix: 去水印下载目录名 DownVid 改为懒得找了"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.28-1792640273.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.28-1792640273.apk",
-    "lastBuildSha": "bdc6649a06e4c721484be7b72df1773660e800ad",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.29-1792642733.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.29-1792642733.apk",
+    "lastBuildSha": "53eaeda3eab5153db7e54cb4b7dc09cf228f23d2",
     "apkSize": 24062288
   },
   "home": {
@@ -24329,11 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.28 已上线",
+    "title": "懒得找了 v1.7.29 已上线",
     "changelog": [
-      "✨ v1.7.28 更新来啦～",
-      "Apply Liquid Glass background on home screen",
-      "Apply liquid glass theme"
+      "✨ v1.7.29 更新来啦～",
+      "fix: 去水印下载目录名 DownVid 改为懒得找了"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24395,10 +24393,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.28",
-      "code": 238,
-      "at": "2026-10-22T03:38:00Z",
-      "sha": "bdc6649a06e4c721484be7b72df1773660e800ad"
+      "version": "1.7.29",
+      "code": 239,
+      "at": "2026-10-22T04:19:00Z",
+      "sha": "53eaeda3eab5153db7e54cb4b7dc09cf228f23d2"
     }
   },
   "_ai_notice": "内容由AI生成"
