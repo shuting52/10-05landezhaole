@@ -24348,7 +24348,16 @@
     "enabled": true,
     "url": "https://myip.ipip.net/"
   },
-  "tools": [],
+  "tools": [
+    {
+      "id": "sana-ai",
+      "name": "Sana AI 生图",
+      "desc": "NVIDIA 高效 AI 生图/视频模型 · 在线体验",
+      "url": "https://huggingface.co/spaces/Efficient-Large-Model/SanaSprint",
+      "icon": "🎨",
+      "badge": "NEW"
+    }
+  ],
   "themeKit": {
     "appBar": {
       "css": ""
