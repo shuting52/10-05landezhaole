@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 234,
-    "name": "1.7.24",
+    "code": 235,
+    "name": "1.7.25",
     "changelog": [
-      "✨ v1.7.24 更新来啦～",
-      "feat: 启动页倒计时支持手动关闭"
+      "✨ v1.7.25 更新来啦～",
+      "feat: 去水印重写——抖音解析移植 short_videos 项目"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.24-1792547039.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.24-1792547039.apk",
-    "lastBuildSha": "fbfaaec9db3af40cc919fe4f1bac037cbacd8339",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.25-1792632141.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.25-1792632141.apk",
+    "lastBuildSha": "b098cf2bf36fadb06348375682db67982b551ab2",
     "apkSize": 24062288
   },
   "home": {
@@ -24328,10 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.24 已上线",
+    "title": "懒得找了 v1.7.25 已上线",
     "changelog": [
-      "✨ v1.7.24 更新来啦～",
-      "feat: 启动页倒计时支持手动关闭"
+      "✨ v1.7.25 更新来啦～",
+      "feat: 去水印重写——抖音解析移植 short_videos 项目"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24393,10 +24393,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.24",
-      "code": 234,
-      "at": "2026-10-21T01:44:05Z",
-      "sha": "fbfaaec9db3af40cc919fe4f1bac037cbacd8339"
+      "version": "1.7.25",
+      "code": 235,
+      "at": "2026-10-22T01:22:28Z",
+      "sha": "b098cf2bf36fadb06348375682db67982b551ab2"
     }
   },
   "_ai_notice": "内容由AI生成"
