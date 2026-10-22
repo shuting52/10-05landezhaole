@@ -1,15 +1,17 @@
 {
   "version": {
-    "code": 241,
-    "name": "1.7.31",
+    "code": 242,
+    "name": "1.7.32",
     "changelog": [
-      "✨ v1.7.31 更新来啦～",
-      "feat: vivid dimensional liquid glass theme"
+      "✨ v1.7.32 更新来啦～",
+      "feat: 云端工具只在环形菜单内展示",
+      "fix: 重写 InAppWebViewDialog 使用标准导入",
+      "feat: 工具箱云端工具只在环形内展示 + App内WebView打开"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.31-1792657942.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.31-1792657942.apk",
-    "lastBuildSha": "e9fb520999f7b22a8f7e4489d3b0b0b20a919809",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.32-1792663390.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.32-1792663390.apk",
+    "lastBuildSha": "5342d4caf7584cabd21455030e7cc2ae3ac9174f",
     "apkSize": 24078672
   },
   "home": {
@@ -24328,10 +24330,12 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.31 已上线",
+    "title": "懒得找了 v1.7.32 已上线",
     "changelog": [
-      "✨ v1.7.31 更新来啦～",
-      "feat: vivid dimensional liquid glass theme"
+      "✨ v1.7.32 更新来啦～",
+      "feat: 云端工具只在环形菜单内展示",
+      "fix: 重写 InAppWebViewDialog 使用标准导入",
+      "feat: 工具箱云端工具只在环形内展示 + App内WebView打开"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24402,10 +24406,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.31",
-      "code": 241,
-      "at": "2026-10-22T08:32:26Z",
-      "sha": "e9fb520999f7b22a8f7e4489d3b0b0b20a919809"
+      "version": "1.7.32",
+      "code": 242,
+      "at": "2026-10-22T10:03:16Z",
+      "sha": "5342d4caf7584cabd21455030e7cc2ae3ac9174f"
     }
   },
   "_ai_notice": "内容由AI生成"
