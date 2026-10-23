@@ -1,16 +1,17 @@
 {
   "version": {
-    "code": 261,
-    "name": "1.7.51",
+    "code": 262,
+    "name": "1.7.52",
     "changelog": [
-      "✨ v1.7.51 更新来啦～",
-      "feat: 主题弹窗交互优化 + 去水印 jicun 式全量迁移"
+      "✨ v1.7.52 更新来啦～",
+      "fix: 删除 WatermarkCards.kt 重复的 @Composable 注解",
+      "feat: jicun 原生主题 + jicun 分段下载器嵌入"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.51-1792733097.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.51-1792733097.apk",
-    "lastBuildSha": "48abe9f784b2201c438054732a7f806c4b5f1df9",
-    "apkSize": 24111440
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.52-1792735929.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.52-1792735929.apk",
+    "lastBuildSha": "61a51f6b7e83d8923c7ddbe7c777b703cee2ac2f",
+    "apkSize": 24127824
   },
   "home": {
     "categories": [
@@ -24328,10 +24329,11 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.51 已上线",
+    "title": "懒得找了 v1.7.52 已上线",
     "changelog": [
-      "✨ v1.7.51 更新来啦～",
-      "feat: 主题弹窗交互优化 + 去水印 jicun 式全量迁移"
+      "✨ v1.7.52 更新来啦～",
+      "fix: 删除 WatermarkCards.kt 重复的 @Composable 注解",
+      "feat: jicun 原生主题 + jicun 分段下载器嵌入"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24402,10 +24404,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.51",
-      "code": 261,
-      "at": "2026-10-23T05:25:04Z",
-      "sha": "48abe9f784b2201c438054732a7f806c4b5f1df9"
+      "version": "1.7.52",
+      "code": 262,
+      "at": "2026-10-23T06:12:17Z",
+      "sha": "61a51f6b7e83d8923c7ddbe7c777b703cee2ac2f"
     }
   },
   "_ai_notice": "内容由AI生成"
