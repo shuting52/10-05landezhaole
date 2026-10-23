@@ -4,12 +4,13 @@
     "name": "1.7.48",
     "changelog": [
       "✨ v1.7.48 更新来啦～",
+      "feat: 14 套新主题切换（删除 jicun 旧主题）",
       "fix: 皮皮虾路由匹配 h5.pipix.com（v1.7.48）"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.48-1792728054.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.48-1792728054.apk",
-    "lastBuildSha": "bc9f61415bc2c1e8e364ecbcc3d1e574743d4697",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.48-1792728514.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.48-1792728514.apk",
+    "lastBuildSha": "76583b8b6607acac8fc5419d0aebd4ea6858dff3",
     "apkSize": 24062288
   },
   "home": {
@@ -24331,6 +24332,7 @@
     "title": "懒得找了 v1.7.48 已上线",
     "changelog": [
       "✨ v1.7.48 更新来啦～",
+      "feat: 14 套新主题切换（删除 jicun 旧主题）",
       "fix: 皮皮虾路由匹配 h5.pipix.com（v1.7.48）"
     ],
     "confirmText": "立即更新",
@@ -24404,8 +24406,8 @@
     "lastRelease": {
       "version": "1.7.48",
       "code": 258,
-      "at": "2026-10-23T04:00:59Z",
-      "sha": "bc9f61415bc2c1e8e364ecbcc3d1e574743d4697"
+      "at": "2026-10-23T04:08:40Z",
+      "sha": "76583b8b6607acac8fc5419d0aebd4ea6858dff3"
     }
   },
   "_ai_notice": "内容由AI生成"
