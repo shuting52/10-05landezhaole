@@ -31,9 +31,7 @@ data class MediaParseResult(
     val qualityOptions: List<Pair<String, String>> = emptyList(), // v1.4.31：画质选项（标签 to 直链）
     val livePhotos: List<LivePhoto> = emptyList(), // v1.6.5：Live 实况图（静态图 + 动态视频成对）
     val description: String? = null,     // v1.7.0：文案/描述
-    val topics: List<String> = emptyList(), // v1.7.0：话题标签
-    val audioUrl: String? = null,       // 2026-10-23：独立音轨（jicun 式音频卡；须与 videoUrl 不同）
-    val audioTitle: String? = null      // 2026-10-23：音频标题（歌名）
+    val topics: List<String> = emptyList() // v1.7.0：话题标签
 )
 
 /** v1.6.5：Live 实况图 —— 一张静态封面 + 一段动态视频 */
@@ -342,27 +340,8 @@ object VideoLinkParser {
             if (c != main) c else null
         }.distinct()
 
-        // 2026-10-23：独立音轨（jicun 式音频卡）—— music.play_url.url_list
-        var audioUrl: String? = null
-        var audioTitle: String? = null
-        try {
-            val music = detail.optJSONObject("music")
-            if (music != null) {
-                audioTitle = music.optString("title").takeIf { it.isNotBlank() }
-                val playUrl = music.optJSONObject("play_url")
-                val urlList = playUrl?.optJSONArray("url_list")
-                if (urlList != null && urlList.length() > 0) {
-                    val au = toHttps(urlList.optString(0))
-                    // 排除回填成视频地址的情况（jicun hasStandaloneAudio 规则）
-                    if (au.isNotBlank() && au != main && !au.contains("video_id=")) audioUrl = au
-                }
-            }
-        } catch (_: Exception) { }
-
         return MediaParseResult(
             videoUrls = listOf(main),
-            audioUrl = audioUrl,
-            audioTitle = audioTitle,
             imageUrls = emptyList(),
             coverUrl = coverUrl,
             title = title.ifBlank { "抖音短视频 · $awemeId" },
