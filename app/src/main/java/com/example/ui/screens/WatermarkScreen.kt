@@ -1,15 +1,8 @@
 package com.example.ui.screens
 
-import android.app.DownloadManager
-import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.os.Environment
-import android.widget.MediaController
 import android.widget.Toast
-import android.widget.VideoView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,7 +25,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.PlayArrow
@@ -69,7 +59,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
@@ -176,40 +165,6 @@ private fun detectPlatform(url: String): String {
 private fun formatTime(ts: Long): String =
     SimpleDateFormat("MM-dd HH:mm", Locale.getDefault()).format(Date(ts))
 
-private fun enqueueDownload(context: Context, url: String, filename: String, isImage: Boolean) {
-    try {
-        val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        val dir = if (isImage) Environment.DIRECTORY_PICTURES else Environment.DIRECTORY_MOVIES
-        val subdir = if (isImage) "懒得找了" else "懒得找了"
-        val req = DownloadManager.Request(Uri.parse(url)).apply {
-            setTitle("懒得找了 · $filename")
-            setDescription("正在保存…")
-            setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            setDestinationInExternalPublicDir(dir, "$subdir/$filename")
-            setAllowedOverMetered(true)
-            setAllowedOverRoaming(true)
-        }
-        dm.enqueue(req)
-        Toast.makeText(context, "已加入下载，完成后存入相册", Toast.LENGTH_SHORT).show()
-    } catch (e: Exception) {
-        try {
-            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            })
-        } catch (_: Exception) {
-            Toast.makeText(context, "下载发起失败：${e.message}", Toast.LENGTH_SHORT).show()
-        }
-    }
-}
-
-private fun copyText(context: Context, text: String, label: String = "已复制") {
-    try {
-        val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        cm.setPrimaryClip(ClipData.newPlainText("watermark", text))
-        Toast.makeText(context, label, Toast.LENGTH_SHORT).show()
-    } catch (_: Exception) { }
-}
-
 // ---------------- 主界面 ----------------
 
 @Composable
@@ -231,6 +186,9 @@ fun WatermarkScreen(
     var isBatchMode by remember { mutableStateOf(false) }
     val batchResults = remember { mutableStateListOf<MediaParseResult>() }
     var batchProgress by remember { mutableStateOf("") }
+    // 2026-10-23：jicun 式下载进度 + 粘贴自动解析开关
+    var activeDownload by remember { mutableStateOf<ActiveDownload?>(null) }
+    var autoParseOnPaste by remember { mutableStateOf(true) }
 
     val history = remember { mutableStateListOf<WatermarkHistoryItem>() }
     LaunchedEffect(Unit) {
@@ -288,8 +246,8 @@ fun WatermarkScreen(
                 return
             }
             inputText = text
-            // jicun 式：粘贴后自动解析（批量模式不自动）
-            if (!isBatchMode) doParse(text)
+            // jicun 式：粘贴后自动解析（批量模式不自动；可开关）
+            if (!isBatchMode && autoParseOnPaste) doParse(text)
         } catch (e: Exception) {
             Toast.makeText(context, "读取剪贴板失败", Toast.LENGTH_SHORT).show()
         }
@@ -403,6 +361,19 @@ fun WatermarkScreen(
                                 )
                             }
                         }
+                        // 2026-10-23：粘贴自动解析开关（jicun 式）
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickable { autoParseOnPaste = !autoParseOnPaste }
+                        ) {
+                            Text("粘贴后自动解析", fontSize = 12.5.sp, color = theme.textMuted)
+                            Spacer(Modifier.width(4.dp))
+                            Switch(
+                                checked = autoParseOnPaste,
+                                onCheckedChange = { autoParseOnPaste = it },
+                                modifier = Modifier.size(width = 40.dp, height = 24.dp)
+                            )
+                        }
                         OutlinedTextField(
                             value = inputText,
                             onValueChange = { inputText = it },
@@ -452,14 +423,15 @@ fun WatermarkScreen(
             }
         }
 
-        // ===== 解析结果 =====
+        // ===== 解析结果（2026-10-23：jicun 式按内容拆卡） =====
         result?.let { media ->
             item {
-                ParseResultCard(
+                JicunResultCards(
                     media = media,
                     selectedQuality = selectedQuality,
                     onQualitySelected = { selectedQuality = it },
-                    onImageClick = { fullscreenImage = it }
+                    onImageClick = { fullscreenImage = it },
+                    onStartDownload = { ids, title -> activeDownload = ActiveDownload(ids, title) }
                 )
             }
         }
@@ -477,11 +449,12 @@ fun WatermarkScreen(
             }
             items(batchResults.size) { idx ->
                 val media = batchResults[idx]
-                ParseResultCard(
+                JicunResultCards(
                     media = media,
                     selectedQuality = 0,
                     onQualitySelected = {},
-                    onImageClick = { fullscreenImage = it }
+                    onImageClick = { fullscreenImage = it },
+                    onStartDownload = { ids, title -> activeDownload = ActiveDownload(ids, title) }
                 )
             }
         }
@@ -530,202 +503,10 @@ fun WatermarkScreen(
             }
         }
     }
-}
 
-// ---------------- 解析结果卡片 ----------------
-
-@Composable
-private fun ParseResultCard(
-    media: MediaParseResult,
-    selectedQuality: Int,
-    onQualitySelected: (Int) -> Unit,
-    onImageClick: (String) -> Unit
-) {
-    val context = LocalContext.current
-    val theme = LocalThemeUiColors.current
-
-    // 当前选中的视频地址（有清晰度选项时用选中的）
-    val currentVideoUrl = when {
-        media.qualityOptions.isNotEmpty() -> media.qualityOptions[selectedQuality.coerceIn(media.qualityOptions.indices)].second
-        media.videoUrls.isNotEmpty() -> media.videoUrls.first()
-        else -> null
-    }
-
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier
-                .background(Brush.linearGradient(theme.cardGradient))
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            // 平台 + 作者
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(theme.primary)
-                        .padding(horizontal = 8.dp, vertical = 3.dp)
-                ) {
-                    Text(
-                        media.platform?.ifBlank { null } ?: "短视频",
-                        color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold
-                    )
-                }
-                Spacer(Modifier.width(8.dp))
-                if (!media.author.isNullOrBlank()) {
-                    Text(media.author!!, fontSize = 13.sp, color = theme.textMuted, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                }
-            }
-            // 标题
-            if (!media.title.isNullOrBlank()) {
-                Text(media.title!!, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = theme.text, maxLines = 2, overflow = TextOverflow.Ellipsis)
-            }
-
-            // 视频预览
-            currentVideoUrl?.let { url ->
-                AndroidView(
-                    factory = { ctx ->
-                        VideoView(ctx).apply {
-                            setVideoURI(Uri.parse(url))
-                            setMediaController(MediaController(ctx))
-                            setOnPreparedListener { /* 用户点播放 */ }
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(16f / 9f)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color.Black)
-                )
-            }
-
-            // 清晰度选择（jicun 式）
-            if (media.qualityOptions.size > 1) {
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text("清晰度", fontSize = 12.sp, color = theme.textMuted)
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        itemsIndexed(media.qualityOptions) { idx, (label, _) ->
-                            val selected = idx == selectedQuality
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(999.dp))
-                                    .background(if (selected) theme.primary else theme.primary.copy(alpha = 0.10f))
-                                    .clickable { onQualitySelected(idx) }
-                                    .padding(horizontal = 14.dp, vertical = 7.dp)
-                            ) {
-                                Text(label, fontSize = 12.sp, fontWeight = FontWeight.Bold,
-                                    color = if (selected) Color.White else theme.primary)
-                            }
-                        }
-                    }
-                }
-            }
-
-            // 图片预览
-            if (media.imageUrls.isNotEmpty()) {
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text("图片（${media.imageUrls.size}）· 点击查看大图", fontSize = 12.sp, color = theme.textMuted)
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(media.imageUrls) { imgUrl ->
-                            AsyncImage(
-                                model = imgUrl,
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .size(96.dp)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .clickable { onImageClick(imgUrl) }
-                            )
-                        }
-                    }
-                }
-            }
-
-            // 封面（无视频无图片时展示）
-            if (currentVideoUrl == null && media.imageUrls.isEmpty() && !media.coverUrl.isNullOrBlank()) {
-                AsyncImage(
-                    model = media.coverUrl,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f).clip(RoundedCornerShape(12.dp))
-                )
-            }
-
-            // 文案卡片（可复制）
-            val descText = buildString {
-                if (!media.description.isNullOrBlank()) append(media.description)
-                if (media.topics.isNotEmpty()) {
-                    if (isNotEmpty()) append("\n")
-                    append(media.topics.joinToString(" "))
-                }
-            }
-            if (descText.isNotBlank()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(Color(0x12000000))
-                        .padding(10.dp)
-                ) {
-                    Column {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text("文案", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = theme.textMuted)
-                            IconButton(onClick = { copyText(context, descText, "文案已复制") }, modifier = Modifier.size(28.dp)) {
-                                Icon(Icons.Filled.ContentCopy, contentDescription = "复制文案", tint = theme.primary, modifier = Modifier.size(16.dp))
-                            }
-                        }
-                        Text(descText, fontSize = 13.sp, color = theme.text, maxLines = 4, overflow = TextOverflow.Ellipsis)
-                    }
-                }
-            }
-
-            // 下载按钮行
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-                currentVideoUrl?.let { url ->
-                    Button(
-                        onClick = {
-                            val ext = "mp4"
-                            val name = "LDZ_${System.currentTimeMillis() % 100000}.$ext"
-                            enqueueDownload(context, url, name, isImage = false)
-                        },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = theme.primary)
-                    ) {
-                        Icon(Icons.Filled.Download, contentDescription = null, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(6.dp))
-                        Text("下载视频", fontWeight = FontWeight.Bold)
-                    }
-                }
-                if (media.imageUrls.isNotEmpty()) {
-                    Button(
-                        onClick = {
-                            val ts = System.currentTimeMillis()
-                            media.imageUrls.forEachIndexed { i, url ->
-                                val ext = url.substringBefore('?').substringAfterLast('.', "").lowercase()
-                                    .takeIf { it in setOf("jpg", "jpeg", "png", "webp") } ?: "jpg"
-                                enqueueDownload(context, url, "LDZ_${ts % 100000}_$i.$ext", isImage = true)
-                            }
-                        },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = theme.primary)
-                    ) {
-                        Icon(Icons.Filled.Download, contentDescription = null, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(6.dp))
-                        Text("下载图片(${media.imageUrls.size})", fontWeight = FontWeight.Bold)
-                    }
-                }
-            }
-        }
+    // 2026-10-23：jicun 式下载进度弹窗
+    activeDownload?.let { task ->
+        DownloadProgressDialog(task = task, onClose = { activeDownload = null })
     }
 }
 

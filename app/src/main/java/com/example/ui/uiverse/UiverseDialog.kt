@@ -107,7 +107,7 @@ fun UiverseDialog(
                         color = currentUiColors.primary.copy(alpha = 0.12f)
                     ) {
                         Text(
-                            "点击立即全局应用",
+                            "点击立即应用并关闭",
                             fontSize = 10.5.sp,
                             color = currentUiColors.primary,
                             fontWeight = FontWeight.Bold,
@@ -142,7 +142,12 @@ fun UiverseDialog(
                                 if (selected) theme.colors.primary else Color.Transparent,
                                 RoundedCornerShape(12.dp)
                             )
-                            .clickable { onAppThemeChange(theme.id) }
+                            // 2026-10-23：点主题即应用+关闭弹窗；背景跟随主题走（清除自定义背景图/视频）
+                            .clickable {
+                                onAppThemeChange(theme.id)
+                                onClearLocalBgMedia()
+                                onClose()
+                            }
                             .padding(horizontal = 10.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -334,39 +339,6 @@ fun UiverseDialog(
                         }
                     }
                 }
-            }
-
-            // 透明磨砂效果开关
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(Color.White.copy(alpha = 0.85f))
-                    .border(1.dp, currentUiColors.primary.copy(alpha = 0.25f), RoundedCornerShape(18.dp))
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("透明磨砂", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1E293B))
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        "背景模糊成毛玻璃效果，前景内容更清晰易读",
-                        fontSize = 11.5.sp,
-                        color = Color(0xFF64748B),
-                        lineHeight = 16.sp
-                    )
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Switch(
-                    checked = bgFrosted,
-                    onCheckedChange = onToggleFrosted,
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = currentUiColors.primary,
-                        uncheckedThumbColor = Color.White,
-                        uncheckedTrackColor = Color(0xFFCBD5E1)
-                    )
-                )
             }
 
             Spacer(modifier = Modifier.height(4.dp))
