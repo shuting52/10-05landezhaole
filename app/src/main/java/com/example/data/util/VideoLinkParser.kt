@@ -106,6 +106,7 @@ object VideoLinkParser {
                     "ippzone.com" in lower || "pipigx.com" in lower -> parsePipigx(url) // v1.7.45：皮皮搞笑
                     "izuiyou" in lower -> parseZuiyou(url) // v1.7.45：最右
                     "doubao.com" in lower -> parseDoubao(url) // v1.7.45：豆包视频
+                    "xiaoyunque.jianying.com" in lower -> parseYunque(url) // 2026-10-23：小云雀视频（移植 MIT 项目 ihmily/doubao-nomark 的 yunque_video_parse）
                     "jimeng.jianying.com" in lower || "jimeng.aiseet.atry.com" in lower -> parseJimeng(url) // v1.7.45：即梦AI
                     "x.com" in lower || "twitter.com" in lower -> parseX(url) // v1.4.29：X 视频直链
                     "tiktok.com" in lower || "vt.tiktok" in lower || "vm.tiktok" in lower -> parseTikTok(url) // v1.4.30：TikTok 无水印
@@ -766,11 +767,21 @@ object VideoLinkParser {
                         val v = unescapeUrl(m.groupValues[1])
                         if (v.startsWith("http") && isVideoUrl(v)) videos.add(v)
                     }
-                    Regex(""""url"\s*:\s*"(https?://[^"]*?(?:sns-img|xhscdn|xiaohongshu)[^"]*?\.(?:jpg|jpeg|png|webp)[^"]*?)"""")
-                        .findAll(state).forEach { m ->
-                            val v = unescapeUrl(m.groupValues[1])
-                            if (isImageUrl(v)) images.add(v)
-                        }
+                    // 2026-10-23：小红书图片去水印 —— 网页版 imageList 里是 sns-webpic-qc 带 !style
+                    // 后缀的 H5 图（CDN 烘焙"小红书"水印），且 URL 以 !h5_1080jpg 结尾无 .jpg，
+                    // 旧正则匹配不上。直接取每项的 fileId，拼移动端 CDN 即为无水印原图（真机验过）。
+                    Regex(""""fileId"\s*:\s*"([A-Za-z0-9]{20,})"""").findAll(state).forEach { m ->
+                        val fid = m.groupValues[1]
+                        images.add("https://sns-img-qc.xhscdn.com/$fid")
+                    }
+                    if (images.isEmpty()) {
+                        // 回退：旧正则（兼容 sns-img 等带 .jpg 的老格式）
+                        Regex(""""url"\s*:\s*"(https?://[^"]*?(?:sns-img|xhscdn|xiaohongshu)[^"]*?\.(?:jpg|jpeg|png|webp)[^"]*?)"""")
+                            .findAll(state).forEach { m ->
+                                val v = unescapeUrl(m.groupValues[1])
+                                if (isImageUrl(v)) images.add(dewatermarkXiaohongshuUrl(v))
+                            }
+                    }
                     // v1.7.0：文案（desc）
                     Regex(""""desc"\s*:\s*"((?:[^"\\]|\\.)*)"""").find(state)?.groupValues?.get(1)?.let { d ->
                         val cleanDesc = d.replace("\\n", "\n").replace("\\u002F", "/").replace("\\\"", "\"").trim()
@@ -1123,7 +1134,7 @@ object VideoLinkParser {
             val j = postJson(apiUrl, body, headers, UA_DESKTOP_SV) ?: return null
             if (j.optInt("code", -1) != 0) return null
             val data = j.optJSONObject("data") ?: return null
-            val videoUrl = findBestVideoUrlInJson(data) ?: return null
+            val videoUrl = findBestVideoUrlInJson(data)?.let(::dewatermarkDoubaoUrl) ?: return null
             MediaParseResult(
                 videoUrls = listOf(videoUrl),
                 coverUrl = data.optString("cover_url", "").takeIf { it.startsWith("http") }
@@ -1131,6 +1142,68 @@ object VideoLinkParser {
                 title = data.optString("title", "").takeIf { it.isNotBlank() }
                     ?: data.optString("desc", "").takeIf { it.isNotBlank() },
                 platform = "豆包"
+            )
+        } catch (_: Exception) { null }
+    }
+
+    /**
+     * 2026-10-23：豆包视频去水印（参考 MIT 项目 ihmily/doubao-nomark）。
+     * get_video_share_info 返回的 play_info.main/backup 带 lr=video_gen_watermark_dyn（动态水印），
+     * 实测去掉 lr 参数后签名依然有效且可下载，download=true 也一并去掉以便直接播放。
+     */
+    private fun dewatermarkDoubaoUrl(url: String): String {
+        return try {
+            val uri = android.net.Uri.parse(url)
+            if (uri.getQueryParameter("lr") == null) return url
+            val b = uri.buildUpon().clearQuery()
+            uri.queryParameterNames.forEach { k ->
+                if (k != "lr" && k != "download") {
+                    uri.getQueryParameters(k).forEach { v -> b.appendQueryParameter(k, v) }
+                }
+            }
+            b.build().toString()
+        } catch (_: Exception) { url }
+    }
+
+    // ================= 小云雀（移植 MIT 项目 ihmily/doubao-nomark 的 yunque_video_parse） =================
+    // 分享链接跟随重定向取 share_id/share_sec_did/share_sec_uid
+    // → POST xiaoyunque.jianying.com/luckycat/cn/jianying/campaign/v1/pippit/share/landing_page
+    private fun parseYunque(shareUrl: String): MediaParseResult? {
+        return try {
+            val finalUrl = getFinalRedirectUrl(shareUrl)
+            val uri = android.net.Uri.parse(finalUrl)
+            val shareId = uri.getQueryParameter("share_id")
+            val secDid = uri.getQueryParameter("share_sec_did")
+            val secUid = uri.getQueryParameter("share_sec_uid")
+            if (shareId.isNullOrBlank() || secDid.isNullOrBlank() || secUid.isNullOrBlank()) return null
+            val apiUrl = "https://xiaoyunque.jianying.com/luckycat/cn/jianying/campaign/v1/pippit/share/landing_page"
+            val body = JSONObject().apply {
+                put("query_params", JSONObject().apply {
+                    put("content_type", "video")
+                    put("home_input_type", "VIDEO_PART")
+                    put("scene", "agent_tool")
+                    put("share_campaign_key", "pippit_invite_fission")
+                    put("share_id", shareId)
+                    put("share_sec_did", secDid)
+                    put("share_sec_uid", secUid)
+                })
+            }.toString()
+            val headers = mapOf(
+                "Content-Type" to "application/json",
+                "Origin" to "https://xiaoyunque.jianying.com"
+            )
+            val j = postJson(apiUrl, body, headers, UA_DESKTOP_SV) ?: return null
+            val data = j.optJSONObject("data") ?: return null
+            val pageInfo = data.optJSONObject("page_info") ?: return null
+            val videoInfo = pageInfo.optJSONObject("generate_page")
+                ?.optJSONObject("item_info")
+                ?.optJSONArray("video_info")
+                ?.optJSONObject(0) ?: return null
+            val videoUrl = videoInfo.optString("video_url", "").takeIf { it.startsWith("http") } ?: return null
+            MediaParseResult(
+                videoUrls = listOf(videoUrl),
+                coverUrl = videoInfo.optString("cover_url", "").takeIf { it.startsWith("http") },
+                platform = "小云雀"
             )
         } catch (_: Exception) { null }
     }
