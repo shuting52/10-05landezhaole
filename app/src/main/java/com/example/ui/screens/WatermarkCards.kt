@@ -698,8 +698,6 @@ private fun TextPreviewCard(descText: String, theme: ThemeUiColors) {
 
 // ---------------- 下载进度弹窗（jicun 式：进度环 + 实时速度 + ETA + 取消） ----------------
 @Composable
-
-@Composable
 internal fun DownloadProgressDialog(job: DownloadJobState, onClose: () -> Unit) {
     val theme = LocalThemeUiColors.current
     val done = job.done
