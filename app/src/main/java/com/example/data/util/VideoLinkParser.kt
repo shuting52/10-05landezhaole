@@ -102,7 +102,7 @@ object VideoLinkParser {
                     "haokan.baidu.com" in lower -> parseHaokan(url)
                     "xiaohongshu.com" in lower || "xhslink.com" in lower -> parseXiaohongshu(url)
                     "weishi.qq.com" in lower -> parseWeishi(url)
-                    "pipixia.com" in lower -> parsePipixia(url) // v1.7.45：皮皮虾专用解析（移植 qushuiyin/ppxia.php）
+                    "pipix" in lower -> parsePipixia(url) // v1.7.45：皮皮虾专用解析（移植 qushuiyin/ppxia.php）；分享域名为 h5.pipix.com，"pipixia.com" 匹配不到
                     "ippzone.com" in lower || "pipigx.com" in lower -> parsePipigx(url) // v1.7.45：皮皮搞笑
                     "izuiyou" in lower -> parseZuiyou(url) // v1.7.45：最右
                     "doubao.com" in lower -> parseDoubao(url) // v1.7.45：豆包视频
@@ -1321,7 +1321,7 @@ object VideoLinkParser {
             .find(html)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotBlank() }
 
         // 若来自明确的短视频平台且未解析出视频，避免将网页背景图/图标作为图片兜底误导用户
-        val isVideoPlatform = listOf("douyin", "kuaishou", "bilibili", "ixigua", "haokan", "pipixia", "tiktok", "weishi",
+        val isVideoPlatform = listOf("douyin", "kuaishou", "bilibili", "ixigua", "haokan", "pipix", "tiktok", "weishi",
             "pipigx", "ippzone", "izuiyou", "doubao", "jimeng")
             .any { pageUrl.contains(it, ignoreCase = true) }
         val filteredImages = if (isVideoPlatform && distinctVideos.isEmpty()) emptyList() else distinctImages
