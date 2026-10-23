@@ -1,6 +1,5 @@
 package com.example.ui.screens
 
-import android.app.DownloadManager
 import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
@@ -77,6 +76,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import com.example.data.util.MediaParseResult
+import com.example.download.DownloadJobState
+import com.example.download.WatermarkDownloadItem
 import com.example.ui.theme.LocalThemeUiColors
 import com.example.ui.theme.ThemeUiColors
 import kotlinx.coroutines.delay
@@ -86,9 +87,6 @@ import kotlinx.coroutines.delay
 // 有什么显示什么；下载带应用内进度；图集多选；音频独立卡。
 // 解析仍用本地 VideoLinkParser 引擎（jicun 的解析走其自家付费接口，不可复用）。
 // ============================================================
-
-/** 进行中的下载任务（进度弹窗用） */
-data class ActiveDownload(val ids: List<Long>, val title: String)
 
 /** 文件名清洗：去话题/emoji/非法字符，限长（jicun 式命名规则简化版） */
 internal fun cleanFileName(raw: String?, fallback: String, ext: String): String {
@@ -102,23 +100,6 @@ internal fun cleanFileName(raw: String?, fallback: String, ext: String): String 
     return "$s.$ext"
 }
 
-/** 入队单个下载，返回 DownloadManager id（失败返回 null） */
-internal fun enqueueOne(context: Context, url: String, filename: String, dirType: String): Long? {
-    return try {
-        val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        val req = DownloadManager.Request(Uri.parse(url)).apply {
-            setTitle("懒得找了 · $filename")
-            setDescription("正在保存…")
-            setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            setDestinationInExternalPublicDir(dirType, "懒得找了/$filename")
-            setAllowedOverMetered(true)
-            setAllowedOverRoaming(true)
-        }
-        dm.enqueue(req)
-    } catch (_: Exception) {
-        null
-    }
-}
 
 internal fun guessImageExt(url: String): String =
     url.substringBefore('?').substringAfterLast('.', "").lowercase()
@@ -188,7 +169,7 @@ internal fun JicunResultCards(
     selectedQuality: Int,
     onQualitySelected: (Int) -> Unit,
     onImageClick: (String) -> Unit,
-    onStartDownload: (ids: List<Long>, title: String) -> Unit
+    onDownloadRequested: (items: List<WatermarkDownloadItem>, title: String) -> Unit
 ) {
     val theme = LocalThemeUiColors.current
     val context = LocalContext.current
@@ -235,7 +216,7 @@ internal fun JicunResultCards(
             selectedQuality = selectedQuality,
             onQualitySelected = onQualitySelected,
             onImageClick = onImageClick,
-            onStartDownload = onStartDownload,
+            onDownloadRequested = onDownloadRequested,
             theme = theme
         )
     } else if (hasImages) {
@@ -243,7 +224,7 @@ internal fun JicunResultCards(
         GalleryPreviewCard(
             media = media,
             onImageClick = onImageClick,
-            onStartDownload = onStartDownload,
+            onDownloadRequested = onDownloadRequested,
             theme = theme
         )
     }
@@ -252,7 +233,7 @@ internal fun JicunResultCards(
     if (hasAudio) {
         AudioPreviewCard(
             media = media,
-            onStartDownload = onStartDownload,
+            onDownloadRequested = onDownloadRequested,
             theme = theme
         )
     }
@@ -271,7 +252,7 @@ private fun MediaPreviewCard(
     selectedQuality: Int,
     onQualitySelected: (Int) -> Unit,
     onImageClick: (String) -> Unit,
-    onStartDownload: (ids: List<Long>, title: String) -> Unit,
+    onDownloadRequested: (items: List<WatermarkDownloadItem>, title: String) -> Unit,
     theme: ThemeUiColors
 ) {
     val context = LocalContext.current
@@ -346,26 +327,26 @@ private fun MediaPreviewCard(
             )
         }
 
-        // 下载按钮
+        // 下载按钮（jicun 分段下载器）
         Button(
             onClick = {
-                val ids = mutableListOf<Long>()
+                val items = mutableListOf<WatermarkDownloadItem>()
                 currentVideoUrl?.let { url ->
                     val name = cleanFileName(media.title, "video_${System.currentTimeMillis() % 100000}", "mp4")
-                    enqueueOne(context, url, name, Environment.DIRECTORY_MOVIES)?.let { ids.add(it) }
+                    items.add(WatermarkDownloadItem(url, name, Environment.DIRECTORY_MOVIES))
                 }
                 if (isMixed) {
                     val ts = System.currentTimeMillis() % 100000
                     selectedImages.sorted().forEachIndexed { i, idx ->
                         val url = media.imageUrls[idx]
                         val name = cleanFileName("${media.title}_$i", "img_${ts}_$i", guessImageExt(url))
-                        enqueueOne(context, url, name, Environment.DIRECTORY_PICTURES)?.let { ids.add(it) }
+                        items.add(WatermarkDownloadItem(url, name, Environment.DIRECTORY_PICTURES))
                     }
                 }
-                if (ids.isEmpty()) {
-                    Toast.makeText(context, "下载发起失败", Toast.LENGTH_SHORT).show()
+                if (items.isEmpty()) {
+                    Toast.makeText(context, "没有可下载的内容", Toast.LENGTH_SHORT).show()
                 } else {
-                    onStartDownload(ids, media.title?.take(20) ?: "媒体")
+                    onDownloadRequested(items, media.title?.take(20) ?: "媒体")
                 }
             },
             modifier = Modifier.fillMaxWidth(),
@@ -388,7 +369,7 @@ private fun MediaPreviewCard(
 private fun GalleryPreviewCard(
     media: MediaParseResult,
     onImageClick: (String) -> Unit,
-    onStartDownload: (ids: List<Long>, title: String) -> Unit,
+    onDownloadRequested: (items: List<WatermarkDownloadItem>, title: String) -> Unit,
     theme: ThemeUiColors
 ) {
     val context = LocalContext.current
@@ -417,17 +398,17 @@ private fun GalleryPreviewCard(
                     Toast.makeText(context, "请先点选要下载的图片", Toast.LENGTH_SHORT).show()
                     return@Button
                 }
-                val ids = mutableListOf<Long>()
+                val items = mutableListOf<WatermarkDownloadItem>()
                 val ts = System.currentTimeMillis() % 100000
                 selected.sorted().forEachIndexed { i, idx ->
                     val url = media.imageUrls[idx]
                     val name = cleanFileName("${media.title}_$i", "img_${ts}_$i", guessImageExt(url))
-                    enqueueOne(context, url, name, Environment.DIRECTORY_PICTURES)?.let { ids.add(it) }
+                    items.add(WatermarkDownloadItem(url, name, Environment.DIRECTORY_PICTURES))
                 }
-                if (ids.isEmpty()) {
-                    Toast.makeText(context, "下载发起失败", Toast.LENGTH_SHORT).show()
+                if (items.isEmpty()) {
+                    Toast.makeText(context, "请先点选要下载的图片", Toast.LENGTH_SHORT).show()
                 } else {
-                    onStartDownload(ids, "${selected.size} 张图片")
+                    onDownloadRequested(items, "${selected.size} 张图片")
                 }
             },
             modifier = Modifier.fillMaxWidth(),
@@ -526,7 +507,7 @@ private fun GallerySelector(
 @Composable
 private fun AudioPreviewCard(
     media: MediaParseResult,
-    onStartDownload: (ids: List<Long>, title: String) -> Unit,
+    onDownloadRequested: (items: List<WatermarkDownloadItem>, title: String) -> Unit,
     theme: ThemeUiColors
 ) {
     val context = LocalContext.current
@@ -546,12 +527,10 @@ private fun AudioPreviewCard(
         Button(
             onClick = {
                 val name = cleanFileName(media.audioTitle ?: media.title, "audio_${System.currentTimeMillis() % 100000}", "mp3")
-                val id = enqueueOne(context, audioUrl, name, Environment.DIRECTORY_MUSIC)
-                if (id == null) {
-                    Toast.makeText(context, "下载发起失败", Toast.LENGTH_SHORT).show()
-                } else {
-                    onStartDownload(listOf(id), media.audioTitle?.take(20) ?: "音频")
-                }
+                onDownloadRequested(
+                    listOf(WatermarkDownloadItem(audioUrl, name, Environment.DIRECTORY_MUSIC)),
+                    media.audioTitle?.take(20) ?: "音频"
+                )
             },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
@@ -717,71 +696,15 @@ private fun TextPreviewCard(descText: String, theme: ThemeUiColors) {
     }
 }
 
-// ---------------- 下载进度弹窗 ----------------
-
-private fun formatSpeed(bytesPerSec: Float): String {
-    if (bytesPerSec <= 0) return ""
-    return when {
-        bytesPerSec >= 1024 * 1024 -> "%.1f MB/s".format(bytesPerSec / (1024 * 1024))
-        bytesPerSec >= 1024 -> "%.0f KB/s".format(bytesPerSec / 1024)
-        else -> "%.0f B/s".format(bytesPerSec)
-    }
-}
+// ---------------- 下载进度弹窗（jicun 式：进度环 + 实时速度 + ETA + 取消） ----------------
+@Composable
 
 @Composable
-internal fun DownloadProgressDialog(task: ActiveDownload, onClose: () -> Unit) {
-    val context = LocalContext.current
+internal fun DownloadProgressDialog(job: DownloadJobState, onClose: () -> Unit) {
     val theme = LocalThemeUiColors.current
-    var progress by remember { mutableStateOf(0f) }
-    var speedText by remember { mutableStateOf("") }
-    var etaText by remember { mutableStateOf("") }
-    var done by remember { mutableStateOf(false) }
-    var failed by remember { mutableStateOf(false) }
+    val done = job.done
+    val failed = job.failed
     var cancelling by remember { mutableStateOf(false) }
-
-    LaunchedEffect(task) {
-        val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        var lastBytes = 0L
-        var lastTime = System.currentTimeMillis()
-        while (true) {
-            var soFar = 0L
-            var total = 0L
-            var allDone = task.ids.isNotEmpty()
-            var anyFailed = false
-            for (id in task.ids) {
-                try {
-                    dm.query(DownloadManager.Query().setFilterById(id))?.use { c ->
-                        if (c.moveToFirst()) {
-                            val st = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS))
-                            soFar += c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
-                            val t = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
-                            if (t > 0) total += t
-                            if (st != DownloadManager.STATUS_SUCCESSFUL) allDone = false
-                            if (st == DownloadManager.STATUS_FAILED) anyFailed = true
-                        } else {
-                            allDone = false
-                        }
-                    }
-                } catch (_: Exception) { allDone = false }
-            }
-            val now = System.currentTimeMillis()
-            val dt = (now - lastTime) / 1000f
-            if (dt >= 0.5f) {
-                val speed = (soFar - lastBytes) / dt
-                speedText = formatSpeed(speed)
-                etaText = if (speed > 64 * 1024 && total > soFar) {
-                    val sec = ((total - soFar) / speed).toLong()
-                    "还剩约 %d:%02d".format(sec / 60, sec % 60)
-                } else ""
-                lastBytes = soFar
-                lastTime = now
-            }
-            progress = if (total > 0) (soFar.toFloat() / total).coerceIn(0f, 1f) else 0f
-            if (anyFailed) { failed = true; break }
-            if (allDone) { done = true; progress = 1f; break }
-            delay(400)
-        }
-    }
 
     Dialog(
         onDismissRequest = { if (done || failed) onClose() },
@@ -801,7 +724,11 @@ internal fun DownloadProgressDialog(task: ActiveDownload, onClose: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    if (done) "下载完成" else if (failed) "下载失败" else "正在下载",
+                    when {
+                        done -> "下载完成"
+                        failed -> "下载失败"
+                        else -> "正在下载"
+                    },
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                     color = theme.text,
@@ -812,7 +739,7 @@ internal fun DownloadProgressDialog(task: ActiveDownload, onClose: () -> Unit) {
                 }
             }
             Text(
-                task.title,
+                "${job.title}" + if (job.totalItems > 1 && !done) "（${job.doneCount}/${job.totalItems}）" else "",
                 fontSize = 13.sp,
                 color = theme.textMuted,
                 maxLines = 1,
@@ -820,14 +747,14 @@ internal fun DownloadProgressDialog(task: ActiveDownload, onClose: () -> Unit) {
             )
             Box(contentAlignment = Alignment.Center, modifier = Modifier.size(120.dp)) {
                 CircularProgressIndicator(
-                    progress = { progress },
+                    progress = { job.progress },
                     modifier = Modifier.size(110.dp),
                     strokeWidth = 9.dp,
                     color = theme.primary,
                     trackColor = theme.primary.copy(alpha = 0.15f)
                 )
                 Text(
-                    "${(progress * 100).toInt()}%",
+                    "${(job.progress * 100).toInt()}%",
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                     color = theme.text
@@ -835,12 +762,12 @@ internal fun DownloadProgressDialog(task: ActiveDownload, onClose: () -> Unit) {
             }
             if (!done && !failed) {
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    if (speedText.isNotBlank()) Text(speedText, fontSize = 13.sp, color = theme.primary, fontWeight = FontWeight.Bold)
-                    if (etaText.isNotBlank()) Text(etaText, fontSize = 13.sp, color = theme.textMuted)
+                    if (job.speedText.isNotBlank()) Text(job.speedText, fontSize = 13.sp, color = theme.primary, fontWeight = FontWeight.Bold)
+                    if (job.etaText.isNotBlank()) Text(job.etaText, fontSize = 13.sp, color = theme.textMuted)
                 }
             }
             if (failed) {
-                Text("部分文件下载失败，可重新解析后重试", fontSize = 13.sp, color = Color(0xFFC0392B))
+                Text(job.errorMsg ?: "下载失败，可重新解析后重试", fontSize = 13.sp, color = Color(0xFFC0392B))
             }
             if (done) {
                 Text("已保存到相册 / 文件", fontSize = 13.sp, color = theme.textMuted)
@@ -851,15 +778,10 @@ internal fun DownloadProgressDialog(task: ActiveDownload, onClose: () -> Unit) {
                         onClose()
                     } else {
                         cancelling = true
-                        try {
-                            val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                            dm.remove(*task.ids.toLongArray())
-                        } catch (_: Exception) { }
-                        Toast.makeText(context, "已取消下载", Toast.LENGTH_SHORT).show()
-                        onClose()
+                        job.cancelled.set(true)
                     }
                 },
-                enabled = !cancelling,
+                enabled = !cancelling || done || failed,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -867,7 +789,11 @@ internal fun DownloadProgressDialog(task: ActiveDownload, onClose: () -> Unit) {
                 )
             ) {
                 Text(
-                    if (done || failed) "完成" else if (cancelling) "正在取消…" else "取消下载",
+                    when {
+                        done || failed -> "完成"
+                        cancelling -> "正在取消…"
+                        else -> "取消下载"
+                    },
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )

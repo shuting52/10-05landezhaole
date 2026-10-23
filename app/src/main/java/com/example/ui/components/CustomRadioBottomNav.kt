@@ -137,6 +137,8 @@ fun CustomRadioBottomNav(
         DesignStyle.AURORA -> 28.dp
         // 2026-10-23：新粗野主题底栏 8dp 硬朗圆角（原稿签名）
         DesignStyle.NEO_BRUTALISM -> 8.dp
+        // 2026-10-23：jicun 底栏跟随卡片 20dp
+        DesignStyle.JICUN -> 20.dp
         else -> 18.dp
     }
     val navPillCorner = when (themeColors.designStyle) {

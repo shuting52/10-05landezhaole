@@ -111,6 +111,7 @@ fun ResourceCard(
                 DesignStyle.MINIMALISM -> 6.dp
                 DesignStyle.BAUHAUS -> 4.dp
                 DesignStyle.FLAT_DESIGN -> 4.dp
+                DesignStyle.JICUN -> 20.dp
                 DesignStyle.RETROFUTURISM -> 10.dp
                 DesignStyle.ACID_GRAPHICS -> 8.dp
                 else -> it
@@ -128,6 +129,8 @@ fun ResourceCard(
         designStyle == DesignStyle.BRUTALISM -> RoundedCornerShape(0.dp)
         designStyle == DesignStyle.ANTI_DESIGN -> RoundedCornerShape(3.dp)
         designStyle == DesignStyle.FLAT_DESIGN -> RoundedCornerShape(4.dp)
+        // 2026-10-23：jicun 原生卡片 20dp 超椭圆圆角
+        designStyle == DesignStyle.JICUN -> RoundedCornerShape(20.dp)
         designStyle == DesignStyle.MATERIAL_DESIGN -> RoundedCornerShape(16.dp)
         designStyle == DesignStyle.CLAYMORPHISM -> RoundedCornerShape(22.dp)
         designStyle == DesignStyle.MINIMALISM -> RoundedCornerShape(6.dp)
@@ -153,7 +156,7 @@ fun ResourceCard(
     }
 
     val cardElevation = when {
-        designStyle == DesignStyle.FLAT_DESIGN || designStyle == DesignStyle.BRUTALISM || designStyle == DesignStyle.MINIMALISM -> 0.dp
+        designStyle == DesignStyle.FLAT_DESIGN || designStyle == DesignStyle.BRUTALISM || designStyle == DesignStyle.MINIMALISM || designStyle == DesignStyle.JICUN -> 0.dp
         designStyle == DesignStyle.CLAYMORPHISM -> 5.dp
         designStyle == DesignStyle.NEO_BRUTALISM -> 4.dp
         designStyle == DesignStyle.GUOCHAO -> 2.dp
@@ -257,6 +260,8 @@ fun ResourceCard(
     }.let { if (compBg != null) it.then(Modifier.background(compBg)) else it }
 
     val cardBorderModifier: Modifier = when {
+        // 2026-10-23：jicun 原生卡片无描边
+        designStyle == DesignStyle.JICUN -> Modifier
         // 2026-10-23：手绘主题抖动描边（原稿 2px 墨色歪扭边框签名）
         designStyle == DesignStyle.HAND_DRAWN -> Modifier.drawBehind {
             val stroke = 2.dp.toPx()

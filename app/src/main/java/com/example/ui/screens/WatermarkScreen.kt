@@ -64,6 +64,9 @@ import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import com.example.data.util.MediaParseResult
 import com.example.data.util.VideoLinkParser
+import com.example.download.DownloadJobState
+import com.example.download.WatermarkDownloadItem
+import com.example.download.runWatermarkDownload
 import com.example.ui.theme.LocalThemeUiColors
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -186,9 +189,19 @@ fun WatermarkScreen(
     var isBatchMode by remember { mutableStateOf(false) }
     val batchResults = remember { mutableStateListOf<MediaParseResult>() }
     var batchProgress by remember { mutableStateOf("") }
-    // 2026-10-23：jicun 式下载进度 + 粘贴自动解析开关
-    var activeDownload by remember { mutableStateOf<ActiveDownload?>(null) }
+    // 2026-10-23：jicun 式分段下载任务 + 粘贴自动解析开关
+    var downloadJob by remember { mutableStateOf<DownloadJobState?>(null) }
     var autoParseOnPaste by remember { mutableStateOf(true) }
+
+    // 发起 jicun 分段下载
+    fun requestDownload(items: List<WatermarkDownloadItem>, title: String) {
+        if (items.isEmpty()) return
+        val job = DownloadJobState(title, items.size)
+        downloadJob = job
+        scope.launch {
+            runWatermarkDownload(context, items, job)
+        }
+    }
 
     val history = remember { mutableStateListOf<WatermarkHistoryItem>() }
     LaunchedEffect(Unit) {
@@ -431,7 +444,7 @@ fun WatermarkScreen(
                     selectedQuality = selectedQuality,
                     onQualitySelected = { selectedQuality = it },
                     onImageClick = { fullscreenImage = it },
-                    onStartDownload = { ids, title -> activeDownload = ActiveDownload(ids, title) }
+                    onDownloadRequested = { items, title -> requestDownload(items, title) }
                 )
             }
         }
@@ -454,7 +467,7 @@ fun WatermarkScreen(
                     selectedQuality = 0,
                     onQualitySelected = {},
                     onImageClick = { fullscreenImage = it },
-                    onStartDownload = { ids, title -> activeDownload = ActiveDownload(ids, title) }
+                    onDownloadRequested = { items, title -> requestDownload(items, title) }
                 )
             }
         }
@@ -505,8 +518,8 @@ fun WatermarkScreen(
     }
 
     // 2026-10-23：jicun 式下载进度弹窗
-    activeDownload?.let { task ->
-        DownloadProgressDialog(task = task, onClose = { activeDownload = null })
+    downloadJob?.let { job ->
+        DownloadProgressDialog(job = job, onClose = { downloadJob = null })
     }
 }
 

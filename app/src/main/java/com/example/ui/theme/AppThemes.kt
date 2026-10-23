@@ -10,7 +10,8 @@ enum class ThemeCategory(val title: String) {
     HAND("手绘涂鸦"),
     RETRO("复古纸感"),
     DARK("暗黑霓虹"),
-    CHUNKY("立体Q弹")
+    CHUNKY("立体Q弹"),
+    MINIMAL("极简扁平")
 }
 
 /**
@@ -377,11 +378,58 @@ val APP_THEMES: List<AppTheme> = listOf(
             backgroundGradient = listOf(Color(0xFFF2F6FB), Color(0xFFE9F0F8)),
             designStyle = DesignStyle.NEUMORPHISM
         )
+    ),
+    // 16. JICUN · 即存浅色：jicun 原生浅色主题（Palette.light 原样搬运）
+    // 页底 #CDDCDC / 强调 #1257C9 / 卡片白 55% 无描边 20dp 超椭圆
+    AppTheme(
+        id = "jicun",
+        tag = "JICUN",
+        name = "即存·浅色",
+        desc = "jicun 原生浅色，青灰底+半透明白卡",
+        category = ThemeCategory.MINIMAL,
+        colors = ThemeUiColors(
+            primary = Color(0xFF1257C9),
+            secondary = Color(0xFF1257C9),
+            background = Color(0xFFCDDCDC),
+            surface = Color(0x8CFFFFFF),
+            text = Color(0xFF1B2430),
+            textMuted = Color(0xFF6E7887),
+            accent = Color(0xFF1257C9),
+            onPrimary = Color(0xFFFFFFFF),
+            border = Color(0x00000000),
+            cardGradient = listOf(Color(0x8CFFFFFF), Color(0x8CFFFFFF)),
+            backgroundGradient = listOf(Color(0xFFCDDCDC), Color(0xFFCDDCDC), Color(0xFFCDDCDC)),
+            designStyle = DesignStyle.JICUN
+        )
+    ),
+    // 17. JICUN DARK · 即存深色：jicun 原生深色主题（Palette.dark 原样搬运）
+    // 页底黑→#434343 渐变 / 强调 #5AA9FF / 卡片白 15% 无描边 20dp
+    AppTheme(
+        id = "jicun_dark",
+        tag = "JICUN DARK",
+        name = "即存·深色",
+        desc = "jicun 原生深色，黑灰渐变底+淡白卡",
+        category = ThemeCategory.MINIMAL,
+        isDark = true,
+        colors = ThemeUiColors(
+            primary = Color(0xFF5AA9FF),
+            secondary = Color(0xFF5AA9FF),
+            background = Color(0xFF434343),
+            surface = Color(0x26FFFFFF),
+            text = Color(0xFFF5F7FA),
+            textMuted = Color(0xFFADB7C5),
+            accent = Color(0xFF5AA9FF),
+            onPrimary = Color(0xFFFFFFFF),
+            border = Color(0x00000000),
+            cardGradient = listOf(Color(0x26FFFFFF), Color(0x26FFFFFF)),
+            backgroundGradient = listOf(Color(0xFF000000), Color(0xFF434343), Color(0xFF434343)),
+            designStyle = DesignStyle.JICUN
+        )
     )
 )
 
-/** 默认主题：冰晶液态（用户主题列表第一套） */
-const val DEFAULT_APP_THEME_ID = "frost"
+/** 默认主题：即存·浅色（jicun 原生主题，用户指定为默认） */
+const val DEFAULT_APP_THEME_ID = "jicun"
 
 /** 按 id 取主题，非法 id 回退默认 */
 fun appThemeById(id: String): AppTheme =
