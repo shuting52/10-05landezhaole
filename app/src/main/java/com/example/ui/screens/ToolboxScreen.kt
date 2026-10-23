@@ -941,21 +941,6 @@ private val RING_MENU_GROUPS: List<RingMenuGroup> = listOf(
             )
         )
     ),
-    // v1.4.22 新增：音乐播放器（致敬开源 Folia folia-major）
-    RingMenuGroup(
-        id = "music_player",
-        entryLabel = "音乐播放器",
-        sheetTitle = "音乐播放器",
-        sheetSub = "在线试听 · 本地播放",
-        icon = ToolboxTab.MUSIC_PLAYER.icon,
-        options = listOf(
-            RingMenuOption(
-                tab = ToolboxTab.MUSIC_PLAYER,
-                name = "音乐播放器",
-                desc = "在线搜索 30 秒试听 · 本地音频播放 · 播放列表"
-            )
-        )
-    ),
     // 2026-10-23：工时打卡（移植自 shuting52/jigongshi）
     RingMenuGroup(
         id = "worktime",

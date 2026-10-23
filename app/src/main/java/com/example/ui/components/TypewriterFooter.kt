@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.GppGood
 import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -45,11 +43,12 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
 /**
- * 软件合规资质与备案号官方页脚（打字机动态版）。
+ * 软件合规资质与备案号官方页脚（24 小时不间断轮播版）。
  *
- * 2026-10-23：用户要求截图中的备案页脚"换成动态页脚的形式呈现"——
- * 备案号逐字打出（带闪烁光标），各区段 staggered 淡入上滑。
- * 动画只在首次进入组合时播放一次，滚动回来不重播。
+ * 2026-10-23：用户要求页脚"24小时不间断轮播"——
+ * 顶部备案卡保持静态（官方认证），底部标语区无限循环：
+ * 逐字打出 → 停留 → 快速删除 → 下一条，全天候循环。
+ * 离开设置页时协程自动取消，不耗电。
  */
 @Composable
 fun TypewriterFooter(
@@ -58,26 +57,64 @@ fun TypewriterFooter(
 ) {
     val licenseFull = "备案号：粤ICP备20260921号-1A"
     var entered by remember { mutableStateOf(false) }
-    var typedCount by remember { mutableStateOf(0) }
-    var cursorOn by remember { mutableStateOf(true) }
+    var licenseTyped by remember { mutableStateOf(0) }
+    var licenseCursor by remember { mutableStateOf(true) }
+
+    // 24 小时轮播标语
+    val carouselLines = remember {
+        listOf(
+            "✓ 国家移动安全检测合格",
+            "✓ 纯净绿色安全软件",
+            "懒得找了 (LanDeZhaoLe) · 官方出品",
+            "Copyright © 2026 懒得找了团队 · 保留所有权利"
+        )
+    }
+    var carouselIndex by remember { mutableStateOf(0) }
+    var carouselTyped by remember { mutableStateOf(0) }
+    var carouselCursor by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         entered = true
-        delay(350)
-        // 打字机：逐字打出备案号
+        // 备案号打字机（播一次）
+        delay(400)
         for (i in 1..licenseFull.length) {
-            typedCount = i
-            delay(75)
+            licenseTyped = i
+            delay(70)
         }
-        // 光标闪烁 3 次后熄灭
         repeat(6) {
             delay(380)
-            cursorOn = !cursorOn
+            licenseCursor = !licenseCursor
         }
-        cursorOn = false
+        licenseCursor = false
     }
 
-    // 区段 staggered 入场：淡入 + 轻微上滑
+    // 24 小时不间断轮播（独立协程，无限循环）
+    LaunchedEffect(Unit) {
+        delay(1200) // 等备案号打完再开始轮播
+        while (true) {
+            val line = carouselLines[carouselIndex]
+            // 逐字打出
+            for (i in 1..line.length) {
+                carouselTyped = i
+                carouselCursor = true
+                delay(65)
+            }
+            // 停留展示
+            repeat(7) {
+                delay(380)
+                carouselCursor = !carouselCursor
+            }
+            carouselCursor = true
+            // 快速删除
+            for (i in line.length downTo 0) {
+                carouselTyped = i
+                delay(22)
+            }
+            delay(350)
+            carouselIndex = (carouselIndex + 1) % carouselLines.size
+        }
+    }
+
     fun sectionEnter(delayMs: Int) =
         fadeIn(animationSpec = tween(500, delayMillis = delayMs)) +
                 slideInVertically(
@@ -128,7 +165,7 @@ fun TypewriterFooter(
             }
         }
 
-        // 2. 官方移动应用程序备案许可认证卡（备案号打字机打出）
+        // 2. 官方移动应用程序备案许可认证卡（静态）
         AnimatedVisibility(visible = entered, enter = sectionEnter(120)) {
             Surface(
                 color = Color.White.copy(alpha = 0.82f),
@@ -162,13 +199,12 @@ fun TypewriterFooter(
 
                     Spacer(modifier = Modifier.height(4.dp))
 
-                    // 打字机备案号 + 闪烁光标
                     Text(
                         text = buildAnnotatedString {
                             withStyle(SpanStyle(color = Color(0xFF2563EB))) {
-                                append(licenseFull.take(typedCount))
+                                append(licenseFull.take(licenseTyped))
                             }
-                            if (cursorOn && typedCount < licenseFull.length) {
+                            if (licenseCursor && licenseTyped < licenseFull.length) {
                                 withStyle(SpanStyle(color = Color(0xFF2563EB))) {
                                     append("▍")
                                 }
@@ -189,65 +225,38 @@ fun TypewriterFooter(
             }
         }
 
-        // 3. 安全检测与纯净无广告标识
-        AnimatedVisibility(visible = entered, enter = sectionEnter(1150)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+        // 3. 24 小时不间断轮播标语区
+        AnimatedVisibility(visible = entered, enter = sectionEnter(300)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(28.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Filled.CheckCircle,
-                        contentDescription = null,
-                        tint = Color(0xFF10B981),
-                        modifier = Modifier.size(12.dp)
-                    )
-                    Spacer(modifier = Modifier.width(3.dp))
-                    Text(
-                        text = "国家移动安全检测合格",
-                        fontSize = 9.5.sp,
-                        color = Color(0xFF059669),
-                        fontWeight = FontWeight.Medium
-                    )
+                val line = carouselLines[carouselIndex]
+                val lineColor = when (carouselIndex) {
+                    0 -> Color(0xFF059669)
+                    1 -> Color(0xFF2563EB)
+                    2 -> Color(0xFF475569)
+                    else -> Color(0xFF94A3B8)
                 }
-
-                Text("•", fontSize = 10.sp, color = Color(0xFFCBD5E1))
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Filled.GppGood,
-                        contentDescription = null,
-                        tint = Color(0xFF3B82F6),
-                        modifier = Modifier.size(12.dp)
-                    )
-                    Spacer(modifier = Modifier.width(3.dp))
-                    Text(
-                        text = "纯净绿色安全软件",
-                        fontSize = 9.5.sp,
-                        color = Color(0xFF2563EB),
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-        }
-
-        // 4. 官方版权归属
-        AnimatedVisibility(visible = entered, enter = sectionEnter(1350)) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(top = 2.dp)
-            ) {
                 Text(
-                    text = "懒得找了 (LanDeZhaoLe) · 官方出品",
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF475569)
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = "Copyright © 2026 懒得找了团队 · 保留所有权利",
-                    fontSize = 9.sp,
-                    color = Color(0xFF94A3B8)
+                    text = buildAnnotatedString {
+                        withStyle(
+                            SpanStyle(
+                                color = lineColor,
+                                fontWeight = if (carouselIndex < 2) FontWeight.Medium else FontWeight.Bold
+                            )
+                        ) {
+                            append(line.take(carouselTyped))
+                        }
+                        if (carouselCursor) {
+                            withStyle(SpanStyle(color = lineColor)) {
+                                append("▍")
+                            }
+                        }
+                    },
+                    fontSize = if (carouselIndex == 3) 9.sp else 10.5.sp
                 )
             }
         }
