@@ -102,7 +102,11 @@ object VideoLinkParser {
                     "haokan.baidu.com" in lower -> parseHaokan(url)
                     "xiaohongshu.com" in lower || "xhslink.com" in lower -> parseXiaohongshu(url)
                     "weishi.qq.com" in lower -> parseWeishi(url)
-                    "pipixia.com" in lower -> parseDouyin(url) // 皮皮虾与抖音同源 _ROUTER_DATA
+                    "pipixia.com" in lower -> parsePipixia(url) // v1.7.45：皮皮虾专用解析（移植 qushuiyin/ppxia.php）
+                    "ippzone.com" in lower || "pipigx.com" in lower -> parsePipigx(url) // v1.7.45：皮皮搞笑
+                    "izuiyou" in lower -> parseZuiyou(url) // v1.7.45：最右
+                    "doubao.com" in lower -> parseDoubao(url) // v1.7.45：豆包视频
+                    "jimeng.jianying.com" in lower || "jimeng.aiseet.atry.com" in lower -> parseJimeng(url) // v1.7.45：即梦AI
                     "x.com" in lower || "twitter.com" in lower -> parseX(url) // v1.4.29：X 视频直链
                     "tiktok.com" in lower || "vt.tiktok" in lower || "vm.tiktok" in lower -> parseTikTok(url) // v1.4.30：TikTok 无水印
                     else -> null
@@ -181,6 +185,25 @@ object VideoLinkParser {
         return try {
             val s = getString(url, ua, referer) ?: return null
             JSONObject(s)
+        } catch (_: Exception) { null }
+    }
+
+    /** POST JSON 并解析返回的 JSONObject（皮皮搞笑/最右/豆包/即梦用） */
+    private fun postJson(
+        url: String,
+        jsonBody: String,
+        headers: Map<String, String>,
+        ua: String = UA
+    ): JSONObject? {
+        return try {
+            val builder = Request.Builder().url(url).header("User-Agent", ua)
+            headers.forEach { (k, v) -> builder.header(k, v) }
+            val reqBody = jsonBody.toRequestBody("application/json".toMediaType())
+            clientFollow.newCall(builder.post(reqBody).build()).execute().use { resp ->
+                if (!resp.isSuccessful) return null
+                val s = resp.body?.string() ?: return null
+                JSONObject(s)
+            }
         } catch (_: Exception) { null }
     }
 
@@ -910,6 +933,316 @@ object VideoLinkParser {
         } catch (_: Exception) { null }
     }
 
+    // ================= 皮皮搞笑（移植 qushuiyin/api/pipigx.php，MIT） =================
+    // 分享链接 query 取 pid/mid → POST h5.pipigx.com/ppapi/share/fetch_content
+    private fun parsePipigx(shareUrl: String): MediaParseResult? {
+        return try {
+            var url = extractShareUrlSv(shareUrl) ?: return null
+            var pid = Regex("[?&]pid=([^&]+)").find(url)?.groupValues?.get(1)
+            var mid = Regex("[?&]mid=([^&]+)").find(url)?.groupValues?.get(1)
+            if (pid.isNullOrBlank() || mid.isNullOrBlank()) {
+                url = getFinalRedirectUrl(url)
+                pid = Regex("[?&]pid=([^&]+)").find(url)?.groupValues?.get(1)
+                mid = Regex("[?&]mid=([^&]+)").find(url)?.groupValues?.get(1)
+            }
+            if (pid.isNullOrBlank() || mid.isNullOrBlank()) return null
+            val pidLong = pid.toLongOrNull() ?: return null
+            val midLong = mid.toLongOrNull() ?: return null
+            val apiUrl = "https://h5.pipigx.com/ppapi/share/fetch_content"
+            val body = "{\"pid\":$pidLong,\"mid\":$midLong,\"type\":\"post\"}"
+            val j = postJson(apiUrl, body, mapOf("Content-Type" to "application/json")) ?: return null
+            val post = j.optJSONObject("data")?.optJSONObject("post") ?: return null
+            val videos = post.optJSONArray("videos") ?: return null
+            if (videos.length() == 0) return null
+            val v0 = videos.optJSONObject(0) ?: return null
+            val videoUrl = v0.optString("url", "").takeIf { it.startsWith("http") } ?: return null
+            val thumb = v0.optString("thumb", "")
+            val coverUrl = if (thumb.isNotBlank()) "https://file.ippzone.com/img/frame/id/$thumb" else null
+            MediaParseResult(
+                videoUrls = listOf(videoUrl),
+                coverUrl = coverUrl,
+                title = post.optString("content", "").takeIf { it.isNotBlank() },
+                platform = "皮皮搞笑"
+            )
+        } catch (_: Exception) { null }
+    }
+
+    // ================= 皮皮虾（移植 qushuiyin/api/ppxia.php，MIT） =================
+    // 短链跟随重定向 → /item/{id} → h5.pipix.com/bds/cell/cell_h5_comment
+    private fun parsePipixia(shareUrl: String): MediaParseResult? {
+        return try {
+            var url = extractShareUrlSv(shareUrl) ?: return null
+            var finalUrl = getFinalRedirectUrl(url)
+            var itemId = Regex("item/([^?/#]+)").find(finalUrl)?.groupValues?.get(1)
+            if (itemId.isNullOrBlank()) {
+                finalUrl = getFinalRedirectUrl(finalUrl)
+                itemId = Regex("item/([^?/#]+)").find(finalUrl)?.groupValues?.get(1)
+            }
+            if (itemId.isNullOrBlank()) return null
+            val apiUrl =
+                "https://h5.pipix.com/bds/cell/cell_h5_comment/?count=5&aid=1319&app_name=super&cell_id=$itemId"
+            val j = getJson(apiUrl) ?: return null
+            // PHP 取 cell_comments[1] 为正文；兼容处理：优先 [1]，否则找第一个含 comment_info.item 的
+            val comments = j.optJSONObject("data")?.optJSONArray("cell_comments") ?: return null
+            var item: JSONObject? = null
+            if (comments.length() > 1) {
+                item = comments.optJSONObject(1)?.optJSONObject("comment_info")?.optJSONObject("item")
+            }
+            if (item == null) {
+                for (i in 0 until comments.length()) {
+                    item = comments.optJSONObject(i)?.optJSONObject("comment_info")?.optJSONObject("item")
+                    if (item != null) break
+                }
+            }
+            item ?: return null
+            val videos = mutableListOf<String>()
+            item.optJSONObject("video")?.optJSONObject("video_high")
+                ?.optJSONArray("url_list")?.optJSONObject(0)?.optString("url", "")
+                ?.takeIf { it.startsWith("http") }?.let { videos.add(it) }
+            val images = mutableListOf<String>()
+            val multiImage = item.optJSONObject("note")?.optJSONArray("multi_image")
+            if (multiImage != null) {
+                for (i in 0 until multiImage.length()) {
+                    multiImage.optJSONObject(i)?.optJSONArray("url_list")?.optJSONObject(0)
+                        ?.optString("url", "")?.takeIf { it.startsWith("http") }?.let { images.add(it) }
+                }
+            }
+            if (videos.isEmpty() && images.isEmpty()) return null
+            val author = item.optJSONObject("author")
+            MediaParseResult(
+                videoUrls = videos,
+                imageUrls = images.distinct().take(20),
+                coverUrl = item.optJSONObject("cover")?.optJSONArray("url_list")?.optJSONObject(0)
+                    ?.optString("url", "")?.takeIf { it.startsWith("http") },
+                title = item.optString("content", "").takeIf { it.isNotBlank() },
+                author = author?.optString("name")?.takeIf { it.isNotBlank() },
+                platform = "皮皮虾"
+            )
+        } catch (_: Exception) { null }
+    }
+
+    // ================= 最右（移植 qushuiyin/api/zuiyou.php，MIT） =================
+    // 分享链接取 pid → POST share.xiaochuankeji.cn/planck/share/post/detail_h5
+    private fun parseZuiyou(shareUrl: String): MediaParseResult? {
+        return try {
+            var url = extractShareUrlSv(shareUrl) ?: return null
+            var pid = Regex("[?&]pid=([^&]+)").find(url)?.groupValues?.get(1)
+            if (pid.isNullOrBlank()) {
+                url = getFinalRedirectUrl(url)
+                pid = Regex("[?&]pid=([^&]+)").find(url)?.groupValues?.get(1)
+            }
+            if (pid.isNullOrBlank()) return null
+            val pidLong = pid.toLongOrNull() ?: return null
+            val apiUrl = "https://share.xiaochuankeji.cn/planck/share/post/detail_h5"
+            val body = "{\"pid\":$pidLong,\"h_av\":\"5.2.13.011\"}"
+            val j = postJson(
+                apiUrl, body,
+                mapOf("Content-Type" to "application/json", "Accept" to "application/json")
+            ) ?: return null
+            val post = j.optJSONObject("data")?.optJSONObject("post") ?: return null
+            val member = post.optJSONObject("member")
+            val imgs = post.optJSONArray("imgs")
+            val img0 = if (imgs != null && imgs.length() > 0) imgs.optJSONObject(0) else null
+            val vid = img0?.optString("id", "") ?: ""
+            var videoUrl: String? = null
+            if (vid.isNotBlank()) {
+                videoUrl = post.optJSONObject("videos")?.optJSONObject(vid)?.optString("url", "")
+                    ?.takeIf { it.startsWith("http") }
+            }
+            // 兜底：videos 对象里第一个带 http 直链的
+            if (videoUrl == null) {
+                val videosObj = post.optJSONObject("videos")
+                if (videosObj != null) {
+                    val keys = videosObj.keys()
+                    while (keys.hasNext()) {
+                        val u = videosObj.optJSONObject(keys.next())?.optString("url", "") ?: ""
+                        if (u.startsWith("http")) {
+                            videoUrl = u
+                            break
+                        }
+                    }
+                }
+            }
+            if (videoUrl == null) return null
+            val coverUrl = img0?.optJSONObject("urls")?.optJSONObject("540_webp")
+                ?.optJSONArray("urls")?.optString(0)?.takeIf { it.startsWith("http") }
+            MediaParseResult(
+                videoUrls = listOf(videoUrl),
+                coverUrl = coverUrl,
+                title = post.optString("content", "").takeIf { it.isNotBlank() },
+                author = member?.optString("name")?.takeIf { it.isNotBlank() },
+                platform = "最右"
+            )
+        } catch (_: Exception) { null }
+    }
+
+    // ================= 豆包视频（移植 qushuiyin/api/doubao/video/DoubaoParser.php，MIT） =================
+    // 分享链接取 share_id/video_id → POST www.doubao.com/creativity/share/get_video_share_info
+    // 注意：data 为透传结构，防御式提取；Cookie 为参考实现自带，可能过期
+    private fun parseDoubao(shareUrl: String): MediaParseResult? {
+        return try {
+            var url = extractShareUrlSv(shareUrl) ?: return null
+            var shareId = Regex("[?&]share_id=([^&]+)").find(url)?.groupValues?.get(1)
+            var videoId = Regex("[?&]video_id=([^&]+)").find(url)?.groupValues?.get(1)
+            if (shareId.isNullOrBlank() || videoId.isNullOrBlank()) {
+                url = getFinalRedirectUrl(url)
+                shareId = Regex("[?&]share_id=([^&]+)").find(url)?.groupValues?.get(1)
+                videoId = Regex("[?&]video_id=([^&]+)").find(url)?.groupValues?.get(1)
+            }
+            if (shareId.isNullOrBlank() || videoId.isNullOrBlank()) return null
+            val apiUrl = "https://www.doubao.com/creativity/share/get_video_share_info" +
+                "?version_code=20800&language=zh-CN&device_platform=web&aid=497858&real_aid=497858" +
+                "&pkg_type=release_version&device_id=&pc_version=3.8.3&region=&sys_region=" +
+                "&samantha_web=1&use-olympus-account=1&web_tab_id=4d5d17a6-6729-4c1e-9f55-09f093100f0a"
+            val body = "{\"share_id\":\"$shareId\",\"vid\":\"$videoId\",\"creation_id\":\"\"}"
+            val headers = mapOf(
+                "Content-Type" to "application/json",
+                "Accept" to "application/json, text/plain, */*",
+                "Origin" to "https://www.doubao.com",
+                "Referer" to "https://www.doubao.com/video-sharing?share_id=$shareId&source_type=mobile&video_id=$videoId&share_scene=video_viewer",
+                "Cookie" to "i18next=zh-CN; ttwid=1%7CFGYNcsGXqieXVBP4QNemEXTZLZoArf0NEPXt1WhSmm8%7C1772615343%7Cc6580d4acaa52df7479b610305cc558176ba8dfcdd55bf8d9ce6fe86d3948009"
+            )
+            val j = postJson(apiUrl, body, headers, UA_DESKTOP_SV) ?: return null
+            if (j.optInt("code", -1) != 0) return null
+            val data = j.optJSONObject("data") ?: return null
+            val videoUrl = findBestVideoUrlInJson(data) ?: return null
+            MediaParseResult(
+                videoUrls = listOf(videoUrl),
+                coverUrl = data.optString("cover_url", "").takeIf { it.startsWith("http") }
+                    ?: data.optString("cover", "").takeIf { it.startsWith("http") },
+                title = data.optString("title", "").takeIf { it.isNotBlank() }
+                    ?: data.optString("desc", "").takeIf { it.isNotBlank() },
+                platform = "豆包"
+            )
+        } catch (_: Exception) { null }
+    }
+
+    /** 在未知结构的 JSON 中递归找最像视频直链的 URL（豆包 data 透传结构用） */
+    private fun findBestVideoUrlInJson(obj: JSONObject): String? {
+        var best: String? = null
+        var bestScore = -1
+        fun score(key: String, value: String): Int {
+            val k = key.lowercase()
+            if ("avatar" in k || "cover" in k || "image" in k || "thumb" in k || "icon" in k || "logo" in k) return -1
+            var s = 0
+            if (value.endsWith(".mp4") || ".mp4?" in value) s += 10
+            if ("video" in k) s += 5
+            if ("play" in k || "url" in k) s += 3
+            if ("video" in value) s += 2
+            return s
+        }
+        fun walk(o: Any?, key: String) {
+            when (o) {
+                is JSONObject -> {
+                    val keys = o.keys()
+                    while (keys.hasNext()) {
+                        val k = keys.next()
+                        walk(o.opt(k), k)
+                    }
+                }
+                is org.json.JSONArray -> {
+                    for (i in 0 until o.length()) walk(o.opt(i), key)
+                }
+                is String -> {
+                    if (o.startsWith("http")) {
+                        val s = score(key, o)
+                        if (s > bestScore) {
+                            bestScore = s
+                            best = o
+                        }
+                    }
+                }
+            }
+        }
+        walk(obj, "")
+        return best?.takeIf { bestScore > 0 }
+    }
+
+    // ================= 即梦AI（移植 qushuiyin/api/jimengai/JimengParser.php，MIT） =================
+    // 分享链接取 item_id（query 参数或末段数字；短链 /s/ 先跟随重定向）
+    // → POST jimeng.jianying.com/mweb/v1/get_item_info
+    private fun parseJimeng(shareUrl: String): MediaParseResult? {
+        return try {
+            var url = extractShareUrlSv(shareUrl) ?: return null
+            var itemId = extractJimengId(url)
+            if (itemId.isNullOrBlank() && "/s/" in url) {
+                url = getFinalRedirectUrl(url)
+                itemId = extractJimengId(url)
+            }
+            if (itemId.isNullOrBlank()) return null
+            val apiUrl = "https://jimeng.jianying.com/mweb/v1/get_item_info"
+            val body = "{\"published_item_id\":\"$itemId\"}"
+            val j = postJson(apiUrl, body, mapOf("Content-Type" to "application/json"), UA_DESKTOP_SV)
+                ?: return null
+            if (j.optString("ret", "") != "0") return null
+            val data = j.optJSONObject("data") ?: return null
+            val common = data.optJSONObject("common_attr")
+            val author = data.optJSONObject("author")
+            val video = data.optJSONObject("video")
+            // 视频：transcoded_video.origin.video_url 优先，其次 origin_video.video_url
+            val transcoded = video?.optJSONObject("transcoded_video")
+            var videoUrl = transcoded?.optJSONObject("origin")?.optString("video_url", "")
+                ?.takeIf { it.startsWith("http") }
+            if (videoUrl == null) {
+                videoUrl = video?.optJSONObject("origin_video")?.optString("video_url", "")
+                    ?.takeIf { it.startsWith("http") }
+            }
+            if (videoUrl == null) return null
+            // 备选画质
+            val qualities = mutableListOf<Pair<String, String>>("原画" to videoUrl)
+            if (transcoded != null) {
+                val keys = transcoded.keys()
+                while (keys.hasNext()) {
+                    val q = keys.next()
+                    if (q == "origin") continue
+                    val u = transcoded.optJSONObject(q)?.optString("video_url", "") ?: ""
+                    if (u.startsWith("http") && u != videoUrl) qualities.add(q to u)
+                }
+            }
+            // 封面：cover_url_map 1080/720/original/首个
+            var coverUrl: String? = null
+            val coverMap = common?.optJSONObject("cover_url_map")
+            if (coverMap != null) {
+                for (k in listOf("1080", "720", "original")) {
+                    val u = coverMap.optString(k, "")
+                    if (u.startsWith("http")) {
+                        coverUrl = u
+                        break
+                    }
+                }
+                if (coverUrl == null) {
+                    val keys = coverMap.keys()
+                    while (keys.hasNext()) {
+                        val u = coverMap.optString(keys.next(), "")
+                        if (u.startsWith("http")) {
+                            coverUrl = u
+                            break
+                        }
+                    }
+                }
+            }
+            if (coverUrl == null) {
+                coverUrl = common?.optString("cover_url", "")?.takeIf { it.startsWith("http") }
+            }
+            MediaParseResult(
+                videoUrls = listOf(videoUrl),
+                coverUrl = coverUrl,
+                title = common?.optString("description", "")?.takeIf { it.isNotBlank() },
+                author = author?.optString("name")?.takeIf { it.isNotBlank() },
+                platform = "即梦AI",
+                qualityOptions = qualities.distinctBy { it.second }.take(4)
+            )
+        } catch (_: Exception) { null }
+    }
+
+    /** 即梦 item_id：query 的 item_id/id，或末段纯数字 */
+    private fun extractJimengId(url: String): String? {
+        return try {
+            Regex("[?&](?:item_id|id)=([^&]+)").find(url)?.groupValues?.get(1)?.takeIf { it.isNotBlank() }
+                ?: Regex("/(\\d+)(?:[?#]|$)").find(url)?.groupValues?.get(1)
+        } catch (_: Exception) { null }
+    }
+
     // ================= 通用回退（v1.4.13 逻辑保留） =================
     private fun extractMedia(html: String, pageUrl: String): MediaParseResult {
         if (html.isBlank()) return MediaParseResult()
@@ -988,7 +1321,8 @@ object VideoLinkParser {
             .find(html)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotBlank() }
 
         // 若来自明确的短视频平台且未解析出视频，避免将网页背景图/图标作为图片兜底误导用户
-        val isVideoPlatform = listOf("douyin", "kuaishou", "bilibili", "ixigua", "haokan", "pipixia", "tiktok", "weishi")
+        val isVideoPlatform = listOf("douyin", "kuaishou", "bilibili", "ixigua", "haokan", "pipixia", "tiktok", "weishi",
+            "pipigx", "ippzone", "izuiyou", "doubao", "jimeng")
             .any { pageUrl.contains(it, ignoreCase = true) }
         val filteredImages = if (isVideoPlatform && distinctVideos.isEmpty()) emptyList() else distinctImages
 
