@@ -46,6 +46,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -226,6 +227,10 @@ fun WatermarkScreen(
     var errorMsg by remember { mutableStateOf<String?>(null) }
     var selectedQuality by remember(result) { mutableStateOf(0) }
     var fullscreenImage by remember { mutableStateOf<String?>(null) }
+    // 批量解析
+    var isBatchMode by remember { mutableStateOf(false) }
+    val batchResults = remember { mutableStateListOf<MediaParseResult>() }
+    var batchProgress by remember { mutableStateOf("") }
 
     val history = remember { mutableStateListOf<WatermarkHistoryItem>() }
     LaunchedEffect(Unit) {
@@ -283,10 +288,52 @@ fun WatermarkScreen(
                 return
             }
             inputText = text
-            // jicun 式：粘贴后自动解析
-            doParse(text)
+            // jicun 式：粘贴后自动解析（批量模式不自动）
+            if (!isBatchMode) doParse(text)
         } catch (e: Exception) {
             Toast.makeText(context, "读取剪贴板失败", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // 批量解析：每行一个链接
+    fun doBatchParse() {
+        val urls = inputText.lines()
+            .map { extractUrl(it.trim()) }
+            .filter { it.startsWith("http://") || it.startsWith("https://") }
+            .distinct()
+        if (urls.isEmpty()) {
+            errorMsg = "请每行粘贴一个分享链接"
+            Toast.makeText(context, "请每行粘贴一个分享链接", Toast.LENGTH_SHORT).show()
+            return
+        }
+        isParsing = true
+        errorMsg = null
+        batchResults.clear()
+        scope.launch {
+            urls.forEachIndexed { idx, url ->
+                batchProgress = "正在解析 ${idx + 1}/${urls.size}"
+                try {
+                    val media = VideoLinkParser.resolveMedia(context, url)
+                    if (media.videoUrls.isNotEmpty() || media.imageUrls.isNotEmpty()) {
+                        batchResults.add(media)
+                        val item = WatermarkHistoryItem(
+                            title = media.title?.ifBlank { null } ?: "无标题",
+                            author = media.author?.ifBlank { null } ?: "",
+                            platform = media.platform?.ifBlank { null } ?: detectPlatform(url),
+                            coverUrl = media.coverUrl,
+                            videoUrl = media.videoUrls.firstOrNull(),
+                            imageCount = media.imageUrls.size,
+                            originalLink = url,
+                            timestamp = System.currentTimeMillis()
+                        )
+                        history.removeAll { it.originalLink == url }
+                        history.add(0, item)
+                    }
+                } catch (_: Exception) { }
+            }
+            if (history.isNotEmpty()) saveHistory(context, history)
+            batchProgress = "完成：${batchResults.size}/${urls.size} 成功"
+            isParsing = false
         }
     }
 
@@ -341,14 +388,33 @@ fun WatermarkScreen(
                             Icon(Icons.Filled.Link, contentDescription = null, tint = theme.primary, modifier = Modifier.size(20.dp))
                             Spacer(Modifier.width(8.dp))
                             Text("粘贴分享链接", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = theme.text)
+                            Spacer(Modifier.weight(1f))
+                            // 批量模式开关
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.clickable { isBatchMode = !isBatchMode }
+                            ) {
+                                Text("批量", fontSize = 12.5.sp, color = theme.textMuted)
+                                Spacer(Modifier.width(4.dp))
+                                Switch(
+                                    checked = isBatchMode,
+                                    onCheckedChange = { isBatchMode = it },
+                                    modifier = Modifier.size(width = 40.dp, height = 24.dp)
+                                )
+                            }
                         }
                         OutlinedTextField(
                             value = inputText,
                             onValueChange = { inputText = it },
-                            modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp),
-                            placeholder = { Text("粘贴抖音 / 快手 / 小红书 / 哔哩哔哩等分享链接…", fontSize = 13.sp, color = theme.textMuted) },
+                            modifier = Modifier.fillMaxWidth().heightIn(min = if (isBatchMode) 120.dp else 90.dp),
+                            placeholder = {
+                                Text(
+                                    if (isBatchMode) "每行粘贴一个分享链接，可批量解析…" else "粘贴抖音 / 快手 / 小红书 / 哔哩哔哩等分享链接…",
+                                    fontSize = 13.sp, color = theme.textMuted
+                                )
+                            },
                             shape = RoundedCornerShape(12.dp),
-                            maxLines = 4
+                            maxLines = if (isBatchMode) 8 else 4
                         )
                         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                             OutlinedButton(
@@ -361,7 +427,7 @@ fun WatermarkScreen(
                                 Text("粘贴")
                             }
                             Button(
-                                onClick = { doParse() },
+                                onClick = { if (isBatchMode) doBatchParse() else doParse() },
                                 enabled = !isParsing,
                                 modifier = Modifier.weight(2f),
                                 shape = RoundedCornerShape(12.dp),
@@ -370,11 +436,11 @@ fun WatermarkScreen(
                                 if (isParsing) {
                                     CircularProgressIndicator(modifier = Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
                                     Spacer(Modifier.width(8.dp))
-                                    Text("解析中…")
+                                    Text(if (isBatchMode && batchProgress.isNotBlank()) batchProgress else "解析中…")
                                 } else {
                                     Icon(Icons.Filled.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
                                     Spacer(Modifier.width(6.dp))
-                                    Text("开始解析", fontWeight = FontWeight.Bold)
+                                    Text(if (isBatchMode) "批量解析" else "开始解析", fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
@@ -393,6 +459,28 @@ fun WatermarkScreen(
                     media = media,
                     selectedQuality = selectedQuality,
                     onQualitySelected = { selectedQuality = it },
+                    onImageClick = { fullscreenImage = it }
+                )
+            }
+        }
+
+        // ===== 批量解析结果 =====
+        if (batchResults.isNotEmpty()) {
+            item {
+                Text(
+                    "批量结果（${batchResults.size}）",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                    color = theme.text,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
+            items(batchResults.size) { idx ->
+                val media = batchResults[idx]
+                ParseResultCard(
+                    media = media,
+                    selectedQuality = 0,
+                    onQualitySelected = {},
                     onImageClick = { fullscreenImage = it }
                 )
             }

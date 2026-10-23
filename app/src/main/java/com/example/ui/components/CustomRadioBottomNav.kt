@@ -217,7 +217,8 @@ fun CustomRadioBottomNav(
     val pressScope = rememberCoroutineScope()
     val longPressModifier = Modifier.pointerInput(Unit) {
         awaitEachGesture {
-            awaitFirstDown()
+            // requireUnconsumed=false：子元素 clickable 会消费按下事件，父级也要能收到
+            awaitFirstDown(requireUnconsumed = false)
             var longPressed = false
             val job = pressScope.launch {
                 delay(400)
