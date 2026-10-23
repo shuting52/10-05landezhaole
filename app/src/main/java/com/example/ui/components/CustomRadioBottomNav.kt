@@ -1,6 +1,5 @@
 package com.example.ui.components
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -60,6 +59,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
@@ -195,9 +195,9 @@ fun CustomRadioBottomNav(
         )
     )
 
-    val highlightColor = themeColors.secondary
     // 2026-10-23：选中态文字跟随主题 onPrimary（暗黑街头/星芒深色字保证对比度）
-    val selectedTextColor = themeColors.onPrimary
+    // 2026-10-23：液态玻璃风格下选中态落在白色玻璃胶囊上，改用深色保证对比
+    val selectedTextColor = if (glassStyle) Color(0xFF1E293B) else themeColors.onPrimary
     val unselectedColor = themeColors.text.copy(alpha = 0.45f)
 
     // 2026-10-23：长按放大 + 透明玻璃质感
@@ -276,11 +276,36 @@ fun CustomRadioBottomNav(
             .padding(horizontal = 16.dp, vertical = 6.dp)
     }
 
-    Box(
+    // 2026-10-23：底栏采用 liquid-radio 液态玻璃风格 —— 选中态为滑动液态玻璃胶囊
+    //（翻译 React 版 SVG 湍流位移滤镜 + 多层内阴玻璃高光为 Compose 实现）
+    BoxWithConstraints(
         modifier = barModifier
             .then(longPressModifier)
             .then(scaleModifier)
     ) {
+        val tabCount = navItems.size
+        val tabWidth = maxWidth / tabCount
+        val selectedIndex = navItems.indexOfFirst { it.tab == selectedTab }.coerceAtLeast(0)
+        // 液态滑动：spring 模拟 cubic-bezier(0.16,1,0.3,1) 的弹性
+        val pillOffsetX by animateFloatAsState(
+            targetValue = selectedIndex * tabWidth.value,
+            animationSpec = spring(
+                dampingRatio = 0.78f,
+                stiffness = 380f
+            ),
+            label = "liquidPillX"
+        )
+        // 液态玻璃滑动胶囊（在 tab 行之下）
+        if (glassStyle) {
+            LiquidGlassPill(
+                modifier = Modifier
+                    .offset(x = pillOffsetX.dp)
+                    .width(tabWidth)
+                    .fillMaxHeight()
+                    .padding(horizontal = 3.dp, vertical = 4.dp),
+                corner = navPillCorner
+            )
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -288,17 +313,11 @@ fun CustomRadioBottomNav(
         ) {
             navItems.forEach { item ->
                 val isSelected = selectedTab == item.tab
-                // 选中态背景色动画
-                val pillColor by animateColorAsState(
-                    targetValue = if (isSelected) highlightColor else Color.Transparent,
-                    animationSpec = tween(250),
-                    label = "tabPill"
-                )
                 val pillShape = RoundedCornerShape(navPillCorner)
-                // 渐变按钮样式：选中 = 渐变底白字，未选中 = 浅底
+                // 渐变按钮样式：选中 = 渐变底白字，未选中 = 浅底（玻璃风格下选中态由滑动胶囊呈现）
                 val itemBg: @Composable () -> Modifier = {
                     if (glassStyle) {
-                        Modifier.background(pillColor)
+                        Modifier // 液态玻璃胶囊已在底层滑动，此处不再画各自背景
                     } else if (isSelected) {
                         Modifier.background(
                             Brush.linearGradient(item.gradient),
@@ -362,6 +381,86 @@ fun CustomRadioBottomNav(
                 }
             }
         }
+    }
+}
+
+/**
+ * 2026-10-23：液态玻璃滑动胶囊 —— 翻译 React 版 liquid-radio 的 SVG 滤镜为 Compose。
+ * 原版 = feTurbulence 位移（液体边缘抖动）+ feGaussianBlur（柔边）+ 多层 inset 阴影（玻璃高光）。
+ * Compose 近似：底层模糊光晕（柔边）+ 主体半透明白 + 顶部高光渐变 + 底部内阴影 + 亮边描边。
+ */
+@Composable
+private fun LiquidGlassPill(
+    modifier: Modifier = Modifier,
+    corner: androidx.compose.ui.unit.Dp = 12.dp
+) {
+    val pillShape = RoundedCornerShape(corner)
+    Box(modifier = modifier) {
+        // 1. 底层柔光（模拟 SVG 高斯模糊的液体边缘）
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .blur(6.dp)
+                .clip(pillShape)
+                .background(Color.White.copy(alpha = 0.55f))
+        )
+        // 2. 主体：半透明白玻璃
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(pillShape)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color.White.copy(alpha = 0.82f),
+                            Color.White.copy(alpha = 0.68f),
+                            Color(0xFFF1F5F9).copy(alpha = 0.72f)
+                        )
+                    )
+                )
+                .border(
+                    width = 1.dp,
+                    brush = Brush.verticalGradient(
+                        listOf(
+                            Color.White.copy(alpha = 0.95f),
+                            Color.White.copy(alpha = 0.35f),
+                            Color.White.copy(alpha = 0.65f)
+                        )
+                    ),
+                    shape = pillShape
+                )
+        )
+        // 3. 顶部高光带（模拟 inset 高光）
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.45f)
+                .clip(pillShape)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color.White.copy(alpha = 0.55f),
+                            Color.White.copy(alpha = 0.0f)
+                        )
+                    )
+                )
+        )
+        // 4. 底部内阴影（玻璃厚度感）
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.35f)
+                .align(Alignment.BottomCenter)
+                .clip(pillShape)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color(0xFF0F172A).copy(alpha = 0.0f),
+                            Color(0xFF0F172A).copy(alpha = 0.08f)
+                        )
+                    )
+                )
+        )
     }
 }
 
