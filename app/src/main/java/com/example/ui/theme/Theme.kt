@@ -11,7 +11,16 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.example.ui.uiverse.ActiveUiverseState
+
+/** 主题签名背景装饰 */
+enum class BgDecor {
+    NONE,   // 纯色/渐变，无装饰
+    BLOBS,  // 柔和色块（冰晶/雾面/千禧）
+    DOTS    // 圆点阵（星芒）
+}
 
 enum class AtmosphereEffect {
     NONE,
@@ -64,6 +73,12 @@ data class ThemeUiColors(
     // 2026-10-23：主色上的文字/图标色（深色主题用深色字保证对比度，如暗黑街头荧光绿底配黑字）
     val onPrimary: Color = Color.White,
     val border: Color = Color(0xFF00A8E8).copy(alpha = 0.35f),
+    // 2026-10-23：15套主题签名级装饰（"原原本本"还原各原稿视觉签名）
+    val hardShadowColor: Color? = null,  // 硬偏移阴影（新粗野/多巴胺/拨杆签名），null=不用
+    val hardShadowDx: Dp = 0.dp,
+    val hardShadowDy: Dp = 4.dp,
+    val cardBorderWidth: Dp? = null,     // 卡片描边宽，null=按设计风格默认
+    val bgDecor: BgDecor = BgDecor.NONE, // 背景签名装饰
     // 卡片渐变（玻璃白→浅天空，高光感）
     val cardGradient: List<Color> = listOf(Color(0xFFFFFFFF), Color(0xFFE8F9FF)),
     // 背景渐变（Frutiger Aero 天空：蓝→浅蓝→极浅）

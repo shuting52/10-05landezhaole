@@ -36,10 +36,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
@@ -133,7 +137,8 @@ fun ResourceCard(
         designStyle == DesignStyle.NEUMORPHISM -> RoundedCornerShape(16.dp)
         designStyle == DesignStyle.SKEUOMORPHISM -> RoundedCornerShape(12.dp)
         designStyle == DesignStyle.ACID_GRAPHICS -> RoundedCornerShape(8.dp)
-        designStyle == DesignStyle.HAND_DRAWN -> RoundedCornerShape(24.dp)
+        // 2026-10-23：手绘主题用抖动形状（原稿歪扭边框签名），seed 取卡片 id，形状稳定
+        designStyle == DesignStyle.HAND_DRAWN -> WobblyRoundedShape(card.id.hashCode())
         designStyle == DesignStyle.CARTOON -> RoundedCornerShape(28.dp)
         uiverse.cardStyle == CardStylePreset.CYBERPUNK -> RoundedCornerShape(topStart = 0.dp, topEnd = 14.dp, bottomEnd = 0.dp, bottomStart = 14.dp)
         uiverse.cardStyle == CardStylePreset.GLASSMORPHISM -> RoundedCornerShape(16.dp)
@@ -234,18 +239,48 @@ fun ResourceCard(
             if (themeUi.cardGradient.size >= 2)
                 Brush.linearGradient(themeUi.cardGradient)
             else Brush.linearGradient(listOf(themeUi.surface, themeUi.surface))
+        ).then(
+            // 2026-10-23：玻璃系主题顶部高光（原稿 inset 高光签名）
+            if (designStyle == DesignStyle.GLASSMORPHISM || designStyle == DesignStyle.AURORA)
+                Modifier.background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color.White.copy(alpha = 0.22f),
+                            Color.White.copy(alpha = 0.05f),
+                            Color.Transparent
+                        )
+                    )
+                )
+            else Modifier
         )
     }.let { if (compBg != null) it.then(Modifier.background(compBg)) else it }
 
     val cardBorderModifier: Modifier = when {
+        // 2026-10-23：手绘主题抖动描边（原稿 2px 墨色歪扭边框签名）
+        designStyle == DesignStyle.HAND_DRAWN -> Modifier.drawBehind {
+            val stroke = 2.dp.toPx()
+            val inset = stroke / 2f
+            translate(inset, inset) {
+                drawPath(
+                    path = wobblyRoundRectPath(
+                        Size(size.width - stroke, size.height - stroke),
+                        24.dp.toPx(), 4.dp.toPx(), card.id.hashCode()
+                    ),
+                    color = themeUi.border,
+                    style = Stroke(width = stroke)
+                )
+            }
+        }
         // 2026-10-23：新主题描边跟随各主题 border 色（复古票据=墨色/暗黑街头=荧光绿/星芒=黑色）
-        designStyle == DesignStyle.NEO_BRUTALISM -> Modifier.border(2.5.dp, themeUi.border, cardShape)
+        designStyle == DesignStyle.NEO_BRUTALISM ->
+            Modifier.border(themeUi.cardBorderWidth ?: 2.5.dp, themeUi.border, cardShape)
         designStyle == DesignStyle.BRUTALISM -> Modifier.border(2.dp, Color.Black, cardShape)
         designStyle == DesignStyle.ANTI_DESIGN -> Modifier.border(2.2.dp, Color(0xFF00FF66), cardShape)
         designStyle == DesignStyle.FLAT_DESIGN -> Modifier
         designStyle == DesignStyle.MATERIAL_DESIGN -> Modifier.border(1.dp, Color(0xFF6750A4).copy(alpha = 0.25f), cardShape)
-        // 2026-10-23：多巴胺=深色描边 / 拨杆=白色描边（各主题 border 色）
-        designStyle == DesignStyle.CLAYMORPHISM -> Modifier.border(1.5.dp, themeUi.border, cardShape)
+        // 2026-10-23：多巴胺=3dp 深色描边 / 拨杆=白色描边（各主题 border 色）
+        designStyle == DesignStyle.CLAYMORPHISM ->
+            Modifier.border(themeUi.cardBorderWidth ?: 1.5.dp, themeUi.border, cardShape)
         designStyle == DesignStyle.MINIMALISM -> Modifier.border(0.8.dp, Color(0xFFE4E4E7), cardShape)
         designStyle == DesignStyle.BAUHAUS -> Modifier.border(2.dp, Color.Black, cardShape)
         designStyle == DesignStyle.RETROFUTURISM -> Modifier.border(1.5.dp, Brush.linearGradient(listOf(Color(0xFF00F0FF), Color(0xFFFF007F))), cardShape)
@@ -253,7 +288,8 @@ fun ResourceCard(
         designStyle == DesignStyle.GLASSMORPHISM -> Modifier.border(1.dp, Color.White.copy(alpha = 0.65f), cardShape)
         designStyle == DesignStyle.NEUMORPHISM -> Modifier.border(1.2.dp, Brush.linearGradient(listOf(Color.White, Color(0xFFCBD5E1))), cardShape)
         // 2026-10-23：柔光拟物主题描边跟随主题 border（灰色），不再写死金色
-        designStyle == DesignStyle.SKEUOMORPHISM -> Modifier.border(1.2.dp, themeUi.border, cardShape)
+        designStyle == DesignStyle.SKEUOMORPHISM ->
+            Modifier.border(themeUi.cardBorderWidth ?: 1.2.dp, themeUi.border, cardShape)
         designStyle == DesignStyle.ACID_GRAPHICS -> Modifier.border(1.8.dp, Brush.sweepGradient(listOf(Color(0xFFCCFF00), Color(0xFFB026FF), Color(0xFF00F0FF), Color(0xFFCCFF00))), cardShape)
         uiverse.cardStyle == CardStylePreset.CYBERPUNK -> Modifier.border(1.5.dp, Color(0xFF00F0FF), cardShape)
         uiverse.cardStyle == CardStylePreset.GLASSMORPHISM -> Modifier.border(
@@ -290,18 +326,35 @@ fun ResourceCard(
             .padding(top = 4.dp, bottom = 4.dp, end = 2.dp)
             .testTag("resource_card_${card.id}")
     ) {
+        // 2026-10-23：硬偏移阴影（新粗野/多巴胺/拨杆签名）；有硬阴影时不再叠加柔光阴影
+        val softElevation = if (themeUi.hardShadowColor != null) 0.dp else cardElevation
+        val hardShadowModifier = if (themeUi.hardShadowColor != null) {
+            Modifier.drawBehind {
+                val dx = themeUi.hardShadowDx.toPx()
+                val dy = themeUi.hardShadowDy.toPx()
+                val r = cardCornerRadius.toPx()
+                drawRoundRect(
+                    color = themeUi.hardShadowColor,
+                    topLeft = Offset(dx, dy),
+                    size = Size(size.width, size.height),
+                    cornerRadius = CornerRadius(r, r)
+                )
+            }
+        } else Modifier
         // Main Card Body
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(
-                    elevation = cardElevation,
+                    elevation = softElevation,
                     shape = cardShape,
                     spotColor = shadowSpotColor,
                     ambientColor = shadowSpotColor.copy(alpha = 0.2f)
                 )
+                .then(hardShadowModifier)
                 .clip(cardShape)
                 .then(cardBgModifier)
+                .then(cardBorderModifier)
                 .then(
                     Modifier.streamingBorder(
                         cornerRadius = cardCornerRadius,

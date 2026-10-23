@@ -1,6 +1,17 @@
 package com.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+
+/** 主题收纳分类（主题外观弹窗按此分组展示） */
+enum class ThemeCategory(val title: String) {
+    GLASS("玻璃拟态"),
+    NEU("新拟态"),
+    HAND("手绘涂鸦"),
+    RETRO("复古纸感"),
+    DARK("暗黑霓虹"),
+    CHUNKY("立体Q弹")
+}
 
 /**
  * 2026-10-23：14 套新主题（用户逐套提供设计稿，要求写进「主题外观」切换器，
@@ -20,6 +31,8 @@ data class AppTheme(
     val desc: String,
     /** 深色主题（决定 Material colorScheme 用深色还是浅色） */
     val isDark: Boolean = false,
+    /** 收纳分类 */
+    val category: ThemeCategory,
     val colors: ThemeUiColors
 )
 
@@ -33,7 +46,9 @@ val APP_THEMES: List<AppTheme> = listOf(
         tag = "FROST UI",
         name = "冰晶液态",
         desc = "冰蓝霜纹玻璃，冷冽通透",
+        category = ThemeCategory.GLASS,
         colors = ThemeUiColors(
+            bgDecor = BgDecor.BLOBS,
             primary = Color(0xFF4FB2EC),
             secondary = Color(0xFF2B8FD4),
             background = Color(0xFFDCEBF9),
@@ -57,7 +72,9 @@ val APP_THEMES: List<AppTheme> = listOf(
         tag = "VOUCHER UI",
         name = "复古票据",
         desc = "牛皮纸票据风，粗描边硬阴影",
+        category = ThemeCategory.RETRO,
         colors = ThemeUiColors(
+            hardShadowColor = Color(0xFF4A3525), hardShadowDx = 3.dp, hardShadowDy = 3.dp,
             primary = Color(0xFFD93A2B),
             secondary = Color(0xFF1F7A5C),
             background = Color(0xFFF3E9D2),
@@ -77,6 +94,7 @@ val APP_THEMES: List<AppTheme> = listOf(
         tag = "STREET UI",
         name = "暗黑街头",
         desc = "暗黑底荧光绿，深色模式",
+        category = ThemeCategory.DARK,
         isDark = true,
         colors = ThemeUiColors(
             primary = Color(0xFFC6FF4A),
@@ -99,7 +117,9 @@ val APP_THEMES: List<AppTheme> = listOf(
         tag = "Dopamine UI",
         name = "多巴胺",
         desc = "高饱和撞色，Q弹立体",
+        category = ThemeCategory.CHUNKY,
         colors = ThemeUiColors(
+            cardBorderWidth = 3.dp, hardShadowColor = Color(0xFF58A700), hardShadowDy = 4.dp,
             primary = Color(0xFF58CC02),
             secondary = Color(0xFF1CB0F6),
             background = Color(0xFFFFF9E6),
@@ -119,7 +139,9 @@ val APP_THEMES: List<AppTheme> = listOf(
         tag = "AERO UI",
         name = "千禧复兴",
         desc = "Frutiger Aero 天空光泽玻璃",
+        category = ThemeCategory.GLASS,
         colors = ThemeUiColors(
+            bgDecor = BgDecor.BLOBS,
             primary = Color(0xFF00A8E8),
             secondary = Color(0xFF0090C9),
             background = Color(0xFFBDE4FB),
@@ -143,6 +165,7 @@ val APP_THEMES: List<AppTheme> = listOf(
         tag = "NEU UI",
         name = "新拟态",
         desc = "同色浮雕，柔和立体阴影",
+        category = ThemeCategory.NEU,
         colors = ThemeUiColors(
             primary = Color(0xFFFF6B6B),
             secondary = Color(0xFFE85A5A),
@@ -163,6 +186,7 @@ val APP_THEMES: List<AppTheme> = listOf(
         tag = "DOODLE",
         name = "手绘风",
         desc = "奶油黄手绘，治愈系涂鸦",
+        category = ThemeCategory.HAND,
         colors = ThemeUiColors(
             primary = Color(0xFFFF9F43),
             secondary = Color(0xFFFFC93C),
@@ -183,6 +207,7 @@ val APP_THEMES: List<AppTheme> = listOf(
         tag = "CHINESE CHIC",
         name = "国潮风",
         desc = "朱砂黛青，东方典雅",
+        category = ThemeCategory.RETRO,
         colors = ThemeUiColors(
             primary = Color(0xFFC8102E),
             secondary = Color(0xFF2B4C4A),
@@ -203,7 +228,9 @@ val APP_THEMES: List<AppTheme> = listOf(
         tag = "LEVER UI",
         name = "拨杆",
         desc = "玩具质感，拨杆按钮",
+        category = ThemeCategory.CHUNKY,
         colors = ThemeUiColors(
+            hardShadowColor = Color(0xFF3083BB), hardShadowDy = 4.dp,
             primary = Color(0xFF1269EF),
             secondary = Color(0xFFED487E),
             background = Color(0xFFDCEBF9),
@@ -223,6 +250,7 @@ val APP_THEMES: List<AppTheme> = listOf(
         tag = "DOODLE UI",
         name = "手绘涂鸦",
         desc = "蜡笔抖线，歪扭边框",
+        category = ThemeCategory.HAND,
         colors = ThemeUiColors(
             primary = Color(0xFFE2605C),
             secondary = Color(0xFF5B8DD9),
@@ -243,6 +271,7 @@ val APP_THEMES: List<AppTheme> = listOf(
         tag = "NEU 柔影",
         name = "柔影",
         desc = "浅蓝灰柔光，优雅拟态",
+        category = ThemeCategory.NEU,
         colors = ThemeUiColors(
             primary = Color(0xFF5F9DE7),
             secondary = Color(0xFF3F7FC4),
@@ -263,7 +292,9 @@ val APP_THEMES: List<AppTheme> = listOf(
         tag = "GLASS UI",
         name = "雾面",
         desc = "雾面毛玻璃，彩色光斑",
+        category = ThemeCategory.GLASS,
         colors = ThemeUiColors(
+            bgDecor = BgDecor.BLOBS,
             primary = Color(0xFF2879F3),
             secondary = Color(0xFFF37E10),
             background = Color(0xFFEDF1F6),
@@ -287,6 +318,7 @@ val APP_THEMES: List<AppTheme> = listOf(
         tag = "GLOSS UI",
         name = "柔光拟物",
         desc = "柔和高光，经典拟物",
+        category = ThemeCategory.CHUNKY,
         colors = ThemeUiColors(
             primary = Color(0xFF007AFF),
             secondary = Color(0xFF0062CC),
@@ -307,8 +339,10 @@ val APP_THEMES: List<AppTheme> = listOf(
         tag = "STAR UI",
         name = "星芒",
         desc = "暗黑橙绿撞色，深色模式",
+        category = ThemeCategory.DARK,
         isDark = true,
         colors = ThemeUiColors(
+            hardShadowColor = Color(0xFFFF9100), hardShadowDx = 4.dp, hardShadowDy = 4.dp, bgDecor = BgDecor.DOTS,
             primary = Color(0xFFFF9100),
             secondary = Color(0xFF91FF00),
             background = Color(0xFF151210),
@@ -329,6 +363,7 @@ val APP_THEMES: List<AppTheme> = listOf(
         tag = "SOFT SWITCH UI",
         name = "柔光开关",
         desc = "浅色轻拟态，柔光描边",
+        category = ThemeCategory.NEU,
         colors = ThemeUiColors(
             primary = Color(0xFF8BA9D4),
             secondary = Color(0xFFA9C4E8),

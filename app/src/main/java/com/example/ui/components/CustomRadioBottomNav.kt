@@ -135,6 +135,8 @@ fun CustomRadioBottomNav(
         DesignStyle.HAND_DRAWN -> 24.dp
         DesignStyle.CARTOON -> 28.dp
         DesignStyle.AURORA -> 28.dp
+        // 2026-10-23：新粗野主题底栏 8dp 硬朗圆角（原稿签名）
+        DesignStyle.NEO_BRUTALISM -> 8.dp
         else -> 18.dp
     }
     val navPillCorner = when (themeColors.designStyle) {
@@ -192,7 +194,8 @@ fun CustomRadioBottomNav(
     )
 
     val highlightColor = themeColors.secondary
-    val selectedTextColor = Color.White
+    // 2026-10-23：选中态文字跟随主题 onPrimary（暗黑街头/星芒深色字保证对比度）
+    val selectedTextColor = themeColors.onPrimary
     val unselectedColor = themeColors.text.copy(alpha = 0.45f)
 
     // 2026-10-23：长按放大 + 透明玻璃质感
@@ -239,6 +242,15 @@ fun CustomRadioBottomNav(
         transformOrigin = TransformOrigin.Center
     )
 
+    // 2026-10-23：底栏底色/描边跟随主题（原稿签名；此前写死浅灰+ jicun 蓝描边）
+    val barBaseColor = when (themeColors.designStyle) {
+        DesignStyle.NEO_BRUTALISM -> themeColors.surface
+        DesignStyle.NEUMORPHISM -> themeColors.background
+        DesignStyle.GLASSMORPHISM, DesignStyle.AURORA -> Color.White.copy(alpha = 0.60f)
+        DesignStyle.HAND_DRAWN -> Color.White.copy(alpha = 0.85f)
+        else -> themeColors.surface.copy(alpha = 0.92f)
+    }
+    val isBrutalistBar = themeColors.designStyle == DesignStyle.NEO_BRUTALISM
     val barModifier = if (glassStyle) {
         modifier
             .fillMaxWidth()
@@ -247,10 +259,10 @@ fun CustomRadioBottomNav(
             .shadow(14.dp, RoundedCornerShape(navCorner), ambientColor = Color.Black.copy(alpha = 0.18f))
             .clip(RoundedCornerShape(navCorner))
             // 长按时背景更透明，玻璃质感增强
-            .background(Color(0xFFF2F2F7).copy(alpha = glassBgAlpha))
+            .background(barBaseColor.copy(alpha = glassBgAlpha))
             .border(
-                1.dp,
-                Color(0xFF1257C9).copy(alpha = 0.12f),
+                if (isBrutalistBar) 2.dp else 1.dp,
+                if (isBrutalistBar) themeColors.border else themeColors.primary.copy(alpha = 0.12f),
                 RoundedCornerShape(navCorner)
             )
             .padding(horizontal = 6.dp, vertical = 5.dp)

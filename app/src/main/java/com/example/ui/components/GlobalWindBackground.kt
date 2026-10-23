@@ -182,9 +182,62 @@ fun GlobalWindBackground(
         }
 
 
+        // ========== 1.5 主题签名背景装饰（15套"原原本本"：冰晶/雾面/千禧的柔和色块，星芒的圆点阵） ==========
+        ThemeBgDecor(theme = theme)
+
         // ========== 3. 应用前台内容层 ==========
         content()
     }
+}
+
+/**
+ * 2026-10-23：主题签名背景装饰。
+ * BLOBS：径向渐变柔和色块（边缘透明模拟模糊），取自主题主色/副色；
+ * DOTS：低透明圆点阵（星芒原稿的 dot texture）。
+ */
+@Composable
+private fun ThemeBgDecor(theme: com.example.ui.theme.ThemeUiColors) {
+    when (theme.bgDecor) {
+        com.example.ui.theme.BgDecor.BLOBS -> {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val w = size.width
+                val h = size.height
+                softBlob(Offset(w * 0.12f, h * 0.06f), w * 0.50f, theme.primary.copy(alpha = 0.22f))
+                softBlob(Offset(w * 0.92f, h * 0.32f), w * 0.42f, theme.secondary.copy(alpha = 0.18f))
+                softBlob(Offset(w * 0.25f, h * 0.98f), w * 0.55f, Color.White.copy(alpha = 0.28f))
+            }
+        }
+        com.example.ui.theme.BgDecor.DOTS -> {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val step = 26.dp.toPx()
+                val r = 1.5.dp.toPx()
+                val c = theme.text.copy(alpha = 0.055f)
+                var y = step / 2f
+                while (y < size.height) {
+                    var x = step / 2f
+                    while (x < size.width) {
+                        drawCircle(c, r, Offset(x, y))
+                        x += step
+                    }
+                    y += step
+                }
+            }
+        }
+        com.example.ui.theme.BgDecor.NONE -> {}
+    }
+}
+
+/** 柔和色块：径向渐变，边缘透明 */
+private fun DrawScope.softBlob(center: Offset, radius: Float, color: Color) {
+    drawCircle(
+        brush = Brush.radialGradient(
+            colors = listOf(color, color.copy(alpha = 0f)),
+            center = center,
+            radius = radius
+        ),
+        radius = radius,
+        center = center
+    )
 }
 
 /**

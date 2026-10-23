@@ -48,6 +48,7 @@ import com.example.ui.components.streamingBorder
 import com.example.ui.theme.APP_THEMES
 import com.example.ui.theme.DEFAULT_APP_THEME_ID
 import com.example.ui.theme.LocalThemeUiColors
+import com.example.ui.theme.ThemeCategory
 
 /**
  * v1.7.17：自定义背景弹窗（主题预设已全部删除）
@@ -115,7 +116,18 @@ fun UiverseDialog(
                     }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-                APP_THEMES.forEach { theme ->
+                // 2026-10-23：15套主题按分类收纳展示
+                val groupedThemes = APP_THEMES.groupBy { it.category }
+                ThemeCategory.values().forEach { cat ->
+                    val catItems = groupedThemes[cat] ?: return@forEach
+                    Text(
+                        cat.title,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF64748B),
+                        modifier = Modifier.padding(top = 6.dp, bottom = 2.dp)
+                    )
+                    catItems.forEach { theme ->
                     val selected = appThemeId == theme.id
                     Row(
                         modifier = Modifier
@@ -183,6 +195,7 @@ fun UiverseDialog(
                         }
                     }
                     Spacer(modifier = Modifier.height(6.dp))
+                    }
                 }
             }
 
