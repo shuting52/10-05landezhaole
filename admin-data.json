@@ -4,13 +4,17 @@
     "name": "1.7.53",
     "changelog": [
       "✨ v1.7.53 更新来啦～",
+      "revert: 恢复 jicun 迁移之前的去水印工具",
+      "revert: 删除 WatermarkDownloadJob.kt（恢复之前去水印）",
+      "revert: 删除 JicunDownloader.kt（恢复之前去水印）",
+      "revert: 删除 WatermarkCards.kt（恢复之前去水印）",
       "fix: 玻璃主题恢复 Liquid Glass 原名 + 下载任务线程安全"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.53-1792736886.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.53-1792736886.apk",
-    "lastBuildSha": "e811f0342be358a2ec7214e0888b334f8790af8f",
-    "apkSize": 24127824
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.53-1792737224.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.53-1792737224.apk",
+    "lastBuildSha": "9eee422eed536431c691b409d1a9add9aba6b54f",
+    "apkSize": 24078672
   },
   "home": {
     "categories": [
@@ -24331,6 +24335,10 @@
     "title": "懒得找了 v1.7.53 已上线",
     "changelog": [
       "✨ v1.7.53 更新来啦～",
+      "revert: 恢复 jicun 迁移之前的去水印工具",
+      "revert: 删除 WatermarkDownloadJob.kt（恢复之前去水印）",
+      "revert: 删除 JicunDownloader.kt（恢复之前去水印）",
+      "revert: 删除 WatermarkCards.kt（恢复之前去水印）",
       "fix: 玻璃主题恢复 Liquid Glass 原名 + 下载任务线程安全"
     ],
     "confirmText": "立即更新",
@@ -24404,8 +24412,8 @@
     "lastRelease": {
       "version": "1.7.53",
       "code": 263,
-      "at": "2026-10-23T06:28:11Z",
-      "sha": "e811f0342be358a2ec7214e0888b334f8790af8f"
+      "at": "2026-10-23T06:33:50Z",
+      "sha": "9eee422eed536431c691b409d1a9add9aba6b54f"
     }
   },
   "_ai_notice": "内容由AI生成"
