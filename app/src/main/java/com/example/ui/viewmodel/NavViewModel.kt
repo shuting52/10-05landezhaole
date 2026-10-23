@@ -93,8 +93,8 @@ data class NavUiState(
     val localBgMediaUri: String = "",
     // v1.7.17：自定义背景透明磨砂（模糊）效果
     val bgFrosted: Boolean = false,
-    // 2026-10-23：jicun 式外观四件套（主题外观弹窗）
-    val themeMode: com.example.ui.theme.ThemeMode = com.example.ui.theme.ThemeMode.LIGHT,
+    // 2026-10-23：14 套新主题（主题外观弹窗切换，点击全局应用）
+    val appThemeId: String = com.example.ui.theme.DEFAULT_APP_THEME_ID,
     val uiScale: Float = 1f,          // 界面缩放 0.8–1.3
     val hideTabLabels: Boolean = false, // 底栏文字标识隐藏
     val glassBottomBar: Boolean = true  // 底栏液态玻璃风格（关 = 渐变按钮样式）
@@ -1051,11 +1051,16 @@ class NavViewModel(
     fun restoreAppearance() {
         try {
             val prefs = appearancePrefs() ?: return
-            val modeName = prefs.getString("theme_mode", com.example.ui.theme.ThemeMode.LIGHT.name)
-            val mode = try { com.example.ui.theme.ThemeMode.valueOf(modeName!!) }
-                catch (_: Exception) { com.example.ui.theme.ThemeMode.LIGHT }
+            // 2026-10-23：新主题 id；老用户一次性迁移（旧 theme_mode=DARK → 暗黑街头）
+            val savedId = prefs.getString("app_theme_id", null)
+            val validId = if (savedId != null && com.example.ui.theme.APP_THEMES.any { it.id == savedId }) {
+                savedId
+            } else {
+                val legacyDark = prefs.getString("theme_mode", "LIGHT") == "DARK"
+                if (legacyDark) "street" else com.example.ui.theme.DEFAULT_APP_THEME_ID
+            }
             _uiState.value = _uiState.value.copy(
-                themeMode = mode,
+                appThemeId = validId,
                 uiScale = prefs.getFloat("ui_scale", 1f).coerceIn(0.8f, 1.3f),
                 hideTabLabels = prefs.getBoolean("hide_tab_labels", false),
                 glassBottomBar = prefs.getBoolean("glass_bottom_bar", true)
@@ -1063,9 +1068,12 @@ class NavViewModel(
         } catch (_: Exception) { }
     }
 
-    fun setThemeMode(mode: com.example.ui.theme.ThemeMode) {
-        _uiState.value = _uiState.value.copy(themeMode = mode)
-        try { appearancePrefs()?.edit()?.putString("theme_mode", mode.name)?.apply() } catch (_: Exception) { }
+    /** 2026-10-23：切换 14 套新主题（点击即全局应用，持久化） */
+    fun setAppTheme(id: String) {
+        val validId = if (com.example.ui.theme.APP_THEMES.any { it.id == id }) id
+            else com.example.ui.theme.DEFAULT_APP_THEME_ID
+        _uiState.value = _uiState.value.copy(appThemeId = validId)
+        try { appearancePrefs()?.edit()?.putString("app_theme_id", validId)?.apply() } catch (_: Exception) { }
     }
 
     fun setUiScale(scale: Float) {

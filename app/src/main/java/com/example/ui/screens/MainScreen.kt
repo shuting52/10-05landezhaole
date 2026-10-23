@@ -818,9 +818,9 @@ fun MainScreen(
                 onPickLocalVideo = { pickBgVideoLauncher.launch("video/*") },
                 onClearLocalBgMedia = { clearCustomBackground() },
                 onToggleFrosted = { viewModel.setBgFrosted(it) },
-                // 2026-10-23：jicun 式外观四件套
-                themeMode = uiState.themeMode,
-                onThemeModeChange = { viewModel.setThemeMode(it) },
+                // 2026-10-23：14 套新主题切换（点击即全局应用）
+                appThemeId = uiState.appThemeId,
+                onAppThemeChange = { viewModel.setAppTheme(it) },
                 uiScale = uiState.uiScale,
                 onUiScaleChange = { viewModel.setUiScale(it) },
                 hideTabLabels = uiState.hideTabLabels,

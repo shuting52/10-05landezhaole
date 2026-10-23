@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 MyApplicationTheme(
                     uiverseState = uiState.activeUiverseState,
-                    themeMode = uiState.themeMode
+                    appThemeId = uiState.appThemeId
                 ) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),

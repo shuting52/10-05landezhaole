@@ -1,7 +1,6 @@
 package com.example.ui.theme
 
 import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -62,6 +61,8 @@ data class ThemeUiColors(
     val text: Color = Color(0xFF0A2540),           // 墨蓝
     val textMuted: Color = Color(0xFF5B7A90),      // 浅灰蓝
     val accent: Color = Color(0xFF00A8E8),
+    // 2026-10-23：主色上的文字/图标色（深色主题用深色字保证对比度，如暗黑街头荧光绿底配黑字）
+    val onPrimary: Color = Color.White,
     val border: Color = Color(0xFF00A8E8).copy(alpha = 0.35f),
     // 卡片渐变（玻璃白→浅天空，高光感）
     val cardGradient: List<Color> = listOf(Color(0xFFFFFFFF), Color(0xFFE8F9FF)),
@@ -78,91 +79,28 @@ data class ThemeUiColors(
 val LocalThemeUiColors = staticCompositionLocalOf { ThemeUiColors() }
 
 // ============================================================
-// 2026-10-22：删除主题切换（用户要求）。App 固定为浅蓝色静态渐变主题，
-// 不再提供 Liquid Glass / LEVER UI / 极光流体 三个主题选项。
+// 2026-10-23：删除旧主题（用户要求）。jicun 浅色/深色主题与
+// 跟随系统/浅色/深色三档切换已移除，由 14 套新主题（AppThemes.kt）取代。
+// 主题 id 持久化在 lzdz_appearance 的 app_theme_id，非法 id 回退默认。
 // ============================================================
-
-/** jicun 式主题模式：跟随系统 / 浅色 / 深色 */
-enum class ThemeMode(val label: String) {
-    SYSTEM("跟随系统"),
-    LIGHT("浅色"),
-    DARK("深色")
-}
-
-/** 2026-10-23 jicun 深色主题（对标 jicun Palette.dark）
- * pageBackground #434343 / accent #5AA9FF / foreground #F5F7FA / secondary #ADB7C5 */
-fun darkUiColors() = ThemeUiColors(
-    primary = Color(0xFF5AA9FF),        // jicun dark accent
-    secondary = Color(0xFF7BAFFF),
-    background = Color(0xFF434343),     // jicun dark pageBackground
-    surface = Color(0xFF2C2C2E),
-    text = Color(0xFFF5F7FA),           // jicun dark foreground
-    textMuted = Color(0xFFADB7C5),      // jicun dark secondary
-    accent = Color(0xFF5AA9FF),
-    border = Color(0xFF5AA9FF).copy(alpha = 0.25f),
-    // jicun 深色卡片：白色半透明 surface（#1FFFFFFF，12% 白）
-    cardGradient = listOf(
-        Color(0x1FFFFFFF),
-        Color(0x14FFFFFF),
-        Color(0x1FFFFFFF)
-    ),
-    backgroundGradient = listOf(
-        Color(0xFF434343),
-        Color(0xFF4A4A4A),
-        Color(0xFF525252)
-    ),
-    designStyle = DesignStyle.GLASSMORPHISM
-)
-
-/** 2026-10-23 jicun 主题（用户指定为软件默认主题）
- * 对标 jicun (dhvbjvvb/jicun) 浅色 Palette：克制液态玻璃风
- * pageBackground #CDDCDC / accent #1257C9 / foreground #1B2430 / secondary #6E7887 */
-fun defaultUiColors() = ThemeUiColors(
-    primary = Color(0xFF1257C9),        // jicun accent 深蓝
-    secondary = Color(0xFF3B82F6),      // 明蓝（渐变/高亮用）
-    background = Color(0xFFCDDCDC),     // jicun pageBackground 蓝灰
-    surface = Color(0xFFFFFFFF),
-    text = Color(0xFF1B2430),           // jicun foreground
-    textMuted = Color(0xFF6E7887),      // jicun secondary
-    accent = Color(0xFF1257C9),
-    border = Color(0xFF1257C9).copy(alpha = 0.25f),
-    // jicun 式卡片：深色半透明 surface（#12000000，7% 黑），比背景略深，非常克制
-    cardGradient = listOf(
-        Color(0x12000000),
-        Color(0x0D000000),
-        Color(0x12000000)
-    ),
-    // 蓝灰静态渐变基底
-    backgroundGradient = listOf(
-        Color(0xFFCDDCDC),
-        Color(0xFFD8E2E2),
-        Color(0xFFE4ECEC)
-    ),
-    designStyle = DesignStyle.GLASSMORPHISM
-)
 
 @Composable
 fun MyApplicationTheme(
     uiverseState: ActiveUiverseState = ActiveUiverseState(),
-    themeMode: ThemeMode = ThemeMode.LIGHT,
+    appThemeId: String = DEFAULT_APP_THEME_ID,
     content: @Composable () -> Unit
 ) {
-    // jicun 式：跟随系统 / 浅色 / 深色
-    val systemDark = isSystemInDarkTheme()
-    val isDark = when (themeMode) {
-        ThemeMode.SYSTEM -> systemDark
-        ThemeMode.LIGHT -> false
-        ThemeMode.DARK -> true
-    }
-    val uiColors = if (isDark) darkUiColors() else defaultUiColors()
+    val appTheme = appThemeById(appThemeId)
+    val uiColors = appTheme.colors
+    val isDark = appTheme.isDark
     val colorScheme = if (isDark) {
         darkColorScheme(
             primary = uiColors.primary,
             secondary = uiColors.secondary,
             background = uiColors.background,
             surface = uiColors.surface,
-            onPrimary = Color.White,
-            onSecondary = Color.White,
+            onPrimary = uiColors.onPrimary,
+            onSecondary = uiColors.onPrimary,
             onBackground = uiColors.text,
             onSurface = uiColors.text
         )
@@ -172,8 +110,8 @@ fun MyApplicationTheme(
             secondary = uiColors.secondary,
             background = uiColors.background,
             surface = uiColors.surface,
-            onPrimary = Color.White,
-            onSecondary = Color.White,
+            onPrimary = uiColors.onPrimary,
+            onSecondary = uiColors.onPrimary,
             onBackground = uiColors.text,
             onSurface = uiColors.text
         )

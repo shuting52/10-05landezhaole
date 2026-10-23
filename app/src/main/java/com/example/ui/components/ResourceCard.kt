@@ -91,7 +91,25 @@ fun ResourceCard(
     }.let {
         when {
             cardCompStyle != null -> cardCompStyle.cornerRadius
-            themeUi.designStyle == DesignStyle.AURORA && uiverse.cardStyle == CardStylePreset.DEFAULT -> 28.dp
+            // 2026-10-23：流光边框圆角跟随主题卡片圆角（默认卡片风格时）
+            uiverse.cardStyle == CardStylePreset.DEFAULT -> when (themeUi.designStyle) {
+                DesignStyle.AURORA -> 28.dp
+                DesignStyle.CLAYMORPHISM -> 22.dp
+                DesignStyle.HAND_DRAWN -> 24.dp
+                DesignStyle.CARTOON -> 28.dp
+                DesignStyle.GLASSMORPHISM -> 18.dp
+                DesignStyle.NEUMORPHISM -> 16.dp
+                DesignStyle.SKEUOMORPHISM -> 12.dp
+                DesignStyle.MATERIAL_DESIGN -> 16.dp
+                DesignStyle.NEO_BRUTALISM -> 8.dp
+                DesignStyle.GUOCHAO -> 8.dp
+                DesignStyle.MINIMALISM -> 6.dp
+                DesignStyle.BAUHAUS -> 4.dp
+                DesignStyle.FLAT_DESIGN -> 4.dp
+                DesignStyle.RETROFUTURISM -> 10.dp
+                DesignStyle.ACID_GRAPHICS -> 8.dp
+                else -> it
+            }
             else -> it
         }
     }
@@ -101,6 +119,7 @@ fun ResourceCard(
     val cardShape = when {
         cardCompStyle != null -> RoundedCornerShape(cardCompStyle.cornerRadius)
         designStyle == DesignStyle.NEO_BRUTALISM -> RoundedCornerShape(8.dp)
+        designStyle == DesignStyle.GUOCHAO -> RoundedCornerShape(8.dp)
         designStyle == DesignStyle.BRUTALISM -> RoundedCornerShape(0.dp)
         designStyle == DesignStyle.ANTI_DESIGN -> RoundedCornerShape(3.dp)
         designStyle == DesignStyle.FLAT_DESIGN -> RoundedCornerShape(4.dp)
@@ -131,6 +150,7 @@ fun ResourceCard(
         designStyle == DesignStyle.FLAT_DESIGN || designStyle == DesignStyle.BRUTALISM || designStyle == DesignStyle.MINIMALISM -> 0.dp
         designStyle == DesignStyle.CLAYMORPHISM -> 5.dp
         designStyle == DesignStyle.NEO_BRUTALISM -> 4.dp
+        designStyle == DesignStyle.GUOCHAO -> 2.dp
         designStyle == DesignStyle.SKEUOMORPHISM -> 4.dp
         designStyle == DesignStyle.MATERIAL_DESIGN || designStyle == DesignStyle.NEUMORPHISM -> 3.dp
         designStyle == DesignStyle.AURORA -> 7.dp
@@ -218,19 +238,22 @@ fun ResourceCard(
     }.let { if (compBg != null) it.then(Modifier.background(compBg)) else it }
 
     val cardBorderModifier: Modifier = when {
-        designStyle == DesignStyle.NEO_BRUTALISM -> Modifier.border(2.5.dp, Color.Black, cardShape)
+        // 2026-10-23：新主题描边跟随各主题 border 色（复古票据=墨色/暗黑街头=荧光绿/星芒=黑色）
+        designStyle == DesignStyle.NEO_BRUTALISM -> Modifier.border(2.5.dp, themeUi.border, cardShape)
         designStyle == DesignStyle.BRUTALISM -> Modifier.border(2.dp, Color.Black, cardShape)
         designStyle == DesignStyle.ANTI_DESIGN -> Modifier.border(2.2.dp, Color(0xFF00FF66), cardShape)
         designStyle == DesignStyle.FLAT_DESIGN -> Modifier
         designStyle == DesignStyle.MATERIAL_DESIGN -> Modifier.border(1.dp, Color(0xFF6750A4).copy(alpha = 0.25f), cardShape)
-        designStyle == DesignStyle.CLAYMORPHISM -> Modifier.border(1.5.dp, Color.White.copy(alpha = 0.85f), cardShape)
+        // 2026-10-23：多巴胺=深色描边 / 拨杆=白色描边（各主题 border 色）
+        designStyle == DesignStyle.CLAYMORPHISM -> Modifier.border(1.5.dp, themeUi.border, cardShape)
         designStyle == DesignStyle.MINIMALISM -> Modifier.border(0.8.dp, Color(0xFFE4E4E7), cardShape)
         designStyle == DesignStyle.BAUHAUS -> Modifier.border(2.dp, Color.Black, cardShape)
         designStyle == DesignStyle.RETROFUTURISM -> Modifier.border(1.5.dp, Brush.linearGradient(listOf(Color(0xFF00F0FF), Color(0xFFFF007F))), cardShape)
-        // jicun 原主题：卡片无描边，仅靠 surface 深浅区分
-        designStyle == DesignStyle.GLASSMORPHISM -> Modifier
+        // 2026-10-23：冰晶液态/雾面主题卡片保留白色亮边（原稿 1px 白色描边）
+        designStyle == DesignStyle.GLASSMORPHISM -> Modifier.border(1.dp, Color.White.copy(alpha = 0.65f), cardShape)
         designStyle == DesignStyle.NEUMORPHISM -> Modifier.border(1.2.dp, Brush.linearGradient(listOf(Color.White, Color(0xFFCBD5E1))), cardShape)
-        designStyle == DesignStyle.SKEUOMORPHISM -> Modifier.border(1.5.dp, Brush.linearGradient(listOf(Color(0xFFD4AF37), Color(0xFF8B5A2B))), cardShape)
+        // 2026-10-23：柔光拟物主题描边跟随主题 border（灰色），不再写死金色
+        designStyle == DesignStyle.SKEUOMORPHISM -> Modifier.border(1.2.dp, themeUi.border, cardShape)
         designStyle == DesignStyle.ACID_GRAPHICS -> Modifier.border(1.8.dp, Brush.sweepGradient(listOf(Color(0xFFCCFF00), Color(0xFFB026FF), Color(0xFF00F0FF), Color(0xFFCCFF00))), cardShape)
         uiverse.cardStyle == CardStylePreset.CYBERPUNK -> Modifier.border(1.5.dp, Color(0xFF00F0FF), cardShape)
         uiverse.cardStyle == CardStylePreset.GLASSMORPHISM -> Modifier.border(

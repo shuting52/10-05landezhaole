@@ -38,14 +38,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.components.LiquidGlassDialogShell
 import com.example.ui.components.streamingBorder
+import com.example.ui.theme.APP_THEMES
+import com.example.ui.theme.DEFAULT_APP_THEME_ID
 import com.example.ui.theme.LocalThemeUiColors
-import com.example.ui.theme.ThemeMode
 
 /**
  * v1.7.17：自定义背景弹窗（主题预设已全部删除）
@@ -61,9 +63,9 @@ fun UiverseDialog(
     onPickLocalVideo: () -> Unit = {},
     onClearLocalBgMedia: () -> Unit = {},
     onToggleFrosted: (Boolean) -> Unit = {},
-    // jicun 四件套
-    themeMode: ThemeMode = ThemeMode.LIGHT,
-    onThemeModeChange: (ThemeMode) -> Unit = {},
+    // 2026-10-23：14 套新主题切换（点击即全局应用）
+    appThemeId: String = DEFAULT_APP_THEME_ID,
+    onAppThemeChange: (String) -> Unit = {},
     uiScale: Float = 1f,
     onUiScaleChange: (Float) -> Unit = {},
     hideTabLabels: Boolean = false,
@@ -87,7 +89,7 @@ fun UiverseDialog(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // ============ jicun 式：系统主题 ============
+            // ============ 2026-10-23：主题切换（14 套，点击即全局应用） ============
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -96,39 +98,91 @@ fun UiverseDialog(
                     .border(1.dp, currentUiColors.primary.copy(alpha = 0.25f), RoundedCornerShape(18.dp))
                     .padding(16.dp)
             ) {
-                Text("系统主题", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1E293B))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("主题切换", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1E293B))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = currentUiColors.primary.copy(alpha = 0.12f)
+                    ) {
+                        Text(
+                            "点击立即全局应用",
+                            fontSize = 10.5.sp,
+                            color = currentUiColors.primary,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(10.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    ThemeMode.values().forEach { mode ->
-                        val selected = themeMode == mode
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = if (selected) currentUiColors.primary else Color(0xFFF1F5F9),
+                APP_THEMES.forEach { theme ->
+                    val selected = appThemeId == theme.id
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(
+                                if (selected) theme.colors.primary.copy(alpha = 0.10f)
+                                else Color(0xFFF1F5F9)
+                            )
+                            .border(
+                                1.dp,
+                                if (selected) theme.colors.primary else Color.Transparent,
+                                RoundedCornerShape(12.dp)
+                            )
+                            .clickable { onAppThemeChange(theme.id) }
+                            .padding(horizontal = 10.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // 主题预览色块：背景渐变 + 主色圆点
+                        androidx.compose.foundation.layout.Box(
                             modifier = Modifier
-                                .weight(1f)
-                                .clickable { onThemeModeChange(mode) }
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(vertical = 10.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                if (selected) {
-                                    Icon(Icons.Filled.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                }
-                                Text(
-                                    mode.label,
-                                    fontSize = 12.5.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (selected) Color.White else Color(0xFF64748B)
+                                .size(44.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(
+                                    Brush.linearGradient(
+                                        theme.colors.backgroundGradient.take(3)
+                                    )
                                 )
-                            }
+                                .border(
+                                    1.dp,
+                                    theme.colors.border,
+                                    RoundedCornerShape(10.dp)
+                                )
+                        ) {
+                            androidx.compose.foundation.layout.Box(
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .size(14.dp)
+                                    .clip(androidx.compose.foundation.shape.CircleShape)
+                                    .background(theme.colors.primary)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                "${theme.tag} · ${theme.name}",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF1E293B)
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                theme.desc + if (theme.isDark) " · 深色" else "",
+                                fontSize = 11.sp,
+                                color = Color(0xFF64748B)
+                            )
+                        }
+                        if (selected) {
+                            Icon(
+                                Icons.Filled.Check,
+                                contentDescription = null,
+                                tint = theme.colors.primary,
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
                     }
+                    Spacer(modifier = Modifier.height(6.dp))
                 }
             }
 
@@ -242,7 +296,7 @@ fun UiverseDialog(
                     ) {
                         Icon(Icons.Filled.Image, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("上传图片", fontSize = 12.5.sp, fontWeight = FontWeight.Bold)
+                        Text("上传图片", fontSize = 12.5.sp, fontWeight = FontWeight.Bold, color = currentUiColors.onPrimary)
                     }
                     Button(
                         onClick = onPickLocalVideo,
@@ -252,7 +306,7 @@ fun UiverseDialog(
                     ) {
                         Icon(Icons.Filled.Videocam, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("上传视频", fontSize = 12.5.sp, fontWeight = FontWeight.Bold)
+                        Text("上传视频", fontSize = 12.5.sp, fontWeight = FontWeight.Bold, color = currentUiColors.onPrimary)
                     }
                     if (localBgMediaType != "none") {
                         OutlinedButton(
@@ -317,7 +371,7 @@ fun UiverseDialog(
                         cornerRadius = 14.dp
                     )
             ) {
-                Text("完成设置", color = Color.White, fontSize = 13.5.sp, fontWeight = FontWeight.Bold)
+                Text("完成设置", color = currentUiColors.onPrimary, fontSize = 13.5.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
