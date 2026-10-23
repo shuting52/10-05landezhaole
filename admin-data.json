@@ -1,16 +1,15 @@
 {
   "version": {
-    "code": 258,
-    "name": "1.7.48",
+    "code": 259,
+    "name": "1.7.49",
     "changelog": [
-      "✨ v1.7.48 更新来啦～",
-      "feat: 14 套新主题切换（删除 jicun 旧主题）",
-      "fix: 皮皮虾路由匹配 h5.pipix.com（v1.7.48）"
+      "✨ v1.7.49 更新来啦～",
+      "feat: 主题切换新增第 15 套「柔光开关」"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.48-1792728514.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.48-1792728514.apk",
-    "lastBuildSha": "76583b8b6607acac8fc5419d0aebd4ea6858dff3",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.49-1792729614.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.49-1792729614.apk",
+    "lastBuildSha": "fd4d1a10c46da875d78dadb537aaccc5dc4ca596",
     "apkSize": 24062288
   },
   "home": {
@@ -24329,11 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.48 已上线",
+    "title": "懒得找了 v1.7.49 已上线",
     "changelog": [
-      "✨ v1.7.48 更新来啦～",
-      "feat: 14 套新主题切换（删除 jicun 旧主题）",
-      "fix: 皮皮虾路由匹配 h5.pipix.com（v1.7.48）"
+      "✨ v1.7.49 更新来啦～",
+      "feat: 主题切换新增第 15 套「柔光开关」"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24404,10 +24402,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.48",
-      "code": 258,
-      "at": "2026-10-23T04:08:40Z",
-      "sha": "76583b8b6607acac8fc5419d0aebd4ea6858dff3"
+      "version": "1.7.49",
+      "code": 259,
+      "at": "2026-10-23T04:27:01Z",
+      "sha": "fd4d1a10c46da875d78dadb537aaccc5dc4ca596"
     }
   },
   "_ai_notice": "内容由AI生成"
