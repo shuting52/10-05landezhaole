@@ -12,6 +12,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Work
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Refresh
@@ -229,6 +230,13 @@ enum class ToolboxTab(
         shortLabel = "生理期记录",
         icon = Icons.Filled.EventNote,
         desc = "经期日历 · 排卵易孕期预测 · 流量症状心情 · 规律性统计 · 导出分享"
+    ),
+    // 2026-10-23：工时打卡（移植自 shuting52/jigongshi），替换 Sana AI 生图
+    WORKTIME(
+        title = "工时打卡 · 考勤记录",
+        shortLabel = "工时打卡",
+        icon = Icons.Filled.Work,
+        desc = "日历打卡 · 班次工时 · 月度统计 · 薪资估算"
     ),
     LOCATION_MOCK(
         title = "IP纯净度检测 (ping0.cc 仅作为参考)",
@@ -549,6 +557,10 @@ fun ToolboxScreen(
                     ToolboxTab.SPEED_TEST -> SpeedTestSection()
                     ToolboxTab.CURRENCY -> CurrencySection()
                     ToolboxTab.PERIOD -> PeriodSection()
+                    // 2026-10-23：工时打卡（移植自 shuting52/jigongshi）
+                    ToolboxTab.WORKTIME -> com.example.ui.toolbox.worktime.WorkTimeScreen(
+                        onClose = { activeTool = null }
+                    )
                     ToolboxTab.LOCATION_MOCK -> com.example.ui.screens.toolbox.LocationMockSection()
                     ToolboxTab.CAR_BRAND -> com.example.ui.screens.toolbox.CarBrandSection()
                     ToolboxTab.IMAGE_PROMPTS -> com.example.ui.screens.toolbox.ImagePromptsSection()
