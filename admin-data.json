@@ -1,16 +1,17 @@
 {
   "version": {
-    "code": 253,
-    "name": "1.7.43",
+    "code": 254,
+    "name": "1.7.44",
     "changelog": [
-      "✨ v1.7.43 更新来啦～",
-      "fix: 主题对准 jicun 原主题"
+      "✨ v1.7.44 更新来啦～",
+      "feat: 工时打卡替换 Sana AI 生图",
+      "feat: 搬迁 jicun 外观四件套"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.43-1792721356.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.43-1792721356.apk",
-    "lastBuildSha": "cd640dba23654e0ae1053ad01a4c78129580b0ce",
-    "apkSize": 23996752
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.44-1792722601.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.44-1792722601.apk",
+    "lastBuildSha": "961ef8262916019cb38d29c5b3238937d546f205",
+    "apkSize": 24062288
   },
   "home": {
     "categories": [
@@ -24328,10 +24329,11 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.43 已上线",
+    "title": "懒得找了 v1.7.44 已上线",
     "changelog": [
-      "✨ v1.7.43 更新来啦～",
-      "fix: 主题对准 jicun 原主题"
+      "✨ v1.7.44 更新来啦～",
+      "feat: 工时打卡替换 Sana AI 生图",
+      "feat: 搬迁 jicun 外观四件套"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24402,10 +24404,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.43",
-      "code": 253,
-      "at": "2026-10-23T02:09:21Z",
-      "sha": "cd640dba23654e0ae1053ad01a4c78129580b0ce"
+      "version": "1.7.44",
+      "code": 254,
+      "at": "2026-10-23T02:30:10Z",
+      "sha": "961ef8262916019cb38d29c5b3238937d546f205"
     }
   },
   "_ai_notice": "内容由AI生成"
