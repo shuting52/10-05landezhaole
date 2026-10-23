@@ -18,6 +18,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -70,6 +71,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
@@ -85,6 +87,7 @@ import com.example.ui.theme.LocalThemeUiColors
 import com.example.ui.theme.DesignStyle
 import com.example.ui.viewmodel.AppBottomTab
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -192,7 +195,48 @@ fun CustomRadioBottomNav(
     val selectedTextColor = Color.White
     val unselectedColor = themeColors.text.copy(alpha = 0.45f)
 
+    // 2026-10-23：长按放大 + 透明玻璃质感
+    var isLongPressed by remember { mutableStateOf(false) }
+    val barScale by animateFloatAsState(
+        targetValue = if (isLongPressed) 1.12f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
+        label = "barLongPressScale"
+    )
+    // 长按时玻璃背景更透明（图标保持锐利）：背景色 alpha 动画
+    val glassBgAlpha by animateFloatAsState(
+        targetValue = if (isLongPressed) 0.45f else 0.90f,
+        animationSpec = tween(250),
+        label = "barGlassBgAlpha"
+    )
+
     // 2026-10-23 jicun 式底栏外观：液态玻璃风格 vs 渐变按钮样式
+    // 长按放大：pointerInput 检测长按，graphicsLayer 缩放 + 玻璃背景透明度
+    val longPressModifier = Modifier.pointerInput(Unit) {
+        awaitEachGesture {
+            awaitFirstDown()
+            var longPressed = false
+            val job = launch {
+                delay(400)
+                longPressed = true
+                isLongPressed = true
+            }
+            try {
+                waitForUpOrCancellation()
+            } finally {
+                job.cancel()
+                if (longPressed) isLongPressed = false
+            }
+        }
+    }
+    val scaleModifier = Modifier.graphicsLayer(
+        scaleX = barScale,
+        scaleY = barScale,
+        transformOrigin = TransformOrigin.Center
+    )
+
     val barModifier = if (glassStyle) {
         modifier
             .fillMaxWidth()
@@ -200,7 +244,8 @@ fun CustomRadioBottomNav(
             .padding(horizontal = 24.dp, vertical = 6.dp)
             .shadow(14.dp, RoundedCornerShape(navCorner), ambientColor = Color.Black.copy(alpha = 0.18f))
             .clip(RoundedCornerShape(navCorner))
-            .background(Color(0xE6F2F2F7))
+            // 长按时背景更透明，玻璃质感增强
+            .background(Color(0xFFF2F2F7).copy(alpha = glassBgAlpha))
             .border(
                 1.dp,
                 Color(0xFF1257C9).copy(alpha = 0.12f),
@@ -215,7 +260,11 @@ fun CustomRadioBottomNav(
             .padding(horizontal = 16.dp, vertical = 6.dp)
     }
 
-    Box(modifier = barModifier) {
+    Box(
+        modifier = barModifier
+            .then(longPressModifier)
+            .then(scaleModifier)
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,

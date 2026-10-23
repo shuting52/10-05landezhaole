@@ -955,6 +955,21 @@ private val RING_MENU_GROUPS: List<RingMenuGroup> = listOf(
                 desc = "在线搜索 30 秒试听 · 本地音频播放 · 播放列表"
             )
         )
+    ),
+    // 2026-10-23：工时打卡（移植自 shuting52/jigongshi）
+    RingMenuGroup(
+        id = "worktime",
+        entryLabel = "工时打卡",
+        sheetTitle = "工时打卡",
+        sheetSub = "日历打卡 · 班次工时 · 薪资估算",
+        icon = ToolboxTab.WORKTIME.icon,
+        options = listOf(
+            RingMenuOption(
+                tab = ToolboxTab.WORKTIME,
+                name = "工时打卡",
+                desc = "日历打卡 · 月度统计 · 薪资设置"
+            )
+        )
     )
 )
 
