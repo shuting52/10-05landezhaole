@@ -1,16 +1,17 @@
 {
   "version": {
-    "code": 267,
-    "name": "1.7.57",
+    "code": 268,
+    "name": "1.7.58",
     "changelog": [
-      "✨ v1.7.57 更新来啦～",
-      "fix: 小红书去水印真生效 + 豆包去水印 + 新增小云雀解析"
+      "✨ v1.7.58 更新来啦～",
+      "fix: 补 fillMaxHeight import",
+      "feat: 底栏液态玻璃滑动胶囊"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.57-1792761057.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.57-1792761057.apk",
-    "lastBuildSha": "0d3c576eb5625e0a17b76ef835a5d8239c408142",
-    "apkSize": 24062288
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.58-1792769787.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.58-1792769787.apk",
+    "lastBuildSha": "fb9c1bb28f1a295f5ff3956cbc5b788dc8e9290f",
+    "apkSize": 24078672
   },
   "home": {
     "categories": [
@@ -24328,10 +24329,11 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.57 已上线",
+    "title": "懒得找了 v1.7.58 已上线",
     "changelog": [
-      "✨ v1.7.57 更新来啦～",
-      "fix: 小红书去水印真生效 + 豆包去水印 + 新增小云雀解析"
+      "✨ v1.7.58 更新来啦～",
+      "fix: 补 fillMaxHeight import",
+      "feat: 底栏液态玻璃滑动胶囊"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24393,10 +24395,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.57",
-      "code": 267,
-      "at": "2026-10-23T13:11:02Z",
-      "sha": "0d3c576eb5625e0a17b76ef835a5d8239c408142"
+      "version": "1.7.58",
+      "code": 268,
+      "at": "2026-10-23T15:36:34Z",
+      "sha": "fb9c1bb28f1a295f5ff3956cbc5b788dc8e9290f"
     }
   },
   "_ai_notice": "内容由AI生成"
