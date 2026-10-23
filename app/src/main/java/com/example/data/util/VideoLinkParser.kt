@@ -732,6 +732,23 @@ object VideoLinkParser {
     }
 
     // ================= 小红书（v1.4.13 自研保留） =================
+
+    /**
+     * 2026-10-23：小红书图片去水印。
+     * 网页版 __INITIAL_STATE__ 给的是 sns-webpic-qc 带 !style 后缀的 H5 图，
+     * CDN 会在图上烘焙"小红书"水印（真机实测确认）。
+     * 实测：用 fileId 直取移动端 CDN（https://sns-img-qc.xhscdn.com/<fileId>）
+     * 即为无水印原图（体积更大、画质更好）。模式不匹配时原样返回。
+     */
+    private fun dewatermarkXiaohongshuUrl(url: String): String {
+        return try {
+            if (!url.contains("sns-webpic-")) return url
+            val fileId = url.substringAfterLast('/').substringBefore('!').substringBefore('?')
+            if (fileId.length < 20 || !fileId.all { it.isLetterOrDigit() }) return url
+            "https://sns-img-qc.xhscdn.com/$fileId"
+        } catch (_: Exception) { url }
+    }
+
     private fun parseXiaohongshu(shareUrl: String): MediaParseResult? {
         return try {
             val html = getString(shareUrl) ?: return null
@@ -779,7 +796,8 @@ object VideoLinkParser {
             // v1.6.5：Live 实况图识别 —— 图文 + 视频同时存在时配对
             val livePhotos = mutableListOf<LivePhoto>()
             val distinctVideos = videos.map(::unescapeUrl).distinct().take(5)
-            val distinctImages = images.map(::unescapeUrl).distinct().take(20)
+            // 2026-10-23：小红书图片去水印（webpic H5 图 → 移动端原图）
+            val distinctImages = images.map(::unescapeUrl).distinct().take(20).map(::dewatermarkXiaohongshuUrl)
             if (distinctImages.isNotEmpty() && distinctVideos.isNotEmpty()) {
                 distinctImages.forEach { imgUrl ->
                     livePhotos.add(LivePhoto(imageUrl = imgUrl, videoUrl = distinctVideos[0]))
