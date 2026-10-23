@@ -322,6 +322,26 @@ val APP_THEMES: List<AppTheme> = listOf(
             backgroundGradient = listOf(Color(0xFF151210), Color(0xFF1F1812)),
             designStyle = DesignStyle.NEO_BRUTALISM
         )
+    ),
+    // 15. SOFT SWITCH UI · 柔光开关：浅色轻拟态，描边圆环开关
+    AppTheme(
+        id = "softswitch",
+        tag = "SOFT SWITCH UI",
+        name = "柔光开关",
+        desc = "浅色轻拟态，柔光描边",
+        colors = ThemeUiColors(
+            primary = Color(0xFF8BA9D4),
+            secondary = Color(0xFFA9C4E8),
+            background = Color(0xFFF2F6FB),
+            surface = Color(0xFFFFFFFF),
+            text = Color(0xFF3D4B5E),
+            textMuted = Color(0xFF8B98AB),
+            accent = Color(0xFF8BA9D4),
+            border = Color(0xFFE9EFF6),
+            cardGradient = listOf(Color(0xFFFFFFFF), Color(0xFFFFFFFF)),
+            backgroundGradient = listOf(Color(0xFFF2F6FB), Color(0xFFE9F0F8)),
+            designStyle = DesignStyle.NEUMORPHISM
+        )
     )
 )
 
