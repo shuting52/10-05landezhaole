@@ -291,7 +291,7 @@ val APP_THEMES: List<AppTheme> = listOf(
     AppTheme(
         id = "glass",
         tag = "GLASS UI",
-        name = "雾面",
+        name = "Liquid Glass",
         desc = "雾面毛玻璃，彩色光斑",
         category = ThemeCategory.GLASS,
         colors = ThemeUiColors(
@@ -304,7 +304,7 @@ val APP_THEMES: List<AppTheme> = listOf(
             textMuted = Color(0xFF64748B),
             accent = Color(0xFF2879F3),
             border = Color(0xFFFFFFFF).copy(alpha = 0.55f),
-            cardGradient = listOf(translucentWhite(0.32f), translucentWhite(0.45f)),
+            cardGradient = listOf(Color(0x52FFFFFF), Color(0x73FFFFFF)),
             backgroundGradient = listOf(
                 Color(0xFFD3E3F8),
                 Color(0xFFEDF1F6),

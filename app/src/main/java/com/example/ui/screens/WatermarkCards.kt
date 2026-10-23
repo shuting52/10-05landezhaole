@@ -53,6 +53,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -700,8 +701,13 @@ private fun TextPreviewCard(descText: String, theme: ThemeUiColors) {
 @Composable
 internal fun DownloadProgressDialog(job: DownloadJobState, onClose: () -> Unit) {
     val theme = LocalThemeUiColors.current
-    val done = job.done
-    val failed = job.failed
+    val progress by job.progress.collectAsState()
+    val speedText by job.speedText.collectAsState()
+    val etaText by job.etaText.collectAsState()
+    val done by job.done.collectAsState()
+    val failed by job.failed.collectAsState()
+    val errorMsg by job.errorMsg.collectAsState()
+    val doneCount by job.doneCount.collectAsState()
     var cancelling by remember { mutableStateOf(false) }
 
     Dialog(
@@ -737,7 +743,7 @@ internal fun DownloadProgressDialog(job: DownloadJobState, onClose: () -> Unit) 
                 }
             }
             Text(
-                "${job.title}" + if (job.totalItems > 1 && !done) "（${job.doneCount}/${job.totalItems}）" else "",
+                "${job.title}" + if (job.totalItems > 1 && !done) "（$doneCount/${job.totalItems}）" else "",
                 fontSize = 13.sp,
                 color = theme.textMuted,
                 maxLines = 1,
@@ -745,14 +751,14 @@ internal fun DownloadProgressDialog(job: DownloadJobState, onClose: () -> Unit) 
             )
             Box(contentAlignment = Alignment.Center, modifier = Modifier.size(120.dp)) {
                 CircularProgressIndicator(
-                    progress = { job.progress },
+                    progress = { progress },
                     modifier = Modifier.size(110.dp),
                     strokeWidth = 9.dp,
                     color = theme.primary,
                     trackColor = theme.primary.copy(alpha = 0.15f)
                 )
                 Text(
-                    "${(job.progress * 100).toInt()}%",
+                    "${(progress * 100).toInt()}%",
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                     color = theme.text
@@ -760,12 +766,12 @@ internal fun DownloadProgressDialog(job: DownloadJobState, onClose: () -> Unit) 
             }
             if (!done && !failed) {
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    if (job.speedText.isNotBlank()) Text(job.speedText, fontSize = 13.sp, color = theme.primary, fontWeight = FontWeight.Bold)
-                    if (job.etaText.isNotBlank()) Text(job.etaText, fontSize = 13.sp, color = theme.textMuted)
+                    if (speedText.isNotBlank()) Text(speedText, fontSize = 13.sp, color = theme.primary, fontWeight = FontWeight.Bold)
+                    if (etaText.isNotBlank()) Text(etaText, fontSize = 13.sp, color = theme.textMuted)
                 }
             }
             if (failed) {
-                Text(job.errorMsg ?: "下载失败，可重新解析后重试", fontSize = 13.sp, color = Color(0xFFC0392B))
+                Text(errorMsg ?: "下载失败，可重新解析后重试", fontSize = 13.sp, color = Color(0xFFC0392B))
             }
             if (done) {
                 Text("已保存到相册 / 文件", fontSize = 13.sp, color = theme.textMuted)

@@ -7,11 +7,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
@@ -27,16 +26,35 @@ data class WatermarkDownloadItem(
     val dirType: String // Environment.DIRECTORY_MOVIES / PICTURES / MUSIC
 )
 
-/** 下载任务 UI 状态（进度弹窗绑定） */
+/**
+ * 下载任务 UI 状态（进度弹窗绑定）。
+ * 2026-10-23 修复：下载器 16 条线程并发回调进度，Compose mutableStateOf 非线程安全，
+ * 改用 StateFlow（value 写线程安全），UI 层 collectAsState 订阅。
+ */
 class DownloadJobState(val title: String, val totalItems: Int) {
-    var progress by mutableFloatStateOf(0f)
-    var speedText by mutableStateOf("")
-    var etaText by mutableStateOf("")
-    var done by mutableStateOf(false)
-    var failed by mutableStateOf(false)
-    var errorMsg by mutableStateOf<String?>(null)
-    var doneCount by mutableStateOf(0)
+    private val _progress = MutableStateFlow(0f)
+    val progress: StateFlow<Float> = _progress.asStateFlow()
+    private val _speedText = MutableStateFlow("")
+    val speedText: StateFlow<String> = _speedText.asStateFlow()
+    private val _etaText = MutableStateFlow("")
+    val etaText: StateFlow<String> = _etaText.asStateFlow()
+    private val _done = MutableStateFlow(false)
+    val done: StateFlow<Boolean> = _done.asStateFlow()
+    private val _failed = MutableStateFlow(false)
+    val failed: StateFlow<Boolean> = _failed.asStateFlow()
+    private val _errorMsg = MutableStateFlow<String?>(null)
+    val errorMsg: StateFlow<String?> = _errorMsg.asStateFlow()
+    private val _doneCount = MutableStateFlow(0)
+    val doneCount: StateFlow<Int> = _doneCount.asStateFlow()
     val cancelled = AtomicBoolean(false)
+
+    // 线程安全更新（下载器 IO 线程直接调）
+    fun setProgress(v: Float) { _progress.value = v.coerceIn(0f, 1f) }
+    fun setSpeedText(v: String) { _speedText.value = v }
+    fun setEtaText(v: String) { _etaText.value = v }
+    fun setDoneCount(v: Int) { _doneCount.value = v }
+    fun markDone() { _progress.value = 1f; _speedText.value = ""; _etaText.value = ""; _done.value = true }
+    fun markFailed(msg: String) { _errorMsg.value = msg; _failed.value = true }
 }
 
 private fun mimeFor(filename: String, dirType: String): String {
@@ -147,13 +165,15 @@ suspend fun runWatermarkDownload(
                             val dt = (nowMs - lastTimeMs) / 1000f
                             if (dt > 0) {
                                 lastSpeed = (aggTotal - lastBytes) / dt
-                                job.speedText = formatSpeed(lastSpeed)
+                                job.setSpeedText(formatSpeed(lastSpeed))
                                 // ETA：已知总量时估算
                                 val estTotal = itemTotals.filter { it > 0 }.sum()
-                                job.etaText = if (lastSpeed > 64 * 1024 && estTotal > aggTotal) {
-                                    val sec = ((estTotal - aggTotal) / lastSpeed).toLong()
-                                    "还剩约 %d:%02d".format(sec / 60, sec % 60)
-                                } else ""
+                                job.setEtaText(
+                                    if (lastSpeed > 64 * 1024 && estTotal > aggTotal) {
+                                        val sec = ((estTotal - aggTotal) / lastSpeed).toLong()
+                                        "还剩约 %d:%02d".format(sec / 60, sec % 60)
+                                    } else ""
+                                )
                                 lastBytes = aggTotal
                                 lastTimeMs = nowMs
                             }
@@ -161,7 +181,7 @@ suspend fun runWatermarkDownload(
                         // 进度：按项平均（每项权重相等，简单可靠）
                         val perItem = 1f / items.size
                         val itemFrac = if (total > 0) (dl.toFloat() / total).coerceIn(0f, 1f) else 0f
-                        job.progress = ((idx + itemFrac) * perItem).coerceIn(0f, 1f)
+                        job.setProgress((idx + itemFrac) * perItem)
                     },
                     isCancelled = { job.cancelled.get() }
                 )
@@ -171,20 +191,15 @@ suspend fun runWatermarkDownload(
                 val ok = publishToGallery(context, tmp, item.filename, item.dirType)
                 if (!ok) throw IllegalStateException("保存到相册失败")
                 doneSizes[idx] = tmp.length().coerceAtLeast(doneSizes[idx])
-                job.doneCount = idx + 1
+                job.setDoneCount(idx + 1)
             } finally {
                 try { tmp.delete() } catch (_: Exception) { }
             }
         }
-        job.progress = 1f
-        job.speedText = ""
-        job.etaText = ""
-        job.done = true
+        job.markDone()
     } catch (e: JicunDownloader.CancelledException) {
-        job.errorMsg = "已取消"
-        job.failed = true
+        job.markFailed("已取消")
     } catch (e: Exception) {
-        job.errorMsg = e.message ?: "下载失败"
-        job.failed = true
+        job.markFailed(e.message ?: "下载失败")
     }
 }
