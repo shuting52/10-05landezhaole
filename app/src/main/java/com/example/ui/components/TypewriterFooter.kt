@@ -129,6 +129,14 @@ fun TypewriterFooter(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
+        // 0. 2026-10-23：3D 旋转图标云（用户指定页脚效果，翻译 magicui/icon-cloud）
+        AnimatedVisibility(visible = entered, enter = sectionEnter(0)) {
+            IconCloud(
+                modifier = Modifier.size(148.dp),
+                iconTint = Color(0xFF94A3B8)
+            )
+        }
+
         // 1. 顶部精致极简柔光分割线
         AnimatedVisibility(visible = entered, enter = sectionEnter(0)) {
             Row(
