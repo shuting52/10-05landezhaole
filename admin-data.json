@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 257,
-    "name": "1.7.47",
+    "code": 258,
+    "name": "1.7.48",
     "changelog": [
-      "✨ v1.7.47 更新来啦～",
-      "feat: 去水印批量解析 + 底栏长按修复"
+      "✨ v1.7.48 更新来啦～",
+      "fix: 皮皮虾路由匹配 h5.pipix.com（v1.7.48）"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.47-1792726230.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.47-1792726230.apk",
-    "lastBuildSha": "77aba4134b9f06a9305b2a3ac3d6b9af57d27736",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.48-1792728054.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.48-1792728054.apk",
+    "lastBuildSha": "bc9f61415bc2c1e8e364ecbcc3d1e574743d4697",
     "apkSize": 24062288
   },
   "home": {
@@ -24328,10 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.47 已上线",
+    "title": "懒得找了 v1.7.48 已上线",
     "changelog": [
-      "✨ v1.7.47 更新来啦～",
-      "feat: 去水印批量解析 + 底栏长按修复"
+      "✨ v1.7.48 更新来啦～",
+      "fix: 皮皮虾路由匹配 h5.pipix.com（v1.7.48）"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24402,10 +24402,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.47",
-      "code": 257,
-      "at": "2026-10-23T03:30:36Z",
-      "sha": "77aba4134b9f06a9305b2a3ac3d6b9af57d27736"
+      "version": "1.7.48",
+      "code": 258,
+      "at": "2026-10-23T04:00:59Z",
+      "sha": "bc9f61415bc2c1e8e364ecbcc3d1e574743d4697"
     }
   },
   "_ai_notice": "内容由AI生成"
