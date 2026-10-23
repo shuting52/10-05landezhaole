@@ -227,11 +227,8 @@ fun ResourceCard(
         designStyle == DesignStyle.MINIMALISM -> Modifier.border(0.8.dp, Color(0xFFE4E4E7), cardShape)
         designStyle == DesignStyle.BAUHAUS -> Modifier.border(2.dp, Color.Black, cardShape)
         designStyle == DesignStyle.RETROFUTURISM -> Modifier.border(1.5.dp, Brush.linearGradient(listOf(Color(0xFF00F0FF), Color(0xFFFF007F))), cardShape)
-        designStyle == DesignStyle.GLASSMORPHISM -> Modifier.border(
-            1.dp,
-            Color(0xFF1257C9).copy(alpha = 0.14f),
-            cardShape
-        )
+        // jicun 原主题：卡片无描边，仅靠 surface 深浅区分
+        designStyle == DesignStyle.GLASSMORPHISM -> Modifier
         designStyle == DesignStyle.NEUMORPHISM -> Modifier.border(1.2.dp, Brush.linearGradient(listOf(Color.White, Color(0xFFCBD5E1))), cardShape)
         designStyle == DesignStyle.SKEUOMORPHISM -> Modifier.border(1.5.dp, Brush.linearGradient(listOf(Color(0xFFD4AF37), Color(0xFF8B5A2B))), cardShape)
         designStyle == DesignStyle.ACID_GRAPHICS -> Modifier.border(1.8.dp, Brush.sweepGradient(listOf(Color(0xFFCCFF00), Color(0xFFB026FF), Color(0xFF00F0FF), Color(0xFFCCFF00))), cardShape)

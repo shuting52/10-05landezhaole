@@ -94,11 +94,11 @@ fun defaultUiColors() = ThemeUiColors(
     textMuted = Color(0xFF6E7887),      // jicun secondary
     accent = Color(0xFF1257C9),
     border = Color(0xFF1257C9).copy(alpha = 0.25f),
-    // jicun 式卡片：白色半透明（玻璃感），比背景略亮
+    // jicun 式卡片：深色半透明 surface（#12000000，7% 黑），比背景略深，非常克制
     cardGradient = listOf(
-        Color.White.copy(alpha = 0.72f),
-        Color.White.copy(alpha = 0.58f),
-        Color.White.copy(alpha = 0.65f)
+        Color(0x12000000),
+        Color(0x0D000000),
+        Color(0x12000000)
     ),
     // 蓝灰静态渐变基底
     backgroundGradient = listOf(

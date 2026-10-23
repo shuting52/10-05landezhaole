@@ -580,7 +580,7 @@ private fun ParseResultCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(10.dp))
-                        .background(Color.White.copy(alpha = 0.5f))
+                        .background(Color(0x12000000))
                         .padding(10.dp)
                 ) {
                     Column {
