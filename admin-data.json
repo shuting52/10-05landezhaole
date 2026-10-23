@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 266,
-    "name": "1.7.56",
+    "code": 267,
+    "name": "1.7.57",
     "changelog": [
-      "✨ v1.7.56 更新来啦～",
-      "fix: 小红书解析图片去水印"
+      "✨ v1.7.57 更新来啦～",
+      "fix: 小红书去水印真生效 + 豆包去水印 + 新增小云雀解析"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.56-1792759921.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.56-1792759921.apk",
-    "lastBuildSha": "152fdc130fe61e97cf6ea3e03b6b964c970a6150",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.57-1792761057.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.57-1792761057.apk",
+    "lastBuildSha": "0d3c576eb5625e0a17b76ef835a5d8239c408142",
     "apkSize": 24062288
   },
   "home": {
@@ -24328,10 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.56 已上线",
+    "title": "懒得找了 v1.7.57 已上线",
     "changelog": [
-      "✨ v1.7.56 更新来啦～",
-      "fix: 小红书解析图片去水印"
+      "✨ v1.7.57 更新来啦～",
+      "fix: 小红书去水印真生效 + 豆包去水印 + 新增小云雀解析"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24393,10 +24393,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.56",
-      "code": 266,
-      "at": "2026-10-23T12:52:07Z",
-      "sha": "152fdc130fe61e97cf6ea3e03b6b964c970a6150"
+      "version": "1.7.57",
+      "code": 267,
+      "at": "2026-10-23T13:11:02Z",
+      "sha": "0d3c576eb5625e0a17b76ef835a5d8239c408142"
     }
   },
   "_ai_notice": "内容由AI生成"
