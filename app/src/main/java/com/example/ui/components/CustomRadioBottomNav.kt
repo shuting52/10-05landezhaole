@@ -214,11 +214,12 @@ fun CustomRadioBottomNav(
 
     // 2026-10-23 jicun 式底栏外观：液态玻璃风格 vs 渐变按钮样式
     // 长按放大：pointerInput 检测长按，graphicsLayer 缩放 + 玻璃背景透明度
+    val pressScope = rememberCoroutineScope()
     val longPressModifier = Modifier.pointerInput(Unit) {
         awaitEachGesture {
             awaitFirstDown()
             var longPressed = false
-            val job = launch {
+            val job = pressScope.launch {
                 delay(400)
                 longPressed = true
                 isLongPressed = true
