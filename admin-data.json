@@ -7,10 +7,10 @@
       "feat: 去水印 jicun 化 + 主题换 jicun 浅色"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.42-1792719373.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.42-1792719373.apk",
-    "lastBuildSha": "2af11f7a30cc869ce8211e041d6fab82ef4c9de0",
-    "apkSize": 24078672
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.42-1792719801.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.42-1792719801.apk",
+    "lastBuildSha": "b67e6b4a9f4118e75a235e11d10f55c16b143cb4",
+    "apkSize": 23996752
   },
   "home": {
     "categories": [
@@ -24404,8 +24404,8 @@
     "lastRelease": {
       "version": "1.7.42",
       "code": 252,
-      "at": "2026-10-23T01:36:19Z",
-      "sha": "2af11f7a30cc869ce8211e041d6fab82ef4c9de0"
+      "at": "2026-10-23T01:43:27Z",
+      "sha": "b67e6b4a9f4118e75a235e11d10f55c16b143cb4"
     }
   },
   "_ai_notice": "内容由AI生成"
