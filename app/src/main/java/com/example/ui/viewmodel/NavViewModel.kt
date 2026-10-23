@@ -92,7 +92,12 @@ data class NavUiState(
     val localBgMediaType: String = "none",
     val localBgMediaUri: String = "",
     // v1.7.17：自定义背景透明磨砂（模糊）效果
-    val bgFrosted: Boolean = false
+    val bgFrosted: Boolean = false,
+    // 2026-10-23：jicun 式外观四件套（主题外观弹窗）
+    val themeMode: com.example.ui.theme.ThemeMode = com.example.ui.theme.ThemeMode.LIGHT,
+    val uiScale: Float = 1f,          // 界面缩放 0.8–1.3
+    val hideTabLabels: Boolean = false, // 底栏文字标识隐藏
+    val glassBottomBar: Boolean = true  // 底栏液态玻璃风格（关 = 渐变按钮样式）
 )
 
 class NavViewModel(
@@ -161,6 +166,8 @@ class NavViewModel(
 
     init {
         // v1.7.17：主题预设已删除，不再加载持久化主题
+        // 2026-10-23：jicun 式外观四件套（尽早恢复，供 MainActivity 主题使用）
+        restoreAppearance()
 
         // Pre-seed some popular initial software and skills if empty
         viewModelScope.launch {
@@ -1033,6 +1040,48 @@ class NavViewModel(
                 ?.getBoolean("bg_frosted", false) ?: false
             _uiState.value = _uiState.value.copy(bgFrosted = frosted)
         } catch (_: Exception) { }
+    }
+
+    // ============ 2026-10-23：jicun 式外观四件套（持久化到 lzdz_appearance） ============
+
+    private fun appearancePrefs() =
+        appContext?.getSharedPreferences("lzdz_appearance", android.content.Context.MODE_PRIVATE)
+
+    /** 恢复外观设置（启动时调用） */
+    fun restoreAppearance() {
+        try {
+            val prefs = appearancePrefs() ?: return
+            val modeName = prefs.getString("theme_mode", com.example.ui.theme.ThemeMode.LIGHT.name)
+            val mode = try { com.example.ui.theme.ThemeMode.valueOf(modeName!!) }
+                catch (_: Exception) { com.example.ui.theme.ThemeMode.LIGHT }
+            _uiState.value = _uiState.value.copy(
+                themeMode = mode,
+                uiScale = prefs.getFloat("ui_scale", 1f).coerceIn(0.8f, 1.3f),
+                hideTabLabels = prefs.getBoolean("hide_tab_labels", false),
+                glassBottomBar = prefs.getBoolean("glass_bottom_bar", true)
+            )
+        } catch (_: Exception) { }
+    }
+
+    fun setThemeMode(mode: com.example.ui.theme.ThemeMode) {
+        _uiState.value = _uiState.value.copy(themeMode = mode)
+        try { appearancePrefs()?.edit()?.putString("theme_mode", mode.name)?.apply() } catch (_: Exception) { }
+    }
+
+    fun setUiScale(scale: Float) {
+        val v = scale.coerceIn(0.8f, 1.3f)
+        _uiState.value = _uiState.value.copy(uiScale = v)
+        try { appearancePrefs()?.edit()?.putFloat("ui_scale", v)?.apply() } catch (_: Exception) { }
+    }
+
+    fun setHideTabLabels(hide: Boolean) {
+        _uiState.value = _uiState.value.copy(hideTabLabels = hide)
+        try { appearancePrefs()?.edit()?.putBoolean("hide_tab_labels", hide)?.apply() } catch (_: Exception) { }
+    }
+
+    fun setGlassBottomBar(glass: Boolean) {
+        _uiState.value = _uiState.value.copy(glassBottomBar = glass)
+        try { appearancePrefs()?.edit()?.putBoolean("glass_bottom_bar", glass)?.apply() } catch (_: Exception) { }
     }
 }
 

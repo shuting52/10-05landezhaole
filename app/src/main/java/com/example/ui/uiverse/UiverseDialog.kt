@@ -2,6 +2,7 @@ package com.example.ui.uiverse
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Videocam
@@ -22,11 +24,17 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,10 +45,11 @@ import androidx.compose.ui.unit.sp
 import com.example.ui.components.LiquidGlassDialogShell
 import com.example.ui.components.streamingBorder
 import com.example.ui.theme.LocalThemeUiColors
+import com.example.ui.theme.ThemeMode
 
 /**
  * v1.7.17：自定义背景弹窗（主题预设已全部删除）
- * 仅保留：上传图片/视频背景、透明磨砂效果、清除。
+ * 2026-10-23：jicun 式外观四件套 —— 系统主题 / 自定义背景图 / 底栏外观样式 / 界面缩放大小
  */
 @Composable
 fun UiverseDialog(
@@ -51,7 +60,16 @@ fun UiverseDialog(
     onPickLocalImage: () -> Unit = {},
     onPickLocalVideo: () -> Unit = {},
     onClearLocalBgMedia: () -> Unit = {},
-    onToggleFrosted: (Boolean) -> Unit = {}
+    onToggleFrosted: (Boolean) -> Unit = {},
+    // jicun 四件套
+    themeMode: ThemeMode = ThemeMode.LIGHT,
+    onThemeModeChange: (ThemeMode) -> Unit = {},
+    uiScale: Float = 1f,
+    onUiScaleChange: (Float) -> Unit = {},
+    hideTabLabels: Boolean = false,
+    onHideTabLabelsChange: (Boolean) -> Unit = {},
+    glassBottomBar: Boolean = true,
+    onGlassBottomBarChange: (Boolean) -> Unit = {}
 ) {
     if (!isOpen) return
 
@@ -69,6 +87,110 @@ fun UiverseDialog(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // ============ jicun 式：系统主题 ============
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(Color.White.copy(alpha = 0.85f))
+                    .border(1.dp, currentUiColors.primary.copy(alpha = 0.25f), RoundedCornerShape(18.dp))
+                    .padding(16.dp)
+            ) {
+                Text("系统主题", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1E293B))
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ThemeMode.values().forEach { mode ->
+                        val selected = themeMode == mode
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = if (selected) currentUiColors.primary else Color(0xFFF1F5F9),
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { onThemeModeChange(mode) }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(vertical = 10.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                if (selected) {
+                                    Icon(Icons.Filled.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                }
+                                Text(
+                                    mode.label,
+                                    fontSize = 12.5.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (selected) Color.White else Color(0xFF64748B)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ============ jicun 式：界面缩放大小 ============
+            var scaleDraft by remember(uiScale) { mutableFloatStateOf(uiScale) }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(Color.White.copy(alpha = 0.85f))
+                    .border(1.dp, currentUiColors.primary.copy(alpha = 0.25f), RoundedCornerShape(18.dp))
+                    .padding(16.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("界面缩放大小", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1E293B))
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        "${(scaleDraft * 100).toInt()}%",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = currentUiColors.primary
+                    )
+                }
+                Slider(
+                    value = scaleDraft,
+                    onValueChange = { scaleDraft = it },
+                    onValueChangeFinished = { onUiScaleChange(scaleDraft) },
+                    valueRange = 0.8f..1.3f,
+                    colors = SliderDefaults.colors(
+                        thumbColor = currentUiColors.primary,
+                        activeTrackColor = currentUiColors.primary
+                    )
+                )
+                Text("拖动调整，松手应用（80%–130%）", fontSize = 11.5.sp, color = Color(0xFF64748B))
+            }
+
+            // ============ jicun 式：底栏外观样式 ============
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(Color.White.copy(alpha = 0.85f))
+                    .border(1.dp, currentUiColors.primary.copy(alpha = 0.25f), RoundedCornerShape(18.dp))
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Text("底栏外观样式", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1E293B), modifier = Modifier.padding(vertical = 8.dp))
+                AppearanceSwitchRow(
+                    title = "底栏文字标识隐藏",
+                    subtitle = "开启后隐藏底栏的文字，只留图标",
+                    checked = hideTabLabels,
+                    onCheckedChange = onHideTabLabelsChange,
+                    accent = currentUiColors.primary
+                )
+                AppearanceSwitchRow(
+                    title = "底栏液态玻璃风格",
+                    subtitle = "关闭后改用渐变按钮样式",
+                    checked = glassBottomBar,
+                    onCheckedChange = onGlassBottomBarChange,
+                    accent = currentUiColors.primary
+                )
+            }
+
             // 自定义背景卡片
             Column(
                 modifier = Modifier
@@ -198,5 +320,39 @@ fun UiverseDialog(
                 Text("完成设置", color = Color.White, fontSize = 13.5.sp, fontWeight = FontWeight.Bold)
             }
         }
+    }
+}
+
+/** jicun 式外观开关行 */
+@Composable
+private fun AppearanceSwitchRow(
+    title: String,
+    subtitle: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    accent: Color
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(title, fontSize = 13.5.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1E293B))
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(subtitle, fontSize = 11.5.sp, color = Color(0xFF64748B), lineHeight = 16.sp)
+        }
+        Spacer(modifier = Modifier.width(12.dp))
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = accent,
+                uncheckedThumbColor = Color.White,
+                uncheckedTrackColor = Color(0xFFCBD5E1)
+            )
+        )
     }
 }

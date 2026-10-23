@@ -82,6 +82,38 @@ val LocalThemeUiColors = staticCompositionLocalOf { ThemeUiColors() }
 // 不再提供 Liquid Glass / LEVER UI / 极光流体 三个主题选项。
 // ============================================================
 
+/** jicun 式主题模式：跟随系统 / 浅色 / 深色 */
+enum class ThemeMode(val label: String) {
+    SYSTEM("跟随系统"),
+    LIGHT("浅色"),
+    DARK("深色")
+}
+
+/** 2026-10-23 jicun 深色主题（对标 jicun Palette.dark）
+ * pageBackground #434343 / accent #5AA9FF / foreground #F5F7FA / secondary #ADB7C5 */
+fun darkUiColors() = ThemeUiColors(
+    primary = Color(0xFF5AA9FF),        // jicun dark accent
+    secondary = Color(0xFF7BAFFF),
+    background = Color(0xFF434343),     // jicun dark pageBackground
+    surface = Color(0xFF2C2C2E),
+    text = Color(0xFFF5F7FA),           // jicun dark foreground
+    textMuted = Color(0xFFADB7C5),      // jicun dark secondary
+    accent = Color(0xFF5AA9FF),
+    border = Color(0xFF5AA9FF).copy(alpha = 0.25f),
+    // jicun 深色卡片：白色半透明 surface（#1FFFFFFF，12% 白）
+    cardGradient = listOf(
+        Color(0x1FFFFFFF),
+        Color(0x14FFFFFF),
+        Color(0x1FFFFFFF)
+    ),
+    backgroundGradient = listOf(
+        Color(0xFF434343),
+        Color(0xFF4A4A4A),
+        Color(0xFF525252)
+    ),
+    designStyle = DesignStyle.GLASSMORPHISM
+)
+
 /** 2026-10-23 jicun 主题（用户指定为软件默认主题）
  * 对标 jicun (dhvbjvvb/jicun) 浅色 Palette：克制液态玻璃风
  * pageBackground #CDDCDC / accent #1257C9 / foreground #1B2430 / secondary #6E7887 */
@@ -112,21 +144,40 @@ fun defaultUiColors() = ThemeUiColors(
 @Composable
 fun MyApplicationTheme(
     uiverseState: ActiveUiverseState = ActiveUiverseState(),
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false,
+    themeMode: ThemeMode = ThemeMode.LIGHT,
     content: @Composable () -> Unit
 ) {
-    val uiColors = defaultUiColors()
-    val colorScheme = lightColorScheme(
-        primary = uiColors.primary,
-        secondary = uiColors.secondary,
-        background = uiColors.background,
-        surface = uiColors.surface,
-        onPrimary = Color.White,
-        onSecondary = Color.White,
-        onBackground = uiColors.text,
-        onSurface = uiColors.text
-    )
+    // jicun 式：跟随系统 / 浅色 / 深色
+    val systemDark = isSystemInDarkTheme()
+    val isDark = when (themeMode) {
+        ThemeMode.SYSTEM -> systemDark
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    }
+    val uiColors = if (isDark) darkUiColors() else defaultUiColors()
+    val colorScheme = if (isDark) {
+        darkColorScheme(
+            primary = uiColors.primary,
+            secondary = uiColors.secondary,
+            background = uiColors.background,
+            surface = uiColors.surface,
+            onPrimary = Color.White,
+            onSecondary = Color.White,
+            onBackground = uiColors.text,
+            onSurface = uiColors.text
+        )
+    } else {
+        lightColorScheme(
+            primary = uiColors.primary,
+            secondary = uiColors.secondary,
+            background = uiColors.background,
+            surface = uiColors.surface,
+            onPrimary = Color.White,
+            onSecondary = Color.White,
+            onBackground = uiColors.text,
+            onSurface = uiColors.text
+        )
+    }
 
     CompositionLocalProvider(
         LocalUiverseState provides uiverseState,

@@ -119,7 +119,10 @@ fun CustomRadioBottomNav(
     modifier: Modifier = Modifier,
     uiText: com.example.data.remote.UiTextDto? = null,
     // 底部导航红点徽标：tab -> 徽标文字（如 "3"），空 map 即不显示
-    badges: Map<AppBottomTab, String> = emptyMap()
+    badges: Map<AppBottomTab, String> = emptyMap(),
+    // 2026-10-23 jicun 式底栏外观：隐藏文字标识 / 液态玻璃风格（关 = 渐变按钮样式）
+    hideLabels: Boolean = false,
+    glassStyle: Boolean = true
 ) {
     // v1.4.13：图4风格重写 —— 白色圆角容器 + 黄色高亮选中 pill（主题跟随）
     val themeColors = com.example.ui.theme.LocalThemeUiColors.current
@@ -189,16 +192,14 @@ fun CustomRadioBottomNav(
     val selectedTextColor = Color.White
     val unselectedColor = themeColors.text.copy(alpha = 0.45f)
 
-    Box(
-        modifier = modifier
+    // 2026-10-23 jicun 式底栏外观：液态玻璃风格 vs 渐变按钮样式
+    val barModifier = if (glassStyle) {
+        modifier
             .fillMaxWidth()
-            // v1.4.19：系统导航栏安全边距，避免底部 Tab 与手机导航键重叠
             .navigationBarsPadding()
-            // v1.4.20：整体缩小一号
             .padding(horizontal = 24.dp, vertical = 6.dp)
             .shadow(14.dp, RoundedCornerShape(navCorner), ambientColor = Color.Black.copy(alpha = 0.18f))
             .clip(RoundedCornerShape(navCorner))
-            // 2026-10-23 jicun 式底栏：半透明浅底（#E6F2F2F7）+ 细边
             .background(Color(0xE6F2F2F7))
             .border(
                 1.dp,
@@ -206,7 +207,15 @@ fun CustomRadioBottomNav(
                 RoundedCornerShape(navCorner)
             )
             .padding(horizontal = 6.dp, vertical = 5.dp)
-    ) {
+    } else {
+        // 渐变按钮样式：透明容器，tab 本体为渐变按钮
+        modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+    }
+
+    Box(modifier = barModifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -221,13 +230,28 @@ fun CustomRadioBottomNav(
                     label = "tabPill"
                 )
                 val pillShape = RoundedCornerShape(navPillCorner)
+                // 渐变按钮样式：选中 = 渐变底白字，未选中 = 浅底
+                val itemBg: @Composable () -> Modifier = {
+                    if (glassStyle) {
+                        Modifier.background(pillColor)
+                    } else if (isSelected) {
+                        Modifier.background(
+                            Brush.linearGradient(item.gradient),
+                            pillShape
+                        )
+                    } else {
+                        Modifier
+                            .background(themeColors.surface.copy(alpha = 0.6f), pillShape)
+                            .border(1.dp, themeColors.primary.copy(alpha = 0.15f), pillShape)
+                    }
+                }
                 Column(
                     modifier = Modifier
                         .weight(1f)
                         .clip(pillShape)
-                        .background(pillColor)
+                        .then(itemBg())
                         .clickable { onTabSelected(item.tab) }
-                        .padding(vertical = 5.dp),
+                        .padding(vertical = if (glassStyle) 5.dp else 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     // 假 z-index:9999 层：图标与红点徽标绘制在玻璃之上，保持锐利不被折射
@@ -259,14 +283,17 @@ fun CustomRadioBottomNav(
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.height(1.dp))
-                    Text(
-                        text = item.title,
-                        fontSize = 10.sp,
-                        fontWeight = if (isSelected) FontWeight.Black else FontWeight.Medium,
-                        color = if (isSelected) selectedTextColor else unselectedColor,
-                        maxLines = 1
-                    )
+                    // 2026-10-23 jicun 式：底栏文字标识隐藏
+                    if (!hideLabels) {
+                        Spacer(modifier = Modifier.height(1.dp))
+                        Text(
+                            text = item.title,
+                            fontSize = 10.sp,
+                            fontWeight = if (isSelected) FontWeight.Black else FontWeight.Medium,
+                            color = if (isSelected) selectedTextColor else unselectedColor,
+                            maxLines = 1
+                        )
+                    }
                 }
             }
         }

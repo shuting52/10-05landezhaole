@@ -127,6 +127,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -219,6 +220,8 @@ fun MainScreen(
         }
         // v1.7.17：恢复透明磨砂设置
         viewModel.restoreBgFrosted()
+        // 2026-10-23：恢复 jicun 式外观四件套
+        viewModel.restoreAppearance()
     }
 
     // v1.4.22：用户自定义上传图片/视频作为软件背景
@@ -291,11 +294,19 @@ fun MainScreen(
             Scaffold(
                 containerColor = Color.Transparent,
                 contentWindowInsets = WindowInsets.statusBars,
+                // 2026-10-23：jicun 式界面缩放（0.8–1.3），整屏缩放
+                modifier = Modifier.graphicsLayer(
+                    scaleX = uiState.uiScale,
+                    scaleY = uiState.uiScale,
+                    transformOrigin = TransformOrigin.Center
+                ),
                 bottomBar = {
                     CustomRadioBottomNav(
                         selectedTab = uiState.currentTab,
                         onTabSelected = { viewModel.switchTab(it) },
-                        uiText = uiState.cloudUiText
+                        uiText = uiState.cloudUiText,
+                        hideLabels = uiState.hideTabLabels,
+                        glassStyle = uiState.glassBottomBar
                     )
                 }
             ) { paddingValues ->
@@ -806,7 +817,16 @@ fun MainScreen(
                 onPickLocalImage = { pickBgImageLauncher.launch("image/*") },
                 onPickLocalVideo = { pickBgVideoLauncher.launch("video/*") },
                 onClearLocalBgMedia = { clearCustomBackground() },
-                onToggleFrosted = { viewModel.setBgFrosted(it) }
+                onToggleFrosted = { viewModel.setBgFrosted(it) },
+                // 2026-10-23：jicun 式外观四件套
+                themeMode = uiState.themeMode,
+                onThemeModeChange = { viewModel.setThemeMode(it) },
+                uiScale = uiState.uiScale,
+                onUiScaleChange = { viewModel.setUiScale(it) },
+                hideTabLabels = uiState.hideTabLabels,
+                onHideTabLabelsChange = { viewModel.setHideTabLabels(it) },
+                glassBottomBar = uiState.glassBottomBar,
+                onGlassBottomBarChange = { viewModel.setGlassBottomBar(it) }
             )
         }
 
