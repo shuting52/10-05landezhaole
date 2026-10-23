@@ -57,9 +57,8 @@ val WindPeach4 = Color(0xFFFAC097)
 val WindPeach5 = Color(0xFFFAC39C)
 
 /**
- * 全局玻璃背景（2026-10-23 重写：对标可交互预览页浅色柔雾 wallpaper）
- * - 基底：#B8D6EE 静态，无动画
- * - 色块：四色大块柔和椭圆（暖黄/粉/青/薰衣草紫），尺寸远大于模糊范围，静态
+ * 全局背景（2026-10-23：jicun 主题 —— 克制的蓝灰静态渐变，无彩色色块）
+ * - 基底：主题 backgroundGradient（#CDDCDC → 浅），无动画
  * - 保留：用户自定义背景媒体（图片/视频）
  */
 @Composable
@@ -71,63 +70,18 @@ fun GlobalWindBackground(
     content: @Composable BoxScope.() -> Unit
 ) {
     val theme = LocalThemeUiColors.current
-    // 背景渐变取自主题 backgroundGradient（柔雾蓝基底）
+    // 背景渐变取自主题 backgroundGradient（jicun 蓝灰）
     val themeGradientColors: List<Color> = theme.backgroundGradient
     val themePrimaryColor: Color = theme.primary
 
     Box(modifier = modifier.fillMaxSize()) {
-        // ========== 1. 静态柔雾背景：基底 + 四色大块柔和色块 ==========
+        // ========== 1. jicun 式静态蓝灰背景 ==========
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val w = size.width
-            val h = size.height
-            // 基底：柔雾蓝静态渐变
             drawRect(
                 brush = Brush.verticalGradient(
                     colors = if (themeGradientColors.size >= 2) themeGradientColors
                     else listOf(theme.background, theme.background)
                 )
-            )
-            // 四色柔雾色块（对标预览页浅色 wallpaper）：暖黄 / 粉 / 青 / 薰衣草紫
-            val blobR = maxOf(w, h) * 0.38f
-            // 左上暖黄
-            drawCircle(
-                brush = Brush.radialGradient(
-                    colors = listOf(Color(0xFFFFE5AC), Color.Transparent),
-                    center = Offset(w * 0.18f, h * 0.16f),
-                    radius = blobR
-                ),
-                radius = blobR,
-                center = Offset(w * 0.18f, h * 0.16f)
-            )
-            // 右上粉
-            drawCircle(
-                brush = Brush.radialGradient(
-                    colors = listOf(Color(0xFFF4BFD2), Color.Transparent),
-                    center = Offset(w * 0.86f, h * 0.20f),
-                    radius = blobR
-                ),
-                radius = blobR,
-                center = Offset(w * 0.86f, h * 0.20f)
-            )
-            // 右下青
-            drawCircle(
-                brush = Brush.radialGradient(
-                    colors = listOf(Color(0xFFA9D9EC), Color.Transparent),
-                    center = Offset(w * 0.72f, h * 0.79f),
-                    radius = blobR * 1.05f
-                ),
-                radius = blobR * 1.05f,
-                center = Offset(w * 0.72f, h * 0.79f)
-            )
-            // 左下薰衣草紫
-            drawCircle(
-                brush = Brush.radialGradient(
-                    colors = listOf(Color(0xFFC6C8FF), Color.Transparent),
-                    center = Offset(w * 0.24f, h * 0.78f),
-                    radius = blobR
-                ),
-                radius = blobR,
-                center = Offset(w * 0.24f, h * 0.78f)
             )
         }
 

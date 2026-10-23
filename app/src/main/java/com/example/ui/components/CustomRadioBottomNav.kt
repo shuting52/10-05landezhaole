@@ -198,56 +198,15 @@ fun CustomRadioBottomNav(
             .padding(horizontal = 24.dp, vertical = 6.dp)
             .shadow(14.dp, RoundedCornerShape(navCorner), ambientColor = Color.Black.copy(alpha = 0.18f))
             .clip(RoundedCornerShape(navCorner))
-            // 2026-10-23 Liquid Glass 底部导航（对标预览页浅色 token）：
-            // 柔雾玻璃底 + 白 36%→15%→24% tint + 1.2px 浅色渐变亮边
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color(0xFFF4FAFF).copy(alpha = 0.88f),
-                        Color(0xFFE2F0FC).copy(alpha = 0.84f)
-                    )
-                )
-            )
-            .background(
-                Brush.linearGradient(
-                    listOf(
-                        Color.White.copy(alpha = 0.36f),
-                        Color.White.copy(alpha = 0.15f),
-                        Color.White.copy(alpha = 0.24f)
-                    )
-                )
-            )
+            // 2026-10-23 jicun 式底栏：半透明浅底（#E6F2F2F7）+ 细边
+            .background(Color(0xE6F2F2F7))
             .border(
-                1.2.dp,
-                Brush.linearGradient(
-                    listOf(
-                        Color.White.copy(alpha = 0.98f),
-                        Color.White.copy(alpha = 0.55f),
-                        Color(0xFF5A82B4).copy(alpha = 0.13f),
-                        Color.White.copy(alpha = 0.38f),
-                        Color.White.copy(alpha = 0.90f)
-                    )
-                ),
+                1.dp,
+                Color(0xFF1257C9).copy(alpha = 0.12f),
                 RoundedCornerShape(navCorner)
             )
             .padding(horizontal = 6.dp, vertical = 5.dp)
     ) {
-        // 顶部内高光：玻璃厚度感（inset 1px 白，对标 .lg 的 inset box-shadow）
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .fillMaxWidth(0.88f)
-                .height(1.dp)
-                .background(
-                    Brush.horizontalGradient(
-                        listOf(
-                            Color.Transparent,
-                            Color.White.copy(alpha = 0.90f),
-                            Color.Transparent
-                        )
-                    )
-                )
-        )
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,

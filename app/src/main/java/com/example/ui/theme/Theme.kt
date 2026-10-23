@@ -82,28 +82,29 @@ val LocalThemeUiColors = staticCompositionLocalOf { ThemeUiColors() }
 // 不再提供 Liquid Glass / LEVER UI / 极光流体 三个主题选项。
 // ============================================================
 
-/** 2026-10-23 Liquid Glass 默认主题（对标可交互预览页浅色 token）
- * 玻璃 tint：白 36% → 白 15% → 白 24%；文字 #253C5C；背景基底 #B8D6EE + 四色柔雾色块 */
+/** 2026-10-23 jicun 主题（用户指定为软件默认主题）
+ * 对标 jicun (dhvbjvvb/jicun) 浅色 Palette：克制液态玻璃风
+ * pageBackground #CDDCDC / accent #1257C9 / foreground #1B2430 / secondary #6E7887 */
 fun defaultUiColors() = ThemeUiColors(
-    primary = Color(0xFF00A8E8),        // 天空蓝
-    secondary = Color(0xFF0090C9),      // 深海蓝
-    background = Color(0xFFB8D6EE),     // 柔雾蓝（预览页浅色基底）
+    primary = Color(0xFF1257C9),        // jicun accent 深蓝
+    secondary = Color(0xFF3B82F6),      // 明蓝（渐变/高亮用）
+    background = Color(0xFFCDDCDC),     // jicun pageBackground 蓝灰
     surface = Color(0xFFFFFFFF),
-    text = Color(0xFF253C5C),           // 预览页浅色文字
-    textMuted = Color(0xFF253C5C).copy(alpha = 0.68f),
-    accent = Color(0xFF00A8E8),
-    border = Color(0xFF00A8E8).copy(alpha = 0.35f),
-    // 玻璃卡片渐变：白 36% → 白 15% → 白 24%（预览页浅色 glass-tint）
+    text = Color(0xFF1B2430),           // jicun foreground
+    textMuted = Color(0xFF6E7887),      // jicun secondary
+    accent = Color(0xFF1257C9),
+    border = Color(0xFF1257C9).copy(alpha = 0.25f),
+    // jicun 式卡片：白色半透明（玻璃感），比背景略亮
     cardGradient = listOf(
-        Color(0x5CFFFFFF),
-        Color(0x26FFFFFF),
-        Color(0x3DFFFFFF)
+        Color.White.copy(alpha = 0.72f),
+        Color.White.copy(alpha = 0.58f),
+        Color.White.copy(alpha = 0.65f)
     ),
-    // 浅色柔雾背景基底：#B8D6EE → 浅 → 极浅（GlobalWindBackground 在此之上叠四色柔雾色块）
+    // 蓝灰静态渐变基底
     backgroundGradient = listOf(
-        Color(0xFFB8D6EE),
-        Color(0xFFCFE6F7),
-        Color(0xFFE8F9FF)
+        Color(0xFFCDDCDC),
+        Color(0xFFD8E2E2),
+        Color(0xFFE4ECEC)
     ),
     designStyle = DesignStyle.GLASSMORPHISM
 )

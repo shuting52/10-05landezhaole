@@ -445,7 +445,7 @@ fun MainScreen(
                     )
                 }
                 AppBottomTab.SKILL -> {
-                    DownVidScreen(
+                    WatermarkScreen(
                         modifier = Modifier.padding(paddingValues),
                         onOpenSettings = { viewModel.switchTab(AppBottomTab.SETTINGS) }
                     )

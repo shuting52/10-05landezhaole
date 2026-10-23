@@ -228,16 +228,8 @@ fun ResourceCard(
         designStyle == DesignStyle.BAUHAUS -> Modifier.border(2.dp, Color.Black, cardShape)
         designStyle == DesignStyle.RETROFUTURISM -> Modifier.border(1.5.dp, Brush.linearGradient(listOf(Color(0xFF00F0FF), Color(0xFFFF007F))), cardShape)
         designStyle == DesignStyle.GLASSMORPHISM -> Modifier.border(
-            1.2.dp,
-            Brush.linearGradient(
-                listOf(
-                    Color.White.copy(alpha = 0.98f),
-                    Color.White.copy(alpha = 0.55f),
-                    Color(0xFF5A82B4).copy(alpha = 0.13f),
-                    Color.White.copy(alpha = 0.38f),
-                    Color.White.copy(alpha = 0.90f)
-                )
-            ),
+            1.dp,
+            Color(0xFF1257C9).copy(alpha = 0.14f),
             cardShape
         )
         designStyle == DesignStyle.NEUMORPHISM -> Modifier.border(1.2.dp, Brush.linearGradient(listOf(Color.White, Color(0xFFCBD5E1))), cardShape)

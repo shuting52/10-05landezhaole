@@ -182,7 +182,7 @@ fun KunBoxScreen(
     modifier: Modifier = Modifier,
     onOpenSettings: () -> Unit = {}
 ) {
-    DownVidScreen(
+    WatermarkScreen(
         modifier = modifier,
         onOpenSettings = onOpenSettings
     )
