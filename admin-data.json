@@ -1,16 +1,16 @@
 {
   "version": {
-    "code": 270,
-    "name": "1.7.60",
+    "code": 271,
+    "name": "1.7.61",
     "changelog": [
-      "✨ v1.7.60 更新来啦～",
-      "feat: 植入 shuiyingongju 下载系统 + 玻璃主题组件 + 底栏 Apple 液态玻璃风格"
+      "✨ v1.7.61 更新来啦～",
+      "feat: 彻底移除去水印功能（用户要求）"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.60-1792801903.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.60-1792801903.apk",
-    "lastBuildSha": "8ba58a021d7549e332793dadb082ff0ed2cb84c4",
-    "apkSize": 24111596
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.61-1792803717.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.61-1792803717.apk",
+    "lastBuildSha": "d20864f0ccb2787fd51d018deb595bde2d9e55a3",
+    "apkSize": 23964136
   },
   "home": {
     "categories": [
@@ -24328,10 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.60 已上线",
+    "title": "懒得找了 v1.7.61 已上线",
     "changelog": [
-      "✨ v1.7.60 更新来啦～",
-      "feat: 植入 shuiyingongju 下载系统 + 玻璃主题组件 + 底栏 Apple 液态玻璃风格"
+      "✨ v1.7.61 更新来啦～",
+      "feat: 彻底移除去水印功能（用户要求）"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24393,10 +24393,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.60",
-      "code": 270,
-      "at": "2026-10-24T00:31:50Z",
-      "sha": "8ba58a021d7549e332793dadb082ff0ed2cb84c4"
+      "version": "1.7.61",
+      "code": 271,
+      "at": "2026-10-24T01:02:03Z",
+      "sha": "d20864f0ccb2787fd51d018deb595bde2d9e55a3"
     }
   },
   "_ai_notice": "内容由AI生成"
