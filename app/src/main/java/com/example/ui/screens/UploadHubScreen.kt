@@ -805,7 +805,16 @@ private object WaveDownloadManager {
         val conn = java.net.URL(url).openConnection() as java.net.HttpURLConnection
         conn.connectTimeout = 20000
         conn.readTimeout = 60000
-        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36")
+        // 2026-10-24：请求头修复 —— v1.7.61 带 Appteka UA + Referer，v1.7.63 改走
+        // WaveDownloadManager 时弄丢了，源站防盗链直接拒绝（用户问"1.7.61怎么可以"的根因）
+        val reqHost = runCatching { java.net.URL(url).host }.getOrNull().orEmpty()
+        if (url.contains("appteka", ignoreCase = true)) {
+            conn.setRequestProperty("User-Agent", com.example.download.APPTEKA_UA)
+            conn.setRequestProperty("Referer", com.example.download.APPTEKA_REFERER)
+        } else {
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36")
+            if (reqHost.isNotEmpty()) conn.setRequestProperty("Referer", "https://$reqHost/")
+        }
         conn.connect()
         // 检查 HTTP 状态码，非 200 直接抛错（带 code，方便定位）
         val responseCode = conn.responseCode
