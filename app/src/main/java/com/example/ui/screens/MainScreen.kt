@@ -311,6 +311,9 @@ fun MainScreen(
                     )
                 }
             ) { paddingValues ->
+            // 2026-10-24：下载弹窗提到主界面内容区（底栏之外）：切版块时弹窗不随软件页
+            // 卸载而消失，底栏仍可点按；弹窗遮罩只盖内容区，不吞底栏点击
+            Box(modifier = Modifier.fillMaxSize()) {
             when (uiState.currentTab) {
                 AppBottomTab.HOME -> {
                     LazyVerticalGrid(
@@ -480,6 +483,8 @@ fun MainScreen(
                         onClearBg = { clearCustomBackground() }
                     )
                 }
+            }
+            WaveDownloadDialog()
             }
         }
         }

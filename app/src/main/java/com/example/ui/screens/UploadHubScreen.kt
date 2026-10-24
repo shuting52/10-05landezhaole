@@ -23,6 +23,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.foundation.layout.Arrangement
@@ -65,6 +66,7 @@ import java.net.URLEncoder
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -585,9 +587,9 @@ private fun installApkDirectly(context: Context, apkFile: File): Boolean {
  * 状态机：DOWNLOADING → PAUSED / CANCELLED / FAILED → INSTALLING → DONE
  * 支持暂停/继续（HTTP Range 断点续传）、取消、失败重试；APK 下载完成后自动拉起系统安装器。
  */
-private enum class WaveDlState { IDLE, DOWNLOADING, PAUSED, CANCELLED, FAILED, INSTALLING, DONE }
+internal enum class WaveDlState { IDLE, DOWNLOADING, PAUSED, CANCELLED, FAILED, INSTALLING, DONE }
 
-private data class WaveDownloadUi(
+internal data class WaveDownloadUi(
     val visible: Boolean = false,
     val state: WaveDlState = WaveDlState.IDLE,
     val title: String = "",
@@ -599,7 +601,7 @@ private data class WaveDownloadUi(
     val isApk: Boolean = false
 )
 
-private object WaveDownloadManager {
+internal object WaveDownloadManager {
     private val _ui = MutableStateFlow(WaveDownloadUi())
     val ui: StateFlow<WaveDownloadUi> = _ui.asStateFlow()
 
@@ -614,6 +616,9 @@ private object WaveDownloadManager {
     // 只认 host 补头会在 CDN 域名上丢头被防盗链拒；此前图三直下就是无条件带头才通的）
     private var forceApptekaHeaders = false
     private var targetFile: File? = null
+    // 2026-10-24：兜底单线程任务与连接——以前取消只停多线程，兜底协程没人管
+    private var fallbackJob: Job? = null
+    private var fallbackConn: java.net.HttpURLConnection? = null
     // 测速用
     private var lastProgressTime = 0L
     private var lastProgressBytes = 0L
@@ -708,6 +713,13 @@ private object WaveDownloadManager {
     private fun cancelTask() {
         taskId?.let { downloader?.cancel(it) }
         taskId = null
+        // 2026-10-24：取消/暂停/关窗口必须真停——兜底单线程协程以前不在取消范围内，
+        // 它继续跑、跑完还照常拉安装，这就是“取消了还在下”的根因；连接也要断开，
+        // 否则阻塞中的 read 还要等到读超时才停
+        fallbackJob?.cancel()
+        fallbackJob = null
+        try { fallbackConn?.disconnect() } catch (_: Exception) {}
+        fallbackConn = null
         // 保活收摊
         appCtx?.let { DownloadKeepAlive.sync(it, 0) }
     }
@@ -723,7 +735,7 @@ private object WaveDownloadManager {
             error = null,
             progress = 0f, downloadedBytes = 0L, totalBytes = 0L
         )
-        CoroutineScope(Dispatchers.IO).launch {
+        fallbackJob = CoroutineScope(Dispatchers.IO).launch {
             // 构建镜像 URL 列表：原站 → gh-proxy → jsDelivr → 更多代理/GitHub 原生 raw
             val mirrorUrls = buildMirrorUrls(url)
             var lastError: Exception? = null
@@ -738,6 +750,10 @@ private object WaveDownloadManager {
                     downloadOk = true
                     break
                 } catch (e: Exception) {
+                    // 2026-10-24：取消必须直接抛出去——以前 CancellationException 被当成
+                    // 普通镜像失败吞掉，循环换下一个镜像继续下，等于取消无效
+                    if (e is CancellationException) throw e
+                    ensureActive()
                     lastError = e
                     failedMirrorIdx = idx
                     Regex("HTTP (\\d+)").find(e.message ?: "")?.groupValues?.getOrNull(1)
@@ -833,6 +849,8 @@ private object WaveDownloadManager {
     // 2026-10-24：单 URL 下载（suspend，供镜像循环调用），失败抛异常，成功返回
     private suspend fun downloadSingleUrl(url: String, file: java.io.File) {
         val conn = java.net.URL(url).openConnection() as java.net.HttpURLConnection
+        // 2026-10-24：登记连接，取消时 cancelTask 能立刻断开阻塞中的 read
+        fallbackConn = conn
         conn.connectTimeout = 20000
         conn.readTimeout = 60000
         // 2026-10-24：请求头修复 —— v1.7.61 带 Appteka UA + Referer，v1.7.63 改走
@@ -863,6 +881,9 @@ private object WaveDownloadManager {
                 var downloaded = 0L
                 var n: Int
                 while (input.read(buffer).also { n = it } != -1) {
+                    // 2026-10-24：每块都查一次取消——阻塞 read 被断开时会抛异常，
+                    // 正常下载时这里让取消在下一块之前立刻生效，不用等整文件下完
+                    currentCoroutineContext().ensureActive()
                     output.write(buffer, 0, n)
                     downloaded += n
                     val p = if (total > 0) (downloaded.toFloat() / total).coerceIn(0f, 1f) else 0f
@@ -874,6 +895,7 @@ private object WaveDownloadManager {
                 }
             }
         }
+        if (fallbackConn == conn) fallbackConn = null
     }
 
     private fun downloadedBytes(): Long = _ui.value.downloadedBytes
@@ -889,8 +911,10 @@ private object WaveDownloadManager {
             && _ui.value.state != WaveDlState.CANCELLED) return
         // NativeDownloader 不支持跨会话断点续传，resume 重新下一遍。
         // 注意：先调 start（它内部会重置 UI 状态），不要提前设 DOWNLOADING 否则被防重复拦截。
+        // 2026-10-24：resume 必须带上原任务的 forceApptekaHeaders，否则 Appteka 直链
+        // 续下时会丢 UA + Referer 被防盗链拒（v1.7.79 续下口子）
         val ctx = appCtx ?: return
-        start(ctx, dlTitle, dlUrl, targetFile?.name, dlIsApk)
+        start(ctx, dlTitle, dlUrl, targetFile?.name, dlIsApk, forceApptekaHeaders)
     }
 
     fun cancel() {
@@ -1004,7 +1028,7 @@ private fun formatSpeed(bps: Double): String {
  * 样式对标用户确认的版本更新弹窗 HTML（毛玻璃白卡、圆角 24、波浪环）
  */
 @Composable
-private fun WaveDownloadDialog() {
+internal fun WaveDownloadDialog() {
     val ui by WaveDownloadManager.ui.collectAsState()
     if (!ui.visible) return
 
@@ -1045,6 +1069,12 @@ private fun WaveDownloadDialog() {
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.35f))
+            // 2026-10-24：遮罩必须吃掉点按——以前点按会穿透到下面的卡片，
+            // 在遮罩外点一下就等于又点了一次下载卡，表现为“关了窗口还在下”
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { }
     ) {
         Column(
             modifier = Modifier
@@ -1998,8 +2028,8 @@ fun UploadHubScreen(
         )
     }
 
-    // v1.7.22：波浪下载弹窗（应用内下载+安装统一入口）
-    WaveDownloadDialog()
+    // 2026-10-24：弹窗已提到 MainScreen 内容区（底栏之外），这里不再挂载——
+    // 否则切版块时弹窗随软件页卸载而消失、回来又把旧状态重新弹出来
 }
 
 /** Skill 技能包卡片（v1.0.12：取消横屏滑动，改为竖排全宽卡片；取消 icon 图标功能）：
