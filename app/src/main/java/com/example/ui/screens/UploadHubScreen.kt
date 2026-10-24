@@ -706,6 +706,7 @@ private object WaveDownloadManager {
     }
 
     // 2026-10-24：单线程兜底下载（多线程失败时用，兼容不支持 Range 的服务器）
+    // 2026-10-24：raw.githubusercontent.com 加镜像兜底（国内经常被墙/DNS 污染）
     private fun fallbackSingleThreadDownload() {
         val ctx = appCtx ?: return
         val url = dlUrl
@@ -716,39 +717,26 @@ private object WaveDownloadManager {
             progress = 0f, downloadedBytes = 0L, totalBytes = 0L
         )
         CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val conn = java.net.URL(url).openConnection() as java.net.HttpURLConnection
-                conn.connectTimeout = 20000
-                conn.readTimeout = 60000
-                conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36")
-                conn.connect()
-                // 2026-10-24：检查 HTTP 状态码，非 200 直接抛错（带 code，方便定位）
-                val responseCode = conn.responseCode
-                if (responseCode != java.net.HttpURLConnection.HTTP_OK) {
-                    val host = try { java.net.URL(url).host } catch (_: Exception) { url }
-                    throw java.io.IOException("HTTP $responseCode（$host）")
-                }
-                val total = conn.contentLengthLong.coerceAtLeast(0L)
-                withContext(Dispatchers.Main) {
-                    _ui.value = _ui.value.copy(totalBytes = total)
-                }
-                conn.inputStream.use { input ->
-                    file.outputStream().use { output ->
-                        val buffer = ByteArray(8192)
-                        var downloaded = 0L
-                        var n: Int
-                        while (input.read(buffer).also { n = it } != -1) {
-                            output.write(buffer, 0, n)
-                            downloaded += n
-                            val p = if (total > 0) (downloaded.toFloat() / total).coerceIn(0f, 1f) else 0f
-                            withContext(Dispatchers.Main) {
-                                _ui.value = _ui.value.copy(
-                                    progress = p, downloadedBytes = downloaded, totalBytes = total
-                                )
-                            }
-                        }
+            // 构建镜像 URL 列表：原站 → gh-proxy → jsDelivr
+            val mirrorUrls = buildMirrorUrls(url)
+            var lastError: Exception? = null
+            var failedMirrorIdx = -1
+            var downloadOk = false
+            for ((idx, tryUrl) in mirrorUrls.withIndex()) {
+                try {
+                    downloadSingleUrl(tryUrl, file)
+                    downloadOk = true
+                    break
+                } catch (e: Exception) {
+                    lastError = e
+                    failedMirrorIdx = idx
+                    // 换下一个镜像前重置进度
+                    withContext(Dispatchers.Main) {
+                        _ui.value = _ui.value.copy(progress = 0f, downloadedBytes = 0L, totalBytes = 0L)
                     }
                 }
+            }
+            if (downloadOk) {
                 // 成功，走正常完成流程
                 withContext(Dispatchers.Main) {
                     _ui.value = _ui.value.copy(progress = 1f, downloadedBytes = downloadedBytes())
@@ -770,15 +758,80 @@ private object WaveDownloadManager {
                         _ui.value = _ui.value.copy(state = WaveDlState.DONE)
                     }
                 }
-            } catch (e: Exception) {
-                // 2026-10-24：错误信息带上 URL host，方便定位是哪个软件/源失败
-                val host = try { java.net.URL(url).host } catch (_: Exception) { "未知地址" }
+            } else {
+                // 全部镜像都失败，报错（注明是第几个镜像失败）
+                val e = lastError
+                val failUrl = mirrorUrls.getOrNull(failedMirrorIdx) ?: url
+                val host = try { java.net.URL(failUrl).host } catch (_: Exception) { "未知地址" }
+                val mirrorInfo = if (mirrorUrls.size > 1) "（镜像${failedMirrorIdx + 1}/${mirrorUrls.size}）" else ""
                 withContext(Dispatchers.Main) {
                     _ui.value = _ui.value.copy(
                         state = WaveDlState.FAILED,
-                        error = "下载失败 [$host]：${e.message ?: "网络异常"}",
+                        error = "下载失败 [$host]$mirrorInfo：${e?.message ?: "网络异常"}",
                         speedBps = 0.0
                     )
+                }
+            }
+        }
+    }
+
+    // 2026-10-24：为 raw.githubusercontent.com 构建镜像 URL 列表
+    private fun buildMirrorUrls(url: String): List<String> {
+        val host = try { java.net.URL(url).host } catch (_: Exception) { return listOf(url) }
+        if (host != "raw.githubusercontent.com") return listOf(url)
+        val list = mutableListOf(url)
+        // 镜像 2：gh-proxy
+        list.add("https://gh-proxy.com/" + url)
+        // 镜像 3：jsDelivr（格式转换：raw.githubusercontent.com/user/repo/branch/path → cdn.jsdelivr.net/gh/user/repo@branch/path）
+        try {
+            val u = java.net.URL(url)
+            val parts = u.path.trim('/').split('/')
+            // path 格式：user/repo/branch/剩余路径
+            if (parts.size >= 4) {
+                val user = parts[0]
+                val repo = parts[1]
+                val branch = parts[2]
+                val restPath = parts.subList(3, parts.size).joinToString("/")
+                list.add("https://cdn.jsdelivr.net/gh/$user/$repo@$branch/$restPath")
+            }
+        } catch (_: Exception) {
+            // 转换失败就跳过 jsDelivr
+        }
+        return list
+    }
+
+    // 2026-10-24：单 URL 下载（suspend，供镜像循环调用），失败抛异常，成功返回
+    private suspend fun downloadSingleUrl(url: String, file: java.io.File) {
+        val conn = java.net.URL(url).openConnection() as java.net.HttpURLConnection
+        conn.connectTimeout = 20000
+        conn.readTimeout = 60000
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36")
+        conn.connect()
+        // 检查 HTTP 状态码，非 200 直接抛错（带 code，方便定位）
+        val responseCode = conn.responseCode
+        if (responseCode != java.net.HttpURLConnection.HTTP_OK) {
+            val host = try { java.net.URL(url).host } catch (_: Exception) { url }
+            throw java.io.IOException("HTTP $responseCode（$host）")
+        }
+        val total = conn.contentLengthLong.coerceAtLeast(0L)
+        withContext(Dispatchers.Main) {
+            _ui.value = _ui.value.copy(totalBytes = total)
+        }
+        conn.inputStream.use { input ->
+            // 每次换镜像重新写文件（覆盖）
+            file.outputStream().use { output ->
+                val buffer = ByteArray(8192)
+                var downloaded = 0L
+                var n: Int
+                while (input.read(buffer).also { n = it } != -1) {
+                    output.write(buffer, 0, n)
+                    downloaded += n
+                    val p = if (total > 0) (downloaded.toFloat() / total).coerceIn(0f, 1f) else 0f
+                    withContext(Dispatchers.Main) {
+                        _ui.value = _ui.value.copy(
+                            progress = p, downloadedBytes = downloaded, totalBytes = total
+                        )
+                    }
                 }
             }
         }
