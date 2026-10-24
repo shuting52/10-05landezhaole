@@ -178,7 +178,6 @@ fun CuteCartoonLiquidGlassDialog(
 
 @Composable
 fun SettingsScreen(
-    onOpenThemeSwitcher: () -> Unit,
     cloudUpdate: UpdateDialogDto? = null,
     cloudVersion: VersionDto? = null,
     cloudSettings: SettingsDto? = null,
@@ -460,16 +459,6 @@ fun SettingsScreen(
                             activeDialogType = "update"
                         }
                     }
-                ),
-                QuadrantCardItem(
-                    title = "主题外观",
-                    position = QuadrantPosition.BOTTOM_RIGHT,
-                    defaultBgColor = Color.White,
-                    activeBgColor = Color(0xFF8B5CF6),
-                    defaultIconColor = Color(0xFF7C3AED),
-                    spotShadowColor = Color(0x608B5CF6),
-                    iconDrawer = { color -> DrawThemeAppearanceIcon(color) },
-                    onClick = onOpenThemeSwitcher
                 )
             )
         )
