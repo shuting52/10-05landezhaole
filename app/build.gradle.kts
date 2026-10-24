@@ -16,8 +16,8 @@ android {
     applicationId = "com.landezhaole.app"
     minSdk = 24
     targetSdk = 36
-    versionCode = 276
-    versionName = "1.7.66"
+    versionCode = 277
+    versionName = "1.7.67"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
