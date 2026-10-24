@@ -4,7 +4,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,9 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -29,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
@@ -44,15 +40,15 @@ import androidx.compose.ui.window.DialogProperties
  * 2026-10-24：设计原稿馆 —— 用户要求"原封不动呈现到软件里面"。
  * 呈现方式按原稿类型区分，内容本身一律不改：
  * - HTML 原稿：放进 assets 原样文件，用 WebView 原样渲染（含真模糊与动效，不翻译成 Compose）
- * - LiquidGlassScreen.kt：原样放进源码（包名 com.example.liquidglass 不动），原样运行
+ * - LiquidGlassScreen.kt：原样放进 assets 以源码呈现；
+ *   该文件直接进工程编不过（类型与版本两类问题），不动原文件、不强行改它跑起来
  * - 两包源码（下载模块 / 主题模块）：原样放进 assets，以源码全文形式呈现；
  *   其中 Dart 是 Flutter 代码，在 Kotlin 软件里跑不起来，故只呈现不移植；
  *   下载模块的 Kotlin 版与软件现有下载器不是同一份，为避免弄坏正在用的下载，只呈现不替换
  */
 private sealed interface OriginalPage {
-    object List : OriginalPage
+    object PageList : OriginalPage
     data class Html(val title: String, val asset: String) : OriginalPage
-    object NativeGlass : OriginalPage
     data class SourceDir(val title: String, val base: String, val files: List<String>) : OriginalPage
     data class SourceFile(val title: String, val asset: String) : OriginalPage
 }
@@ -77,7 +73,7 @@ private val themeFiles = listOf(
 
 @Composable
 fun OriginalsViewer(onDismiss: () -> Unit) {
-    var page by remember { mutableStateOf<OriginalPage>(OriginalPage.List) }
+    var page by remember { mutableStateOf<OriginalPage>(OriginalPage.PageList) }
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -88,37 +84,23 @@ fun OriginalsViewer(onDismiss: () -> Unit) {
                 .background(Color.White)
         ) {
             when (val p = page) {
-                is OriginalPage.List -> OriginalsList(onOpen = { page = it }, onDismiss = onDismiss)
+                is OriginalPage.PageList -> OriginalsList(onOpen = { page = it }, onDismiss = onDismiss)
                 is OriginalPage.Html -> OriginalHtmlPage(
                     title = p.title,
                     asset = p.asset,
-                    onBack = { page = OriginalPage.List }
+                    onBack = { page = OriginalPage.PageList }
                 )
-                is OriginalPage.NativeGlass -> Box(modifier = Modifier.fillMaxSize()) {
-                    com.example.liquidglass.LiquidGlassScreen()
-                    IconButton(
-                        onClick = { page = OriginalPage.List },
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .padding(8.dp)
-                            .clip(CircleShape)
-                            .background(Color.Black.copy(alpha = 0.35f))
-                            .size(40.dp)
-                    ) {
-                        Icon(Icons.Filled.ArrowBack, "返回", tint = Color.White)
-                    }
-                }
                 is OriginalPage.SourceDir -> OriginalSourceDirPage(
                     title = p.title,
                     base = p.base,
                     files = p.files,
-                    onBack = { page = OriginalPage.List },
+                    onBack = { page = OriginalPage.PageList },
                     onOpenFile = { file -> page = OriginalPage.SourceFile(file, "${p.base}/$file") }
                 )
                 is OriginalPage.SourceFile -> OriginalSourceFilePage(
                     title = p.title,
                     asset = p.asset,
-                    onBack = { page = OriginalPage.List }
+                    onBack = { page = OriginalPage.PageList }
                 )
             }
         }
@@ -158,7 +140,7 @@ private fun OriginalsList(onOpen: (OriginalPage) -> Unit, onDismiss: () -> Unit)
             .padding(16.dp)
     ) {
         Text(
-            text = "以下均为你发来的原稿，未经改动：HTML 原样渲染，演示页原样运行，源码原样呈现。",
+            text = "以下均为你发来的原稿，未经改动：HTML 原样渲染，源码原样呈现。",
             fontSize = 12.sp,
             color = Color(0xFF5B7A90)
         )
@@ -174,9 +156,9 @@ private fun OriginalsList(onOpen: (OriginalPage) -> Unit, onDismiss: () -> Unit)
             onOpen(OriginalPage.Html("AERO · 千禧复兴", "originals/aero.html"))
         }
         Spacer(modifier = Modifier.height(16.dp))
-        OriginalSectionTitle("原生演示页（原样运行）")
-        OriginalRow("液态玻璃演示页", "LiquidGlassScreen.kt 原样进工程，直接运行") {
-            onOpen(OriginalPage.NativeGlass)
+        OriginalSectionTitle("演示页源码（原样呈现）")
+        OriginalRow("液态玻璃演示页源码", "LiquidGlassScreen.kt 原样呈现，全文可看") {
+            onOpen(OriginalPage.SourceFile("LiquidGlassScreen.kt", "originals-src/liquidglass/LiquidGlassScreen.kt"))
         }
         Spacer(modifier = Modifier.height(16.dp))
         OriginalSectionTitle("源码（原样呈现）")
