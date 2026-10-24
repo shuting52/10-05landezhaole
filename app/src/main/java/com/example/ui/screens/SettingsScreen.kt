@@ -112,7 +112,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.ui.viewmodel.NavViewModel
-import com.example.ui.theme.AeroCard
 import com.example.ui.theme.AeroSectionTitle
 import com.example.ui.theme.AeroSegmented
 import com.example.ui.theme.AeroSlider
@@ -451,6 +450,16 @@ fun SettingsScreen(
                     onClick = { activeDialogType = "share_software" }
                 ),
                 QuadrantCardItem(
+                    title = "外观与背景",
+                    position = QuadrantPosition.BOTTOM_RIGHT,
+                    defaultBgColor = Color.White,
+                    activeBgColor = Color(0xFF00A8E8),
+                    defaultIconColor = Color(0xFF00A8E8),
+                    spotShadowColor = Color(0x6000A8E8),
+                    iconDrawer = { color -> DrawThemeAppearanceIcon(color) },
+                    onClick = { if (viewModel != null) showAppearanceDialog = true }
+                ),
+                QuadrantCardItem(
                     title = if (isCheckingUpdate) "获取中…" else if (hasNewCloudVersion) "有新版更新" else "检查更新",
                     position = QuadrantPosition.BOTTOM_LEFT,
                     defaultBgColor = if (hasNewCloudVersion) Color(0xFFFFF1F1) else Color.White,
@@ -479,28 +488,8 @@ fun SettingsScreen(
             )
         )
 
-        Spacer(modifier = Modifier.height(14.dp))
-        // 2026-10-24：外观与背景改为独立窗口（点击入口打开弹窗，内含主题/背景/底栏/缩放）
-        if (viewModel != null) {
-            Text(
-                text = "\uD83C\uDFA8 外观与背景",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Black,
-                color = LocalThemeUiColors.current.primary,
-                modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
-            )
-            AeroCard {
-                SettingsClickableItem(
-                    title = "外观与背景",
-                    subtitle = "主题风格 · 背景图片/视频 · 底栏样式 · 界面缩放",
-                    icon = Icons.Filled.Palette,
-                    iconColor = Color(0xFF00A8E8),
-                    onClick = { showAppearanceDialog = true }
-                )
-            }
-            Spacer(modifier = Modifier.height(14.dp))
-        }
-
+        // 2026-10-24：外观入口改回锦囊象限第 4 卡（调色板图标，点开独立弹窗），
+        // 不再单立“外观与背景”区，避免标题与卡片内行标题重复、AeroCard 灰底套白底行两层背景
         Spacer(modifier = Modifier.height(18.dp))
 
         // Footer Brand Info with Typewriter Effect

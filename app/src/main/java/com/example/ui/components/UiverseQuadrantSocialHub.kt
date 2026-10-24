@@ -89,7 +89,7 @@ fun QuadrantCardGrid(
     items: List<QuadrantCardItem>,
     modifier: Modifier = Modifier
 ) {
-    // 2026-10-24：支持 3 卡片（主题外观已删），缺右下角时下排只显示左卡
+    // 2026-10-24：支持 4 卡片（右下角为外观与背景），缺右下角时下排只显示左卡
     if (items.size < 3) return
     val topLeft = items.firstOrNull { it.position == QuadrantPosition.TOP_LEFT } ?: items[0]
     val topRight = items.firstOrNull { it.position == QuadrantPosition.TOP_RIGHT } ?: items.getOrNull(1) ?: items[0]
