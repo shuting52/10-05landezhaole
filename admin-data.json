@@ -4,12 +4,11 @@
     "name": "1.7.72",
     "changelog": [
       "✨ v1.7.72 更新来啦～",
-      "revert: Appteka 下载恢复 v1.7.61 方式",
-      "revert: Appteka 下载恢复 v1.7.61 方式"
+      "rollback: 版本回退到 v1.7.61"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.72-1792822254.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.72-1792822254.apk",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.72-1792823544.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.72-1792823544.apk",
     "lastBuildSha": "2f37a1f19617a2d94ac768d8e5975e1105f4cfbc",
     "apkSize": 23980516
   },
@@ -24332,8 +24331,7 @@
     "title": "懒得找了 v1.7.72 已上线",
     "changelog": [
       "✨ v1.7.72 更新来啦～",
-      "revert: Appteka 下载恢复 v1.7.61 方式",
-      "revert: Appteka 下载恢复 v1.7.61 方式"
+      "rollback: 版本回退到 v1.7.61"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24397,8 +24395,8 @@
     "lastRelease": {
       "version": "1.7.72",
       "code": 282,
-      "at": "2026-10-24T06:11:00Z",
-      "sha": "114332b6b7a7f3e2aba0b1d3b600cc72ccdfc39b"
+      "at": "2026-10-24T06:32:32Z",
+      "sha": "2f37a1f19617a2d94ac768d8e5975e1105f4cfbc"
     }
   },
   "_ai_notice": "内容由AI生成"
