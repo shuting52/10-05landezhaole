@@ -556,35 +556,49 @@ private fun SettingsClickableItem(
     iconColor: Color,
     onClick: () -> Unit
 ) {
+    // 2026-10-24 Frutiger Aero：fa-row 风格（44px 圆角图标 + 标题 + 副标题 + 箭头）
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(horizontal = 14.dp, vertical = if (subtitle.isNullOrBlank()) 14.dp else 12.dp),
+            .padding(vertical = 13.dp, horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = iconColor,
-            modifier = Modifier.size(22.dp)
-        )
-        Spacer(modifier = Modifier.width(14.dp))
+        Box(
+            modifier = Modifier
+                .size(44.dp)
+                .clip(RoundedCornerShape(15.dp))
+                .background(
+                    Brush.linearGradient(
+                        listOf(Color.White.copy(alpha = 0.9f), Color(0xFFBEE1F5).copy(alpha = 0.7f))
+                    )
+                )
+                .border(1.dp, Color.White.copy(alpha = 0.9f), RoundedCornerShape(15.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = iconColor,
+                modifier = Modifier.size(22.dp)
+            )
+        }
+        Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(title, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Text(title, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color(0xFF0A2540))
             if (!subtitle.isNullOrBlank()) {
                 Text(
                     subtitle,
-                    fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    fontSize = 12.sp,
+                    color = Color(0xFF5B7A90)
                 )
             }
         }
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-            modifier = Modifier.size(14.dp)
+        Text(
+            text = "›",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Black,
+            color = Color(0xFF0090C9)
         )
     }
 }
