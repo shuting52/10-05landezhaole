@@ -89,11 +89,12 @@ fun QuadrantCardGrid(
     items: List<QuadrantCardItem>,
     modifier: Modifier = Modifier
 ) {
-    if (items.size < 4) return
+    // 2026-10-24：支持 3 卡片（主题外观已删），缺右下角时下排只显示左卡
+    if (items.size < 3) return
     val topLeft = items.firstOrNull { it.position == QuadrantPosition.TOP_LEFT } ?: items[0]
-    val topRight = items.firstOrNull { it.position == QuadrantPosition.TOP_RIGHT } ?: items[1]
-    val bottomLeft = items.firstOrNull { it.position == QuadrantPosition.BOTTOM_LEFT } ?: items[2]
-    val bottomRight = items.firstOrNull { it.position == QuadrantPosition.BOTTOM_RIGHT } ?: items[3]
+    val topRight = items.firstOrNull { it.position == QuadrantPosition.TOP_RIGHT } ?: items.getOrNull(1) ?: items[0]
+    val bottomLeft = items.firstOrNull { it.position == QuadrantPosition.BOTTOM_LEFT } ?: items.getOrNull(2) ?: items[0]
+    val bottomRight = items.firstOrNull { it.position == QuadrantPosition.BOTTOM_RIGHT } ?: items.getOrNull(3)
 
     Column(
         modifier = modifier
@@ -110,10 +111,12 @@ fun QuadrantCardGrid(
                 QuadrantSingleCard(item = topLeft)
                 QuadrantSingleCard(item = topRight)
             }
-            // 下半区 .down
+            // 下半区 .down（3 卡片时右下角留空）
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 QuadrantSingleCard(item = bottomLeft)
-                QuadrantSingleCard(item = bottomRight)
+                if (bottomRight != null) {
+                    QuadrantSingleCard(item = bottomRight)
+                }
             }
         }
     }
