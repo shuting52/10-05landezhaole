@@ -207,6 +207,8 @@ fun SettingsScreen(
     var isCheckingUpdate by remember { mutableStateOf(false) }
     // 检查更新反馈弹窗：无新版本时点击「检查更新」弹出独立弹窗「已是最新版本」
     var showLatestVersionDialog by remember { mutableStateOf(false) }
+    // 2026-10-24：外观与背景独立窗口（主题/背景/底栏/缩放集中到弹窗内）
+    var showAppearanceDialog by remember { mutableStateOf(false) }
 
     // 云端新版本检测：云端 versionCode 大于本地时视为有新版本
     val hasNewCloudVersion = (cloudVersion?.code ?: 0) > com.example.BuildConfig.VERSION_CODE
@@ -479,10 +481,8 @@ fun SettingsScreen(
         )
 
         Spacer(modifier = Modifier.height(14.dp))
-
-        // 2026-10-24：恢复外观设置（背景图片/视频、底栏液态玻璃、界面缩放）
+        // 2026-10-24：外观与背景改为独立窗口（点击入口打开弹窗，内含主题/背景/底栏/缩放）
         if (viewModel != null) {
-            val appearanceState by viewModel.uiState.collectAsStateWithLifecycle()
             Text(
                 text = "\uD83C\uDFA8 外观与背景",
                 fontSize = 12.sp,
@@ -491,73 +491,13 @@ fun SettingsScreen(
                 modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
             )
             AeroCard {
-                // 2026-10-24：主题切换（千禧复兴 / 皮纹鞣制）
-                AeroSectionTitle(text = "主题风格")
-                val themeOptions = com.example.ui.theme.APP_THEMES.map { it.name }
-                val themeSelected = com.example.ui.theme.APP_THEMES.indexOfFirst { it.id == appearanceState.appThemeId }.coerceAtLeast(0)
-                AeroSegmented(
-                    options = themeOptions,
-                    selectedIndex = themeSelected,
-                    onSelect = { idx ->
-                        com.example.ui.theme.APP_THEMES.getOrNull(idx)?.let { viewModel.setAppTheme(it.id) }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Text(
-                    text = com.example.ui.theme.APP_THEMES.getOrNull(themeSelected)?.colors?.designStyle?.desc ?: "",
-                    fontSize = 12.sp,
-                    color = Color(0xFF5B7A90),
-                    modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
-                )
-                AeroSectionTitle(text = "背景图片 / 视频")
                 SettingsClickableItem(
-                    title = "选择背景图片",
-                    subtitle = if (appearanceState.localBgMediaType == "image") "已设置自定义图片" else "从相册选择",
-                    icon = Icons.Filled.Image,
+                    title = "外观与背景",
+                    subtitle = "主题风格 · 背景图片/视频 · 底栏样式 · 界面缩放",
+                    icon = Icons.Filled.Palette,
                     iconColor = Color(0xFF00A8E8),
-                    onClick = onPickBgImage
+                    onClick = { showAppearanceDialog = true }
                 )
-                SettingsClickableItem(
-                    title = "选择背景视频",
-                    subtitle = if (appearanceState.localBgMediaType == "video") "已设置自定义视频" else "从相册选择",
-                    icon = Icons.Filled.Videocam,
-                    iconColor = Color(0xFF7ED957),
-                    onClick = onPickBgVideo
-                )
-                if (appearanceState.localBgMediaType == "image" || appearanceState.localBgMediaType == "video") {
-                    SettingsClickableItem(
-                        title = "清除自定义背景",
-                        subtitle = "恢复默认主题背景",
-                        icon = Icons.Filled.DeleteOutline,
-                        iconColor = Color(0xFFC0392B),
-                        onClick = onClearBg
-                    )
-                }
-                AeroSwitch(
-                    checked = appearanceState.glassBottomBar,
-                    onCheckedChange = { viewModel.setGlassBottomBar(it) },
-                    title = "底栏液态玻璃风格",
-                    desc = "关闭则使用渐变按钮样式"
-                )
-                Column(modifier = Modifier.padding(vertical = 6.dp)) {
-                    Text(
-                        text = "界面缩放",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0A2540)
-                    )
-                    Text(
-                        text = "当前 ${(appearanceState.uiScale * 100).toInt()}%",
-                        fontSize = 12.sp,
-                        color = Color(0xFF5B7A90),
-                        modifier = Modifier.padding(top = 2.dp, bottom = 4.dp)
-                    )
-                    AeroSlider(
-                        value = appearanceState.uiScale,
-                        onValueChange = { viewModel.setUiScale(it) },
-                        valueRange = 0.8f..1.2f
-                    )
-                }
             }
             Spacer(modifier = Modifier.height(14.dp))
         }
@@ -599,6 +539,17 @@ fun SettingsScreen(
                 )
             }
         }
+    }
+
+    // 2026-10-24：外观与背景独立窗口
+    if (showAppearanceDialog && viewModel != null) {
+        AppearanceDialog(
+            viewModel = viewModel,
+            onDismiss = { showAppearanceDialog = false },
+            onPickBgImage = onPickBgImage,
+            onPickBgVideo = onPickBgVideo,
+            onClearBg = onClearBg
+        )
     }
 
     // Modal Dialogs for Policies & About Us
@@ -643,6 +594,97 @@ fun SettingsScreen(
                 onDismiss = { activeDialogType = null },
                 onOpenFeedback = { activeDialogType = "feedback_bug" }
             )
+        }
+    }
+}
+
+@Composable
+private fun AppearanceDialog(
+    viewModel: NavViewModel,
+    onDismiss: () -> Unit,
+    onPickBgImage: () -> Unit,
+    onPickBgVideo: () -> Unit,
+    onClearBg: () -> Unit
+) {
+    val appearanceState by viewModel.uiState.collectAsStateWithLifecycle()
+    com.example.ui.components.LiquidGlassDialogShell(
+        onDismissRequest = onDismiss,
+        title = "🎨 外观与背景",
+        subtitle = "主题风格 · 背景 · 底栏 · 缩放"
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(18.dp)
+        ) {
+            // 主题风格
+            AeroSectionTitle(text = "主题风格")
+            val themeOptions = com.example.ui.theme.APP_THEMES.map { it.name }
+            val themeSelected = com.example.ui.theme.APP_THEMES.indexOfFirst { it.id == appearanceState.appThemeId }.coerceAtLeast(0)
+            AeroSegmented(
+                options = themeOptions,
+                selectedIndex = themeSelected,
+                onSelect = { idx ->
+                    com.example.ui.theme.APP_THEMES.getOrNull(idx)?.let { viewModel.setAppTheme(it.id) }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = com.example.ui.theme.APP_THEMES.getOrNull(themeSelected)?.colors?.designStyle?.desc ?: "",
+                fontSize = 12.sp,
+                color = Color(0xFF5B7A90),
+                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+            )
+            // 背景图片 / 视频
+            AeroSectionTitle(text = "背景图片 / 视频")
+            SettingsClickableItem(
+                title = "选择背景图片",
+                subtitle = if (appearanceState.localBgMediaType == "image") "已设置自定义图片" else "从相册选择",
+                icon = Icons.Filled.Image,
+                iconColor = Color(0xFF00A8E8),
+                onClick = onPickBgImage
+            )
+            SettingsClickableItem(
+                title = "选择背景视频",
+                subtitle = if (appearanceState.localBgMediaType == "video") "已设置自定义视频" else "从相册选择",
+                icon = Icons.Filled.Videocam,
+                iconColor = Color(0xFF7ED957),
+                onClick = onPickBgVideo
+            )
+            if (appearanceState.localBgMediaType == "image" || appearanceState.localBgMediaType == "video") {
+                SettingsClickableItem(
+                    title = "清除自定义背景",
+                    subtitle = "恢复默认主题背景",
+                    icon = Icons.Filled.DeleteOutline,
+                    iconColor = Color(0xFFC0392B),
+                    onClick = onClearBg
+                )
+            }
+            // 底栏样式
+            AeroSectionTitle(text = "底栏样式")
+            AeroSwitch(
+                checked = appearanceState.glassBottomBar,
+                onCheckedChange = { viewModel.setGlassBottomBar(it) },
+                title = "底栏液态玻璃风格",
+                desc = "关闭则使用渐变按钮样式"
+            )
+            // 界面缩放
+            AeroSectionTitle(text = "界面缩放")
+            Column(modifier = Modifier.padding(vertical = 6.dp)) {
+                Text(
+                    text = "当前 ${(appearanceState.uiScale * 100).toInt()}%",
+                    fontSize = 12.sp,
+                    color = Color(0xFF5B7A90),
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                AeroSlider(
+                    value = appearanceState.uiScale,
+                    onValueChange = { viewModel.setUiScale(it) },
+                    valueRange = 0.8f..1.2f
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
