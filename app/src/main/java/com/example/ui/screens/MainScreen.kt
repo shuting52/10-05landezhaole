@@ -275,10 +275,9 @@ fun MainScreen(
             uiState.cloudSettings?.bgMedia?.url.orEmpty()
         }
         val hasCustomBgMedia = (bgType == "image" || bgType == "video") && bgUrl.isNotBlank()
+        // 2026-10-24：删除双重背景（纯色 background 被 GlobalWindBackground 完全盖住，纯 overdraw）
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+            modifier = Modifier.fillMaxSize()
         ) {
             // 默认主题背景此前没有接入全局背景组件；仅在未自定义图片/视频时显示液态玻璃效果。
             if (!hasCustomBgMedia) {
@@ -472,7 +471,12 @@ fun MainScreen(
                         onCheckUpdate = { viewModel.refreshRemoteConfig() },
                         modifier = Modifier.padding(paddingValues),
                         // v1.2.6：设置页标题/副标题可云端覆盖
-                        uiText = uiState.cloudUiText
+                        uiText = uiState.cloudUiText,
+                        // 2026-10-24：恢复外观设置入口
+                        viewModel = viewModel,
+                        onPickBgImage = { pickBgImageLauncher.launch("image/*") },
+                        onPickBgVideo = { pickBgVideoLauncher.launch("video/*") },
+                        onClearBg = { clearCustomBackground() }
                     )
                 }
             }
