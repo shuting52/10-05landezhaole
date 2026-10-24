@@ -722,6 +722,12 @@ private object WaveDownloadManager {
                 conn.readTimeout = 60000
                 conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36")
                 conn.connect()
+                // 2026-10-24：检查 HTTP 状态码，非 200 直接抛错（带 code，方便定位）
+                val responseCode = conn.responseCode
+                if (responseCode != java.net.HttpURLConnection.HTTP_OK) {
+                    val host = try { java.net.URL(url).host } catch (_: Exception) { url }
+                    throw java.io.IOException("HTTP $responseCode（$host）")
+                }
                 val total = conn.contentLengthLong.coerceAtLeast(0L)
                 withContext(Dispatchers.Main) {
                     _ui.value = _ui.value.copy(totalBytes = total)
@@ -765,10 +771,12 @@ private object WaveDownloadManager {
                     }
                 }
             } catch (e: Exception) {
+                // 2026-10-24：错误信息带上 URL host，方便定位是哪个软件/源失败
+                val host = try { java.net.URL(url).host } catch (_: Exception) { "未知地址" }
                 withContext(Dispatchers.Main) {
                     _ui.value = _ui.value.copy(
                         state = WaveDlState.FAILED,
-                        error = "下载失败：${e.message ?: "网络异常"}",
+                        error = "下载失败 [$host]：${e.message ?: "网络异常"}",
                         speedBps = 0.0
                     )
                 }
