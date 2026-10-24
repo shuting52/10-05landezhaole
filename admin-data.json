@@ -1,16 +1,17 @@
 {
   "version": {
-    "code": 290,
-    "name": "1.7.80",
+    "code": 291,
+    "name": "1.7.81",
     "changelog": [
-      "✨ v1.7.80 更新来啦～",
-      "fix: 取消/暂停/关窗口真正停下载（兜底单线程协程纳入取消、断开连接、取消异常不再当镜像失败）；下载弹窗提至主界面内容区切版块不消失、遮罩吃掉点按防穿透重下；resume续下保留Appteka强制头"
+      "✨ v1.7.81 更新来啦～",
+      "fix: 修复编译错误（isActive 改 ensureActive；onSizeChanged 包名改 layout）",
+      "v1.7.81: 界面缩放滑块可拖动；下载暂停续传（多线程跳段+兜底Range追加）；新增液态玻璃主题"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.80-1792839371.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.80-1792839371.apk",
-    "lastBuildSha": "9c1a3e20931617a8a5bceefe73d8b7cfc018cb3f",
-    "apkSize": 23996904
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.81-1792843196.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.81-1792843196.apk",
+    "lastBuildSha": "4900d5ec0e8f6e4de15d3d2d468de6fd2414241c",
+    "apkSize": 24013288
   },
   "home": {
     "categories": [
@@ -24328,10 +24329,11 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.80 已上线",
+    "title": "懒得找了 v1.7.81 已上线",
     "changelog": [
-      "✨ v1.7.80 更新来啦～",
-      "fix: 取消/暂停/关窗口真正停下载（兜底单线程协程纳入取消、断开连接、取消异常不再当镜像失败）；下载弹窗提至主界面内容区切版块不消失、遮罩吃掉点按防穿透重下；resume续下保留Appteka强制头"
+      "✨ v1.7.81 更新来啦～",
+      "fix: 修复编译错误（isActive 改 ensureActive；onSizeChanged 包名改 layout）",
+      "v1.7.81: 界面缩放滑块可拖动；下载暂停续传（多线程跳段+兜底Range追加）；新增液态玻璃主题"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24393,10 +24395,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.80",
-      "code": 290,
-      "at": "2026-10-24T10:56:18Z",
-      "sha": "9c1a3e20931617a8a5bceefe73d8b7cfc018cb3f"
+      "version": "1.7.81",
+      "code": 291,
+      "at": "2026-10-24T12:00:02Z",
+      "sha": "4900d5ec0e8f6e4de15d3d2d468de6fd2414241c"
     }
   },
   "_ai_notice": "内容由AI生成"
