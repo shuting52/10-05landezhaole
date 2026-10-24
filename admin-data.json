@@ -1,16 +1,16 @@
 {
   "version": {
-    "code": 282,
-    "name": "1.7.72",
+    "code": 271,
+    "name": "1.7.61",
     "changelog": [
       "✨ v1.7.72 更新来啦～",
       "revert: Appteka 下载恢复 v1.7.61 方式",
       "revert: Appteka 下载恢复 v1.7.61 方式"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.72-1792822254.apk",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.61-rollback.apk",
     "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.72-1792822254.apk",
-    "lastBuildSha": "114332b6b7a7f3e2aba0b1d3b600cc72ccdfc39b",
+    "lastBuildSha": "ae866777a53a8953b59af0af44404dc7b22083ed",
     "apkSize": 23980516
   },
   "home": {
