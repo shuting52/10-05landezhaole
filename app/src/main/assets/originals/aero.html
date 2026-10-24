@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AERO UI · 千禧复兴 Frutiger Aero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ============ AERO UI · 千禧复兴 Frutiger Aero ============ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --fa-sky1:#7EC8F7; --fa-sky2:#E8F9FF;
+  --fa-blue:#00A8E8; --fa-blue-deep:#0090C9; --fa-green:#7ED957; --fa-green-deep:#5DBE3D;
+  --fa-ink:#0A2540;
+  --fa-white:#ffffff;
+  --fa-hl:inset 0 1px 0 rgba(255,255,255,0.6);
+  --fa-r:24px;
+  --fa-shadow:0 8px 24px rgba(10,37,64,.12), 0 2px 6px rgba(10,37,64,.08);
+  --fa-font:'Nunito','Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+}
+html,body{height:100%}
+body{
+  font-family:var(--fa-font); color:var(--fa-ink);
+  background:#cfe9f7; min-height:100vh;
+  display:flex; justify-content:center; align-items:flex-start;
+  padding:24px 0;
+}
+/* 桌面端 phone 框 */
+.fa-phone{
+  width:430px; max-width:100vw; height:min(932px, calc(100vh - 48px)); min-height:700px;
+  background:linear-gradient(180deg,var(--fa-sky1) 0%,#BDE4FB 38%,#DFF3FE 68%,var(--fa-sky2) 100%);
+  border-radius:32px; overflow:hidden; position:relative;
+  box-shadow:0 24px 70px rgba(10,37,64,.28), 0 4px 18px rgba(10,37,64,.16);
+  border:1px solid rgba(255,255,255,.7);
+  display:flex; flex-direction:column;
+}
+/* 屏幕区 */
+.fa-screens{flex:1; overflow:hidden; position:relative}
+.fa-screen{
+  position:absolute; inset:0; overflow-y:auto; overflow-x:hidden;
+  padding:20px 18px 120px; opacity:0; pointer-events:none;
+  transform:translateX(24px); transition:opacity .32s ease, transform .32s ease;
+  scrollbar-width:thin; scrollbar-color:rgba(0,168,232,.35) transparent;
+}
+.fa-screen::-webkit-scrollbar{width:5px}
+.fa-screen::-webkit-scrollbar-thumb{background:rgba(0,168,232,.35);border-radius:3px}
+.fa-screen.active{opacity:1; pointer-events:auto; transform:none; animation:faIn .38s ease}
+@keyframes faIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* 气泡上浮（装饰动画，验证时保留） */
+.fa-bubble{
+  position:absolute; bottom:-40px; border-radius:50%;
+  background:radial-gradient(circle at 32% 30%, rgba(255,255,255,.85) 0%, rgba(255,255,255,.28) 40%, rgba(255,255,255,.08) 70%);
+  border:1px solid rgba(255,255,255,.5);
+  box-shadow:inset -2px -3px 6px rgba(255,255,255,.35), 0 2px 6px rgba(0,168,232,.12);
+  animation:faRise linear infinite; pointer-events:none; z-index:0;
+}
+@keyframes faRise{
+  0%{transform:translateY(0) scale(1); opacity:0}
+  12%{opacity:.85}
+  85%{opacity:.7}
+  100%{transform:translateY(-110vh) scale(1.08); opacity:0}
+}
+
+/* 小鱼 / 草叶装饰 */
+.fa-fish{position:absolute; z-index:0; pointer-events:none; opacity:.8; animation:faSwim 9s ease-in-out infinite}
+@keyframes faSwim{0%,100%{transform:translateX(0) rotate(4deg)}50%{transform:translateX(26px) rotate(-4deg)}}
+.fa-grass{position:absolute; z-index:0; pointer-events:none; animation:faSway 5s ease-in-out infinite; transform-origin:bottom center}
+@keyframes faSway{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+
+/* 通用卡片（玻璃质感） */
+.fa-card{
+  background:rgba(255,255,255,.55); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border-radius:var(--fa-r); border:1px solid rgba(255,255,255,.8);
+  box-shadow:var(--fa-hl), var(--fa-shadow);
+  padding:18px; margin-bottom:16px; position:relative; z-index:1;
+}
+.fa-card h3.fa-sec{font-size:15px; font-weight:800; margin-bottom:12px; display:flex; align-items:center; gap:8px}
+.fa-sec .fa-dot{width:10px;height:10px;border-radius:50%;background:var(--fa-blue);box-shadow:0 0 8px var(--fa-blue)}
+.fa-hint{font-size:12px; color:#4a6b8a; margin-top:8px; line-height:1.7}
+
+/* 顶部页头 */
+.fa-pagehead{position:relative; z-index:1; margin:6px 2px 16px}
+.fa-pagehead h1{font-size:26px; font-weight:900; letter-spacing:.5px}
+.fa-pagehead p{font-size:13px; color:#33576f; margin-top:4px}
+
+/* ============ hero（总览） ============ */
+.fa-hero{
+  position:relative; overflow:hidden; border-radius:28px; padding:30px 22px 26px;
+  background:linear-gradient(160deg, rgba(255,255,255,.75), rgba(255,255,255,.28));
+  border:1px solid rgba(255,255,255,.85); box-shadow:var(--fa-hl), var(--fa-shadow);
+  margin-bottom:16px; z-index:1;
+}
+.fa-hero::before{ /* 玻璃反射层 */
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(115deg, rgba(255,255,255,.5) 0%, rgba(255,255,255,.08) 34%, transparent 45%);
+}
+.fa-hero .fa-fish{bottom:18px; right:18px; font-size:30px}
+.fa-hero-tag{display:inline-block; font-size:11px; font-weight:800; letter-spacing:2px; color:var(--fa-blue-deep);
+  background:rgba(0,168,232,.1); border:1px solid rgba(0,168,232,.3); padding:5px 12px; border-radius:999px; margin-bottom:12px}
+.fa-hero h2{font-size:34px; font-weight:900; line-height:1.15}
+.fa-hero h2 .en{font-size:17px; font-weight:700; color:var(--fa-blue-deep); letter-spacing:1px; display:block; margin-top:4px}
+.fa-hero p{font-size:14px; color:#2c4f66; margin:10px 0 18px; line-height:1.8}
+
+/* ============ 按钮 ============ */
+.fa-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  border:none; cursor:pointer; font-family:var(--fa-font); font-weight:800; color:#fff;
+  padding:14px 28px; font-size:15px; border-radius:22px;
+  background:linear-gradient(180deg, #35c3f5 0%, var(--fa-blue) 55%, var(--fa-blue-deep) 100%);
+  box-shadow:var(--fa-hl), 0 6px 16px rgba(0,168,232,.38), inset 0 -2px 4px rgba(0,60,90,.18);
+  transition:transform .15s ease, box-shadow .15s ease, filter .15s;
+  position:relative; overflow:hidden;
+}
+.fa-btn::after{content:"";position:absolute;top:0;left:8%;right:8%;height:46%;border-radius:0 0 20px 20px;
+  background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0));pointer-events:none}
+.fa-btn:active{transform:scale(.96); filter:brightness(.96)}
+.fa-btn.fa-green{background:linear-gradient(180deg,#9bef83 0%,var(--fa-green) 55%,var(--fa-green-deep) 100%);
+  box-shadow:var(--fa-hl), 0 6px 16px rgba(126,217,87,.4), inset 0 -2px 4px rgba(40,110,20,.18)}
+.fa-btn.fa-ghost{background:rgba(255,255,255,.65); color:var(--fa-blue-deep);
+  box-shadow:var(--fa-hl), 0 4px 12px rgba(10,37,64,.1); border:1px solid rgba(0,168,232,.35)}
+.fa-btn.fa-outline{background:transparent; color:var(--fa-blue-deep); border:2px solid var(--fa-blue);
+  box-shadow:var(--fa-hl)}
+.fa-btn.fa-sm{padding:9px 18px; font-size:13px; border-radius:16px}
+.fa-btn.fa-lg{padding:17px 36px; font-size:17px; border-radius:26px}
+.fa-btn.fa-block{width:100%}
+.fa-btn[disabled]{opacity:.5; cursor:not-allowed; filter:grayscale(.4)}
+.fa-btn-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:10px}
+.fa-iconbtn{
+  width:52px; height:52px; border-radius:18px; border:1px solid rgba(255,255,255,.8);
+  background:rgba(255,255,255,.6); box-shadow:var(--fa-hl), var(--fa-shadow);
+  font-size:22px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;
+  transition:transform .15s;
+}
+.fa-iconbtn:active{transform:scale(.9)}
+
+/* ============ 表单 ============ */
+.fa-field{margin-bottom:14px}
+.fa-field label.fa-lab{display:block; font-size:13px; font-weight:800; margin-bottom:8px; color:#25465e}
+.fa-input, .fa-textarea, .fa-select{
+  width:100%; font-family:var(--fa-font); font-size:15px; color:var(--fa-ink);
+  background:rgba(255,255,255,.75); border:1.5px solid rgba(0,168,232,.3);
+  border-radius:18px; padding:13px 16px; outline:none; transition:border-color .2s, box-shadow .2s;
+}
+.fa-input:focus, .fa-textarea:focus, .fa-select:focus{
+  border-color:var(--fa-blue); box-shadow:0 0 0 4px rgba(0,168,232,.15), var(--fa-hl);
+}
+.fa-textarea{min-height:92px; resize:vertical}
+.fa-select{appearance:none; -webkit-appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9'><path d='M1 1l6 6 6-6' fill='none' stroke='%2300A8E8' stroke-width='2.4' stroke-linecap='round'/></svg>");
+  background-repeat:no-repeat; background-position:right 16px center; padding-right:40px}
+.fa-input::placeholder,.fa-textarea::placeholder{color:#8aa5b8}
+
+/* 开关（已知坑：轨道必须显式尺寸+flex:none） */
+.fa-switchrow{display:flex; align-items:center; justify-content:space-between; padding:10px 0}
+.fa-switchrow .fa-t{font-size:14px; font-weight:700}
+.fa-switchrow .fa-d{font-size:12px; color:#5b7a90; margin-top:2px}
+.fa-switch{position:relative; width:56px; height:32px; flex:0 0 auto; cursor:pointer; border:none; background:none; padding:0}
+.fa-switch .fa-track{
+  display:block; position:relative; width:56px; height:32px; border-radius:999px;
+  background:linear-gradient(180deg,#b8d2e2,#d3e6f2); box-shadow:inset 0 2px 5px rgba(10,37,64,.18), var(--fa-hl);
+  transition:background .25s;
+}
+.fa-switch .fa-knob{
+  position:absolute; top:3px; left:3px; width:26px; height:26px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #ffffff 0%, #e8f4fb 60%, #cfe8f6 100%);
+  box-shadow:0 2px 5px rgba(10,37,64,.25), inset 0 1px 0 rgba(255,255,255,.9);
+  transition:left .25s cubic-bezier(.4,1.4,.6,1);
+}
+.fa-switch.on .fa-track{background:linear-gradient(180deg,var(--fa-blue-deep),var(--fa-blue))}
+.fa-switch.on .fa-knob{left:27px}
+.fa-switch.on .fa-track::after{content:"💧"; position:absolute; left:8px; top:5px; font-size:13px}
+
+/* 复选 */
+.fa-checkrow{display:flex; align-items:center; gap:12px; padding:9px 0; cursor:pointer; font-size:14px; font-weight:600}
+.fa-checkbox{
+  width:26px; height:26px; border-radius:9px; flex:0 0 auto; position:relative;
+  background:rgba(255,255,255,.8); border:1.5px solid rgba(0,168,232,.4);
+  box-shadow:var(--fa-hl); transition:background .2s; display:inline-block;
+}
+.fa-checkrow.on .fa-checkbox{background:linear-gradient(180deg,#35c3f5,var(--fa-blue-deep))}
+.fa-checkbox::after{content:"✓"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:16px; font-weight:900; opacity:0; transform:scale(.5); transition:.18s}
+.fa-checkrow.on .fa-checkbox::after{opacity:1; transform:scale(1)}
+
+/* 滑杆 */
+.fa-sliderbox{display:flex; align-items:center; gap:12px}
+.fa-slider{-webkit-appearance:none; appearance:none; flex:1; height:12px; border-radius:999px; outline:none;
+  background:linear-gradient(90deg, var(--fa-blue) var(--v,50%), rgba(255,255,255,.7) var(--v,50%));
+  box-shadow:inset 0 2px 4px rgba(10,37,64,.15), var(--fa-hl); cursor:pointer}
+.fa-slider::-webkit-slider-thumb{-webkit-appearance:none; width:26px; height:26px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #fff 0%, #dcf1fc 60%, #bfe2f7 100%);
+  box-shadow:0 2px 6px rgba(0,168,232,.4), inset 0 1px 0 rgba(255,255,255,.9); border:1px solid rgba(0,168,232,.35)}
+.fa-slider::-moz-range-thumb{width:26px;height:26px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #fff 0%, #dcf1fc 60%, #bfe2f7 100%);
+  box-shadow:0 2px 6px rgba(0,168,232,.4); border:1px solid rgba(0,168,232,.35)}
+.fa-slider-val{min-width:48px; text-align:center; font-weight:800; color:var(--fa-blue-deep);
+  background:rgba(255,255,255,.7); border-radius:12px; padding:5px 8px; font-size:14px}
+
+/* 步进器 */
+.fa-stepper{display:inline-flex; align-items:center; gap:4px; background:rgba(255,255,255,.65);
+  border-radius:999px; padding:5px; border:1px solid rgba(255,255,255,.85); box-shadow:var(--fa-hl),var(--fa-shadow)}
+.fa-stepper button{width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;font-size:18px;font-weight:900;
+  color:#fff;background:linear-gradient(180deg,#35c3f5,var(--fa-blue-deep));box-shadow:var(--fa-hl)}
+.fa-stepper button:active{transform:scale(.9)}
+.fa-stepper .fa-num{min-width:44px;text-align:center;font-weight:800;font-size:16px}
+
+/* 分段选择 */
+.fa-seg{display:flex; background:rgba(255,255,255,.5); border-radius:999px; padding:5px;
+  border:1px solid rgba(255,255,255,.85); box-shadow:var(--fa-hl), inset 0 2px 5px rgba(10,37,64,.08)}
+.fa-seg button{flex:1; border:none; background:none; font-family:var(--fa-font); font-weight:800; font-size:14px;
+  color:#4a6b8a; padding:10px 0; border-radius:999px; cursor:pointer; transition:.2s}
+.fa-seg button.on{background:linear-gradient(180deg,#35c3f5,var(--fa-blue-deep)); color:#fff;
+  box-shadow:var(--fa-hl), 0 3px 10px rgba(0,168,232,.35)}
+
+/* 评分 */
+.fa-stars{display:flex; gap:6px}
+.fa-star{font-size:34px; cursor:pointer; color:#c3d8e6; transition:transform .15s, color .15s; line-height:1}
+.fa-star.on{color:#FFB800; text-shadow:0 0 10px rgba(255,184,0,.55)}
+.fa-star:active{transform:scale(1.25)}
+
+/* ============ showcase ============ */
+/* 进度条 */
+.fa-prog{height:14px; border-radius:999px; background:rgba(255,255,255,.65); margin:10px 0 18px;
+  box-shadow:inset 0 2px 4px rgba(10,37,64,.14), var(--fa-hl); overflow:hidden; position:relative}
+.fa-prog i{display:block; height:100%; border-radius:999px; position:relative; overflow:hidden;
+  background:linear-gradient(90deg,var(--fa-blue),#6fd6ff); transition:width .6s ease}
+.fa-prog.fa-g i{background:linear-gradient(90deg,var(--fa-green-deep),#a5ec82)}
+.fa-prog i::after{content:""; position:absolute; inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.45),rgba(255,255,255,0)); }
+.fa-prog-lab{display:flex; justify-content:space-between; font-size:12px; font-weight:700; color:#33576f}
+
+/* 数据统计 + 徽标 */
+.fa-stats{display:flex; gap:10px; margin-bottom:14px}
+.fa-stat{flex:1; text-align:center; background:rgba(255,255,255,.6); border-radius:18px; padding:12px 4px;
+  border:1px solid rgba(255,255,255,.85); box-shadow:var(--fa-hl), var(--fa-shadow)}
+.fa-stat b{display:block; font-size:20px; font-weight:900; color:var(--fa-blue-deep)}
+.fa-stat span{font-size:11px; color:#5b7a90; font-weight:700}
+.fa-badges{display:flex; gap:8px; flex-wrap:wrap}
+.fa-badge{font-size:12px; font-weight:800; padding:6px 13px; border-radius:999px; color:#fff;
+  background:linear-gradient(180deg,#35c3f5,var(--fa-blue-deep)); box-shadow:var(--fa-hl), 0 3px 8px rgba(0,168,232,.3)}
+.fa-badge.fa-g{background:linear-gradient(180deg,#9bef83,var(--fa-green-deep)); box-shadow:var(--fa-hl), 0 3px 8px rgba(126,217,87,.35)}
+.fa-badge.fa-soft{background:rgba(255,255,255,.7); color:var(--fa-blue-deep); border:1px solid rgba(0,168,232,.35)}
+
+/* 筛选芯片 */
+.fa-chips{display:flex; gap:8px; flex-wrap:wrap}
+.fa-chip{border:1.5px solid rgba(0,168,232,.35); background:rgba(255,255,255,.55); color:#33576f;
+  font-family:var(--fa-font); font-weight:700; font-size:13px; padding:8px 16px; border-radius:999px; cursor:pointer; transition:.2s}
+.fa-chip.on{background:linear-gradient(180deg,#35c3f5,var(--fa-blue-deep)); color:#fff; border-color:transparent;
+  box-shadow:var(--fa-hl), 0 4px 10px rgba(0,168,232,.35)}
+
+/* 列表行 */
+.fa-row{display:flex; align-items:center; gap:12px; padding:13px 4px; border-bottom:1px solid rgba(0,168,232,.12)}
+.fa-row:last-child{border-bottom:none}
+.fa-row .fa-ico{width:44px; height:44px; border-radius:15px; flex:0 0 auto; display:flex; align-items:center; justify-content:center;
+  font-size:22px; background:linear-gradient(160deg,rgba(255,255,255,.9),rgba(190,225,245,.7));
+  border:1px solid rgba(255,255,255,.9); box-shadow:var(--fa-hl)}
+.fa-row .fa-body{flex:1; min-width:0}
+.fa-row .fa-body b{font-size:14px; display:block}
+.fa-row .fa-body span{font-size:12px; color:#5b7a90}
+.fa-tag{font-size:10px; font-weight:800; color:#fff; background:var(--fa-green-deep); padding:3px 9px; border-radius:999px}
+.fa-arrow{color:var(--fa-blue-deep); font-size:18px; font-weight:900}
+
+/* 手风琴 */
+.fa-acc{border-bottom:1px solid rgba(0,168,232,.14)}
+.fa-acc:last-child{border-bottom:none}
+.fa-acc-head{width:100%; background:none; border:none; font-family:var(--fa-font); cursor:pointer;
+  display:flex; align-items:center; justify-content:space-between; padding:14px 2px; font-size:15px; font-weight:800; color:var(--fa-ink)}
+.fa-acc-head .fa-plus{width:28px;height:28px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,#35c3f5,var(--fa-blue-deep));color:#fff;font-size:16px;transition:transform .3s;box-shadow:var(--fa-hl)}
+.fa-acc.open .fa-plus{transform:rotate(45deg)}
+.fa-acc-body{max-height:0; overflow:hidden; transition:max-height .35s ease}
+.fa-acc-body p{font-size:13.5px; color:#33576f; line-height:1.8; padding:0 2px 14px}
+
+/* 顶部页签 */
+.fa-toptabs{display:flex; gap:4px; background:rgba(255,255,255,.45); border-radius:20px; padding:5px; margin-bottom:12px;
+  border:1px solid rgba(255,255,255,.8)}
+.fa-toptabs button{flex:1; border:none; background:none; font-family:var(--fa-font); font-weight:800; font-size:13.5px;
+  color:#4a6b8a; padding:10px 0; border-radius:15px; cursor:pointer; transition:.2s}
+.fa-toptabs button.on{background:rgba(255,255,255,.95); color:var(--fa-blue-deep); box-shadow:var(--fa-shadow)}
+.fa-toppane{display:none; font-size:14px; color:#33576f; line-height:1.9}
+.fa-toppane.on{display:block; animation:faIn .3s ease}
+
+/* 骨架屏 */
+.fa-skel{border-radius:14px; margin:10px 0; position:relative; overflow:hidden;
+  background:linear-gradient(90deg, rgba(255,255,255,.35) 25%, rgba(255,255,255,.75) 50%, rgba(255,255,255,.35) 75%);
+  background-size:200% 100%; animation:faShimmer 1.6s linear infinite}
+@keyframes faShimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+
+/* 空状态 */
+.fa-empty{text-align:center; padding:26px 10px}
+.fa-empty .fa-big{font-size:52px; display:block; margin-bottom:10px; filter:drop-shadow(0 4px 8px rgba(0,168,232,.25))}
+.fa-empty b{font-size:16px}
+.fa-empty p{font-size:13px; color:#5b7a90; margin:6px 0 14px}
+
+/* ============ feedback ============ */
+.fa-banner{display:flex; gap:12px; align-items:flex-start; border-radius:20px; padding:14px 16px; margin-bottom:12px;
+  border:1px solid rgba(255,255,255,.8); box-shadow:var(--fa-hl), var(--fa-shadow); font-size:13.5px; line-height:1.6}
+.fa-banner .fa-bi{font-size:22px; flex:0 0 auto}
+.fa-banner.fa-info{background:rgba(0,168,232,.12)}
+.fa-banner.fa-ok{background:rgba(126,217,87,.16)}
+.fa-banner b{display:block; font-size:14px; margin-bottom:2px}
+
+/* 遮罩 / 弹窗 / 动作表 */
+.fa-mask{position:absolute; inset:0; background:rgba(10,37,64,.35); backdrop-filter:blur(3px);
+  opacity:0; pointer-events:none; transition:opacity .28s; z-index:50}
+.fa-mask.show{opacity:1; pointer-events:auto}
+.fa-modal{position:absolute; left:24px; right:24px; top:50%; transform:translateY(-46%) scale(.92); z-index:51;
+  background:rgba(255,255,255,.92); border-radius:28px; padding:26px 22px; text-align:center;
+  border:1px solid rgba(255,255,255,.9); box-shadow:var(--fa-hl), 0 20px 50px rgba(10,37,64,.3);
+  opacity:0; pointer-events:none; transition:.28s cubic-bezier(.4,1.3,.6,1)}
+.fa-modal.show{opacity:1; pointer-events:auto; transform:translateY(-50%) scale(1)}
+.fa-modal .fa-mico{font-size:46px; display:block; margin-bottom:10px}
+.fa-modal h4{font-size:18px; margin-bottom:8px}
+.fa-modal p{font-size:13.5px; color:#4a6b8a; line-height:1.7; margin-bottom:18px}
+.fa-sheet{position:absolute; left:0; right:0; bottom:0; z-index:51; background:rgba(255,255,255,.96);
+  border-radius:28px 28px 0 0; padding:12px 20px 30px; border-top:1px solid rgba(255,255,255,.9);
+  box-shadow:0 -14px 40px rgba(10,37,64,.22); transform:translateY(105%); transition:transform .32s cubic-bezier(.4,1.1,.6,1)}
+.fa-sheet.show{transform:none}
+.fa-sheet .fa-grab{width:44px; height:5px; border-radius:3px; background:#b9d4e6; margin:4px auto 12px}
+.fa-sheet button.fa-opt{width:100%; border:none; background:none; font-family:var(--fa-font); font-size:15px; font-weight:700;
+  color:var(--fa-ink); padding:15px 4px; border-bottom:1px solid rgba(0,168,232,.1); cursor:pointer; display:flex; align-items:center; gap:12px}
+.fa-sheet button.fa-opt:last-of-type{border-bottom:none}
+.fa-sheet button.fa-opt:active{background:rgba(0,168,232,.08)}
+
+/* Toast */
+.fa-toast{position:absolute; left:50%; bottom:110px; transform:translateX(-50%) translateY(20px); z-index:60;
+  background:rgba(10,37,64,.88); color:#fff; font-size:13.5px; font-weight:700; padding:12px 22px; border-radius:999px;
+  opacity:0; pointer-events:none; transition:.3s; white-space:nowrap; box-shadow:0 8px 20px rgba(10,37,64,.35);
+  border:1px solid rgba(255,255,255,.25)}
+.fa-toast.show{opacity:1; transform:translateX(-50%)}
+
+/* 头像组 */
+.fa-avatars{display:flex; align-items:center}
+.fa-av{width:48px; height:48px; border-radius:50%; border:3px solid #fff; margin-left:-14px; flex:0 0 auto;
+  display:flex; align-items:center; justify-content:center; font-size:22px;
+  background:linear-gradient(160deg,#bfe6fb,#8fd0f5); box-shadow:var(--fa-shadow)}
+.fa-av:first-child{margin-left:0}
+.fa-avmore{width:48px;height:48px;border-radius:50%;border:3px solid #fff;margin-left:-14px;background:var(--fa-blue-deep);
+  color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+
+/* ============ 底部 Tab 栏 ============ */
+.fa-tabbar{position:absolute; left:16px; right:16px; bottom:18px; z-index:40;
+  background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(165,220,250,.6));
+  backdrop-filter:blur(18px) saturate(160%); -webkit-backdrop-filter:blur(18px) saturate(160%);
+  border-radius:26px; border:1px solid rgba(255,255,255,.95);
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.9), inset 0 -2px 4px rgba(0,168,232,.15), 0 12px 32px rgba(10,37,64,.22);
+  display:flex; padding:10px 8px 8px}
+.fa-tab{flex:1; border:none; background:none; font-family:var(--fa-font); cursor:pointer; position:relative; z-index:2;
+  display:flex; flex-direction:column; align-items:center; gap:3px; padding:8px 0 6px; color:#5b7a90;
+  font-size:11px; font-weight:800; transition:color .25s}
+.fa-tab .fa-ti{font-size:20px; line-height:1}
+.fa-tab.on{color:var(--fa-blue-deep)}
+.fa-bub{position:absolute; top:-24px; left:50%; font-size:16px; line-height:1; pointer-events:none; z-index:3;
+  opacity:0; transform:translateX(-50%) translateY(8px) scale(.5);
+  transition:opacity .3s, transform .4s cubic-bezier(.34,1.56,.64,1)}
+.fa-tab.on .fa-bub{opacity:1; transform:translateX(-50%) translateY(0) scale(1);
+  animation:faBubFloat 2.4s ease-in-out .4s infinite}
+@keyframes faBubFloat{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-5px)}}
+.fa-pill{position:absolute; top:6px; bottom:6px; z-index:1; border-radius:20px;
+  background:linear-gradient(180deg, rgba(0,168,232,.32), rgba(0,168,232,.1));
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:inset 0 1px 2px rgba(255,255,255,.8), 0 0 18px rgba(0,168,232,.35);
+  transition:left .32s cubic-bezier(.4,1.2,.5,1), width .32s cubic-bezier(.4,1.2,.5,1)}
+
+/* ============ 总览：色卡 / 字阶 / 索引 ============ */
+.fa-swatches{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+.fa-sw{border-radius:20px; height:96px; cursor:pointer; position:relative; overflow:hidden;
+  border:1px solid rgba(255,255,255,.85); box-shadow:var(--fa-hl), var(--fa-shadow);
+  display:flex; align-items:flex-end; padding:10px; transition:transform .15s}
+.fa-sw:active{transform:scale(.95)}
+.fa-sw span{font-size:10.5px; font-weight:800; background:rgba(255,255,255,.85); padding:3px 9px; border-radius:999px; color:var(--fa-ink)}
+.fa-type{border-bottom:1px dashed rgba(0,168,232,.25); padding:10px 0}
+.fa-type:last-child{border-bottom:none}
+.fa-idx{display:flex; align-items:center; gap:12px; padding:13px 4px; cursor:pointer; border-bottom:1px solid rgba(0,168,232,.12)}
+.fa-idx:last-child{border-bottom:none}
+.fa-idx .fa-n{width:30px;height:30px;border-radius:12px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:900;color:#fff;background:linear-gradient(180deg,#35c3f5,var(--fa-blue-deep));box-shadow:var(--fa-hl)}
+.fa-idx b{flex:1; font-size:14.5px}
+.fa-idx .fa-arrow{font-size:16px}
+</style>
+</head>
+
+<body>
+<div class="fa-phone" id="faPhone">
+  <div class="fa-screens">
+
+    <!-- ============ 1 · 总览 home ============ -->
+    <section class="fa-screen" data-tab="home">
+      <div class="fa-hero">
+        <span class="fa-fish">🐟</span>
+        <span class="fa-hero-tag">FRUTIGER AERO · 千禧复兴</span>
+        <h2>千禧复兴<span class="en">FRUTIGER AERO</span></h2>
+        <p>高光泽玻璃质感 · 透明水滴气泡<br>蓝天白云绿草，舒缓治愈的数字自然主义 🫧</p>
+        <button class="fa-btn" data-goto="buttons">去看看按钮 ✨</button>
+      </div>
+
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>色卡 · 点击复制</h3>
+        <div class="fa-swatches">
+          <div class="fa-sw" data-hex="#7EC8F7" style="background:linear-gradient(160deg,#a5dcfa,#7EC8F7)"><span>#7EC8F7</span></div>
+          <div class="fa-sw" data-hex="#E8F9FF" style="background:linear-gradient(160deg,#ffffff,#E8F9FF)"><span>#E8F9FF</span></div>
+          <div class="fa-sw" data-hex="#00A8E8" style="background:linear-gradient(160deg,#35c3f5,#00A8E8)"><span>#00A8E8</span></div>
+          <div class="fa-sw" data-hex="#7ED957" style="background:linear-gradient(160deg,#a5ec82,#7ED957)"><span>#7ED957</span></div>
+          <div class="fa-sw" data-hex="#0A2540" style="background:linear-gradient(160deg,#1d3a5f,#0A2540)"><span>#0A2540</span></div>
+          <div class="fa-sw" data-hex="#FFB800" style="background:linear-gradient(160deg,#ffd25e,#FFB800)"><span>#FFB800</span></div>
+        </div>
+      </div>
+
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>字阶</h3>
+        <div class="fa-type"><div style="font-size:28px;font-weight:900">标题 Heading · 28px</div></div>
+        <div class="fa-type"><div style="font-size:20px;font-weight:800">副标题 Subtitle · 20px</div></div>
+        <div class="fa-type"><div style="font-size:15px;font-weight:600">正文 Body · 15px 人文主义无衬线</div></div>
+        <div class="fa-type"><div style="font-size:12px;color:#4a6b8a">辅助 Caption · 12px 浅灰蓝</div></div>
+      </div>
+
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>INDEX 索引</h3>
+        <div class="fa-idx" data-goto="buttons"><span class="fa-n">1</span><b>按钮 Buttons</b><span class="fa-arrow">→</span></div>
+        <div class="fa-idx" data-goto="forms"><span class="fa-n">2</span><b>表单 Forms</b><span class="fa-arrow">→</span></div>
+        <div class="fa-idx" data-goto="showcase"><span class="fa-n">3</span><b>展示 Showcase</b><span class="fa-arrow">→</span></div>
+        <div class="fa-idx" data-goto="feedback"><span class="fa-n">4</span><b>反馈 Feedback</b><span class="fa-arrow">→</span></div>
+      </div>
+      <div style="text-align:center;position:relative;z-index:1;padding:8px 0 4px"><span class="fa-grass" style="font-size:26px;position:static">🌱🌿🌱</span></div>
+    </section>
+
+    <!-- ============ 2 · 按钮 buttons ============ -->
+    <section class="fa-screen" data-tab="buttons">
+      <div class="fa-pagehead"><h1>按钮 ✨</h1><p>高光玻璃质感 · 水滴圆角</p></div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>主按钮</h3>
+        <div class="fa-btn-row"><button class="fa-btn" data-toast="主按钮被点击啦">开始体验</button></div>
+        <h3 class="fa-sec" style="margin-top:14px"><span class="fa-dot"></span>变体</h3>
+        <div class="fa-btn-row">
+          <button class="fa-btn fa-green" data-toast="绿色自然按钮">自然绿</button>
+          <button class="fa-btn fa-ghost" data-toast="幽灵按钮">玻璃拟态</button>
+          <button class="fa-btn fa-outline" data-toast="描边按钮">描边</button>
+        </div>
+        <h3 class="fa-sec" style="margin-top:14px"><span class="fa-dot"></span>禁用</h3>
+        <div class="fa-btn-row"><button class="fa-btn" disabled>不可用状态</button></div>
+        <h3 class="fa-sec" style="margin-top:14px"><span class="fa-dot"></span>加载中</h3>
+        <div class="fa-btn-row"><button class="fa-btn" id="faLoadBtn">点我加载</button></div>
+        <div class="fa-hint">点击后变「加载中…」禁用 1.5s，恢复后弹出 Toast</div>
+      </div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>尺寸</h3>
+        <div class="fa-btn-row">
+          <button class="fa-btn fa-sm" data-toast="小按钮">小号 sm</button>
+          <button class="fa-btn" data-toast="默认按钮">默认</button>
+          <button class="fa-btn fa-lg" data-toast="大按钮">大号 lg</button>
+        </div>
+        <h3 class="fa-sec" style="margin-top:14px"><span class="fa-dot"></span>通栏</h3>
+        <button class="fa-btn fa-block" data-toast="通栏按钮">通栏 Block 按钮</button>
+      </div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>图标按钮</h3>
+        <div class="fa-btn-row">
+          <button class="fa-iconbtn" data-toast="💧 水滴">💧</button>
+          <button class="fa-iconbtn" data-toast="🐟 小鱼">🐟</button>
+          <button class="fa-iconbtn" data-toast="🌿 草叶">🌿</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 3 · 表单 forms ============ -->
+    <section class="fa-screen" data-tab="forms">
+      <div class="fa-pagehead"><h1>表单 📝</h1><p>圆润输入 · 水滴开关</p></div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>输入框</h3>
+        <div class="fa-field"><label class="fa-lab">昵称</label><input class="fa-input" placeholder="请输入你的昵称"></div>
+        <div class="fa-field"><label class="fa-lab">选择城市</label>
+          <select class="fa-select"><option>上海</option><option>北京</option><option>广州</option><option>深圳</option></select>
+        </div>
+        <div class="fa-field"><label class="fa-lab">多行文本</label><textarea class="fa-textarea" placeholder="说点什么吧…"></textarea></div>
+      </div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>开关</h3>
+        <div class="fa-switchrow"><div><div class="fa-t">气泡音效</div><div class="fa-d">界面交互伴随水泡声</div></div>
+          <button class="fa-switch on" role="switch" aria-checked="true"><span class="fa-track"><span class="fa-knob"></span></span></button></div>
+        <div class="fa-switchrow"><div><div class="fa-t">深海模式</div><div class="fa-d">夜晚护眼的深蓝主题</div></div>
+          <button class="fa-switch" role="switch" aria-checked="false"><span class="fa-track"><span class="fa-knob"></span></span></button></div>
+      </div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>复选</h3>
+        <div class="fa-checkrow on"><span class="fa-checkbox"></span>接收新品推送</div>
+        <div class="fa-checkrow"><span class="fa-checkbox"></span>同意用户协议</div>
+      </div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>滑杆</h3>
+        <div class="fa-sliderbox"><input type="range" class="fa-slider" min="0" max="100" value="50" style="--v:50%"><span class="fa-slider-val">50</span></div>
+        <div class="fa-hint">拖动更新 CSS 变量 --v 与数值显示</div>
+        <h3 class="fa-sec" style="margin-top:14px"><span class="fa-dot"></span>步进器</h3>
+        <div class="fa-stepper"><button data-step="-1">−</button><span class="fa-num">1</span><button data-step="1">＋</button></div>
+        <div class="fa-hint">范围 0–99</div>
+      </div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>分段选择</h3>
+        <div class="fa-seg"><button class="on">日</button><button>周</button><button>月</button></div>
+        <h3 class="fa-sec" style="margin-top:16px"><span class="fa-dot"></span>评分</h3>
+        <div class="fa-stars"><span class="fa-star on">★</span><span class="fa-star on">★</span><span class="fa-star on">★</span><span class="fa-star">★</span><span class="fa-star">★</span></div>
+        <div class="fa-hint">点击星星点亮评分</div>
+      </div>
+    </section>
+
+    <!-- ============ 4 · 展示 showcase ============ -->
+    <section class="fa-screen" data-tab="showcase">
+      <div class="fa-pagehead"><h1>展示 🫧</h1><p>数据 · 列表 · 状态</p></div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>进度条</h3>
+        <div class="fa-prog-lab"><span>云端同步</span><span>72%</span></div>
+        <div class="fa-prog"><i style="width:72%"></i></div>
+        <div class="fa-prog-lab"><span>草地生长</span><span>45%</span></div>
+        <div class="fa-prog fa-g"><i style="width:45%"></i></div>
+        <div class="fa-prog-lab"><span>水滴收集</span><span>90%</span></div>
+        <div class="fa-prog"><i style="width:90%"></i></div>
+      </div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>数据统计</h3>
+        <div class="fa-stats">
+          <div class="fa-stat"><b>1,248</b><span>气泡</span></div>
+          <div class="fa-stat"><b>96</b><span>小鱼</span></div>
+          <div class="fa-stat"><b>32</b><span>水滴</span></div>
+        </div>
+        <h3 class="fa-sec"><span class="fa-dot"></span>徽标</h3>
+        <div class="fa-badges"><span class="fa-badge">NEW</span><span class="fa-badge fa-g">生态</span><span class="fa-badge fa-soft">v2.0</span></div>
+      </div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>筛选芯片</h3>
+        <div class="fa-chips">
+          <button class="fa-chip on">全部</button><button class="fa-chip">天空</button><button class="fa-chip">海洋</button><button class="fa-chip">草地</button>
+        </div>
+        <h3 class="fa-sec" style="margin-top:16px"><span class="fa-dot"></span>顶部页签</h3>
+        <div class="fa-toptabs"><button class="on" data-pane="p1">动态</button><button data-pane="p2">发现</button><button data-pane="p3">我的</button></div>
+        <div class="fa-toppane on" id="p1">🌊 海洋动态：今天有 12 只小鱼游过你的首页，3 颗水滴落在了草叶上。</div>
+        <div class="fa-toppane" id="p2">🔭 发现：附近的蓝天白云正在缓慢飘移，适合发呆 5 分钟。</div>
+        <div class="fa-toppane" id="p3">👤 我的：你已收集 32 颗水滴，距离「水滴收藏家」还差 18 颗。</div>
+      </div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>列表</h3>
+        <div class="fa-row"><span class="fa-ico">💧</span><div class="fa-body"><b>晨露水滴</b><span>草叶上 · 刚刚</span></div><span class="fa-tag">NEW</span><span class="fa-arrow">›</span></div>
+        <div class="fa-row"><span class="fa-ico">🐟</span><div class="fa-body"><b>透明小鱼</b><span>浅滩 · 5 分钟前</span></div><span class="fa-arrow">›</span></div>
+        <div class="fa-row"><span class="fa-ico">🌿</span><div class="fa-body"><b>摇曳草叶</b><span>岸边 · 1 小时前</span></div><span class="fa-arrow">›</span></div>
+      </div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>手风琴</h3>
+        <div class="fa-acc open"><button class="fa-acc-head">什么是 Frutiger Aero？<span class="fa-plus">＋</span></button>
+          <div class="fa-acc-body"><p>千禧年代的数字自然主义美学：蓝天、绿草、玻璃高光与透明水滴，充满对科技的乐观想象。</p></div></div>
+        <div class="fa-acc"><button class="fa-acc-head">为什么用这么多圆角？<span class="fa-plus">＋</span></button>
+          <div class="fa-acc-body"><p>水滴感大圆角带来亲和与治愈，配合白色高光内描边，营造出湿润清透的玻璃质感。</p></div></div>
+      </div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>骨架屏</h3>
+        <div class="fa-skel" style="height:18px;width:60%"></div>
+        <div class="fa-skel" style="height:14px;width:90%"></div>
+        <div class="fa-skel" style="height:14px;width:75%"></div>
+      </div>
+      <div class="fa-card">
+        <div class="fa-empty"><span class="fa-big">🫧</span><b>还没有气泡</b><p>去首页放飞几只小气泡吧</p>
+          <button class="fa-btn fa-sm" data-goto="home">回到首页</button></div>
+      </div>
+    </section>
+
+    <!-- ============ 5 · 反馈 feedback ============ -->
+    <section class="fa-screen" data-tab="feedback">
+      <div class="fa-pagehead"><h1>反馈 🔔</h1><p>提示 · 弹窗 · 轻提醒</p></div>
+      <div class="fa-banner fa-info"><span class="fa-bi">💧</span><div><b>同步完成</b>你的 12 颗水滴已安全存入云端水库。</div></div>
+      <div class="fa-banner fa-ok"><span class="fa-bi">🌿</span><div><b>生态良好</b>草地生长进度 45%，小鱼们很活跃。</div></div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>弹窗与动作表</h3>
+        <div class="fa-btn-row">
+          <button class="fa-btn" id="faOpenModal">打开弹窗</button>
+          <button class="fa-btn fa-green" id="faOpenSheet">动作表</button>
+        </div>
+        <div class="fa-hint">点击遮罩或关闭按钮即可关闭</div>
+      </div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>Toast 演示</h3>
+        <div class="fa-btn-row">
+          <button class="fa-btn fa-ghost" id="faToast1">底部 Toast</button>
+          <button class="fa-btn fa-outline" id="faToast2">成功 Toast</button>
+        </div>
+        <div class="fa-hint">1.8s 自动消失</div>
+      </div>
+      <div class="fa-card">
+        <h3 class="fa-sec"><span class="fa-dot"></span>头像组</h3>
+        <div class="fa-avatars">
+          <span class="fa-av">🐟</span><span class="fa-av">💧</span><span class="fa-av">🌿</span><span class="fa-av">🫧</span><span class="fa-avmore">+9</span>
+        </div>
+        <div class="fa-hint">13 位小伙伴正在这片水域畅游</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 底部 Tab 栏 -->
+  <nav class="fa-tabbar" id="faTabbar">
+    <span class="fa-pill" id="faPill"></span>
+    <button class="fa-tab" data-tab="home"><span class="fa-ti">🏠</span><span class="fa-bub">🫧</span>总览</button>
+    <button class="fa-tab" data-tab="buttons"><span class="fa-ti">✨</span><span class="fa-bub">🫧</span>按钮</button>
+    <button class="fa-tab" data-tab="forms"><span class="fa-ti">📝</span><span class="fa-bub">🫧</span>表单</button>
+    <button class="fa-tab" data-tab="showcase"><span class="fa-ti">🫧</span><span class="fa-bub">🫧</span>展示</button>
+    <button class="fa-tab" data-tab="feedback"><span class="fa-ti">🔔</span><span class="fa-bub">🫧</span>反馈</button>
+  </nav>
+
+  <!-- 弹层 -->
+  <div class="fa-mask" id="faMask"></div>
+  <div class="fa-modal" id="faModal" role="dialog" aria-modal="true">
+    <span class="fa-mico">💧</span>
+    <h4>水滴收集成功</h4>
+    <p>你刚刚收集到一颗晨露水滴，<br>它正在你的水库里闪闪发光。</p>
+    <button class="fa-btn fa-block" id="faCloseModal">收下啦</button>
+  </div>
+  <div class="fa-sheet" id="faSheet">
+    <div class="fa-grab"></div>
+    <button class="fa-opt" data-toast="📤 已选择：分享给小鱼"><span>📤</span>分享给小鱼</button>
+    <button class="fa-opt" data-toast="💾 已选择：存入水库"><span>💾</span>存入水库</button>
+    <button class="fa-opt" data-toast="🗑 已选择：放生气泡"><span>🗑</span>放生气泡</button>
+  </div>
+  <div class="fa-toast" id="faToast"></div>
+</div>
+
+<script>
+(function(){
+  var phone=document.getElementById('faPhone');
+
+  /* ---------- 气泡生成 ---------- */
+  function bubbles(){
+    var host=document.querySelector('[data-tab="home"]');
+    for(var i=0;i<9;i++){
+      var b=document.createElement('span');
+      b.className='fa-bubble';
+      var s=8+Math.random()*26;
+      b.style.width=s+'px'; b.style.height=s+'px';
+      b.style.left=(Math.random()*92)+'%';
+      b.style.animationDuration=(7+Math.random()*9)+'s';
+      b.style.animationDelay=(-Math.random()*10)+'s';
+      host.appendChild(b);
+    }
+  }
+  bubbles();
+
+  /* ---------- Tab 切换 + pill ---------- */
+  var tabs=[].slice.call(document.querySelectorAll('.fa-tab'));
+  var screens=[].slice.call(document.querySelectorAll('.fa-screen'));
+  var pill=document.getElementById('faPill');
+  function movePill(btn){
+    pill.style.left=btn.offsetLeft+'px';
+    pill.style.width=btn.offsetWidth+'px';
+  }
+  function goTab(name,push){
+    tabs.forEach(function(t){t.classList.toggle('on',t.dataset.tab===name)});
+    screens.forEach(function(s){s.classList.toggle('active',s.dataset.tab===name)});
+    var btn=tabs.filter(function(t){return t.dataset.tab===name})[0];
+    if(btn) movePill(btn);
+    screens.forEach(function(s){if(s.dataset.tab===name) s.scrollTop=0});
+    if(push!==false){try{history.replaceState(null,'','?tab='+name)}catch(e){}}
+  }
+  tabs.forEach(function(t){t.addEventListener('click',function(){goTab(t.dataset.tab)})});
+  document.querySelectorAll('[data-goto]').forEach(function(el){
+    el.addEventListener('click',function(){goTab(el.dataset.goto)});
+  });
+  window.addEventListener('resize',function(){
+    var cur=tabs.filter(function(t){return t.classList.contains('on')})[0];
+    if(cur) movePill(cur);
+  });
+  var m=/[?&]tab=(home|buttons|forms|showcase|feedback)/.exec(location.search);
+  goTab(m?m[1]:'home',false);
+  requestAnimationFrame(function(){var cur=tabs.filter(function(t){return t.classList.contains('on')})[0];if(cur)movePill(cur)});
+
+  /* ---------- Toast ---------- */
+  var toastEl=document.getElementById('faToast'), toastT=null;
+  function toast(msg){
+    toastEl.textContent=msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastT);
+    toastT=setTimeout(function(){toastEl.classList.remove('show')},1800);
+  }
+  document.querySelectorAll('[data-toast]').forEach(function(el){
+    el.addEventListener('click',function(){closeAll(); toast(el.dataset.toast)});
+  });
+  document.getElementById('faToast1').addEventListener('click',function(){toast('这是一条底部 Toast')});
+  document.getElementById('faToast2').addEventListener('click',function(){toast('✅ 操作成功！')});
+
+  /* ---------- 弹窗 / 动作表 / 遮罩 ---------- */
+  var mask=document.getElementById('faMask'),
+      modal=document.getElementById('faModal'),
+      sheet=document.getElementById('faSheet');
+  function closeAll(){mask.classList.remove('show');modal.classList.remove('show');sheet.classList.remove('show')}
+  document.getElementById('faOpenModal').addEventListener('click',function(){mask.classList.add('show');modal.classList.add('show')});
+  document.getElementById('faOpenSheet').addEventListener('click',function(){mask.classList.add('show');sheet.classList.add('show')});
+  document.getElementById('faCloseModal').addEventListener('click',closeAll);
+  mask.addEventListener('click',closeAll);
+
+  /* ---------- 色卡复制 ---------- */
+  document.querySelectorAll('.fa-sw').forEach(function(sw){
+    sw.addEventListener('click',function(){
+      var hex=sw.dataset.hex;
+      function done(ok){toast(ok?('已复制 '+hex):('色值 '+hex))}
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(hex).then(function(){done(true)},function(){done(false)});
+      }else done(false);
+    });
+  });
+
+  /* ---------- 加载按钮 ---------- */
+  var loadBtn=document.getElementById('faLoadBtn');
+  loadBtn.addEventListener('click',function(){
+    if(loadBtn.disabled) return;
+    loadBtn.disabled=true; loadBtn.textContent='加载中…';
+    setTimeout(function(){
+      loadBtn.disabled=false; loadBtn.textContent='点我加载';
+      toast('✅ 加载完成');
+    },1500);
+  });
+
+  /* ---------- 开关 / 复选 ---------- */
+  document.querySelectorAll('.fa-switch').forEach(function(sw){
+    sw.addEventListener('click',function(){
+      sw.classList.toggle('on');
+      sw.setAttribute('aria-checked',sw.classList.contains('on'));
+    });
+  });
+  document.querySelectorAll('.fa-checkrow').forEach(function(r){
+    r.addEventListener('click',function(){r.classList.toggle('on')});
+  });
+
+  /* ---------- 滑杆 ---------- */
+  document.querySelectorAll('.fa-slider').forEach(function(sl){
+    var val=sl.parentElement.querySelector('.fa-slider-val');
+    function upd(){
+      var p=(sl.value-sl.min)/(sl.max-sl.min)*100;
+      sl.style.setProperty('--v',p+'%');
+      if(val) val.textContent=sl.value;
+    }
+    sl.addEventListener('input',upd); upd();
+  });
+
+  /* ---------- 步进器 ---------- */
+  document.querySelectorAll('.fa-stepper').forEach(function(st){
+    var num=st.querySelector('.fa-num'), v=parseInt(num.textContent,10)||0;
+    st.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click',function(){
+        v=Math.min(99,Math.max(0,v+parseInt(b.dataset.step,10)));
+        num.textContent=v;
+      });
+    });
+  });
+
+  /* ---------- 分段 / 芯片 / 顶部页签（单选） ---------- */
+  function single(container,sel){
+    var box=document.querySelector(container);
+    if(!box) return;
+    box.querySelectorAll(sel).forEach(function(b){
+      b.addEventListener('click',function(){
+        box.querySelectorAll(sel).forEach(function(x){x.classList.remove('on')});
+        b.classList.add('on');
+      });
+    });
+  }
+  single('.fa-seg','button');
+  document.querySelectorAll('.fa-chips').forEach(function(box){
+    box.querySelectorAll('.fa-chip').forEach(function(c){
+      c.addEventListener('click',function(){
+        box.querySelectorAll('.fa-chip').forEach(function(x){x.classList.remove('on')});
+        c.classList.add('on');
+      });
+    });
+  });
+  document.querySelectorAll('.fa-toptabs').forEach(function(box){
+    box.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click',function(){
+        box.querySelectorAll('button').forEach(function(x){x.classList.remove('on')});
+        b.classList.add('on');
+        document.querySelectorAll('.fa-toppane').forEach(function(p){
+          p.classList.toggle('on',p.id===b.dataset.pane);
+        });
+      });
+    });
+  });
+
+  /* ---------- 评分 ---------- */
+  document.querySelectorAll('.fa-stars').forEach(function(box){
+    var stars=box.querySelectorAll('.fa-star');
+    stars.forEach(function(s,i){
+      s.addEventListener('click',function(){
+        stars.forEach(function(x,j){x.classList.toggle('on',j<=i)});
+        toast('评分：'+(i+1)+' 星 ⭐');
+      });
+    });
+  });
+
+  /* ---------- 手风琴 ---------- */
+  document.querySelectorAll('.fa-acc').forEach(function(acc){
+    var head=acc.querySelector('.fa-acc-head'), body=acc.querySelector('.fa-acc-body');
+    if(acc.classList.contains('open')) body.style.maxHeight=body.scrollHeight+'px';
+    head.addEventListener('click',function(){
+      var open=acc.classList.toggle('open');
+      body.style.maxHeight=open?body.scrollHeight+'px':'0px';
+    });
+  });
+})();
+</script>
+</body>
+</html>

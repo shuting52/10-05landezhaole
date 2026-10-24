@@ -595,6 +595,7 @@ private fun AppearanceDialog(
     onClearBg: () -> Unit
 ) {
     val appearanceState by viewModel.uiState.collectAsStateWithLifecycle()
+    var showOriginals by remember { mutableStateOf(false) }
     com.example.ui.components.LiquidGlassDialogShell(
         onDismissRequest = onDismiss,
         title = "🎨 外观与背景",
@@ -688,8 +689,20 @@ private fun AppearanceDialog(
                     valueRange = 0.8f..1.2f
                 )
             }
+            // 设计原稿（原封不动）：2026-10-24 用户要求原稿原样呈现，不翻译
+            AeroSectionTitle(text = "设计原稿（原封不动）")
+            SettingsClickableItem(
+                title = "查看设计原稿",
+                subtitle = "液态玻璃 / 程序坞 / AERO 原稿 + 演示页 + 源码，原样呈现",
+                icon = Icons.Filled.Palette,
+                iconColor = Color(0xFF8A3BFF),
+                onClick = { showOriginals = true }
+            )
             Spacer(modifier = Modifier.height(8.dp))
         }
+    }
+    if (showOriginals) {
+        com.example.ui.components.OriginalsViewer(onDismiss = { showOriginals = false })
     }
 }
 

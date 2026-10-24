@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Dock · 复刻自 21st.dev</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body { height:100%; }
+body { font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif; background:radial-gradient(120% 90% at 50% 0%, #1c2a44 0%, #0b1220 55%, #060a14 100%); color:#e8eef7; min-height:100vh; display:flex; flex-direction:column; align-items:center; overflow:hidden; user-select:none; }
+header { margin-top:64px; text-align:center; padding:0 24px; }
+header .tag { display:inline-block; font-size:12px; color:#9fb3d1; border:1px solid rgba(159,179,209,.28); border-radius:999px; padding:4px 12px; margin-bottom:14px; letter-spacing:.5px; background:rgba(255,255,255,.04); }
+header h1 { font-size:30px; font-weight:800; letter-spacing:2px; }
+header h1 .dot { color:#5aa9ff; }
+header p { margin-top:10px; font-size:13px; color:#8fa3c2; line-height:1.7; }
+.stage { flex:1; width:100%; display:flex; align-items:flex-end; justify-content:center; padding-bottom:48px; }
+.dock-wrap { display:flex; flex-direction:column; align-items:center; }
+.tip { margin-bottom:14px; font-size:12px; color:#cfe0f7; background:rgba(20,28,46,.85); border:1px solid rgba(255,255,255,.14); border-radius:8px; padding:5px 12px; opacity:0; transform:translateY(6px); transition:opacity .18s, transform .18s; pointer-events:none; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+.tip.show { opacity:1; transform:translateY(0); }
+.dock { display:flex; align-items:flex-end; gap:10px; padding:14px 16px; max-width:calc(100vw - 24px); background:rgba(255,255,255,.12); -webkit-backdrop-filter:blur(22px) saturate(1.6); backdrop-filter:blur(22px) saturate(1.6); border:1px solid rgba(255,255,255,.22); border-radius:26px; box-shadow:0 18px 50px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.25); }
+.app { position:relative; display:flex; flex-direction:column; align-items:center; cursor:pointer; transform-origin:bottom center; will-change:transform; }
+.icon { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:28px; box-shadow:0 6px 16px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.35); border:1px solid rgba(255,255,255,.2); }
+.dot-run { width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,.85); margin-top:5px; box-shadow:0 0 6px rgba(255,255,255,.6); }
+.sep { width:1px; align-self:stretch; background:rgba(255,255,255,.25); margin:6px 2px; border-radius:1px; }
+footer { padding-bottom:26px; font-size:11px; color:#5b6c88; }
+@media (max-width:480px){ .dock{ gap:5px; padding:8px 10px; border-radius:18px; } .icon{ width:32px; height:32px; font-size:18px; border-radius:9px; } .sep{ margin:4px 1px; } }
+</style>
+</head>
+<body>
+<header>
+<div class="tag">复刻自 21st.dev · Dock</div>
+<h1>macOS 风格程序坞<span class="dot">.</span></h1>
+<p>把鼠标移到图标上，靠近的图标会像放大镜一样鼓起来<br>（触屏可直接点按试试）</p>
+</header>
+<div class="stage">
+<div class="dock-wrap">
+<div class="tip" id="tip">访达</div>
+<div class="dock" id="dock">
+<div class="app" data-label="访达"><div class="icon" style="background:linear-gradient(135deg,#7db4ff,#2f6fe4)">📁</div><div class="dot-run"></div></div>
+<div class="app" data-label="浏览器"><div class="icon" style="background:linear-gradient(135deg,#5eead4,#0ea5e9)">🧭</div><div class="dot-run"></div></div>
+<div class="app" data-label="邮件"><div class="icon" style="background:linear-gradient(135deg,#a5b4fc,#6366f1)">✉️</div></div>
+<div class="app" data-label="音乐"><div class="icon" style="background:linear-gradient(135deg,#fda4af,#e11d48)">🎵</div><div class="dot-run"></div></div>
+<div class="sep"></div>
+<div class="app" data-label="照片"><div class="icon" style="background:linear-gradient(135deg,#fde68a,#f59e0b)">🌅</div></div>
+<div class="app" data-label="相机"><div class="icon" style="background:linear-gradient(135deg,#c4b5fd,#8b5cf6)">📷</div></div>
+<div class="app" data-label="备忘录"><div class="icon" style="background:linear-gradient(135deg,#fef08a,#eab308)">📝</div></div>
+<div class="sep"></div>
+<div class="app" data-label="终端"><div class="icon" style="background:linear-gradient(135deg,#4b5563,#111827);color:#4ade80;font-size:22px;font-weight:700">>_</div></div>
+<div class="app" data-label="设置"><div class="icon" style="background:linear-gradient(135deg,#9ca3af,#374151)">⚙️</div></div>
+<div class="app" data-label="废纸篓"><div class="icon" style="background:linear-gradient(135deg,#e2e8f0,#94a3b8)">🗑️</div></div>
+</div>
+</div>
+</div>
+<footer>纯手写 CSS · 零框架 · 零外部依赖</footer>
+<script>
+(function(){
+  var dock = document.getElementById('dock');
+  var tip = document.getElementById('tip');
+  var apps = Array.prototype.slice.call(dock.querySelectorAll('.app'));
+  var MAX = 1.8, SIGMA = 62; // 放大上限与高斯宽度
+  function gauss(d){ return Math.exp(-(d*d)/(2*SIGMA*SIGMA)); }
+  function render(mx){
+    apps.forEach(function(a){
+      var r = a.getBoundingClientRect();
+      var cx = r.left + r.width/2;
+      var d = Math.abs(mx - cx);
+      var s = 1 + (MAX-1) * gauss(d);
+      var lift = (s-1) * 34; // 放大时顺势上浮
+      a.style.transform = 'scale(' + s.toFixed(3) + ') translateY(' + (-lift).toFixed(1) + 'px)';
+    });
+  }
+  function reset(){
+    apps.forEach(function(a){ a.style.transform = 'scale(1) translateY(0)'; });
+    tip.classList.remove('show');
+  }
+  dock.addEventListener('mousemove', function(e){ render(e.clientX); });
+  dock.addEventListener('mouseleave', reset);
+  // 触屏：按住拖动同样有放大镜
+  dock.addEventListener('touchmove', function(e){
+    if(e.touches.length){ render(e.touches[0].clientX); }
+  }, {passive:true});
+  dock.addEventListener('touchend', reset);
+  // 中文 label tooltip
+  apps.forEach(function(a){
+    a.addEventListener('mouseenter', function(){
+      tip.textContent = a.getAttribute('data-label');
+      tip.classList.add('show');
+    });
+  });
+  // 小屏收紧：高斯宽度按图标间距自适应
+  function adapt(){
+    if(apps.length > 1){
+      var r0 = apps[0].getBoundingClientRect(), r1 = apps[1].getBoundingClientRect();
+      SIGMA = Math.max(46, (r1.left - r0.left) * 0.85);
+    }
+  }
+  window.addEventListener('resize', adapt);
+  adapt();
+})();
+</script>
+</body>
+</html>
