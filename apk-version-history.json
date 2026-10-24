@@ -1,0 +1,367 @@
+[
+  {
+    "file": "dist/apk/doubao-qushuiyin-3.6.apk",
+    "version": "doubao",
+    "build": "qushuiyin"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.6.6-1792171997.apk",
+    "version": "1.6.6",
+    "build": "1792171997"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.6.7-1792196951.apk",
+    "version": "1.6.7",
+    "build": "1792196951"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.6.8-1792198617.apk",
+    "version": "1.6.8",
+    "build": "1792198617"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.6.9-1792200542.apk",
+    "version": "1.6.9",
+    "build": "1792200542"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.0-1792216154.apk",
+    "version": "1.7.0",
+    "build": "1792216154"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.1-1792231445.apk",
+    "version": "1.7.1",
+    "build": "1792231445"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.10-1792256171.apk",
+    "version": "1.7.10",
+    "build": "1792256171"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.11-1792283814.apk",
+    "version": "1.7.11",
+    "build": "1792283814"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.12-1792285913.apk",
+    "version": "1.7.12",
+    "build": "1792285913"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.13-1792314654.apk",
+    "version": "1.7.13",
+    "build": "1792314654"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.14-1792319174.apk",
+    "version": "1.7.14",
+    "build": "1792319174"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.15-1792322030.apk",
+    "version": "1.7.15",
+    "build": "1792322030"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.16-1792323641.apk",
+    "version": "1.7.16",
+    "build": "1792323641"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.17-1792325592.apk",
+    "version": "1.7.17",
+    "build": "1792325592"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.18-1792338192.apk",
+    "version": "1.7.18",
+    "build": "1792338192"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.19-1792347508.apk",
+    "version": "1.7.19",
+    "build": "1792347508"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.2-1792235795.apk",
+    "version": "1.7.2",
+    "build": "1792235795"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.20-1792348997.apk",
+    "version": "1.7.20",
+    "build": "1792348997"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.21-1792366626.apk",
+    "version": "1.7.21",
+    "build": "1792366626"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.22-1792373657.apk",
+    "version": "1.7.22",
+    "build": "1792373657"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.23-1792375686.apk",
+    "version": "1.7.23",
+    "build": "1792375686"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.24-1792547039.apk",
+    "version": "1.7.24",
+    "build": "1792547039"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.25-1792632141.apk",
+    "version": "1.7.25",
+    "build": "1792632141"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.26-1792634475.apk",
+    "version": "1.7.26",
+    "build": "1792634475"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.27-1792635106.apk",
+    "version": "1.7.27",
+    "build": "1792635106"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.28-1792640273.apk",
+    "version": "1.7.28",
+    "build": "1792640273"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.29-1792642733.apk",
+    "version": "1.7.29",
+    "build": "1792642733"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.3-1792237365.apk",
+    "version": "1.7.3",
+    "build": "1792237365"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.30-1792644552.apk",
+    "version": "1.7.30",
+    "build": "1792644552"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.31-1792657942.apk",
+    "version": "1.7.31",
+    "build": "1792657942"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.32-1792663390.apk",
+    "version": "1.7.32",
+    "build": "1792663390"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.32-1792663747.apk",
+    "version": "1.7.32",
+    "build": "1792663747"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.33-1792667693.apk",
+    "version": "1.7.33",
+    "build": "1792667693"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.34-1792669234.apk",
+    "version": "1.7.34",
+    "build": "1792669234"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.35-1792676436.apk",
+    "version": "1.7.35",
+    "build": "1792676436"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.36-1792679546.apk",
+    "version": "1.7.36",
+    "build": "1792679546"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.37-1792680909.apk",
+    "version": "1.7.37",
+    "build": "1792680909"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.38-1792681452.apk",
+    "version": "1.7.38",
+    "build": "1792681452"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.39-1792682837.apk",
+    "version": "1.7.39",
+    "build": "1792682837"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.4-1792239239.apk",
+    "version": "1.7.4",
+    "build": "1792239239"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.40-1792684350.apk",
+    "version": "1.7.40",
+    "build": "1792684350"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.41-1792690884.apk",
+    "version": "1.7.41",
+    "build": "1792690884"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.42-1792719373.apk",
+    "version": "1.7.42",
+    "build": "1792719373"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.42-1792719801.apk",
+    "version": "1.7.42",
+    "build": "1792719801"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.43-1792721356.apk",
+    "version": "1.7.43",
+    "build": "1792721356"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.44-1792722171.apk",
+    "version": "1.7.44",
+    "build": "1792722171"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.44-1792722601.apk",
+    "version": "1.7.44",
+    "build": "1792722601"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.45-1792723734.apk",
+    "version": "1.7.45",
+    "build": "1792723734"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.46-1792724466.apk",
+    "version": "1.7.46",
+    "build": "1792724466"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.47-1792726230.apk",
+    "version": "1.7.47",
+    "build": "1792726230"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.48-1792728054.apk",
+    "version": "1.7.48",
+    "build": "1792728054"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.48-1792728514.apk",
+    "version": "1.7.48",
+    "build": "1792728514"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.49-1792729614.apk",
+    "version": "1.7.49",
+    "build": "1792729614"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.5-1792241251.apk",
+    "version": "1.7.5",
+    "build": "1792241251"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.50-1792731140.apk",
+    "version": "1.7.50",
+    "build": "1792731140"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.51-1792733097.apk",
+    "version": "1.7.51",
+    "build": "1792733097"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.52-1792735929.apk",
+    "version": "1.7.52",
+    "build": "1792735929"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.53-1792736886.apk",
+    "version": "1.7.53",
+    "build": "1792736886"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.53-1792737224.apk",
+    "version": "1.7.53",
+    "build": "1792737224"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.54-1792755499.apk",
+    "version": "1.7.54",
+    "build": "1792755499"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.55-1792758128.apk",
+    "version": "1.7.55",
+    "build": "1792758128"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.55-1792758975.apk",
+    "version": "1.7.55",
+    "build": "1792758975"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.56-1792759921.apk",
+    "version": "1.7.56",
+    "build": "1792759921"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.57-1792761057.apk",
+    "version": "1.7.57",
+    "build": "1792761057"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.58-1792769787.apk",
+    "version": "1.7.58",
+    "build": "1792769787"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.59-1792771043.apk",
+    "version": "1.7.59",
+    "build": "1792771043"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.6-1792242904.apk",
+    "version": "1.7.6",
+    "build": "1792242904"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.60-1792801903.apk",
+    "version": "1.7.60",
+    "build": "1792801903"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.61-1792803717.apk",
+    "version": "1.7.61",
+    "build": "1792803717"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.7-1792245506.apk",
+    "version": "1.7.7",
+    "build": "1792245506"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.8-1792248264.apk",
+    "version": "1.7.8",
+    "build": "1792248264"
+  },
+  {
+    "file": "dist/apk/landezhao-v1.7.9-1792253208.apk",
+    "version": "1.7.9",
+    "build": "1792253208"
+  }
+]
