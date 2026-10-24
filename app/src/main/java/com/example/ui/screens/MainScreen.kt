@@ -355,17 +355,8 @@ fun MainScreen(
                             )
                         }
 
-                        // 4. Search Box
-                        item(span = { GridItemSpan(3) }) {
-                            SearchSection(
-                                query = uiState.searchQuery,
-                                onQueryChange = { viewModel.updateSearchQuery(it) },
-                                componentThemes = uiState.activeUiverseState.componentThemes,
-                                // v1.2.6：搜索框占位文字可云端覆盖
-                                placeholderText = uiState.cloudUiText?.searchPlaceholder
-                            )
-                        }
-
+                        // 2026-10-24：用户要求删除首页搜索框（图一），搜索入口随之移除，
+                        // 找站点改走分类浏览；如需恢复搜索，在此重新挂回 SearchSection 即可
                         // 5. Result Counter
                         item(span = { GridItemSpan(3) }) {
                             Row(
@@ -958,11 +949,8 @@ private fun HeaderBrandSection(
 
                 Column {
                     AnimatedBrandTitle(text = cloudAppName)
-                    Spacer(modifier = Modifier.height(2.dp))
-                    DynamicOnlineCountWidget(
-                        totalResourceCount = totalResourceCount,
-                        primaryColor = primaryColor
-                    )
+                    // 2026-10-24：用户要求删除“收录 X+ 华夏宝藏”行（图二），
+                    // DynamicOnlineCountWidget 调用与函数一并删除
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -1757,149 +1745,7 @@ private fun FlipHalfSlice(
     }
 }
 
-/**
- * 真实感在线人数动态增减组件：按时段拟真、微小波动、呼吸绿点与即时增减浮标
- */
-@Composable
-fun DynamicOnlineCountWidget(
-    totalResourceCount: Int,
-    primaryColor: Color,
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-    val hour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
-    // 根据一天中不同时间段计算真实基准在线人数（白天约1200-1400，晚高峰约1500-1800，深夜约400-600）
-    val baseCount = remember(hour) {
-        when (hour) {
-            in 0..6 -> 460 + (hour * 40)
-            in 7..11 -> 880 + ((hour - 7) * 90)
-            in 12..17 -> 1260 + ((hour - 12) * 40)
-            in 18..22 -> 1520 + ((hour - 18) * 55)
-            else -> 1050
-        }
-    }
-
-    var onlineCount by remember { mutableIntStateOf(baseCount + Random.nextInt(-18, 22)) }
-    var lastDelta by remember { mutableIntStateOf(0) }
-
-    // 每 2.8 ~ 4.8 秒自然增减波动 (+1, -1, +2, -2, +3...)
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(Random.nextLong(2800, 4800))
-            val delta = Random.nextInt(-3, 5)
-            if (delta != 0) {
-                lastDelta = delta
-                onlineCount = (onlineCount + delta).coerceIn(300, 2800)
-            }
-        }
-    }
-
-    // 实时状态绿点呼吸动效
-    val pulseTransition = rememberInfiniteTransition(label = "pulse_live_dot")
-    val dotAlpha by pulseTransition.animateFloat(
-        initialValue = 0.45f,
-        targetValue = 1.0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "dot_alpha"
-    )
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier
-            .clip(RoundedCornerShape(6.dp))
-            // v1.1.15：禁止点击在线人数（不再弹出 Toast 弹窗，用户要求）
-            .padding(vertical = 1.dp)
-    ) {
-        Text(
-            text = "收录 $totalResourceCount+ 华夏宝藏",
-            fontSize = 10.5.sp,
-            fontWeight = FontWeight.Bold,
-            color = LocalThemeUiColors.current.primary
-        )
-    }
-}
-
-// ---------------- SEARCH SECTION ----------------
-@Composable
-private fun SearchSection(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    // v1.1.4 主题分支：组件级定制（search_box）
-    componentThemes: Map<String, String> = emptyMap(),
-    // v1.2.6：搜索框占位文字（控制台 UI 文本可覆盖）
-    placeholderText: String? = null
-) {
-    val uiverse = LocalUiverseState.current
-    val primaryColor = MaterialTheme.colorScheme.primary
-    // v1.1.4：组件定制覆盖（search_box）
-    val searchComp = com.example.ui.components.ComponentThemeResolver.resolve(componentThemes, "search_box")
-    val inputShape = when (uiverse.inputStyle) {
-        InputStylePreset.CYBER_TERMINAL -> RoundedCornerShape(topStart = 0.dp, topEnd = 12.dp, bottomEnd = 0.dp, bottomStart = 12.dp)
-        InputStylePreset.GLASS_INSET -> RoundedCornerShape(16.dp)
-        InputStylePreset.NEO_BRUTALIST_BOX -> RoundedCornerShape(6.dp)
-        InputStylePreset.CUSTOM -> RoundedCornerShape(uiverse.customStyle?.cornerRadius ?: 28.dp)
-        else -> RoundedCornerShape(28.dp)
-    }.let { if (searchComp != null) RoundedCornerShape(searchComp.cornerRadius) else it }
-    val containerColor = when (uiverse.inputStyle) {
-        InputStylePreset.CYBER_TERMINAL -> Color(0xFF0F101A)
-        InputStylePreset.GLASS_INSET -> Color(0x55FFFFFF)
-        InputStylePreset.NEO_BRUTALIST_BOX -> Color.White
-        InputStylePreset.CUSTOM -> uiverse.customStyle?.backgroundColor ?: Color.White.copy(alpha = 0.56f)
-        else -> Color.White.copy(alpha = 0.56f)
-    }.let { if (searchComp?.backgroundColor != null) searchComp.backgroundColor else it }
-    val focusedBorderColor = when (uiverse.inputStyle) {
-        InputStylePreset.CYBER_TERMINAL -> Color(0xFF00F0FF)
-        InputStylePreset.NEO_BRUTALIST_BOX -> Color.Black
-        InputStylePreset.CUSTOM -> uiverse.customStyle?.borderColor?.takeIf { it != Color.Transparent } ?: Color.White.copy(alpha = 0.92f)
-        else -> Color.White.copy(alpha = 0.92f)
-    }
-    val unfocusedBorderColor = when (uiverse.inputStyle) {
-        InputStylePreset.CYBER_TERMINAL -> Color(0xFF00F0FF).copy(alpha = 0.4f)
-        InputStylePreset.NEO_BRUTALIST_BOX -> Color.Black
-        InputStylePreset.GLASS_INSET -> Color(0x88FFFFFF)
-        else -> Color.White.copy(alpha = 0.78f)
-    }
-
-    OutlinedTextField(
-        value = query,
-        onValueChange = onQueryChange,
-        placeholder = {
-            Text(placeholderText?.ifBlank { "🔍 探索全网精选资源、AI、实用工具、影视..." } ?: "🔍 探索全网精选资源、AI、实用工具、影视...", fontSize = 13.sp, maxLines = 1)
-        },
-        leadingIcon = {
-            Icon(Icons.Filled.Search, contentDescription = "搜索", tint = LocalThemeUiColors.current.primary)
-        },
-        trailingIcon = {
-            // v1.1.15：固定占位宽度——避免输入时清除按钮出现导致输入框宽度突变、光标跳到文字前
-            Box(
-                modifier = Modifier.size(48.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                if (query.isNotEmpty()) {
-                    IconButton(onClick = { onQueryChange("") }) {
-                        Icon(Icons.Filled.Clear, contentDescription = "清除")
-                    }
-                }
-            }
-        },
-        singleLine = true,
-        shape = inputShape,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = focusedBorderColor,
-            unfocusedBorderColor = unfocusedBorderColor,
-            focusedContainerColor = containerColor,
-            unfocusedContainerColor = containerColor
-        ),
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        modifier = Modifier
-            .fillMaxWidth()
-            .testTag("search_text_input")
-    )
-}
+// 2026-10-24：SearchSection 已随首页搜索框删除（图一）
 
 // ---------------- CATEGORY TAGS EXPANSION SHEET CONTENT ----------------
 @Composable
