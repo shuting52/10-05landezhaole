@@ -255,7 +255,7 @@ fun CustomRadioBottomNav(
         modifier
             .fillMaxWidth()
             .navigationBarsPadding()
-            .padding(horizontal = 24.dp, vertical = 6.dp)
+            .padding(horizontal = 24.dp, vertical = 3.dp)
             .shadow(14.dp, RoundedCornerShape(navCorner), ambientColor = Color.Black.copy(alpha = 0.18f))
             .clip(RoundedCornerShape(navCorner))
             // 长按时背景更透明，玻璃质感增强
@@ -279,7 +279,7 @@ fun CustomRadioBottomNav(
                 else themeColors.primary.copy(alpha = 0.12f),
                 RoundedCornerShape(navCorner)
             )
-            .padding(horizontal = 6.dp, vertical = 5.dp)
+            .padding(horizontal = 6.dp, vertical = 3.dp)
     } else {
         // 渐变按钮样式：透明容器，tab 本体为渐变按钮
         modifier
@@ -449,22 +449,19 @@ fun CustomRadioBottomNav(
                             .border(1.dp, themeColors.primary.copy(alpha = 0.15f), pillShape)
                     }
                 }
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(pillShape)
-                        .then(itemBg())
-                        .clickable { onTabSelected(item.tab) }
-                        .padding(vertical = if (glassStyle) 3.dp else 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.TopCenter
                 ) {
-                    // 2026-10-24 Frutiger Aero：选中 tab 顶部浮动气泡 🫧（设计稿 .fa-bub，小尺寸不撑高）
-                    if (isSelected && isAeroBar && glassStyle) {
-                        com.example.ui.theme.AeroBubble(
-                            modifier = Modifier.offset(y = (-2).dp),
-                            size = 12.dp
-                        )
-                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(pillShape)
+                            .then(itemBg())
+                            .clickable { onTabSelected(item.tab) }
+                            .padding(vertical = if (glassStyle) 3.dp else 8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                     // 假 z-index:9999 层：图标与红点徽标绘制在玻璃之上，保持锐利不被折射
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
@@ -505,7 +502,15 @@ fun CustomRadioBottomNav(
                             maxLines = 1
                         )
                     }
-                }
+                    } // Column 闭合
+                    // 2026-10-24 Frutiger Aero：选中 tab 顶部浮动气泡（绝对定位，不占布局高度）
+                    if (isSelected && isAeroBar && glassStyle) {
+                        com.example.ui.theme.AeroBubble(
+                            modifier = Modifier.align(Alignment.TopCenter).offset(y = (-10).dp),
+                            size = 12.dp
+                        )
+                    }
+                } // Box 闭合
             }
         }
     }
