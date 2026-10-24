@@ -1,16 +1,16 @@
 {
   "version": {
-    "code": 288,
-    "name": "1.7.78",
+    "code": 289,
+    "name": "1.7.79",
     "changelog": [
-      "✨ v1.7.78 更新来啦～",
-      "fix: 外观入口改回锦囊象限第4卡，删重复标题与嵌套卡片"
+      "✨ v1.7.79 更新来啦～",
+      "fix: 图三Appteka搜索下载同步独立窗口下载安装；图一raw下载镜像扩至8个、全部404时明示文件不存在；删设置页备案卡"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.78-1792831251.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.78-1792831251.apk",
-    "lastBuildSha": "86a765ee97defbf16472a15d70779796a5ca7ef3",
-    "apkSize": 23996900
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.79-1792837013.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.79-1792837013.apk",
+    "lastBuildSha": "0f1ce959f1d1d9fdd8ce7e10f347925e77a2a627",
+    "apkSize": 23996904
   },
   "home": {
     "categories": [
@@ -24328,10 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.78 已上线",
+    "title": "懒得找了 v1.7.79 已上线",
     "changelog": [
-      "✨ v1.7.78 更新来啦～",
-      "fix: 外观入口改回锦囊象限第4卡，删重复标题与嵌套卡片"
+      "✨ v1.7.79 更新来啦～",
+      "fix: 图三Appteka搜索下载同步独立窗口下载安装；图一raw下载镜像扩至8个、全部404时明示文件不存在；删设置页备案卡"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24393,10 +24393,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.78",
-      "code": 288,
-      "at": "2026-10-24T08:40:57Z",
-      "sha": "86a765ee97defbf16472a15d70779796a5ca7ef3"
+      "version": "1.7.79",
+      "code": 289,
+      "at": "2026-10-24T10:16:59Z",
+      "sha": "0f1ce959f1d1d9fdd8ce7e10f347925e77a2a627"
     }
   },
   "_ai_notice": "内容由AI生成"
