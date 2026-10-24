@@ -6,6 +6,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.keyframes
@@ -126,7 +127,9 @@ fun CustomRadioBottomNav(
     badges: Map<AppBottomTab, String> = emptyMap(),
     // 2026-10-23 jicun 式底栏外观：隐藏文字标识 / 液态玻璃风格（关 = 渐变按钮样式）
     hideLabels: Boolean = false,
-    glassStyle: Boolean = true
+    glassStyle: Boolean = true,
+    // 2026-10-24：底栏主题：auto=跟随主题 / glass=液态玻璃 / gradient=渐变按钮 / light_dock=浅色毛玻璃程序坞
+    bottomBarStyle: String = "auto"
 ) {
     // v1.4.13：图4风格重写 —— 白色圆角容器 + 黄色高亮选中 pill（主题跟随）
     val themeColors = com.example.ui.theme.LocalThemeUiColors.current
@@ -191,9 +194,29 @@ fun CustomRadioBottomNav(
         )
     )
 
+    // 2026-10-24：浅色毛玻璃程序坞（用户 Dock HTML）优先于主题，独立渲染后直接返回
+    if (bottomBarStyle == "light_dock") {
+        LightDockBottomBar(
+            navItems = navItems,
+            selectedTab = selectedTab,
+            onTabSelected = onTabSelected,
+            badges = badges,
+            hideLabels = hideLabels,
+            modifier = modifier
+        )
+        return
+    }
+
+    // 2026-10-24：显式底栏主题覆盖旧 glass 开关；auto 时沿用旧逻辑
+    val effectiveGlassStyle = when (bottomBarStyle) {
+        "glass" -> true
+        "gradient" -> false
+        else -> glassStyle
+    }
+
     // 2026-10-24：皮纹鞣制底栏（设计稿 g95）—— 边缘到边缘的深棕皮革条，
-    // 与玻璃胶囊逻辑完全不同，独立渲染后直接返回
-    if (themeColors.designStyle == DesignStyle.LEATHER) {
+    // 与玻璃胶囊逻辑完全不同，独立渲染后直接返回；仅跟随主题时生效
+    if (bottomBarStyle == "auto" && themeColors.designStyle == DesignStyle.LEATHER) {
         LeatherBottomBar(
             navItems = navItems,
             selectedTab = selectedTab,
@@ -207,7 +230,7 @@ fun CustomRadioBottomNav(
 
     // 2026-10-23：选中态文字跟随主题 onPrimary（暗黑街头/星芒深色字保证对比度）
     // 2026-10-23：液态玻璃风格下选中态落在白色玻璃胶囊上，改用深色保证对比
-    val selectedTextColor = if (glassStyle) Color(0xFF1E293B) else themeColors.onPrimary
+    val selectedTextColor = if (effectiveGlassStyle) Color(0xFF1E293B) else themeColors.onPrimary
     val unselectedColor = themeColors.text.copy(alpha = 0.45f)
 
     // 2026-10-23：长按放大 + 透明玻璃质感
@@ -266,7 +289,7 @@ fun CustomRadioBottomNav(
     }
     val isBrutalistBar = themeColors.designStyle == DesignStyle.NEO_BRUTALISM
     val isAeroBar = themeColors.designStyle == DesignStyle.AERO
-    val barModifier = if (glassStyle) {
+    val barModifier = if (effectiveGlassStyle) {
         modifier
             .fillMaxWidth()
             .navigationBarsPadding()
@@ -319,7 +342,7 @@ fun CustomRadioBottomNav(
     // 2026-10-24：改成 Apple iOS 26 Liquid Glass 风格 —— 更通透、高光克制
     // 2026-10-24：Frutiger Aero 下用蓝色玻璃胶囊（设计稿 .fa-pill）
     val isAeroPill = themeColors.designStyle == DesignStyle.AERO
-    val liquidPillBg = if (glassStyle) {
+    val liquidPillBg = if (effectiveGlassStyle) {
         Modifier.drawBehind {
             val tabW = size.width / navItems.size
             val corner = navPillCorner.toPx()
@@ -451,7 +474,7 @@ fun CustomRadioBottomNav(
                 val pillShape = RoundedCornerShape(navPillCorner)
                 // 渐变按钮样式：选中 = 渐变底白字，未选中 = 浅底（玻璃风格下选中态由滑动胶囊呈现）
                 val itemBg: @Composable () -> Modifier = {
-                    if (glassStyle) {
+                    if (effectiveGlassStyle) {
                         Modifier // 液态玻璃胶囊已在底层滑动，此处不再画各自背景
                     } else if (isSelected) {
                         Modifier.background(
@@ -474,7 +497,7 @@ fun CustomRadioBottomNav(
                             .clip(pillShape)
                             .then(itemBg())
                             .clickable { onTabSelected(item.tab) }
-                            .padding(vertical = if (glassStyle) 3.dp else 8.dp),
+                            .padding(vertical = if (effectiveGlassStyle) 3.dp else 8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                     // 假 z-index:9999 层：图标与红点徽标绘制在玻璃之上，保持锐利不被折射
@@ -519,13 +542,143 @@ fun CustomRadioBottomNav(
                     }
                     } // Column 闭合
                     // 2026-10-24 Frutiger Aero：选中 tab 顶部浮动气泡（绝对定位，不占布局高度）
-                    if (isSelected && isAeroBar && glassStyle) {
+                    if (isSelected && isAeroBar && effectiveGlassStyle) {
                         com.example.ui.theme.AeroBubble(
                             modifier = Modifier.align(Alignment.TopCenter).offset(y = (-10).dp),
                             size = 12.dp
                         )
                     }
                 } // Box 闭合
+            }
+        }
+    }
+}
+
+/**
+ * 2026-10-24：浅色毛玻璃程序坞底栏（用户 Dock HTML 原样翻译，移动端适配说明）：
+ * - 悬浮胶囊：白 55% 底、1dp 白 90% 亮边、26dp 圆角、18dp 阴影、左右 12dp 悬空
+ * - 图标：渐变底方块（每 Tab 一色，对标 HTML 的粉/紫/绿/黄）+ 15dp 圆角 + 白 70% 描边
+ * - 选中放大：52dp（未选中 44dp，弹簧动画），上浮 4dp，底部运行点；无悬停提示，改用文字标签
+ * - 分组分隔：软件 / 工具箱之间 1dp 竖线（对标 HTML 的 .sep）
+ * - 注意：Compose 没有 Web 的 backdrop-filter 真实背景模糊，毛玻璃以半透明白近似，
+ *   不声称与 HTML 的 blur(22px) saturate(1.6) 完全一致
+ */
+@Composable
+private fun LightDockBottomBar(
+    navItems: List<BottomNavTabItem>,
+    selectedTab: AppBottomTab,
+    onTabSelected: (AppBottomTab) -> Unit,
+    badges: Map<AppBottomTab, String>,
+    hideLabels: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(horizontal = 12.dp, vertical = 3.dp)
+            .shadow(18.dp, RoundedCornerShape(26.dp), ambientColor = Color.Black.copy(alpha = 0.18f))
+            .clip(RoundedCornerShape(26.dp))
+            .background(Color.White.copy(alpha = 0.55f))
+            .border(1.dp, Color.White.copy(alpha = 0.9f), RoundedCornerShape(26.dp))
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.Bottom
+        ) {
+            navItems.forEachIndexed { idx, item ->
+                if (idx == 2) {
+                    Box(
+                        modifier = Modifier
+                            .width(1.dp)
+                            .height(40.dp)
+                            .background(Color(0xFF0F172A).copy(alpha = 0.15f))
+                    )
+                }
+                val isSelected = selectedTab == item.tab
+                val iconSize by animateDpAsState(
+                    targetValue = if (isSelected) 52.dp else 44.dp,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessMedium
+                    ),
+                    label = "dockIconSize"
+                )
+                val iconGradient = when (item.tab) {
+                    AppBottomTab.HOME -> listOf(Color(0xFFFDA4AF), Color(0xFFE11D48))
+                    AppBottomTab.SOFTWARE -> listOf(Color(0xFFC4B5FD), Color(0xFF8B5CF6))
+                    AppBottomTab.TOOLBOX -> listOf(Color(0xFF6EE7B7), Color(0xFF059669))
+                    AppBottomTab.SETTINGS -> listOf(Color(0xFFFCD34D), Color(0xFFF59E0B))
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { onTabSelected(item.tab) }
+                        .padding(vertical = 2.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Box(
+                            modifier = Modifier
+                                .offset(y = if (isSelected) (-4).dp else 0.dp)
+                                .size(iconSize)
+                                .shadow(6.dp, RoundedCornerShape(15.dp))
+                                .clip(RoundedCornerShape(15.dp))
+                                .background(Brush.linearGradient(iconGradient))
+                                .border(1.dp, Color.White.copy(alpha = 0.7f), RoundedCornerShape(15.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = item.icon,
+                                contentDescription = item.title,
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                        badges[item.tab]?.let { badgeText ->
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .offset(x = 8.dp, y = (-6).dp)
+                                    .size(16.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFFFF3B30))
+                                    .border(1.5.dp, Color.White, CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = badgeText,
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                    }
+                    if (isSelected) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(5.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFF64748B))
+                        )
+                    }
+                    if (!hideLabels) {
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = item.title,
+                            fontSize = 10.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            color = if (isSelected) Color(0xFF1F2937) else Color(0xFF64748B),
+                            maxLines = 1
+                        )
+                    }
+                }
             }
         }
     }

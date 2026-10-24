@@ -115,7 +115,6 @@ import com.example.ui.viewmodel.NavViewModel
 import com.example.ui.theme.AeroCard
 import com.example.ui.theme.AeroSectionTitle
 import com.example.ui.theme.AeroSegmented
-import com.example.ui.theme.AeroSwitch
 import com.example.ui.theme.AeroSlider
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -661,13 +660,29 @@ private fun AppearanceDialog(
                     onClick = onClearBg
                 )
             }
-            // 底栏样式
+            // 底栏样式：2026-10-24 由单开关改为四选一（新增浅色毛玻璃程序坞）
             AeroSectionTitle(text = "底栏样式")
-            AeroSwitch(
-                checked = appearanceState.glassBottomBar,
-                onCheckedChange = { viewModel.setGlassBottomBar(it) },
-                title = "底栏液态玻璃风格",
-                desc = "关闭则使用渐变按钮样式"
+            val bottomBarOptions = listOf("跟随主题", "液态玻璃", "渐变按钮", "毛玻璃坞")
+            val bottomBarIds = listOf("auto", "glass", "gradient", "light_dock")
+            val bottomBarSelected = bottomBarIds.indexOf(appearanceState.bottomBarStyle).coerceAtLeast(0)
+            AeroSegmented(
+                options = bottomBarOptions,
+                selectedIndex = bottomBarSelected,
+                onSelect = { idx ->
+                    bottomBarIds.getOrNull(idx)?.let { viewModel.setBottomBarStyle(it) }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = when (bottomBarSelected) {
+                    1 -> "液态玻璃：现有滑动玻璃胶囊底栏"
+                    2 -> "渐变按钮：选中为渐变底白字"
+                    3 -> "浅色毛玻璃程序坞：你发的 Dock HTML，白 55% 毛玻璃、26dp 圆角、图标渐变底、选中放大"
+                    else -> "跟随主题：千禧复兴用液态玻璃胶囊，皮纹鞣制用皮革条"
+                },
+                fontSize = 12.sp,
+                color = Color(0xFF5B7A90),
+                modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
             )
             // 界面缩放
             AeroSectionTitle(text = "界面缩放")

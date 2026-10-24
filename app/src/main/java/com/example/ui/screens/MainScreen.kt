@@ -306,7 +306,8 @@ fun MainScreen(
                         onTabSelected = { viewModel.switchTab(it) },
                         uiText = uiState.cloudUiText,
                         hideLabels = uiState.hideTabLabels,
-                        glassStyle = uiState.glassBottomBar
+                        glassStyle = uiState.glassBottomBar,
+                        bottomBarStyle = uiState.bottomBarStyle
                     )
                 }
             ) { paddingValues ->

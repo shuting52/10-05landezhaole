@@ -95,7 +95,9 @@ data class NavUiState(
     val appThemeId: String = com.example.ui.theme.DEFAULT_APP_THEME_ID,
     val uiScale: Float = 1f,          // 界面缩放 0.8–1.3
     val hideTabLabels: Boolean = false, // 底栏文字标识隐藏
-    val glassBottomBar: Boolean = true  // 底栏液态玻璃风格（关 = 渐变按钮样式）
+    val glassBottomBar: Boolean = true, // 底栏液态玻璃风格（关 = 渐变按钮样式，旧设置兼容用）
+    // 2026-10-24：底栏主题：auto=跟随主题 / glass=液态玻璃 / gradient=渐变按钮 / light_dock=浅色毛玻璃程序坞
+    val bottomBarStyle: String = "auto"
 )
 
 class NavViewModel(
@@ -1050,11 +1052,17 @@ class NavViewModel(
                 ?: com.example.ui.theme.DEFAULT_APP_THEME_ID
             val validTheme = if (com.example.ui.theme.APP_THEMES.any { it.id == savedTheme }) savedTheme
                 else com.example.ui.theme.DEFAULT_APP_THEME_ID
+            // 2026-10-24：底栏主题持久化；老用户无 bottom_bar_style 时按旧 glass 开关迁移
+            val savedStyleRaw = if (prefs.contains("bottom_bar_style")) {
+                prefs.getString("bottom_bar_style", "auto") ?: "auto"
+            } else if (prefs.getBoolean("glass_bottom_bar", true)) "glass" else "gradient"
+            val savedStyle = if (savedStyleRaw in listOf("auto", "glass", "gradient", "light_dock")) savedStyleRaw else "auto"
             _uiState.value = _uiState.value.copy(
                 appThemeId = validTheme,
                 uiScale = prefs.getFloat("ui_scale", 1f).coerceIn(0.8f, 1.3f),
                 hideTabLabels = prefs.getBoolean("hide_tab_labels", false),
-                glassBottomBar = prefs.getBoolean("glass_bottom_bar", true)
+                glassBottomBar = prefs.getBoolean("glass_bottom_bar", true),
+                bottomBarStyle = savedStyle
             )
         } catch (_: Exception) { }
     }
@@ -1083,6 +1091,15 @@ class NavViewModel(
     fun setGlassBottomBar(glass: Boolean) {
         _uiState.value = _uiState.value.copy(glassBottomBar = glass)
         try { appearancePrefs()?.edit()?.putBoolean("glass_bottom_bar", glass)?.apply() } catch (_: Exception) { }
+    }
+
+    /** 切换底栏主题（外观弹窗调用，立即生效并持久化，非法 id 回退跟随主题） */
+    fun setBottomBarStyle(style: String) {
+        try {
+            val valid = if (style in listOf("auto", "glass", "gradient", "light_dock")) style else "auto"
+            _uiState.value = _uiState.value.copy(bottomBarStyle = valid)
+            appearancePrefs()?.edit()?.putString("bottom_bar_style", valid)?.apply()
+        } catch (_: Exception) { }
     }
 }
 
