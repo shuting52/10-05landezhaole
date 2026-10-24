@@ -1045,13 +1045,27 @@ class NavViewModel(
     fun restoreAppearance() {
         try {
             val prefs = appearancePrefs() ?: return
-            // 2026-10-24：主题已删除，只用极简默认
+            // 2026-10-24：恢复主题持久化（千禧复兴/皮纹鞣制二选一，非法 id 回退默认）
+            val savedTheme = prefs.getString("app_theme_id", com.example.ui.theme.DEFAULT_APP_THEME_ID)
+                ?: com.example.ui.theme.DEFAULT_APP_THEME_ID
+            val validTheme = if (com.example.ui.theme.APP_THEMES.any { it.id == savedTheme }) savedTheme
+                else com.example.ui.theme.DEFAULT_APP_THEME_ID
             _uiState.value = _uiState.value.copy(
-                appThemeId = com.example.ui.theme.DEFAULT_APP_THEME_ID,
+                appThemeId = validTheme,
                 uiScale = prefs.getFloat("ui_scale", 1f).coerceIn(0.8f, 1.3f),
                 hideTabLabels = prefs.getBoolean("hide_tab_labels", false),
                 glassBottomBar = prefs.getBoolean("glass_bottom_bar", true)
             )
+        } catch (_: Exception) { }
+    }
+
+    /** 切换主题（设置页调用，立即生效并持久化） */
+    fun setAppTheme(themeId: String) {
+        try {
+            val validId = if (com.example.ui.theme.APP_THEMES.any { it.id == themeId }) themeId
+                else com.example.ui.theme.DEFAULT_APP_THEME_ID
+            _uiState.value = _uiState.value.copy(appThemeId = validId)
+            appearancePrefs()?.edit()?.putString("app_theme_id", validId)?.apply()
         } catch (_: Exception) { }
     }
 

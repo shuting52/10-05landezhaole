@@ -68,6 +68,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
@@ -189,6 +190,20 @@ fun CustomRadioBottomNav(
             petVoice = "设置一下更顺手~ ⚙"
         )
     )
+
+    // 2026-10-24：皮纹鞣制底栏（设计稿 g95）—— 边缘到边缘的深棕皮革条，
+    // 与玻璃胶囊逻辑完全不同，独立渲染后直接返回
+    if (themeColors.designStyle == DesignStyle.LEATHER) {
+        LeatherBottomBar(
+            navItems = navItems,
+            selectedTab = selectedTab,
+            onTabSelected = onTabSelected,
+            badges = badges,
+            hideLabels = hideLabels,
+            modifier = modifier
+        )
+        return
+    }
 
     // 2026-10-23：选中态文字跟随主题 onPrimary（暗黑街头/星芒深色字保证对比度）
     // 2026-10-23：液态玻璃风格下选中态落在白色玻璃胶囊上，改用深色保证对比
@@ -511,6 +526,170 @@ fun CustomRadioBottomNav(
                         )
                     }
                 } // Box 闭合
+            }
+        }
+    }
+}
+
+/**
+ * 2026-10-24：皮纹鞣制底栏（设计稿 g95 原样翻译）
+ * - 边缘到边缘深棕渐变（#3a2c20 → #2a2018），无圆角无浮动
+ * - 顶部 2dp 金棕虚线缝线（dashed border）
+ * - 噪点皮纹 + 45°/-45° 斜纹编织（Canvas 绘制，极低透明度）
+ * - 未选中 #a08776，选中 #f0d9b8 + 图标圆形金棕描边 + 淡金底
+ */
+@Composable
+private fun LeatherBottomBar(
+    navItems: List<BottomNavTabItem>,
+    selectedTab: AppBottomTab,
+    onTabSelected: (AppBottomTab) -> Unit,
+    badges: Map<AppBottomTab, String>,
+    hideLabels: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val leatherTop = Color(0xFF3A2C20)
+    val leatherBottom = Color(0xFF2A2018)
+    val stitch = Color(0xFFDCB482).copy(alpha = 0.45f)
+    val unselected = Color(0xFFA08776)
+    val selected = Color(0xFFF0D9B8)
+    val selectedRing = Color(0xFFD8B98A)
+    val selectedBg = Color(0xFFD8B98A).copy(alpha = 0.12f)
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .background(
+                Brush.verticalGradient(listOf(leatherTop, leatherBottom))
+            )
+            // 皮纹纹理层：噪点 + 斜纹编织（drawBehind，不占布局）
+            .drawBehind {
+                // 1. 斜纹编织：45° / -45° 细线，极低透明度
+                val step = 8.dp.toPx()
+                val lineAlpha = 0.02f
+                var x = -size.height
+                while (x < size.width + size.height) {
+                    drawLine(
+                        color = Color.White.copy(alpha = lineAlpha),
+                        start = Offset(x, 0f),
+                        end = Offset(x + size.height, size.height),
+                        strokeWidth = 2.dp.toPx()
+                    )
+                    drawLine(
+                        color = Color.Black.copy(alpha = 0.06f),
+                        start = Offset(x + step / 2, 0f),
+                        end = Offset(x + step / 2 + size.height, size.height),
+                        strokeWidth = 2.dp.toPx()
+                    )
+                    x += step * 2
+                }
+                // 2. 噪点皮纹：伪随机小点（固定种子，渲染稳定）
+                val dotStep = 6.dp.toPx()
+                var row = 0
+                var y = 0f
+                while (y < size.height) {
+                    var col = 0
+                    var px = 0f
+                    while (px < size.width) {
+                        val hash = (row * 31 + col * 17) % 7
+                        if (hash < 3) {
+                            drawCircle(
+                                color = Color.White.copy(alpha = 0.03f),
+                                radius = 1.dp.toPx(),
+                                center = Offset(px + (hash * 1.5f).dp.toPx(), y + (hash * 0.8f).dp.toPx())
+                            )
+                        }
+                        col++
+                        px += dotStep
+                    }
+                    row++
+                    y += dotStep
+                }
+                // 3. 顶部虚线缝线（2dp 金棕 dashed）
+                drawLine(
+                    color = stitch,
+                    start = Offset(0f, 1.dp.toPx()),
+                    end = Offset(size.width, 1.dp.toPx()),
+                    strokeWidth = 2.dp.toPx(),
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(8.dp.toPx(), 6.dp.toPx()), 0f)
+                )
+                // 4. 内阴影：顶部 8dp 黑色渐隐（皮革压边感）
+                drawRect(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Color.Black.copy(alpha = 0.6f), Color.Transparent),
+                        startY = 0f,
+                        endY = 8.dp.toPx()
+                    ),
+                    size = Size(size.width, 8.dp.toPx())
+                )
+            }
+            .padding(horizontal = 6.dp, vertical = 10.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            navItems.forEach { item ->
+                val isSelected = selectedTab == item.tab
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { onTabSelected(item.tab) }
+                        .padding(vertical = 6.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        // 选中态：圆形金棕描边 + 淡金底（设计稿 .tab.on .ic）
+                        val iconModifier = if (isSelected) {
+                            Modifier
+                                .size(34.dp)
+                                .clip(CircleShape)
+                                .background(selectedBg)
+                                .border(2.dp, selectedRing, CircleShape)
+                                .padding(4.dp)
+                        } else {
+                            Modifier.size(26.dp)
+                        }
+                        Icon(
+                            imageVector = item.icon,
+                            contentDescription = item.title,
+                            tint = if (isSelected) selected else unselected,
+                            modifier = iconModifier
+                        )
+                        badges[item.tab]?.let { badgeText ->
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .offset(x = 8.dp, y = (-6).dp)
+                                    .size(16.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFFFF3B30))
+                                    .border(1.5.dp, Color.White, CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = badgeText,
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                    }
+                    if (!hideLabels) {
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Text(
+                            text = item.title,
+                            fontSize = 11.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            color = if (isSelected) selected else unselected,
+                            maxLines = 1
+                        )
+                    }
+                }
             }
         }
     }

@@ -114,6 +114,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.ui.viewmodel.NavViewModel
 import com.example.ui.theme.AeroCard
 import com.example.ui.theme.AeroSectionTitle
+import com.example.ui.theme.AeroSegmented
 import com.example.ui.theme.AeroSwitch
 import com.example.ui.theme.AeroSlider
 import androidx.compose.ui.text.font.FontWeight
@@ -490,6 +491,24 @@ fun SettingsScreen(
                 modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
             )
             AeroCard {
+                // 2026-10-24：主题切换（千禧复兴 / 皮纹鞣制）
+                AeroSectionTitle(text = "主题风格")
+                val themeOptions = com.example.ui.theme.APP_THEMES.map { it.name }
+                val themeSelected = com.example.ui.theme.APP_THEMES.indexOfFirst { it.id == appearanceState.appThemeId }.coerceAtLeast(0)
+                AeroSegmented(
+                    options = themeOptions,
+                    selectedIndex = themeSelected,
+                    onSelect = { idx ->
+                        com.example.ui.theme.APP_THEMES.getOrNull(idx)?.let { viewModel.setAppTheme(it.id) }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    text = com.example.ui.theme.APP_THEMES.getOrNull(themeSelected)?.colors?.designStyle?.desc ?: "",
+                    fontSize = 12.sp,
+                    color = Color(0xFF5B7A90),
+                    modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+                )
                 AeroSectionTitle(text = "背景图片 / 视频")
                 SettingsClickableItem(
                     title = "选择背景图片",

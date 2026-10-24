@@ -53,7 +53,8 @@ enum class DesignStyle(val displayName: String, val desc: String) {
     GUOCHAO("Guochao 国潮风", "经典中国传统色调与东方典雅韵味。"),
     CYBERPUNK("Cyberpunk 赛博朋克", "高饱和度霓虹与深邃暗夜科技感。"),
     JICUN("Jicun 即存", "即存 jicun 原生主题：半透明白卡片 + 20dp 超椭圆圆角，无描边无阴影。"),
-    AERO("Aero 千禧复兴", "Frutiger Aero：蓝天白云、玻璃高光、水滴气泡的千禧年数字自然主义。")
+    AERO("Aero 千禧复兴", "Frutiger Aero：蓝天白云、玻璃高光、水滴气泡的千禧年数字自然主义。"),
+    LEATHER("Leather 皮纹鞣制", "深棕鞣制皮革：噪点皮纹 + 斜纹编织 + 虚线缝线，暖金点缀的复古手工质感。")
 }
 
 val LocalUiverseState = staticCompositionLocalOf { ActiveUiverseState() }
