@@ -52,7 +52,8 @@ enum class DesignStyle(val displayName: String, val desc: String) {
     FELT_CRAFT("Felt Craft 毛毡风", "温暖质朴的羊毛毡手作质感，缝线虚线边缘，温润燕麦羊毛色系。"),
     GUOCHAO("Guochao 国潮风", "经典中国传统色调与东方典雅韵味。"),
     CYBERPUNK("Cyberpunk 赛博朋克", "高饱和度霓虹与深邃暗夜科技感。"),
-    JICUN("Jicun 即存", "即存 jicun 原生主题：半透明白卡片 + 20dp 超椭圆圆角，无描边无阴影。")
+    JICUN("Jicun 即存", "即存 jicun 原生主题：半透明白卡片 + 20dp 超椭圆圆角，无描边无阴影。"),
+    AERO("Aero 千禧复兴", "Frutiger Aero：蓝天白云、玻璃高光、水滴气泡的千禧年数字自然主义。")
 }
 
 val LocalUiverseState = staticCompositionLocalOf { ActiveUiverseState() }
