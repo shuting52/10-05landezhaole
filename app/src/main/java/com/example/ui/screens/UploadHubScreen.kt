@@ -610,12 +610,18 @@ private object WaveDownloadManager {
     private var dlTitle = ""
     private var dlUrl = ""
     private var dlIsApk = false
+    // 2026-10-24：Appteka 直链强制带 Appteka UA + Referer（直链 host 不一定含 appteka，
+    // 只认 host 补头会在 CDN 域名上丢头被防盗链拒；此前图三直下就是无条件带头才通的）
+    private var forceApptekaHeaders = false
     private var targetFile: File? = null
     // 测速用
     private var lastProgressTime = 0L
     private var lastProgressBytes = 0L
 
-    fun start(context: Context, title: String, url: String, fileName: String?, isApk: Boolean) {
+    fun start(
+        context: Context, title: String, url: String, fileName: String?, isApk: Boolean,
+        forceApptekaHeaders: Boolean = false
+    ) {
         // 正在下载中则忽略重复触发
         if (_ui.value.visible && _ui.value.state == WaveDlState.DOWNLOADING) return
         cancelTask()
@@ -623,6 +629,7 @@ private object WaveDownloadManager {
         dlTitle = title
         dlUrl = url
         dlIsApk = isApk
+        this.forceApptekaHeaders = forceApptekaHeaders
         val safeName = (fileName?.ifBlank { null } ?: url.substringAfterLast('/').ifBlank { "download.bin" })
             .replace(" ", "_")
             .replace(Regex("[\\\\/:*?\"<>|]"), "_")
@@ -717,10 +724,13 @@ private object WaveDownloadManager {
             progress = 0f, downloadedBytes = 0L, totalBytes = 0L
         )
         CoroutineScope(Dispatchers.IO).launch {
-            // 构建镜像 URL 列表：原站 → gh-proxy → jsDelivr
+            // 构建镜像 URL 列表：原站 → gh-proxy → jsDelivr → 更多代理/GitHub 原生 raw
             val mirrorUrls = buildMirrorUrls(url)
             var lastError: Exception? = null
             var failedMirrorIdx = -1
+            // 2026-10-24：记下每个镜像的 HTTP 码——全部 404 时说明文件本身不在仓库，
+            // 再怎么重试/换镜像都没用，报错必须说清楚而不是只报最后一个镜像的 404
+            val httpCodes = mutableListOf<Int>()
             var downloadOk = false
             for ((idx, tryUrl) in mirrorUrls.withIndex()) {
                 try {
@@ -730,6 +740,8 @@ private object WaveDownloadManager {
                 } catch (e: Exception) {
                     lastError = e
                     failedMirrorIdx = idx
+                    Regex("HTTP (\\d+)").find(e.message ?: "")?.groupValues?.getOrNull(1)
+                        ?.toIntOrNull()?.let { httpCodes.add(it) }
                     // 换下一个镜像前重置进度
                     withContext(Dispatchers.Main) {
                         _ui.value = _ui.value.copy(progress = 0f, downloadedBytes = 0L, totalBytes = 0L)
@@ -764,10 +776,18 @@ private object WaveDownloadManager {
                 val failUrl = mirrorUrls.getOrNull(failedMirrorIdx) ?: url
                 val host = try { java.net.URL(failUrl).host } catch (_: Exception) { "未知地址" }
                 val mirrorInfo = if (mirrorUrls.size > 1) "（镜像${failedMirrorIdx + 1}/${mirrorUrls.size}）" else ""
+                // raw 链接且全部镜像都 404：文件在仓库里根本不存在，重试无意义
+                val isRaw = try { java.net.URL(url).host } catch (_: Exception) { "" } == "raw.githubusercontent.com"
+                val all404 = isRaw && httpCodes.isNotEmpty() && httpCodes.all { it == 404 }
+                val errorText = if (all404) {
+                    "下载失败：文件在仓库中不存在（${mirrorUrls.size} 个镜像均返回 404），请确认云端下载链接是否有效"
+                } else {
+                    "下载失败 [$host]$mirrorInfo：${e?.message ?: "网络异常"}"
+                }
                 withContext(Dispatchers.Main) {
                     _ui.value = _ui.value.copy(
                         state = WaveDlState.FAILED,
-                        error = "下载失败 [$host]$mirrorInfo：${e?.message ?: "网络异常"}",
+                        error = errorText,
                         speedBps = 0.0
                     )
                 }
@@ -776,13 +796,14 @@ private object WaveDownloadManager {
     }
 
     // 2026-10-24：为 raw.githubusercontent.com 构建镜像 URL 列表
+    // 顺序说明：前 3 个保持原顺序（原站 → gh-proxy → jsDelivr，已通的文件不被拖慢），
+    // 后 5 个是新增兜底——jsDelivr 对大文件会直接 404、原站国内常被墙，多几个代理才有机会通
     private fun buildMirrorUrls(url: String): List<String> {
         val host = try { java.net.URL(url).host } catch (_: Exception) { return listOf(url) }
         if (host != "raw.githubusercontent.com") return listOf(url)
         val list = mutableListOf(url)
         // 镜像 2：gh-proxy
         list.add("https://gh-proxy.com/" + url)
-        // 镜像 3：jsDelivr（格式转换：raw.githubusercontent.com/user/repo/branch/path → cdn.jsdelivr.net/gh/user/repo@branch/path）
         try {
             val u = java.net.URL(url)
             val parts = u.path.trim('/').split('/')
@@ -792,10 +813,19 @@ private object WaveDownloadManager {
                 val repo = parts[1]
                 val branch = parts[2]
                 val restPath = parts.subList(3, parts.size).joinToString("/")
+                // 镜像 3：jsDelivr（格式转换：raw.githubusercontent.com/user/repo/branch/path → cdn.jsdelivr.net/gh/user/repo@branch/path）
                 list.add("https://cdn.jsdelivr.net/gh/$user/$repo@$branch/$restPath")
+                // 镜像 4-5：另外两个前缀式代理（与 gh-proxy 同款用法）
+                list.add("https://ghfast.top/" + url)
+                list.add("https://ghproxy.net/" + url)
+                list.add("https://mirror.ghproxy.com/" + url)
+                // 镜像 6：GitHub 原生 raw 跳转（绕开 raw.githubusercontent.com 直连）
+                list.add("https://github.com/$user/$repo/raw/$branch/$restPath")
+                // 镜像 7：gitmirror（项目网络层既有通道：raw.gitmirror.com/user/repo/branch/path）
+                list.add("https://raw.gitmirror.com/$user/$repo/$branch/$restPath")
             }
         } catch (_: Exception) {
-            // 转换失败就跳过 jsDelivr
+            // 转换失败就只保留前缀式代理
         }
         return list
     }
@@ -808,7 +838,7 @@ private object WaveDownloadManager {
         // 2026-10-24：请求头修复 —— v1.7.61 带 Appteka UA + Referer，v1.7.63 改走
         // WaveDownloadManager 时弄丢了，源站防盗链直接拒绝（用户问"1.7.61怎么可以"的根因）
         val reqHost = runCatching { java.net.URL(url).host }.getOrNull().orEmpty()
-        if (url.contains("appteka", ignoreCase = true)) {
+        if (forceApptekaHeaders || url.contains("appteka", ignoreCase = true)) {
             conn.setRequestProperty("User-Agent", com.example.download.APPTEKA_UA)
             conn.setRequestProperty("Referer", com.example.download.APPTEKA_REFERER)
         } else {
@@ -1264,22 +1294,25 @@ private fun downloadAndInstallResourceInApp(
 }
 
 /**
- * 下载 Appteka 真实 APK 并在应用内直接拉起真实安装（免调用手机 DownloadManager）
+ * 下载 Appteka 真实 APK：2026-10-24 起与软件区同步走独立窗口下载安装
+ * （WaveDownloadDialog：进度环 + 暂停/取消/重试 + 下完自动拉起安装）。
+ * 注意：直链 host 不一定含 appteka，所以强制带 Appteka UA + Referer——
+ * 多线程那路只认 host 补头，兜底单线程靠 forceApptekaHeaders 补齐，防盗链不断。
+ * 直链解析期间先给一个 Toast 兜底反馈，拿到直链后弹窗接管进度。
  */
 private fun downloadApptekaApk(
     context: Context,
-    item: ApptekaAppItem,
-    onProgress: (Boolean) -> Unit = {},
-    onCompleted: () -> Unit = {}
+    item: ApptekaAppItem
 ) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
-            withContext(Dispatchers.Main) { onProgress(true) }
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "正在获取 ${item.label} 的下载直链…", Toast.LENGTH_SHORT).show()
+            }
             val directUrl = item.directApkUrl ?: fetchApptekaDownloadUrl(item.appId)
             item.directApkUrl = directUrl
             if (directUrl.isNullOrBlank()) {
                 withContext(Dispatchers.Main) {
-                    onProgress(false)
                     Toast.makeText(context, "未能获取到下载直链，请稍后重试", Toast.LENGTH_SHORT).show()
                 }
                 return@launch
@@ -1290,51 +1323,14 @@ private fun downloadApptekaApk(
                 .replace(Regex("[\\\\/:*?\"<>|]"), "_")
 
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "🚀 正在应用内直接高速下载 ${item.label}…", Toast.LENGTH_SHORT).show()
-            }
-
-            // 保存到应用缓存私有目录供 FileProvider 实时真实安装
-            val downloadDir = File(context.cacheDir, "apk_downloads").apply { mkdirs() }
-            val apkFile = File(downloadDir, safeName)
-
-            // OkHttp 直接下载，带 Appteka UA 和 Referer，自动跟随重定向
-            val client = OkHttpClient.Builder()
-                .connectTimeout(20, TimeUnit.SECONDS)
-                .readTimeout(180, TimeUnit.SECONDS)
-                .followRedirects(true)
-                .followSslRedirects(true)
-                .build()
-            val request = Request.Builder()
-                .url(directUrl)
-                .header("User-Agent", "Appteka/23.0 Android")
-                .header("Referer", "https://appteka.store/")
-                .build()
-            val response = client.newCall(request).execute()
-            response.use { resp ->
-                if (!resp.isSuccessful) {
-                    throw Exception("HTTP ${resp.code}")
-                }
-                val body = resp.body ?: throw Exception("空响应")
-                apkFile.outputStream().use { fileOut ->
-                    body.byteStream().use { input ->
-                        input.copyTo(fileOut)
-                    }
-                }
-            }
-
-            withContext(Dispatchers.Main) {
-                onProgress(false)
-                onCompleted()
-                Toast.makeText(context, "🎉 ${item.label} 下载成功，正在拉起真实安装…", Toast.LENGTH_SHORT).show()
-                val installOk = installApkDirectly(context, apkFile)
-                if (!installOk) {
-                    Toast.makeText(context, "安装包已就绪：${apkFile.name}", Toast.LENGTH_LONG).show()
-                }
+                WaveDownloadManager.start(
+                    context, item.label, directUrl, safeName, true,
+                    forceApptekaHeaders = true
+                )
             }
         } catch (e: Exception) {
             // v1.7.20：应用内下载失败只提示错误，不再跳转浏览器（用户需求）
             withContext(Dispatchers.Main) {
-                onProgress(false)
                 Toast.makeText(context, "下载失败，请检查网络后重试", Toast.LENGTH_LONG).show()
             }
         }
@@ -1408,19 +1404,26 @@ private fun ApptekaAppCard(
     index: Int = 0
 ) {
     val context = LocalContext.current
-    var isDownloading by remember(item.appId) { mutableStateOf(false) }
-    // v1.7.3：下载完成标记（显示对勾）
+    // 2026-10-24：与独立窗口同步——卡片上的转圈/对勾直接跟 Wave 弹窗状态走，
+    // 不再用直下回调维护（直下已删，回调无处回填）
+    val waveUi by WaveDownloadManager.ui.collectAsState()
+    val isDownloading = waveUi.visible &&
+        (waveUi.state == WaveDlState.DOWNLOADING || waveUi.state == WaveDlState.INSTALLING) &&
+        waveUi.title == item.label
+    // v1.7.3：下载完成标记（显示对勾）；弹窗关闭后仍保留一次，避免对勾随弹窗消失
     var isCompleted by remember(item.appId) { mutableStateOf(false) }
+    LaunchedEffect(waveUi.state, waveUi.title) {
+        if (waveUi.state == WaveDlState.DONE && waveUi.title == item.label && waveUi.error == null) {
+            isCompleted = true
+        }
+    }
 
     // v1.7.3：软件卡片使用毛毡风格
     FeltCardBox(
         modifier = Modifier.fillMaxWidth(),
         cornerRadius = 22.dp,
         onClick = {
-            downloadApptekaApk(context, item,
-                onProgress = { isDownloading = it },
-                onCompleted = { isCompleted = true }
-            )
+            downloadApptekaApk(context, item)
         }
     ) {
         Row(
@@ -1562,10 +1565,7 @@ private fun ApptekaAppCard(
                             .clip(RoundedCornerShape(8.dp))
                             .background(Color(0xFFB08968).copy(alpha = 0.15f))
                             .clickable {
-                                downloadApptekaApk(context, item,
-                                    onProgress = { isDownloading = it },
-                                    onCompleted = { isCompleted = true }
-                                )
+                                downloadApptekaApk(context, item)
                             }
                             .padding(horizontal = 7.dp, vertical = 3.dp)
                     ) {
@@ -1586,7 +1586,7 @@ private fun ApptekaAppCard(
                             }
                             Spacer(modifier = Modifier.width(3.dp))
                             Text(
-                                text = if (isDownloading) "解析中..." else "下载 APK",
+                                text = if (isDownloading) "下载中..." else "下载 APK",
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF8B5E3C)
