@@ -1,17 +1,17 @@
 {
   "version": {
-    "code": 281,
-    "name": "1.7.71",
+    "code": 282,
+    "name": "1.7.72",
     "changelog": [
-      "✨ v1.7.71 更新来啦～",
-      "fix: 下载请求头补回",
-      "fix: 下载请求头补回"
+      "✨ v1.7.72 更新来啦～",
+      "revert: Appteka 下载恢复 v1.7.61 方式",
+      "revert: Appteka 下载恢复 v1.7.61 方式"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.71-1792821134.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.71-1792821134.apk",
-    "lastBuildSha": "0b66202140a27c3d7a976af5069f4b2403aa8d25",
-    "apkSize": 23980520
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.72-1792822254.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.72-1792822254.apk",
+    "lastBuildSha": "114332b6b7a7f3e2aba0b1d3b600cc72ccdfc39b",
+    "apkSize": 23980516
   },
   "home": {
     "categories": [
@@ -24329,11 +24329,11 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.71 已上线",
+    "title": "懒得找了 v1.7.72 已上线",
     "changelog": [
-      "✨ v1.7.71 更新来啦～",
-      "fix: 下载请求头补回",
-      "fix: 下载请求头补回"
+      "✨ v1.7.72 更新来啦～",
+      "revert: Appteka 下载恢复 v1.7.61 方式",
+      "revert: Appteka 下载恢复 v1.7.61 方式"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24395,10 +24395,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.71",
-      "code": 281,
-      "at": "2026-10-24T05:52:20Z",
-      "sha": "0b66202140a27c3d7a976af5069f4b2403aa8d25"
+      "version": "1.7.72",
+      "code": 282,
+      "at": "2026-10-24T06:11:00Z",
+      "sha": "114332b6b7a7f3e2aba0b1d3b600cc72ccdfc39b"
     }
   },
   "_ai_notice": "内容由AI生成"
