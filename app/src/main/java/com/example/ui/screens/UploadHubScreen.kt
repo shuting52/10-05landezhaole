@@ -949,23 +949,6 @@ private fun WaveDownloadDialog() {
         else -> ""
     }
 
-    // 2026-10-24：七彩跑马灯边框（用户要求）
-    val rainbowTransition = rememberInfiniteTransition(label = "rainbowBorder")
-    val rainbowAngle by rainbowTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(3000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "rainbowAngle"
-    )
-    val rainbowColors = listOf(
-        Color(0xFFFF0000), Color(0xFFFF7F00), Color(0xFFFFFF00),
-        Color(0xFF00FF00), Color(0xFF0000FF), Color(0xFF8B00FF),
-        Color(0xFFFF0000)
-    )
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -975,21 +958,10 @@ private fun WaveDownloadDialog() {
             modifier = Modifier
                 .align(Alignment.Center)
                 .width(320.dp)
-                .drawBehind {
-                    // 旋转的七彩边框（跑马灯效果）
-                    val strokeWidth = 3.dp.toPx()
-                    val radius = 24.dp.toPx()
-                    rotate(rainbowAngle, pivot = center) {
-                        drawRoundRect(
-                            brush = Brush.sweepGradient(colors = rainbowColors, center = center),
-                            topLeft = androidx.compose.ui.geometry.Offset.Zero,
-                            size = size,
-                            cornerRadius = androidx.compose.ui.geometry.CornerRadius(radius, radius),
-                            style = androidx.compose.ui.graphics.drawscope.Stroke(strokeWidth)
-                        )
-                    }
-                }
-                .background(Color.White.copy(alpha = 0.92f), RoundedCornerShape(24.dp))
+                // 2026-10-24：Aero 风格边框（用户要求移除跑马灯）：白色亮边 + 柔和阴影 + 顶部高光
+                .shadow(20.dp, RoundedCornerShape(24.dp), ambientColor = Color(0xFF0A2540).copy(alpha = 0.25f))
+                .background(Color.White.copy(alpha = 0.94f), RoundedCornerShape(24.dp))
+                .border(1.dp, Color.White.copy(alpha = 0.9f), RoundedCornerShape(24.dp))
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
