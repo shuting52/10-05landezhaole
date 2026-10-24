@@ -385,10 +385,11 @@ private fun WoodenFishTool() {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("自动积德", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Spacer(modifier = Modifier.width(4.dp))
-                    Switch(
+                    // 2026-10-24 Frutiger Aero 开关
+                    com.example.ui.theme.AeroSwitch(
                         checked = autoPlay,
                         onCheckedChange = { autoPlay = it },
-                        modifier = Modifier.size(36.dp)
+                        modifier = Modifier.width(56.dp)
                     )
                 }
             }
