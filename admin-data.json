@@ -4,12 +4,13 @@
     "name": "1.7.69",
     "changelog": [
       "✨ v1.7.69 更新来啦～",
+      "fix: 设置卡重叠+去跑马灯",
       "fix: 设置卡重叠+去跑马灯"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.69-1792818262.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.69-1792818262.apk",
-    "lastBuildSha": "e7c4bd5b5f1e590f1397918decccba8b26c19c05",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.69-1792818572.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.69-1792818572.apk",
+    "lastBuildSha": "7f24408c1eed320cca06c35e1a1b50a03ff8b7a0",
     "apkSize": 23980524
   },
   "home": {
@@ -24331,6 +24332,7 @@
     "title": "懒得找了 v1.7.69 已上线",
     "changelog": [
       "✨ v1.7.69 更新来啦～",
+      "fix: 设置卡重叠+去跑马灯",
       "fix: 设置卡重叠+去跑马灯"
     ],
     "confirmText": "立即更新",
@@ -24395,8 +24397,8 @@
     "lastRelease": {
       "version": "1.7.69",
       "code": 279,
-      "at": "2026-10-24T05:04:29Z",
-      "sha": "e7c4bd5b5f1e590f1397918decccba8b26c19c05"
+      "at": "2026-10-24T05:09:38Z",
+      "sha": "7f24408c1eed320cca06c35e1a1b50a03ff8b7a0"
     }
   },
   "_ai_notice": "内容由AI生成"
