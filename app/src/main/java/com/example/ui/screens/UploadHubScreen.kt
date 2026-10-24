@@ -1189,23 +1189,18 @@ private fun WaveDialogButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
-    Box(
-        modifier = modifier
-            .background(
-                bgColor.copy(alpha = if (enabled) 1f else 0.5f),
-                RoundedCornerShape(99.dp)
-            )
-            .clickable(enabled = enabled, onClick = onClick)
-            .padding(vertical = 14.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = textColor.copy(alpha = if (enabled) 1f else 0.5f)
-        )
-    }
+    // 2026-10-24 Frutiger Aero：按原色映射到 Aero 按钮风格
+    val isBlue = bgColor == Color(0xFF3B82F6) || textColor == Color(0xFF3B82F6) ||
+            bgColor.red < 0.5f && bgColor.blue > 0.7f
+    val style = if (isBlue) com.example.ui.theme.AeroButtonStyle.Blue
+    else com.example.ui.theme.AeroButtonStyle.Ghost
+    com.example.ui.theme.AeroButton(
+        text = text,
+        onClick = onClick,
+        modifier = modifier,
+        style = style,
+        enabled = enabled
+    )
 }
 
 /**
@@ -1354,6 +1349,7 @@ private fun SoftwareSearchBar(
     onSearch: () -> Unit,
     placeholder: String = "搜索应用、软件或安装包..."
 ) {
+    // 2026-10-24 Frutiger Aero：fa-input 风格（白 75% + 1.5px 蓝边 30% + 18px 圆角）
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
@@ -1362,14 +1358,14 @@ private fun SoftwareSearchBar(
                 text = placeholder,
                 fontSize = 12.5.sp,
                 maxLines = 1,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                color = Color(0xFF8AA5B8)
             )
         },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Filled.Search,
                 contentDescription = "搜索",
-                tint = Color(0xFF10B981),
+                tint = Color(0xFF00A8E8),
                 modifier = Modifier.size(20.dp)
             )
         },
@@ -1379,19 +1375,19 @@ private fun SoftwareSearchBar(
                     Icon(
                         imageVector = Icons.Filled.Clear,
                         contentDescription = "清空",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        tint = Color(0xFF5B7A90),
                         modifier = Modifier.size(18.dp)
                     )
                 }
             }
         },
         singleLine = true,
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(18.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Color(0xFF10B981).copy(alpha = 0.8f),
-            unfocusedBorderColor = Color(0xFF10B981).copy(alpha = 0.25f),
-            focusedContainerColor = Color.White.copy(alpha = 0.85f),
-            unfocusedContainerColor = Color.White.copy(alpha = 0.65f)
+            focusedBorderColor = Color(0xFF00A8E8),
+            unfocusedBorderColor = Color(0xFF00A8E8).copy(alpha = 0.3f),
+            focusedContainerColor = Color.White.copy(alpha = 0.75f),
+            unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
         ),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = { onSearch() }),
