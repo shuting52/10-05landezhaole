@@ -398,6 +398,11 @@ class NativeDownloader(
      * 纯 JVM 单测要能直接 new 它(见 NativeDownloaderTest)。
      */
     private val onActiveChanged: (Int) -> Unit = {},
+    /**
+     * 2026-10-24：分段完成回调（断点续传用）：每段整段落盘后报一次段序号，
+     * 调用方记下来，暂停后继续时跳过这些段，不再从头重下。
+     */
+    private val onChunkDone: ((Long) -> Unit)? = null,
 ) {
 
     companion object {
@@ -502,6 +507,12 @@ class NativeDownloader(
         /** 未知大小时按这个估进总量,免得进度先冲到 100% 再倒退。 */
         val total: AtomicLong = AtomicLong(1024L * 1024 * 4),
         val received: AtomicLong = AtomicLong(0),
+        /** 2026-10-24：暂停时为真——收尾不删残件，继续时才能接着下。 */
+        val keepPartial: AtomicBoolean = AtomicBoolean(false),
+        /** 2026-10-24：断点续传：上次已整段落盘的段序号（仅单文件任务有效）。 */
+        var resumeChunks: Set<Long> = emptySet(),
+        /** 2026-10-24：断点续传期望的总大小，探针大小对不上就放弃续传、从头重下。 */
+        var resumeTotal: Long = 0L,
     )
 
     private val counter = AtomicLong(0)
@@ -514,7 +525,13 @@ class NativeDownloader(
      *   `dnProgress` {id, received, total}
      *   `dnDone`     {id, files:[{path,ext}], error}
      */
-    fun start(rawItems: List<Map<String, Any?>>, segments: Int): Long {
+    fun start(
+        rawItems: List<Map<String, Any?>>,
+        segments: Int,
+        /** 2026-10-24：断点续传（仅单文件任务）：已完成的段序号与期望总大小。 */
+        resumeChunks: Set<Long> = emptySet(),
+        resumeTotal: Long = 0L,
+    ): Long {
         val items = rawItems.map {
             Item(
                 url = it["url"] as String,
@@ -523,6 +540,10 @@ class NativeDownloader(
         }
         val id = counter.incrementAndGet()
         val task = Task()
+        if (items.size == 1) {
+            task.resumeChunks = resumeChunks
+            task.resumeTotal = resumeTotal
+        }
         tasks[id] = task
         // 登记正在写的文件(启动清扫按它跳过),并把「还有几趟没跑完」报出去 → 开保活。
         ActiveDownloads.add(items.map { it.file.absolutePath })
@@ -537,6 +558,17 @@ class NativeDownloader(
         task.userCancelled.set(true)
         task.cancelled.set(true)
         // 主动断开正在阻塞 read() 的连接,不必等到下一批 256KB 才响应取消。
+        task.connections.toList().forEach { it.disconnect() }
+    }
+
+    /**
+     * 2026-10-24：暂停（区别于取消）：停掉连接、但收尾不删残件，
+     * 调用方记下的已完成段 + 残件就是继续时的断点。最终取消仍走 [cancel]。
+     */
+    fun pause(id: Long) {
+        val task = tasks[id] ?: return
+        task.keepPartial.set(true)
+        task.cancelled.set(true)
         task.connections.toList().forEach { it.disconnect() }
     }
 
@@ -608,10 +640,29 @@ class NativeDownloader(
                     }
                 }
                 task.total.set(sizes.sum().coerceAtLeast(1))
+                // 2026-10-24：断点续传校验——单文件且探针总大小与暂停时一致才认旧段，
+                // 文件换了就放弃续传；已完成段的字节直接计入已收，进度从断点起算。
+                // 残件丢了或长度对不上也放弃续传：预分配文件里的空洞不能当已完成段交出去。
+                if (items.size == 1 && task.resumeTotal > 0 && sizes[0] != task.resumeTotal) {
+                    task.resumeChunks = emptySet()
+                }
+                if (items.size == 1 && task.resumeChunks.isNotEmpty()) {
+                    val f = items[0].file
+                    if (!f.exists() || f.length() != sizes[0]) task.resumeChunks = emptySet()
+                }
+                if (items.size == 1) {
+                    var resumedBytes = 0L
+                    for (claim in task.resumeChunks) {
+                        claimedChunkWithTail(
+                            claim, sizes[0], SEGMENT_BYTES, TAIL_BYTES, TAIL_CHUNK_BYTES,
+                        )?.let { resumedBytes += it.last - it.first + 1 }
+                    }
+                    task.received.set(resumedBytes)
+                }
                 android.util.Log.i(
                     "landezhaole-dl",
                     "开跑: items=${items.size} lanes=$lanes sizes=${sizes.joinToString()} " +
-                        "total=${task.total.get()}",
+                        "total=${task.total.get()} resumed=${task.received.get()}",
                 )
 
                 // 只等真正会跑的那几条:探针就失败的不占坑
@@ -674,13 +725,15 @@ class NativeDownloader(
             // 这个数字归零,保活(前台服务 + 唤醒锁)跟着关掉(见 DownloadKeepAlive)。
             ActiveDownloads.remove(items.map { it.file.absolutePath })
             notifyActive()
-            if (error != null) {
+            if (error != null && !task.keepPartial.get()) {
                 // 失败时只删**没下成**的那几条:已经下完的那几条留着交给 Dart 登记
                 // —— 用户要的是"失败的那条不留,同批里下好的照常进相册"。
                 //
                 // **用户取消是另一回事**:取消只要"取消那一刻已经出现在相册里的",
                 // 所以这一批临时文件全删(含已经下完、还没轮到登记的那几条)。相册里
                 // 那部分由 Dart 决定撤不撤(单条撤回,多条留着)。
+                //
+                // 2026-10-24：暂停（keepPartial）不删——残件 + 已完成段就是断点。
                 val cancelled = task.userCancelled.get()
                 val done = files.mapNotNull { it["path"] as? String }.toSet()
                 items.forEach { item ->
@@ -859,8 +912,11 @@ class NativeDownloader(
                         var laneBytes = 0L
                         while (true) {
                             if (stopped(task, item)) throw InterruptedException()
+                            // 2026-10-24：断点续传——已整段落盘的段直接跳过，字节计入总量，
+                            // 不再重下；正在写的那一段（暂停时没记进来）照常重下，不会写坏
+                            val claimIdx = cursor.getAndIncrement()
                             val chunk = claimedChunkWithTail(
-                                cursor.getAndIncrement(),
+                                claimIdx,
                                 size,
                                 SEGMENT_BYTES,
                                 TAIL_BYTES,
@@ -868,6 +924,13 @@ class NativeDownloader(
                             ) ?: break
                             val start = chunk.first
                             val chunkEnd = chunk.last
+                            if (claimIdx in task.resumeChunks) {
+                                val chunkSize = chunkEnd - start + 1
+                                written.addAndGet(chunkSize)
+                                laneBytes += chunkSize
+                                chunks++
+                                continue
+                            }
                             // 这一段的续传位置,以及这一段已经落盘的字节数(含重试前收到的
                             // 部分)。两者都是这一段的局部量:`written`(整条文件的累计)只在
                             // 这一段彻底了结之后加一次,不然重试会把字节数重复计进完整性校验。
@@ -924,6 +987,8 @@ class NativeDownloader(
                             written.addAndGet(chunkDone)
                             laneBytes += chunkDone
                             chunks++
+                            // 2026-10-24：整段落盘才记——暂停时这段就是可跳过的断点
+                            onChunkDone?.invoke(claimIdx)
                         }
                         android.util.Log.i(
                             "landezhaole-dl",

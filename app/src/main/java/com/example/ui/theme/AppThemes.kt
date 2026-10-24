@@ -14,7 +14,7 @@ data class AppTheme(
     val colors: ThemeUiColors
 )
 
-/** 全局主题：千禧复兴 Frutiger Aero + 皮纹鞣制 + 柔影 / 柔光 / 黏土（2026-10-24 用户新设计稿） */
+/** 全局主题：千禧复兴 Frutiger Aero + 皮纹鞣制 + 柔影 / 柔光 / 黏土 / 液态玻璃（2026-10-24 用户新设计稿） */
 val APP_THEMES: List<AppTheme> = listOf(
     AppTheme(
         id = "minimal",
@@ -131,6 +131,37 @@ val APP_THEMES: List<AppTheme> = listOf(
                 Color(0xFFF7F2FB)
             ),
             designStyle = DesignStyle.CLAY
+        )
+    ),
+    AppTheme(
+        id = "liquid",
+        name = "液态玻璃",
+        // 2026-10-24：用户发的液态玻璃交互预览（默认暗色流光档）翻译进原生主题；
+        // Compose 没有 backdrop-filter，玻璃用半透明渐变 + 亮边近似，不承诺真模糊
+        isDark = true,
+        colors = ThemeUiColors(
+            primary = Color(0xFF3B6BFF),          // 徽标渐变起点蓝
+            secondary = Color(0xFF8A3BFF),        // 徽标渐变终点紫
+            background = Color(0xFF140A20),       // 预览 --mode-bg 深紫
+            surface = Color(0xFF241A38),          // 深紫面板（玻璃白 10% 叠在深紫底上的近似色）
+            text = Color(0xFFFFFFFF),             // 预览 --text-1 白
+            textMuted = Color(0xFFFFFFFF).copy(alpha = 0.72f),  // 预览 --text-2 白 72%
+            accent = Color(0xFF8A3BFF),           // 点缀紫
+            onPrimary = Color(0xFFFFFFFF),
+            border = Color(0xFFFFFFFF).copy(alpha = 0.30f),  // 分组标题描边白 30%
+            // 预览 .lg 玻璃渐变：白 17% → 5% → 10%（155deg）
+            cardGradient = listOf(
+                Color(0xFFFFFFFF).copy(alpha = 0.17f),
+                Color(0xFFFFFFFF).copy(alpha = 0.05f),
+                Color(0xFFFFFFFF).copy(alpha = 0.10f)
+            ),
+            // 预览壁纸：深紫底 + 四角流光（红/橙/粉/紫）近似为深紫渐变
+            backgroundGradient = listOf(
+                Color(0xFF2A1245),
+                Color(0xFF1A0C2E),
+                Color(0xFF140A20)
+            ),
+            designStyle = DesignStyle.LIQUID
         )
     )
 )

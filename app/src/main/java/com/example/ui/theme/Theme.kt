@@ -57,7 +57,8 @@ enum class DesignStyle(val displayName: String, val desc: String) {
     LEATHER("Leather 皮纹鞣制", "深棕鞣制皮革：噪点皮纹 + 斜纹编织 + 虚线缝线，暖金点缀的复古手工质感。"),
     NEU("Neu 柔影", "NEU UI 柔影拟物：与背景同色的表面，靠左上白阴影 + 右下蓝阴影塑造体积，描边白 33%。"),
     GLOSS("Gloss 柔光", "GLOSS UI 柔光拟物：白到灰的高光渐变 + 1px 灰描边 + 文字 1px 白高光，按下向内压缩。"),
-    CLAY("Clay 黏土", "CLAY UI 黏土立体：奶油粉/宝宝蓝/芝士黄，内高光 + 厚实彩色阴影，按下整体塌缩。")
+    CLAY("Clay 黏土", "CLAY UI 黏土立体：奶油粉/宝宝蓝/芝士黄，内高光 + 厚实彩色阴影，按下整体塌缩。"),
+    LIQUID("Liquid Glass 液态玻璃", "液态玻璃交互预览（暗色流光）：深紫底 + 白 17%→5%→10% 玻璃渐变卡片 + 34dp 大圆角 + 1.2px 亮边 + 蓝紫徽标渐变。")
 }
 
 val LocalUiverseState = staticCompositionLocalOf { ActiveUiverseState() }

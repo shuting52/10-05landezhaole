@@ -622,6 +622,14 @@ internal object WaveDownloadManager {
     // 测速用
     private var lastProgressTime = 0L
     private var lastProgressBytes = 0L
+    // 2026-10-24：断点续传状态
+    // 多线程：已整段落盘的段序号（引擎 onChunkDone 回报），暂停后继续时跳过这些段；
+    // 兜底单线程：文件顺序写，长度就是断点，继续时 Range 追加
+    private val completedChunks = java.util.concurrent.ConcurrentHashMap.newKeySet<Long>()
+    private var inFallback = false
+    private var pausedTotalBytes = 0L
+    /** 服务端不认 Range：续传不能追加，只能从头重下 */
+    private class RangeNotSupportedException : java.io.IOException("服务端不支持断点续传")
 
     fun start(
         context: Context, title: String, url: String, fileName: String?, isApk: Boolean,
@@ -650,8 +658,22 @@ internal object WaveDownloadManager {
         )
         lastProgressTime = System.currentTimeMillis()
         lastProgressBytes = 0L
+        // 全新下载：断点状态清零
+        completedChunks.clear()
+        inFallback = false
+        pausedTotalBytes = 0L
         val ctx = appCtx!!
-        downloader = NativeDownloader(
+        downloader = newDownloader(ctx)
+        taskId = downloader!!.start(
+            rawItems = listOf(mapOf("url" to dlUrl, "path" to targetFile!!.absolutePath)),
+            segments = 32
+        )
+    }
+
+    // 2026-10-24：下载器构造抽出来——全新下载与多线程断点续传共用同一套监听，
+    // 否则两处监听一改一漏迟早分叉
+    private fun newDownloader(ctx: Context): NativeDownloader {
+        return NativeDownloader(
             listener = object : DownloadListener {
                 override fun onProgress(id: Long, received: Long, total: Long) {
                     if (id != taskId) return
@@ -702,11 +724,9 @@ internal object WaveDownloadManager {
                     }
                 }
             },
-            onActiveChanged = { active -> DownloadKeepAlive.sync(ctx, active) }
-        )
-        taskId = downloader!!.start(
-            rawItems = listOf(mapOf("url" to dlUrl, "path" to targetFile!!.absolutePath)),
-            segments = 32
+            onActiveChanged = { active -> DownloadKeepAlive.sync(ctx, active) },
+            // 2026-10-24：整段落盘才记——暂停时这段就是可跳过的断点
+            onChunkDone = { claim -> completedChunks.add(claim) }
         )
     }
 
@@ -730,6 +750,8 @@ internal object WaveDownloadManager {
         val ctx = appCtx ?: return
         val url = dlUrl
         val file = targetFile ?: return
+        // 2026-10-24：进入兜底阶段——暂停时按“文件长度 = 断点”做 Range 续传
+        inFallback = true
         _ui.value = _ui.value.copy(
             state = WaveDlState.DOWNLOADING,
             error = null,
@@ -765,26 +787,9 @@ internal object WaveDownloadManager {
                 }
             }
             if (downloadOk) {
-                // 成功，走正常完成流程
+                // 成功，走正常完成流程（与兜底续传成功共用同一段完成逻辑）
                 withContext(Dispatchers.Main) {
-                    _ui.value = _ui.value.copy(progress = 1f, downloadedBytes = downloadedBytes())
-                    if (dlIsApk) {
-                        _ui.value = _ui.value.copy(state = WaveDlState.INSTALLING)
-                        // 触发安装（复用原有安装逻辑）
-                        CoroutineScope(Dispatchers.Main).launch {
-                            val installOk = installApkDirectly(ctx, file)
-                            if (installOk) {
-                                _ui.value = _ui.value.copy(state = WaveDlState.DONE)
-                            } else {
-                                _ui.value = _ui.value.copy(
-                                    state = WaveDlState.FAILED,
-                                    error = "安装包已下载，调起安装失败"
-                                )
-                            }
-                        }
-                    } else {
-                        _ui.value = _ui.value.copy(state = WaveDlState.DONE)
-                    }
+                    completeFallbackDownload(ctx, file)
                 }
             } else {
                 // 全部镜像都失败，报错（注明是第几个镜像失败）
@@ -900,31 +905,211 @@ internal object WaveDownloadManager {
 
     private fun downloadedBytes(): Long = _ui.value.downloadedBytes
 
+    /** 兜底下载完成流程（全新兜底与兜底续传共用）：仅在主线程调用 */
+    private fun completeFallbackDownload(ctx: Context, file: java.io.File) {
+        _ui.value = _ui.value.copy(progress = 1f, downloadedBytes = downloadedBytes())
+        if (dlIsApk) {
+            _ui.value = _ui.value.copy(state = WaveDlState.INSTALLING)
+            // 触发安装（复用原有安装逻辑）
+            CoroutineScope(Dispatchers.Main).launch {
+                val installOk = installApkDirectly(ctx, file)
+                if (installOk) {
+                    _ui.value = _ui.value.copy(state = WaveDlState.DONE)
+                } else {
+                    _ui.value = _ui.value.copy(
+                        state = WaveDlState.FAILED,
+                        error = "安装包已下载，调起安装失败"
+                    )
+                }
+            }
+        } else {
+            _ui.value = _ui.value.copy(state = WaveDlState.DONE)
+        }
+    }
+
     fun pause() {
         if (_ui.value.state != WaveDlState.DOWNLOADING) return
-        cancelTask()
+        // 2026-10-24：暂停 ≠ 取消——以前 pause 直接调 cancelTask，多线程引擎
+        // 会把残件删掉，所以继续只能从 0 重下。现在暂停只停连接、不删残件：
+        // 多线程靠引擎 pause（留残件）+ 已完成段集合做断点；兜底靠文件长度做断点
+        pausedTotalBytes = _ui.value.totalBytes
+        if (inFallback) {
+            fallbackJob?.cancel()
+            fallbackJob = null
+            try { fallbackConn?.disconnect() } catch (_: Exception) {}
+            fallbackConn = null
+            appCtx?.let { DownloadKeepAlive.sync(it, 0) }
+        } else {
+            taskId?.let { downloader?.pause(it) }
+            // 兜底还没开始时 fallbackJob 应为 null，保险起见也停掉
+            fallbackJob?.cancel()
+            fallbackJob = null
+            try { fallbackConn?.disconnect() } catch (_: Exception) {}
+            fallbackConn = null
+        }
         _ui.value = _ui.value.copy(state = WaveDlState.PAUSED, speedBps = 0.0)
     }
 
     fun resume() {
         if (_ui.value.state != WaveDlState.PAUSED && _ui.value.state != WaveDlState.FAILED
             && _ui.value.state != WaveDlState.CANCELLED) return
-        // NativeDownloader 不支持跨会话断点续传，resume 重新下一遍。
-        // 注意：先调 start（它内部会重置 UI 状态），不要提前设 DOWNLOADING 否则被防重复拦截。
-        // 2026-10-24：resume 必须带上原任务的 forceApptekaHeaders，否则 Appteka 直链
-        // 续下时会丢 UA + Referer 被防盗链拒（v1.7.79 续下口子）
         val ctx = appCtx ?: return
+        if (_ui.value.state == WaveDlState.PAUSED) {
+            // 2026-10-24：暂停 → 继续必须从断点接上，不再归零重下
+            if (inFallback) {
+                val file = targetFile
+                if (file != null && file.exists() && file.length() > 0L && pausedTotalBytes > 0L) {
+                    resumeFallback()
+                    return
+                }
+            } else if (completedChunks.isNotEmpty() && pausedTotalBytes > 0L) {
+                val file = targetFile
+                if (file != null && file.exists() && file.length() == pausedTotalBytes) {
+                    resumeMulti()
+                    return
+                }
+            }
+            // 没东西可续（暂停时还没收到字节、还没探出大小，如 0% 未知大小那次）
+            // → 从头重下，这时归零是诚实的
+        }
+        // FAILED / CANCELLED，或暂停时无断点：从头重下（CANCELLED 已删文件，FAILED 残件不可信）
+        completedChunks.clear()
+        inFallback = false
+        // 注意：先调 start（它内部会重置 UI 状态），不要提前设 DOWNLOADING 否则被防重复拦截。
+        // resume 必须带上原任务的 forceApptekaHeaders，否则 Appteka 直链
+        // 续下时会丢 UA + Referer 被防盗链拒（v1.7.79 续下口子）
         start(ctx, dlTitle, dlUrl, targetFile?.name, dlIsApk, forceApptekaHeaders)
+    }
+
+    /** 多线程断点续传：不删残件、不重置进度，引擎跳过已完成段继续 */
+    private fun resumeMulti() {
+        val ctx = appCtx ?: return
+        val file = targetFile ?: return
+        _ui.value = _ui.value.copy(state = WaveDlState.DOWNLOADING, error = null, speedBps = 0.0)
+        lastProgressTime = System.currentTimeMillis()
+        lastProgressBytes = _ui.value.downloadedBytes
+        downloader = newDownloader(ctx)
+        taskId = downloader!!.start(
+            rawItems = listOf(mapOf("url" to dlUrl, "path" to file.absolutePath)),
+            segments = 32,
+            resumeChunks = completedChunks.toSet(),
+            resumeTotal = pausedTotalBytes
+        )
+    }
+
+    /** 兜底单线程断点续传：文件顺序写，长度就是断点，Range 追加 */
+    private fun resumeFallback() {
+        val ctx = appCtx ?: return
+        val file = targetFile ?: return
+        val existing = file.length()
+        _ui.value = _ui.value.copy(state = WaveDlState.DOWNLOADING, error = null, speedBps = 0.0)
+        fallbackJob = CoroutineScope(Dispatchers.IO).launch {
+            var lastError: Exception? = null
+            var resumed = false
+            var rangeUnsupported = false
+            for (tryUrl in buildMirrorUrls(dlUrl)) {
+                try {
+                    resumeSingleUrl(tryUrl, file, existing)
+                    resumed = true
+                    break
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: RangeNotSupportedException) {
+                    rangeUnsupported = true
+                    break
+                } catch (e: Exception) {
+                    if (!isActive) throw CancellationException()
+                    lastError = e
+                }
+            }
+            when {
+                resumed -> withContext(Dispatchers.Main) { completeFallbackDownload(ctx, file) }
+                // 服务端不认 Range：追加会写坏，只能从头重下（兜底自己重置进度）
+                rangeUnsupported -> withContext(Dispatchers.Main) { fallbackSingleThreadDownload() }
+                else -> withContext(Dispatchers.Main) {
+                    _ui.value = _ui.value.copy(
+                        state = WaveDlState.FAILED,
+                        error = "续传失败：${lastError?.message ?: "网络异常"}",
+                        speedBps = 0.0
+                    )
+                }
+            }
+        }
+    }
+
+    /** 单 URL Range 续传（suspend，供续传循环调用）：成功返回，失败抛异常 */
+    private suspend fun resumeSingleUrl(url: String, file: java.io.File, existing: Long) {
+        val conn = java.net.URL(url).openConnection() as java.net.HttpURLConnection
+        fallbackConn = conn
+        conn.connectTimeout = 20000
+        conn.readTimeout = 60000
+        val reqHost = runCatching { java.net.URL(url).host }.getOrNull().orEmpty()
+        if (forceApptekaHeaders || url.contains("appteka", ignoreCase = true)) {
+            conn.setRequestProperty("User-Agent", com.example.download.APPTEKA_UA)
+            conn.setRequestProperty("Referer", com.example.download.APPTEKA_REFERER)
+        } else {
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36")
+            if (reqHost.isNotEmpty()) conn.setRequestProperty("Referer", "https://$reqHost/")
+        }
+        conn.setRequestProperty("Range", "bytes=$existing-")
+        conn.connect()
+        val responseCode = conn.responseCode
+        if (responseCode == java.net.HttpURLConnection.HTTP_OK) {
+            // 回了整条说明服务端不认 Range：往残件后追加整条会写坏，必须从头重下
+            throw RangeNotSupportedException()
+        }
+        if (responseCode != java.net.HttpURLConnection.HTTP_PARTIAL) {
+            val host = try { java.net.URL(url).host } catch (_: Exception) { url }
+            throw java.io.IOException("HTTP $responseCode（$host）")
+        }
+        // Content-Range: bytes <起点>-<终点>/<总量>——起点必须等于断点，否则追加写坏
+        val rangeMatch = Regex("bytes (\\d+)-(\\d+)/(\\d+)")
+            .find(conn.getHeaderField("Content-Range") ?: "")
+        val rangeStart = rangeMatch?.groupValues?.getOrNull(1)?.toLongOrNull()
+        val total = rangeMatch?.groupValues?.getOrNull(3)?.toLongOrNull() ?: pausedTotalBytes
+        if (rangeStart != null && rangeStart != existing) {
+            throw java.io.IOException("续传区间起点不符 $rangeStart（断点 $existing）")
+        }
+        withContext(Dispatchers.Main) {
+            _ui.value = _ui.value.copy(totalBytes = total)
+        }
+        conn.inputStream.use { input ->
+            java.io.FileOutputStream(file, true).use { output ->
+                val buffer = ByteArray(8192)
+                var written = existing
+                var n: Int
+                while (input.read(buffer).also { n = it } != -1) {
+                    currentCoroutineContext().ensureActive()
+                    output.write(buffer, 0, n)
+                    written += n
+                    val p = if (total > 0) (written.toFloat() / total).coerceIn(0f, 1f) else 0f
+                    withContext(Dispatchers.Main) {
+                        _ui.value = _ui.value.copy(
+                            progress = p, downloadedBytes = written, totalBytes = total
+                        )
+                    }
+                }
+            }
+        }
+        if (fallbackConn == conn) fallbackConn = null
+        // 续完必须正好是总量，否则残件不可信，不能当完成
+        if (total > 0 && file.length() != total) {
+            throw java.io.IOException("续传后大小不符 ${file.length()}/$total")
+        }
     }
 
     fun cancel() {
         cancelTask()
         try { targetFile?.delete() } catch (_: Exception) {}
+        completedChunks.clear()
+        inFallback = false
         _ui.value = _ui.value.copy(state = WaveDlState.CANCELLED, speedBps = 0.0)
     }
 
     fun dismiss() {
         cancelTask()
+        completedChunks.clear()
+        inFallback = false
         _ui.value = WaveDownloadUi()
     }
 

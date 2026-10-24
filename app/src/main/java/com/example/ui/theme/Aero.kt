@@ -10,6 +10,8 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +43,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -559,6 +564,24 @@ fun AeroSlider(
         verticalAlignment = Alignment.CenterVertically
     ) {
         val fraction = ((value - valueRange.start) / (valueRange.endInclusive - valueRange.start)).coerceIn(0f, 1f)
+        // 2026-10-24：以前这里只是静态展示条，没有任何拖动/点按手势，onValueChange
+        // 永远不会被触发——这就是界面缩放滑块“不能调”的根因。现在轨道支持点按跳位
+        // 与横向拖动，滑块位置按轨道实测宽度算，不再写死 100dp
+        var trackWidthPx by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(0) }
+        val density = androidx.compose.ui.platform.LocalDensity.current
+        val thumbSize = 26.dp
+        val thumbOffsetDp = with(density) {
+            if (trackWidthPx > 0) {
+                ((fraction * (trackWidthPx - thumbSize.toPx())).coerceAtLeast(0f)).toDp()
+            } else {
+                (fraction * 100).dp - 13.dp
+            }
+        }
+        fun valueFromX(xPx: Float): Float {
+            if (trackWidthPx <= 0) return value
+            val f = (xPx / trackWidthPx).coerceIn(0f, 1f)
+            return valueRange.start + f * (valueRange.endInclusive - valueRange.start)
+        }
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -579,13 +602,23 @@ fun AeroSlider(
                     }
                 }
                 .aeroTopHighlight(999.dp, 0.6f)
+                .onSizeChanged { trackWidthPx = it.width }
+                .pointerInput(valueRange) {
+                    detectTapGestures { offset -> onValueChange(valueFromX(offset.x)) }
+                }
+                .pointerInput(valueRange) {
+                    detectHorizontalDragGestures { change, _ ->
+                        change.consume()
+                        onValueChange(valueFromX(change.position.x))
+                    }
+                }
         ) {
             // 白色高光滑块 26px
             Box(
                 modifier = Modifier
-                    .offset(x = ((fraction * 100).dp - 13.dp).coerceAtLeast(0.dp))
+                    .offset(x = thumbOffsetDp)
                     .align(Alignment.CenterStart)
-                    .size(26.dp)
+                    .size(thumbSize)
                     .shadow(2.dp, CircleShape, ambientColor = AeroColors.blue.copy(alpha = 0.4f))
                     .clip(CircleShape)
                     .background(AeroBrush.knobGloss)
@@ -600,7 +633,8 @@ fun AeroSlider(
                 .padding(horizontal = 8.dp, vertical = 5.dp)
         ) {
             Text(
-                text = value.toInt().toString(),
+                // 小量程（如界面缩放 0.8–1.2）显示百分比，否则 toInt 会把 1.0 显示成“1”误导人
+                text = if (valueRange.endInclusive <= 2f) "${(value * 100).toInt()}%" else value.toInt().toString(),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = AeroColors.blueDeep

@@ -139,6 +139,8 @@ fun ResourceCard(
         designStyle == DesignStyle.NEU -> RoundedCornerShape(24.dp)
         designStyle == DesignStyle.GLOSS -> RoundedCornerShape(18.dp)
         designStyle == DesignStyle.CLAY -> RoundedCornerShape(28.dp)
+        // 2026-10-24：液态玻璃预览 --glass-radius 34px
+        designStyle == DesignStyle.LIQUID -> RoundedCornerShape(34.dp)
         designStyle == DesignStyle.MATERIAL_DESIGN -> RoundedCornerShape(16.dp)
         designStyle == DesignStyle.CLAYMORPHISM -> RoundedCornerShape(22.dp)
         designStyle == DesignStyle.MINIMALISM -> RoundedCornerShape(6.dp)

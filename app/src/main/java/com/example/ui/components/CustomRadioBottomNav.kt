@@ -261,6 +261,24 @@ fun CustomRadioBottomNav(
                 )
                 return
             }
+            // 2026-10-24：液态玻璃专属底栏（预览 .lg 翻译）：暗玻璃条 + 白 30% 亮边，
+            // 选中为预览未读徽标的蓝紫渐变 #3B6BFF→#8A3BFF
+            DesignStyle.LIQUID -> {
+                SoftThemeBottomBar(
+                    navItems = navItems, selectedTab = selectedTab, onTabSelected = onTabSelected,
+                    badges = badges, hideLabels = hideLabels, modifier = modifier,
+                    barBg = Color.White.copy(alpha = 0.10f), barBorderColor = Color.White.copy(alpha = 0.30f),
+                    barBorderWidth = 1.dp, barRadius = 34.dp, pillRadius = 22.dp,
+                    shadowDp = 12.dp, shadowAmbient = Color.Black.copy(alpha = 0.55f),
+                    selectedBrush = Brush.linearGradient(
+                        listOf(Color(0xFF3B6BFF), Color(0xFF8A3BFF))
+                    ),
+                    selectedBorderColor = Color.White.copy(alpha = 0.30f),
+                    selectedText = Color.White, unselectedText = Color.White.copy(alpha = 0.72f),
+                    selectedIconTint = Color.White, unselectedIconTint = Color.White.copy(alpha = 0.72f)
+                )
+                return
+            }
             else -> { }
         }
     }
