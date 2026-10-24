@@ -4,12 +4,15 @@
     "name": "1.7.68",
     "changelog": [
       "✨ v1.7.68 更新来啦～",
+      "fix: 4项修复",
+      "fix: 4项修复",
+      "fix: 4项修复",
       "fix: 4项修复"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.68-1792816656.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.68-1792816656.apk",
-    "lastBuildSha": "f9cb8cf22a7510f3ea3dcf3d3d517dfe1773a604",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.68-1792817105.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.68-1792817105.apk",
+    "lastBuildSha": "73fda8c128f9987fc92a94d1c0bfef00b7ece053",
     "apkSize": 23980520
   },
   "home": {
@@ -24331,6 +24334,9 @@
     "title": "懒得找了 v1.7.68 已上线",
     "changelog": [
       "✨ v1.7.68 更新来啦～",
+      "fix: 4项修复",
+      "fix: 4项修复",
+      "fix: 4项修复",
       "fix: 4项修复"
     ],
     "confirmText": "立即更新",
@@ -24395,8 +24401,8 @@
     "lastRelease": {
       "version": "1.7.68",
       "code": 278,
-      "at": "2026-10-24T04:37:42Z",
-      "sha": "f9cb8cf22a7510f3ea3dcf3d3d517dfe1773a604"
+      "at": "2026-10-24T04:45:12Z",
+      "sha": "73fda8c128f9987fc92a94d1c0bfef00b7ece053"
     }
   },
   "_ai_notice": "内容由AI生成"
