@@ -976,13 +976,13 @@ private fun PeriodSettingsDialog(
         title = { Text("⚙️ 周期设置", fontWeight = FontWeight.Black, fontSize = 16.sp) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text("自动计算周期", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = themeUi.text)
-                        Text("有足够记录时用平均周期预测", fontSize = 11.sp, color = themeUi.textMuted)
-                    }
-                    Switch(checked = autoCycle, onCheckedChange = { autoCycle = it })
-                }
+                // 2026-10-24 Frutiger Aero 开关（含标题/描述）
+                com.example.ui.theme.AeroSwitch(
+                    checked = autoCycle,
+                    onCheckedChange = { autoCycle = it },
+                    title = "自动计算周期",
+                    desc = "有足够记录时用平均周期预测"
+                )
                 OutlinedTextField(
                     value = cycleLen,
                     onValueChange = { cycleLen = it.filter { c -> c.isDigit() }.take(2) },
