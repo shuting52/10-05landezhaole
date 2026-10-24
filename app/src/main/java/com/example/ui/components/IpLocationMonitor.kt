@@ -516,7 +516,8 @@ fun IpLocationMonitorWidget(
     var failed by remember { mutableStateOf(false) }
     var showDetailDialog by remember { mutableStateOf(false) }
 
-    val enabled = cloudIpMonitor?.enabled == true
+    // 2026-10-24：云端配置未回来时默认启用，立即用缓存定位显示，不等云端
+    val enabled = cloudIpMonitor?.enabled ?: true
     val url = cloudIpMonitor?.url?.trim().orEmpty()
 
     // 旋转动画（同步中指示）
