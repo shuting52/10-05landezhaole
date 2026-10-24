@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 283,
-    "name": "1.7.73",
+    "code": 284,
+    "name": "1.7.74",
     "changelog": [
-      "✨ v1.7.73 更新来啦～",
-      "版本改回 v1.7.72（用户实际安装版本）"
+      "✨ v1.7.74 更新来啦～",
+      "feat: 新增皮纹鞣制主题（千禧复兴/皮纹鞣制二选一，设置页外观区切换）"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.73-1792823866.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.73-1792823866.apk",
-    "lastBuildSha": "2a514db46bb43a8876f2a4cc5c5bb0a98a0f64bb",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.74-1792826505.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.74-1792826505.apk",
+    "lastBuildSha": "9c3a986d7b622cfb614de439c87193897c61f1e6",
     "apkSize": 23980520
   },
   "home": {
@@ -24328,10 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.73 已上线",
+    "title": "懒得找了 v1.7.74 已上线",
     "changelog": [
-      "✨ v1.7.73 更新来啦～",
-      "版本改回 v1.7.72（用户实际安装版本）"
+      "✨ v1.7.74 更新来啦～",
+      "feat: 新增皮纹鞣制主题（千禧复兴/皮纹鞣制二选一，设置页外观区切换）"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24393,10 +24393,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.73",
-      "code": 283,
-      "at": "2026-10-24T06:37:52Z",
-      "sha": "2a514db46bb43a8876f2a4cc5c5bb0a98a0f64bb"
+      "version": "1.7.74",
+      "code": 284,
+      "at": "2026-10-24T07:21:52Z",
+      "sha": "9c3a986d7b622cfb614de439c87193897c61f1e6"
     }
   },
   "_ai_notice": "内容由AI生成"
