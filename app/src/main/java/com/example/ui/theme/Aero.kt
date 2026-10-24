@@ -159,7 +159,10 @@ fun AeroCard(
             .then(clickMod)
             .padding(18.dp)
     ) {
-        content()
+        // 2026-10-24 fix：子项纵向排列（之前直接放 Box 里导致重叠）
+        Column(modifier = Modifier.fillMaxWidth()) {
+            content()
+        }
     }
 }
 
