@@ -1,16 +1,18 @@
 {
   "version": {
-    "code": 293,
-    "name": "1.7.83",
+    "code": 294,
+    "name": "1.7.84",
     "changelog": [
-      "✨ v1.7.83 更新来啦～",
-      "v1.7.83: 新增程序坞主题（macOS Dock 深色玻璃翻译）"
+      "✨ v1.7.84 更新来啦～",
+      "v1.7.84 fix2: 鱼眼中心改布局常量计算，弃用坐标 API",
+      "v1.7.84 fix: positionInParent 改 positionInRoot（BOM 2024.09 解析不到）",
+      "v1.7.84: 程序坞底栏按 HTML .dock 原样复刻 + 背景改顶部径向渐变"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.83-1792848272.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.83-1792848272.apk",
-    "lastBuildSha": "07abde06bc8dccc284408770354c17d5d2190872",
-    "apkSize": 23996904
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.84-1792851108.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.84-1792851108.apk",
+    "lastBuildSha": "979af63dd154b638fdca2951032daf02d8cb8a9e",
+    "apkSize": 24013288
   },
   "home": {
     "categories": [
@@ -24328,10 +24330,12 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.83 已上线",
+    "title": "懒得找了 v1.7.84 已上线",
     "changelog": [
-      "✨ v1.7.83 更新来啦～",
-      "v1.7.83: 新增程序坞主题（macOS Dock 深色玻璃翻译）"
+      "✨ v1.7.84 更新来啦～",
+      "v1.7.84 fix2: 鱼眼中心改布局常量计算，弃用坐标 API",
+      "v1.7.84 fix: positionInParent 改 positionInRoot（BOM 2024.09 解析不到）",
+      "v1.7.84: 程序坞底栏按 HTML .dock 原样复刻 + 背景改顶部径向渐变"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24393,10 +24397,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.83",
-      "code": 293,
-      "at": "2026-10-24T13:24:39Z",
-      "sha": "07abde06bc8dccc284408770354c17d5d2190872"
+      "version": "1.7.84",
+      "code": 294,
+      "at": "2026-10-24T14:11:54Z",
+      "sha": "979af63dd154b638fdca2951032daf02d8cb8a9e"
     }
   },
   "_ai_notice": "内容由AI生成"
