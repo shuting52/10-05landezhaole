@@ -167,15 +167,6 @@ fun CustomRadioBottomNav(
             petVoice = "发现宝藏软件啦! ⚡"
         ),
         BottomNavTabItem(
-            tab = AppBottomTab.SKILL,
-            title = if (uiText?.tabSkill.isNullOrBlank() || uiText?.tabSkill == "资源" || uiText?.tabSkill == "懒得KunBox" || uiText?.tabSkill == "懒得连了" || uiText?.tabSkill == "AI前言" || uiText?.tabSkill == "DownVid") "去水印" else uiText!!.tabSkill,
-            icon = Icons.Filled.PlayArrow,
-            color = themeColors.primary,
-            gradient = listOf(themeColors.primary, themeColors.secondary),
-            petKaomoji = "(◕‿◕)b",
-            petVoice = "全网无水印视频一键解析下载喵~ 🎬"
-        ),
-        BottomNavTabItem(
             tab = AppBottomTab.TOOLBOX,
             title = uiText?.tabToolbox?.ifBlank { "工具箱" } ?: "工具箱",
             icon = Icons.Filled.Build,

@@ -455,12 +455,6 @@ fun MainScreen(
                         gridMode = true
                     )
                 }
-                AppBottomTab.SKILL -> {
-                    WatermarkScreen(
-                        modifier = Modifier.padding(paddingValues),
-                        onOpenSettings = { viewModel.switchTab(AppBottomTab.SETTINGS) }
-                    )
-                }
                 AppBottomTab.TOOLBOX -> {
                     ToolboxScreen(
                         cloudTools = uiState.cloudTools,

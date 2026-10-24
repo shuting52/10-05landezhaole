@@ -53,7 +53,6 @@ import java.util.UUID
 enum class AppBottomTab(val title: String) {
     HOME("首页"),
     SOFTWARE("软件"),
-    SKILL("去水印"),
     TOOLBOX("工具箱"),
     SETTINGS("设置")
 }
