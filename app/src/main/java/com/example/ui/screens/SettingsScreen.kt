@@ -702,7 +702,10 @@ private fun AppearanceDialog(
         }
     }
     if (showOriginals) {
-        com.example.ui.components.OriginalsViewer(onDismiss = { showOriginals = false })
+        com.example.ui.components.OriginalsViewer(
+            onDismiss = { showOriginals = false },
+            onApplyTheme = { viewModel.setAppTheme(it) }
+        )
     }
 }
 

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -72,7 +73,7 @@ private val themeFiles = listOf(
 )
 
 @Composable
-fun OriginalsViewer(onDismiss: () -> Unit) {
+fun OriginalsViewer(onDismiss: () -> Unit, onApplyTheme: ((String) -> Unit)? = null) {
     var page by remember { mutableStateOf<OriginalPage>(OriginalPage.PageList) }
     Dialog(
         onDismissRequest = onDismiss,
@@ -84,7 +85,11 @@ fun OriginalsViewer(onDismiss: () -> Unit) {
                 .background(Color.White)
         ) {
             when (val p = page) {
-                is OriginalPage.PageList -> OriginalsList(onOpen = { page = it }, onDismiss = onDismiss)
+                is OriginalPage.PageList -> OriginalsList(
+                    onOpen = { page = it },
+                    onDismiss = onDismiss,
+                    onApplyTheme = onApplyTheme
+                )
                 is OriginalPage.Html -> OriginalHtmlPage(
                     title = p.title,
                     asset = p.asset,
@@ -131,7 +136,11 @@ private fun ViewerTopBar(title: String, onBack: () -> Unit) {
 }
 
 @Composable
-private fun OriginalsList(onOpen: (OriginalPage) -> Unit, onDismiss: () -> Unit) {
+private fun OriginalsList(
+    onOpen: (OriginalPage) -> Unit,
+    onDismiss: () -> Unit,
+    onApplyTheme: ((String) -> Unit)?
+) {
     ViewerTopBar(title = "设计原稿（原封不动）", onBack = onDismiss)
     Column(
         modifier = Modifier
@@ -140,21 +149,30 @@ private fun OriginalsList(onOpen: (OriginalPage) -> Unit, onDismiss: () -> Unit)
             .padding(16.dp)
     ) {
         Text(
-            text = "以下均为你发来的原稿，未经改动：HTML 原样渲染，源码原样呈现。",
+            text = "以下均为你发来的原稿，未经改动：HTML 原样渲染，源码原样呈现。HTML 原稿点右边的「应用」可直接设为软件主题。",
             fontSize = 12.sp,
             color = Color(0xFF5B7A90)
         )
         Spacer(modifier = Modifier.height(16.dp))
         OriginalSectionTitle("原稿页面（原样渲染）")
-        OriginalRow("液态玻璃 · 可交互预览", "HTML 原稿，WebView 原样打开") {
-            onOpen(OriginalPage.Html("液态玻璃 · 可交互预览", "originals/liquid-glass.html"))
-        }
-        OriginalRow("macOS 风格程序坞", "HTML 原稿，WebView 原样打开") {
-            onOpen(OriginalPage.Html("macOS 风格程序坞", "originals/dock.html"))
-        }
-        OriginalRow("AERO · 千禧复兴 Frutiger Aero", "HTML 原稿，WebView 原样打开") {
-            onOpen(OriginalPage.Html("AERO · 千禧复兴", "originals/aero.html"))
-        }
+        OriginalRow(
+            "液态玻璃 · 可交互预览",
+            "HTML 原稿，WebView 原样打开",
+            onClick = { onOpen(OriginalPage.Html("液态玻璃 · 可交互预览", "originals/liquid-glass.html")) },
+            onApply = onApplyTheme?.let { apply -> { apply("liquid"); onDismiss() } }
+        )
+        OriginalRow(
+            "macOS 风格程序坞",
+            "HTML 原稿，WebView 原样打开",
+            onClick = { onOpen(OriginalPage.Html("macOS 风格程序坞", "originals/dock.html")) },
+            onApply = onApplyTheme?.let { apply -> { apply("dock"); onDismiss() } }
+        )
+        OriginalRow(
+            "AERO · 千禧复兴 Frutiger Aero",
+            "HTML 原稿，WebView 原样打开",
+            onClick = { onOpen(OriginalPage.Html("AERO · 千禧复兴", "originals/aero.html")) },
+            onApply = onApplyTheme?.let { apply -> { apply("minimal"); onDismiss() } }
+        )
         Spacer(modifier = Modifier.height(16.dp))
         OriginalSectionTitle("演示页源码（原样呈现）")
         OriginalRow("液态玻璃演示页源码", "LiquidGlassScreen.kt 原样呈现，全文可看") {
@@ -183,7 +201,12 @@ private fun OriginalSectionTitle(text: String) {
 }
 
 @Composable
-private fun OriginalRow(title: String, subtitle: String, onClick: () -> Unit) {
+private fun OriginalRow(
+    title: String,
+    subtitle: String,
+    onApply: (() -> Unit)? = null,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -195,6 +218,18 @@ private fun OriginalRow(title: String, subtitle: String, onClick: () -> Unit) {
             Text(text = title, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = Color(0xFF0A2540))
             Spacer(modifier = Modifier.height(2.dp))
             Text(text = subtitle, fontSize = 12.sp, color = Color(0xFF5B7A90))
+        }
+        if (onApply != null) {
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "应用",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF007AFF),
+                modifier = Modifier
+                    .clickable(onClick = onApply)
+                    .padding(horizontal = 6.dp, vertical = 4.dp)
+            )
         }
         Icon(Icons.Filled.KeyboardArrowRight, "打开", tint = Color(0xFF9FB3D1))
     }
