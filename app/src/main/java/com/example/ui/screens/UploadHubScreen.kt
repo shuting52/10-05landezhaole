@@ -1272,7 +1272,6 @@ private fun downloadApptekaApk(
     onProgress: (Boolean) -> Unit = {},
     onCompleted: () -> Unit = {}
 ) {
-    // 2026-10-24：改走 WaveDownloadManager 弹窗（用户要求搜索结果也显示下载弹窗）
     CoroutineScope(Dispatchers.IO).launch {
         try {
             withContext(Dispatchers.Main) { onProgress(true) }
@@ -1289,26 +1288,58 @@ private fun downloadApptekaApk(
             val safeName = "${item.label}${safeVer}.apk"
                 .replace(" ", "_")
                 .replace(Regex("[\\\\/:*?\"<>|]"), "_")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "🚀 正在应用内直接高速下载 ${item.label}…", Toast.LENGTH_SHORT).show()
+            }
+
+            // 保存到应用缓存私有目录供 FileProvider 实时真实安装
+            val downloadDir = File(context.cacheDir, "apk_downloads").apply { mkdirs() }
+            val apkFile = File(downloadDir, safeName)
+
+            // OkHttp 直接下载，带 Appteka UA 和 Referer，自动跟随重定向
+            val client = OkHttpClient.Builder()
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(180, TimeUnit.SECONDS)
+                .followRedirects(true)
+                .followSslRedirects(true)
+                .build()
+            val request = Request.Builder()
+                .url(directUrl)
+                .header("User-Agent", "Appteka/23.0 Android")
+                .header("Referer", "https://appteka.store/")
+                .build()
+            val response = client.newCall(request).execute()
+            response.use { resp ->
+                if (!resp.isSuccessful) {
+                    throw Exception("HTTP ${resp.code}")
+                }
+                val body = resp.body ?: throw Exception("空响应")
+                apkFile.outputStream().use { fileOut ->
+                    body.byteStream().use { input ->
+                        input.copyTo(fileOut)
+                    }
+                }
+            }
+
             withContext(Dispatchers.Main) {
                 onProgress(false)
                 onCompleted()
-                // 走统一下载弹窗
-                WaveDownloadManager.start(context, item.label, directUrl, safeName, isApk = true)
+                Toast.makeText(context, "🎉 ${item.label} 下载成功，正在拉起真实安装…", Toast.LENGTH_SHORT).show()
+                val installOk = installApkDirectly(context, apkFile)
+                if (!installOk) {
+                    Toast.makeText(context, "安装包已就绪：${apkFile.name}", Toast.LENGTH_LONG).show()
+                }
             }
         } catch (e: Exception) {
+            // v1.7.20：应用内下载失败只提示错误，不再跳转浏览器（用户需求）
             withContext(Dispatchers.Main) {
                 onProgress(false)
                 Toast.makeText(context, "下载失败，请检查网络后重试", Toast.LENGTH_LONG).show()
             }
         }
     }
-}
-
-@Deprecated("已改走 WaveDownloadManager 弹窗，保留仅防外部引用")
-private fun downloadApptekaApkDirect(
-    context: Context,
-    item: ApptekaAppItem,
-    onProgress: (Boolean) -> Unit = {},
+},
     onCompleted: () -> Unit = {}
 ) {
     CoroutineScope(Dispatchers.IO).launch {
