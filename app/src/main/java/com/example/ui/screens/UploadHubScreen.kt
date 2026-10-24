@@ -1018,7 +1018,9 @@ internal object WaveDownloadManager {
                     rangeUnsupported = true
                     break
                 } catch (e: Exception) {
-                    if (!isActive) throw CancellationException()
+                    // 2026-10-24：CoroutineScope 没有 isActive 属性（上次已吃过亏），
+                    // 查取消一律用 ensureActive()，它在取消时直接抛 CancellationException
+                    ensureActive()
                     lastError = e
                 }
             }
