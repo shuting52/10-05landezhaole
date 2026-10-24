@@ -250,7 +250,7 @@ fun AeroButton(
 
     Box(
         modifier = modifier
-            .then(if (block) Modifier.fillMaxWidth() else Modifier)
+            .let { m -> if (block) m.fillMaxWidth() else m }
             .scale(scale)
             .shadow(6.dp, RoundedCornerShape(radius), ambientColor = glowColor)
             .clip(RoundedCornerShape(radius))
@@ -523,7 +523,7 @@ fun AeroCheckbox(
             modifier = Modifier
                 .size(26.dp)
                 .clip(RoundedCornerShape(9.dp))
-                .background(if (checked) AeroBrush.blueButton else Color.White.copy(alpha = 0.8f))
+                .background(brush = if (checked) AeroBrush.blueButton else Brush.linearGradient(listOf(Color.White.copy(alpha = 0.8f), Color.White.copy(alpha = 0.8f))), shape = RoundedCornerShape(9.dp))
                 .border(
                     1.5.dp,
                     if (checked) Color.Transparent else AeroColors.blue.copy(alpha = 0.4f),
@@ -631,14 +631,14 @@ fun AeroSegmented(
                 modifier = Modifier
                     .weight(1f)
                     .clip(CircleShape)
-                    .background(if (selected) AeroBrush.blueButton else Color.Transparent)
-                    .then(
-                        if (selected) Modifier.shadow(
+                    .background(brush = if (selected) AeroBrush.blueButton else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent)), shape = CircleShape)
+                    .let { m ->
+                        if (selected) m.shadow(
                             3.dp,
                             CircleShape,
                             ambientColor = AeroColors.blue.copy(alpha = 0.35f)
-                        ) else Modifier
-                    )
+                        ) else m
+                    }
                     .clickable { onSelect(i) }
                     .padding(vertical = 10.dp),
                 contentAlignment = Alignment.Center
@@ -798,19 +798,19 @@ fun AeroChip(
     Box(
         modifier = modifier
             .clip(CircleShape)
-            .background(if (selected) AeroBrush.blueButton else Color.White.copy(alpha = 0.55f))
+            .background(brush = if (selected) AeroBrush.blueButton else Brush.linearGradient(listOf(Color.White.copy(alpha = 0.55f), Color.White.copy(alpha = 0.55f))), shape = CircleShape)
             .border(
                 1.5.dp,
                 if (selected) Color.Transparent else AeroColors.blue.copy(alpha = 0.35f),
                 CircleShape
             )
-            .then(
-                if (selected) Modifier.shadow(
+            .let { m ->
+                if (selected) m.shadow(
                     4.dp,
                     CircleShape,
                     ambientColor = AeroColors.blue.copy(alpha = 0.35f)
-                ) else Modifier
-            )
+                ) else m
+            }
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center
