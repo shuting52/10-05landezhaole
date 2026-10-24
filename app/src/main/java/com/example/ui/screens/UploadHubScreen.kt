@@ -105,6 +105,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -867,6 +868,23 @@ private fun WaveDownloadDialog() {
         else -> ""
     }
 
+    // 2026-10-24：七彩跑马灯边框（用户要求）
+    val rainbowTransition = rememberInfiniteTransition(label = "rainbowBorder")
+    val rainbowAngle by rainbowTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(3000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "rainbowAngle"
+    )
+    val rainbowColors = listOf(
+        Color(0xFFFF0000), Color(0xFFFF7F00), Color(0xFFFFFF00),
+        Color(0xFF00FF00), Color(0xFF0000FF), Color(0xFF8B00FF),
+        Color(0xFFFF0000)
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -876,6 +894,20 @@ private fun WaveDownloadDialog() {
             modifier = Modifier
                 .align(Alignment.Center)
                 .width(320.dp)
+                .drawBehind {
+                    // 旋转的七彩边框（跑马灯效果）
+                    val strokeWidth = 3.dp.toPx()
+                    val radius = 24.dp.toPx()
+                    rotate(rainbowAngle, pivot = center) {
+                        drawRoundRect(
+                            brush = Brush.sweepGradient(colors = rainbowColors, center = center),
+                            topLeft = androidx.compose.ui.geometry.Offset.Zero,
+                            size = size,
+                            cornerRadius = androidx.compose.ui.geometry.CornerRadius(radius, radius),
+                            style = androidx.compose.ui.graphics.drawscope.Stroke(strokeWidth)
+                        )
+                    }
+                }
                 .background(Color.White.copy(alpha = 0.92f), RoundedCornerShape(24.dp))
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -964,13 +996,6 @@ private fun WaveDownloadDialog() {
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "${(ui.progress * 100).toInt()}%",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF111827)
-            )
             Spacer(modifier = Modifier.height(20.dp))
 
             // 底部按钮组
@@ -2897,13 +2922,8 @@ fun getRealisticSoftwareStats(title: String, desc: String, url: String, timestam
     val d = desc.lowercase()
     val combined = "$t $d $url"
 
-    val dateStr = if (timestamp > 1600000000000L) {
-        val cal = java.util.Calendar.getInstance().apply { timeInMillis = timestamp }
-        String.format("%02d-%02d", cal.get(java.util.Calendar.MONTH) + 1, cal.get(java.util.Calendar.DAY_OF_MONTH))
-    } else {
-        val seed = kotlin.math.abs(title.hashCode())
-        "10-0${1 + (seed % 4)}"
-    }
+    // 2026-10-24：用户要求时间固定为 2026-05-14，不跟随网络/系统时间变动
+    val dateStr = "2026-05-14"
 
     val (size, downloads) = when {
         t.contains("everything") -> "3.5 MB" to "8520万"
