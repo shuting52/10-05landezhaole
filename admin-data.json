@@ -1,15 +1,15 @@
 {
   "version": {
-    "code": 286,
-    "name": "1.7.76",
+    "code": 287,
+    "name": "1.7.77",
     "changelog": [
-      "✨ v1.7.76 更新来啦～",
-      "feat: 外观底栏主题四选一，新增浅色毛玻璃程序坞底栏"
+      "✨ v1.7.77 更新来啦～",
+      "feat: 新增柔影/柔光/黏土三套主题及专属底栏"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.76-1792828976.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.76-1792828976.apk",
-    "lastBuildSha": "b35036fa82b4f50d685a67fb287d9263c3b7241c",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.77-1792829554.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.77-1792829554.apk",
+    "lastBuildSha": "fb78a881b871f81cc0c17bf219a5966fa78d989e",
     "apkSize": 23996904
   },
   "home": {
@@ -24328,10 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.76 已上线",
+    "title": "懒得找了 v1.7.77 已上线",
     "changelog": [
-      "✨ v1.7.76 更新来啦～",
-      "feat: 外观底栏主题四选一，新增浅色毛玻璃程序坞底栏"
+      "✨ v1.7.77 更新来啦～",
+      "feat: 新增柔影/柔光/黏土三套主题及专属底栏"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24393,10 +24393,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.76",
-      "code": 286,
-      "at": "2026-10-24T08:03:03Z",
-      "sha": "b35036fa82b4f50d685a67fb287d9263c3b7241c"
+      "version": "1.7.77",
+      "code": 287,
+      "at": "2026-10-24T08:12:39Z",
+      "sha": "fb78a881b871f81cc0c17bf219a5966fa78d989e"
     }
   },
   "_ai_notice": "内容由AI生成"
