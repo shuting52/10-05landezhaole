@@ -1,16 +1,16 @@
 {
   "version": {
-    "code": 274,
-    "name": "1.7.64",
+    "code": 275,
+    "name": "1.7.65",
     "changelog": [
-      "✨ v1.7.64 更新来啦～",
-      "fix: 3卡片布局"
+      "✨ v1.7.65 更新来啦～",
+      "feat: Frutiger Aero 风格"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.64-1792810305.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.64-1792810305.apk",
-    "lastBuildSha": "8461b46ebb8b3c60b126b3727ec652caf13a304c",
-    "apkSize": 23947752
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.65-1792811072.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.65-1792811072.apk",
+    "lastBuildSha": "04ca3669c1a4bb702791b8ac226c8b63f3a33890",
+    "apkSize": 23931368
   },
   "home": {
     "categories": [
@@ -24328,10 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.64 已上线",
+    "title": "懒得找了 v1.7.65 已上线",
     "changelog": [
-      "✨ v1.7.64 更新来啦～",
-      "fix: 3卡片布局"
+      "✨ v1.7.65 更新来啦～",
+      "feat: Frutiger Aero 风格"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24393,10 +24393,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.64",
-      "code": 274,
-      "at": "2026-10-24T02:51:52Z",
-      "sha": "8461b46ebb8b3c60b126b3727ec652caf13a304c"
+      "version": "1.7.65",
+      "code": 275,
+      "at": "2026-10-24T03:04:38Z",
+      "sha": "04ca3669c1a4bb702791b8ac226c8b63f3a33890"
     }
   },
   "_ai_notice": "内容由AI生成"
