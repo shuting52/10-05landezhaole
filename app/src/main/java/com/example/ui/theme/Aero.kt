@@ -994,7 +994,7 @@ fun AeroToast(message: String, visible: Boolean, modifier: Modifier = Modifier) 
 // fa-bub · 底栏选中气泡（浮动动画）
 // ============================================================
 @Composable
-fun AeroBubble(modifier: Modifier = Modifier) {
+fun AeroBubble(modifier: Modifier = Modifier, size: Dp = 16.dp) {
     val transition = rememberInfiniteTransition(label = "aeroBub")
     val floatY by transition.animateFloat(
         initialValue = 0f,
@@ -1007,7 +1007,7 @@ fun AeroBubble(modifier: Modifier = Modifier) {
     )
     Text(
         text = "🫧",
-        fontSize = 16.sp,
+        fontSize = size.value.sp,
         modifier = modifier.offset(y = floatY.dp)
     )
 }
