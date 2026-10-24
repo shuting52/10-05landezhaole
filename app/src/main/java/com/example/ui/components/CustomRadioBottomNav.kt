@@ -139,12 +139,16 @@ fun CustomRadioBottomNav(
         DesignStyle.NEO_BRUTALISM -> 8.dp
         // 2026-10-23：jicun 底栏跟随卡片 20dp
         DesignStyle.JICUN -> 20.dp
+        // 2026-10-24：Frutiger Aero 底栏 26dp（设计稿 .fa-tabbar）
+        DesignStyle.AERO -> 26.dp
         else -> 18.dp
     }
     val navPillCorner = when (themeColors.designStyle) {
         DesignStyle.HAND_DRAWN -> 16.dp
         DesignStyle.CARTOON -> 20.dp
         DesignStyle.AURORA -> 18.dp
+        // 2026-10-24：Frutiger Aero 胶囊 20dp（设计稿 .fa-pill）
+        DesignStyle.AERO -> 20.dp
         else -> 12.dp
     }
     val navItems = listOf(
@@ -241,9 +245,12 @@ fun CustomRadioBottomNav(
         DesignStyle.NEUMORPHISM -> themeColors.background
         DesignStyle.GLASSMORPHISM, DesignStyle.AURORA -> Color.White.copy(alpha = 0.60f)
         DesignStyle.HAND_DRAWN -> Color.White.copy(alpha = 0.85f)
+        // 2026-10-24：Frutiger Aero 底栏玻璃（设计稿 .fa-tabbar 白→浅蓝渐变基底）
+        DesignStyle.AERO -> Color(0xFFE4F4FE)
         else -> themeColors.surface.copy(alpha = 0.92f)
     }
     val isBrutalistBar = themeColors.designStyle == DesignStyle.NEO_BRUTALISM
+    val isAeroBar = themeColors.designStyle == DesignStyle.AERO
     val barModifier = if (glassStyle) {
         modifier
             .fillMaxWidth()
@@ -252,10 +259,24 @@ fun CustomRadioBottomNav(
             .shadow(14.dp, RoundedCornerShape(navCorner), ambientColor = Color.Black.copy(alpha = 0.18f))
             .clip(RoundedCornerShape(navCorner))
             // 长按时背景更透明，玻璃质感增强
-            .background(barBaseColor.copy(alpha = glassBgAlpha))
+            // 2026-10-24：Frutiger Aero 用白→浅蓝垂直渐变（设计稿 .fa-tabbar）
+            .then(
+                if (isAeroBar) Modifier.background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color.White.copy(alpha = 0.88f * glassBgAlpha + 0.12f * (1f - glassBgAlpha)),
+                            Color(0xFFA5DCFA).copy(alpha = 0.60f * glassBgAlpha + 0.12f * (1f - glassBgAlpha))
+                        )
+                    )
+                )
+                else Modifier.background(barBaseColor.copy(alpha = glassBgAlpha))
+            )
             .border(
                 if (isBrutalistBar) 2.dp else 1.dp,
-                if (isBrutalistBar) themeColors.border else themeColors.primary.copy(alpha = 0.12f),
+                if (isBrutalistBar) themeColors.border
+                // 2026-10-24：Frutiger Aero 白色亮边（设计稿 border: 1px solid rgba(255,255,255,.95)）
+                else if (isAeroBar) Color.White.copy(alpha = 0.95f)
+                else themeColors.primary.copy(alpha = 0.12f),
                 RoundedCornerShape(navCorner)
             )
             .padding(horizontal = 6.dp, vertical = 5.dp)
@@ -281,6 +302,8 @@ fun CustomRadioBottomNav(
         label = "liquidPillX"
     )
     // 2026-10-24：改成 Apple iOS 26 Liquid Glass 风格 —— 更通透、高光克制
+    // 2026-10-24：Frutiger Aero 下用蓝色玻璃胶囊（设计稿 .fa-pill）
+    val isAeroPill = themeColors.designStyle == DesignStyle.AERO
     val liquidPillBg = if (glassStyle) {
         Modifier.drawBehind {
             val tabW = size.width / navItems.size
@@ -294,6 +317,53 @@ fun CustomRadioBottomNav(
             val w = right - left
             val h = bottom - top
             if (w <= 0 || h <= 0) return@drawBehind
+            if (isAeroPill) {
+                // Frutiger Aero 蓝色玻璃胶囊：蓝渐变 + 白亮边 + 蓝色光晕
+                // 1. 蓝色光晕
+                drawRoundRect(
+                    color = Color(0xFF00A8E8).copy(alpha = 0.22f),
+                    topLeft = Offset(left - 6.dp.toPx(), top - 3.dp.toPx()),
+                    size = Size(w + 12.dp.toPx(), h + 6.dp.toPx()),
+                    cornerRadius = CornerRadius(corner + 6.dp.toPx())
+                )
+                // 2. 主体：蓝渐变玻璃
+                drawRoundRect(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF00A8E8).copy(alpha = 0.32f),
+                            Color(0xFF00A8E8).copy(alpha = 0.10f)
+                        ),
+                        startY = top,
+                        endY = bottom
+                    ),
+                    topLeft = Offset(left, top),
+                    size = Size(w, h),
+                    cornerRadius = CornerRadius(corner)
+                )
+                // 3. 顶部高光
+                drawRoundRect(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.8f),
+                            Color.White.copy(alpha = 0.0f)
+                        ),
+                        startY = top,
+                        endY = top + h * 0.45f
+                    ),
+                    topLeft = Offset(left, top),
+                    size = Size(w, h * 0.45f),
+                    cornerRadius = CornerRadius(corner)
+                )
+                // 4. 白亮边
+                drawRoundRect(
+                    color = Color.White.copy(alpha = 0.7f),
+                    topLeft = Offset(left, top),
+                    size = Size(w, h),
+                    cornerRadius = CornerRadius(corner),
+                    style = Stroke(1.dp.toPx())
+                )
+                return@drawBehind
+            }
             // 1. 底层柔光（液体边缘）
             drawRoundRect(
                 color = Color.White.copy(alpha = 0.28f),
