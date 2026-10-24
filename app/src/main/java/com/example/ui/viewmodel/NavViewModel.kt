@@ -62,7 +62,6 @@ data class NavUiState(
     val atmosphereEffect: AtmosphereEffect = AtmosphereEffect.NONE,
     // v1.2.0：动态效果主题
     val dynamicEffect: DynamicEffectPreset = DynamicEffectPreset.NONE,
-    val isThemeDialogVisible: Boolean = false,
     val activeUiverseState: ActiveUiverseState = ActiveUiverseState(),
     val categories: List<NavCategory> = NavData.categories,
     val selectedCategoryId: String = NavData.categories.firstOrNull()?.id ?: "ai_models",
@@ -576,10 +575,6 @@ class NavViewModel(
         _uiState.value = _uiState.value.copy(dynamicEffect = effect)
     }
 
-    fun setThemeDialogVisible(visible: Boolean) {
-        _uiState.value = _uiState.value.copy(isThemeDialogVisible = visible)
-    }
-
 
 
     fun applyUiverseKit(kit: UiKitPreset) {
@@ -1050,29 +1045,14 @@ class NavViewModel(
     fun restoreAppearance() {
         try {
             val prefs = appearancePrefs() ?: return
-            // 2026-10-23：新主题 id；老用户一次性迁移（旧 theme_mode=DARK → 暗黑街头）
-            val savedId = prefs.getString("app_theme_id", null)
-            val validId = if (savedId != null && com.example.ui.theme.APP_THEMES.any { it.id == savedId }) {
-                savedId
-            } else {
-                val legacyDark = prefs.getString("theme_mode", "LIGHT") == "DARK"
-                if (legacyDark) "street" else com.example.ui.theme.DEFAULT_APP_THEME_ID
-            }
+            // 2026-10-24：主题已删除，只用极简默认
             _uiState.value = _uiState.value.copy(
-                appThemeId = validId,
+                appThemeId = com.example.ui.theme.DEFAULT_APP_THEME_ID,
                 uiScale = prefs.getFloat("ui_scale", 1f).coerceIn(0.8f, 1.3f),
                 hideTabLabels = prefs.getBoolean("hide_tab_labels", false),
                 glassBottomBar = prefs.getBoolean("glass_bottom_bar", true)
             )
         } catch (_: Exception) { }
-    }
-
-    /** 2026-10-23：切换 14 套新主题（点击即全局应用，持久化） */
-    fun setAppTheme(id: String) {
-        val validId = if (com.example.ui.theme.APP_THEMES.any { it.id == id }) id
-            else com.example.ui.theme.DEFAULT_APP_THEME_ID
-        _uiState.value = _uiState.value.copy(appThemeId = validId)
-        try { appearancePrefs()?.edit()?.putString("app_theme_id", validId)?.apply() } catch (_: Exception) { }
     }
 
     fun setUiScale(scale: Float) {
