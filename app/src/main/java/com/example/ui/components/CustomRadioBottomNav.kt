@@ -458,6 +458,12 @@ fun CustomRadioBottomNav(
                         .padding(vertical = if (glassStyle) 5.dp else 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    // 2026-10-24 Frutiger Aero：选中 tab 顶部浮动气泡 🫧（设计稿 .fa-bub）
+                    if (isSelected && isAeroBar && glassStyle) {
+                        com.example.ui.theme.AeroBubble(
+                            modifier = Modifier.offset(y = (-4).dp)
+                        )
+                    }
                     // 假 z-index:9999 层：图标与红点徽标绘制在玻璃之上，保持锐利不被折射
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
