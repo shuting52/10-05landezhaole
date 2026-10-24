@@ -39,6 +39,9 @@ import androidx.compose.material.icons.filled.ChildCare
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Videocam
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LightMode
@@ -107,6 +110,12 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.ui.viewmodel.NavViewModel
+import com.example.ui.theme.AeroCard
+import com.example.ui.theme.AeroSectionTitle
+import com.example.ui.theme.AeroSwitch
+import com.example.ui.theme.AeroSlider
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -184,7 +193,12 @@ fun SettingsScreen(
     onCheckUpdate: (suspend () -> Pair<Boolean, VersionDto?>)? = null,
     modifier: Modifier = Modifier,
     // v1.2.6：设置页标题/副标题（控制台 UI 文本可云端覆盖）
-    uiText: com.example.data.remote.UiTextDto? = null
+    uiText: com.example.data.remote.UiTextDto? = null,
+    // 2026-10-24：恢复外观设置入口（背景/底栏/缩放）
+    viewModel: NavViewModel? = null,
+    onPickBgImage: () -> Unit = {},
+    onPickBgVideo: () -> Unit = {},
+    onClearBg: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -462,6 +476,72 @@ fun SettingsScreen(
                 )
             )
         )
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        // 2026-10-24：恢复外观设置（背景图片/视频、底栏液态玻璃、界面缩放）
+        if (viewModel != null) {
+            val appearanceState by viewModel.uiState.collectAsStateWithLifecycle()
+            Text(
+                text = "\uD83C\uDFA8 外观与背景",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Black,
+                color = LocalThemeUiColors.current.primary,
+                modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
+            )
+            AeroCard {
+                AeroSectionTitle(text = "背景图片 / 视频")
+                SettingsClickableItem(
+                    title = "选择背景图片",
+                    subtitle = if (appearanceState.localBgMediaType == "image") "已设置自定义图片" else "从相册选择",
+                    icon = Icons.Filled.Image,
+                    iconColor = Color(0xFF00A8E8),
+                    onClick = onPickBgImage
+                )
+                SettingsClickableItem(
+                    title = "选择背景视频",
+                    subtitle = if (appearanceState.localBgMediaType == "video") "已设置自定义视频" else "从相册选择",
+                    icon = Icons.Filled.Videocam,
+                    iconColor = Color(0xFF7ED957),
+                    onClick = onPickBgVideo
+                )
+                if (appearanceState.localBgMediaType == "image" || appearanceState.localBgMediaType == "video") {
+                    SettingsClickableItem(
+                        title = "清除自定义背景",
+                        subtitle = "恢复默认主题背景",
+                        icon = Icons.Filled.DeleteOutline,
+                        iconColor = Color(0xFFC0392B),
+                        onClick = onClearBg
+                    )
+                }
+                AeroSwitch(
+                    checked = appearanceState.glassBottomBar,
+                    onCheckedChange = { viewModel.setGlassBottomBar(it) },
+                    title = "底栏液态玻璃风格",
+                    desc = "关闭则使用渐变按钮样式"
+                )
+                Column(modifier = Modifier.padding(vertical = 6.dp)) {
+                    Text(
+                        text = "界面缩放",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF0A2540)
+                    )
+                    Text(
+                        text = "当前 ${(appearanceState.uiScale * 100).toInt()}%",
+                        fontSize = 12.sp,
+                        color = Color(0xFF5B7A90),
+                        modifier = Modifier.padding(top = 2.dp, bottom = 4.dp)
+                    )
+                    AeroSlider(
+                        value = appearanceState.uiScale,
+                        onValueChange = { viewModel.setUiScale(it) },
+                        valueRange = 0.8f..1.2f
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(14.dp))
+        }
 
         Spacer(modifier = Modifier.height(18.dp))
 
