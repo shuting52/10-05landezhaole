@@ -55,7 +55,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -79,7 +78,6 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -910,10 +908,31 @@ private fun DockBottomBar(
 ) {
     val density = LocalDensity.current
     var focusX by remember { mutableStateOf<Float?>(null) }
-    // 2026-10-24：不用 positionInParent（本工程 Compose BOM 2024.09 解析不到）；
-    // 改用 positionInRoot：存图标根坐标，减 Row 根坐标得坞内相对坐标
-    var rowRootX by remember { mutableStateOf(0f) }
-    val tileRootCenters = remember { mutableStateMapOf<AppBottomTab, Float>() }
+    // 2026-10-24：本工程 Compose 版本解析不到 positionInRoot/positionInParent，
+    // 改用确定性布局计算：坞内子项顺序固定（tile, tile, tile, sep, tile），
+    // 尺寸全是定值（图标 52dp、间距 10dp、分隔线 1dp），中心坐标直接算出；
+    // 若 Tab 数不是 4 个，centers 为空，放大自动退化为 1（不影响点击）
+    val tileCentersPx = remember(density, navItems.size) {
+        if (navItems.size != 4) emptyMap()
+        else {
+            val tile = with(density) { 52.dp.toPx() }
+            val gap = with(density) { 10.dp.toPx() }
+            val sep = with(density) { 1.dp.toPx() }
+            val map = mutableMapOf<AppBottomTab, Float>()
+            var x = 0f
+            // 子项：tile0, tile1, tile2, sep, tile3；相邻间 gap
+            val tabs = listOf(
+                navItems[0].tab, navItems[1].tab, navItems[2].tab, null, navItems[3].tab
+            )
+            val widths = listOf(tile, tile, tile, sep, tile)
+            tabs.forEachIndexed { ci, tab ->
+                if (ci > 0) x += gap
+                if (tab != null) map[tab] = x + widths[ci] / 2f
+                x += widths[ci]
+            }
+            map
+        }
+    }
     val sigmaPx = with(density) { 62.dp.toPx() }
     val liftPx = with(density) { 34.dp.toPx() }
 
@@ -945,9 +964,7 @@ private fun DockBottomBar(
             Row(
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier
-                    .onGloballyPositioned { rowRootX = it.positionInRoot().x }
-                    .pointerInput(Unit) {
+                modifier = Modifier.pointerInput(Unit) {
                     detectHorizontalDragGestures(
                         onDragStart = { focusX = it.x },
                         onHorizontalDrag = { change, _ ->
@@ -971,7 +988,7 @@ private fun DockBottomBar(
                         )
                     }
                     val isSelected = selectedTab == item.tab
-                    val center = tileRootCenters[item.tab]?.let { it - rowRootX }
+                    val center = tileCentersPx[item.tab]
                     val fx = focusX
                     val scale = if (fx != null && center != null) {
                         val d = kotlin.math.abs(fx - center)
@@ -987,10 +1004,6 @@ private fun DockBottomBar(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Box(
                             modifier = Modifier
-                                .onGloballyPositioned { coords ->
-                                    tileRootCenters[item.tab] =
-                                        coords.positionInRoot().x + coords.size.width / 2f
-                                }
                                 .graphicsLayer {
                                     scaleX = scale
                                     scaleY = scale
