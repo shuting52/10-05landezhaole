@@ -1,21 +1,15 @@
 {
   "version": {
-    "code": 272,
-    "name": "1.7.62",
+    "code": 273,
+    "name": "1.7.63",
     "changelog": [
-      "✨ v1.7.62 更新来啦～",
-      "fix: 补 drawBehind import",
-      "feat: 主题精简更新",
-      "feat: 主题精简更新",
-      "feat: 主题精简更新",
-      "feat: 主题精简更新",
-      "feat: 主题精简更新",
-      "feat: 极简主题（单文件测试）"
+      "✨ v1.7.63 更新来啦～",
+      "fix: 下载兜底+搜索弹窗"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.62-1792806139.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.62-1792806139.apk",
-    "lastBuildSha": "bae0a7d7d8cc0b1b55b094e30cad211f039d4370",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.63-1792809052.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.63-1792809052.apk",
+    "lastBuildSha": "452136d58990ff148239d3dc4d3f2e72618b9a38",
     "apkSize": 23931368
   },
   "home": {
@@ -24334,16 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.62 已上线",
+    "title": "懒得找了 v1.7.63 已上线",
     "changelog": [
-      "✨ v1.7.62 更新来啦～",
-      "fix: 补 drawBehind import",
-      "feat: 主题精简更新",
-      "feat: 主题精简更新",
-      "feat: 主题精简更新",
-      "feat: 主题精简更新",
-      "feat: 主题精简更新",
-      "feat: 极简主题（单文件测试）"
+      "✨ v1.7.63 更新来啦～",
+      "fix: 下载兜底+搜索弹窗"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24405,10 +24393,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.62",
-      "code": 272,
-      "at": "2026-10-24T01:42:26Z",
-      "sha": "bae0a7d7d8cc0b1b55b094e30cad211f039d4370"
+      "version": "1.7.63",
+      "code": 273,
+      "at": "2026-10-24T02:31:00Z",
+      "sha": "452136d58990ff148239d3dc4d3f2e72618b9a38"
     }
   },
   "_ai_notice": "内容由AI生成"
