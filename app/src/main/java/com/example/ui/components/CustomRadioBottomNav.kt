@@ -910,7 +910,10 @@ private fun DockBottomBar(
 ) {
     val density = LocalDensity.current
     var focusX by remember { mutableStateOf<Float?>(null) }
-    val tileCenters = remember { mutableStateMapOf<AppBottomTab, Float>() }
+    // 2026-10-24：不用 positionInParent（本工程 Compose BOM 2024.09 解析不到）；
+    // 改用 positionInRoot：存图标根坐标，减 Row 根坐标得坞内相对坐标
+    var rowRootX by remember { mutableStateOf(0f) }
+    val tileRootCenters = remember { mutableStateMapOf<AppBottomTab, Float>() }
     val sigmaPx = with(density) { 62.dp.toPx() }
     val liftPx = with(density) { 34.dp.toPx() }
 
@@ -942,7 +945,9 @@ private fun DockBottomBar(
             Row(
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.pointerInput(Unit) {
+                modifier = Modifier
+                    .onGloballyPositioned { rowRootX = it.positionInRoot().x }
+                    .pointerInput(Unit) {
                     detectHorizontalDragGestures(
                         onDragStart = { focusX = it.x },
                         onHorizontalDrag = { change, _ ->
@@ -966,7 +971,7 @@ private fun DockBottomBar(
                         )
                     }
                     val isSelected = selectedTab == item.tab
-                    val center = tileCenters[item.tab]
+                    val center = tileRootCenters[item.tab]?.let { it - rowRootX }
                     val fx = focusX
                     val scale = if (fx != null && center != null) {
                         val d = kotlin.math.abs(fx - center)
@@ -983,8 +988,8 @@ private fun DockBottomBar(
                         Box(
                             modifier = Modifier
                                 .onGloballyPositioned { coords ->
-                                    tileCenters[item.tab] =
-                                        coords.positionInParent().x + coords.size.width / 2f
+                                    tileRootCenters[item.tab] =
+                                        coords.positionInRoot().x + coords.size.width / 2f
                                 }
                                 .graphicsLayer {
                                     scaleX = scale
