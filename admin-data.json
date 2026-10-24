@@ -1,16 +1,22 @@
 {
   "version": {
-    "code": 271,
-    "name": "1.7.61",
+    "code": 272,
+    "name": "1.7.62",
     "changelog": [
-      "✨ v1.7.61 更新来啦～",
-      "feat: 彻底移除去水印功能（用户要求）"
+      "✨ v1.7.62 更新来啦～",
+      "fix: 补 drawBehind import",
+      "feat: 主题精简更新",
+      "feat: 主题精简更新",
+      "feat: 主题精简更新",
+      "feat: 主题精简更新",
+      "feat: 主题精简更新",
+      "feat: 极简主题（单文件测试）"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.61-1792803717.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.61-1792803717.apk",
-    "lastBuildSha": "d20864f0ccb2787fd51d018deb595bde2d9e55a3",
-    "apkSize": 23964136
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.62-1792806139.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.62-1792806139.apk",
+    "lastBuildSha": "bae0a7d7d8cc0b1b55b094e30cad211f039d4370",
+    "apkSize": 23931368
   },
   "home": {
     "categories": [
@@ -24328,10 +24334,16 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.61 已上线",
+    "title": "懒得找了 v1.7.62 已上线",
     "changelog": [
-      "✨ v1.7.61 更新来啦～",
-      "feat: 彻底移除去水印功能（用户要求）"
+      "✨ v1.7.62 更新来啦～",
+      "fix: 补 drawBehind import",
+      "feat: 主题精简更新",
+      "feat: 主题精简更新",
+      "feat: 主题精简更新",
+      "feat: 主题精简更新",
+      "feat: 主题精简更新",
+      "feat: 极简主题（单文件测试）"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24393,10 +24405,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.61",
-      "code": 271,
-      "at": "2026-10-24T01:02:03Z",
-      "sha": "d20864f0ccb2787fd51d018deb595bde2d9e55a3"
+      "version": "1.7.62",
+      "code": 272,
+      "at": "2026-10-24T01:42:26Z",
+      "sha": "bae0a7d7d8cc0b1b55b094e30cad211f039d4370"
     }
   },
   "_ai_notice": "内容由AI生成"
