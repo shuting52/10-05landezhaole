@@ -1,16 +1,15 @@
 {
   "version": {
-    "code": 295,
-    "name": "1.7.85",
+    "code": 296,
+    "name": "1.7.86",
     "changelog": [
-      "✨ v1.7.85 更新来啦～",
-      "v1.7.85 fix: 演示页改源码呈现（原文件编不过，不动原文件）+ 修查看器 List 撞名",
-      "v1.7.85: 设计原稿馆（HTML/演示页/源码原封不动呈现）"
+      "✨ v1.7.86 更新来啦～",
+      "v1.7.86: 选主题自动带底栏（setAppTheme 时底栏样式回到跟随主题）"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.85-1792852694.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.85-1792852694.apk",
-    "lastBuildSha": "a0f54e37a36a90a1ae7564b7fef8af4c51261ccd",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.86-1792883874.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.86-1792883874.apk",
+    "lastBuildSha": "f9c9e27ec4113bdac99701ae426e6d6b51385ca5",
     "apkSize": 24123462
   },
   "home": {
@@ -24329,11 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.85 已上线",
+    "title": "懒得找了 v1.7.86 已上线",
     "changelog": [
-      "✨ v1.7.85 更新来啦～",
-      "v1.7.85 fix: 演示页改源码呈现（原文件编不过，不动原文件）+ 修查看器 List 撞名",
-      "v1.7.85: 设计原稿馆（HTML/演示页/源码原封不动呈现）"
+      "✨ v1.7.86 更新来啦～",
+      "v1.7.86: 选主题自动带底栏（setAppTheme 时底栏样式回到跟随主题）"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24395,10 +24393,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.85",
-      "code": 295,
-      "at": "2026-10-24T14:38:22Z",
-      "sha": "a0f54e37a36a90a1ae7564b7fef8af4c51261ccd"
+      "version": "1.7.86",
+      "code": 296,
+      "at": "2026-10-24T23:18:01Z",
+      "sha": "f9c9e27ec4113bdac99701ae426e6d6b51385ca5"
     }
   },
   "_ai_notice": "内容由AI生成"
