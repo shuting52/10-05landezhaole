@@ -1072,8 +1072,10 @@ class NavViewModel(
         try {
             val validId = if (com.example.ui.theme.APP_THEMES.any { it.id == themeId }) themeId
                 else com.example.ui.theme.DEFAULT_APP_THEME_ID
-            _uiState.value = _uiState.value.copy(appThemeId = validId)
-            appearancePrefs()?.edit()?.putString("app_theme_id", validId)?.apply()
+            // 2026-10-25：用户拍板"选主题就自带底栏"：选主题时底栏样式回到跟随主题，
+            // 之后再单独换底栏样式仍然有效（setBottomBarStyle 不受影响）
+            _uiState.value = _uiState.value.copy(appThemeId = validId, bottomBarStyle = "auto")
+            appearancePrefs()?.edit()?.putString("app_theme_id", validId)?.putString("bottom_bar_style", "auto")?.apply()
         } catch (_: Exception) { }
     }
 
