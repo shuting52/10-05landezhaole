@@ -665,10 +665,9 @@ private object WaveDownloadManager {
                         return
                     }
                     if (error != null) {
-                        _ui.value = _ui.value.copy(
-                            state = WaveDlState.FAILED,
-                            error = error, speedBps = 0.0
-                        )
+                        // 2026-10-24：多线程失败时降级为单线程直连（兼容不支持 Range 的服务器）
+                        android.util.Log.w("landezhaole-dl", "多线程下载失败，尝试单线程兜底: $error")
+                        fallbackSingleThreadDownload()
                         return
                     }
                     val total = _ui.value.totalBytes.coerceAtLeast(_ui.value.downloadedBytes)
@@ -705,6 +704,79 @@ private object WaveDownloadManager {
         // 保活收摊
         appCtx?.let { DownloadKeepAlive.sync(it, 0) }
     }
+
+    // 2026-10-24：单线程兜底下载（多线程失败时用，兼容不支持 Range 的服务器）
+    private fun fallbackSingleThreadDownload() {
+        val ctx = appCtx ?: return
+        val url = dlUrl
+        val file = targetFile ?: return
+        _ui.value = _ui.value.copy(
+            state = WaveDlState.DOWNLOADING,
+            error = null,
+            progress = 0f, downloadedBytes = 0L, totalBytes = 0L
+        )
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val conn = java.net.URL(url).openConnection() as java.net.HttpURLConnection
+                conn.connectTimeout = 20000
+                conn.readTimeout = 60000
+                conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36")
+                conn.connect()
+                val total = conn.contentLengthLong.coerceAtLeast(0L)
+                withContext(Dispatchers.Main) {
+                    _ui.value = _ui.value.copy(totalBytes = total)
+                }
+                conn.inputStream.use { input ->
+                    file.outputStream().use { output ->
+                        val buffer = ByteArray(8192)
+                        var downloaded = 0L
+                        var n: Int
+                        while (input.read(buffer).also { n = it } != -1) {
+                            output.write(buffer, 0, n)
+                            downloaded += n
+                            val p = if (total > 0) (downloaded.toFloat() / total).coerceIn(0f, 1f) else 0f
+                            withContext(Dispatchers.Main) {
+                                _ui.value = _ui.value.copy(
+                                    progress = p, downloadedBytes = downloaded, totalBytes = total
+                                )
+                            }
+                        }
+                    }
+                }
+                // 成功，走正常完成流程
+                withContext(Dispatchers.Main) {
+                    _ui.value = _ui.value.copy(progress = 1f, downloadedBytes = downloadedBytes())
+                    if (dlIsApk) {
+                        _ui.value = _ui.value.copy(state = WaveDlState.INSTALLING)
+                        // 触发安装（复用原有安装逻辑）
+                        CoroutineScope(Dispatchers.Main).launch {
+                            val installOk = installApkDirectly(ctx, file)
+                            if (installOk) {
+                                _ui.value = _ui.value.copy(state = WaveDlState.DONE)
+                            } else {
+                                _ui.value = _ui.value.copy(
+                                    state = WaveDlState.FAILED,
+                                    error = "安装包已下载，调起安装失败"
+                                )
+                            }
+                        }
+                    } else {
+                        _ui.value = _ui.value.copy(state = WaveDlState.DONE)
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    _ui.value = _ui.value.copy(
+                        state = WaveDlState.FAILED,
+                        error = "下载失败：${e.message ?: "网络异常"}",
+                        speedBps = 0.0
+                    )
+                }
+            }
+        }
+    }
+
+    private fun downloadedBytes(): Long = _ui.value.downloadedBytes
 
     fun pause() {
         if (_ui.value.state != WaveDlState.DOWNLOADING) return
@@ -845,7 +917,7 @@ private fun WaveDownloadDialog() {
         WaveDlState.DOWNLOADING -> "正在下载 ${ui.title}"
         WaveDlState.PAUSED -> "已暂停 · ${ui.title}（${(ui.progress * 100).toInt()}%）"
         WaveDlState.CANCELLED -> "已取消下载"
-        WaveDlState.FAILED -> "网络连接失败，请重试"
+        WaveDlState.FAILED -> ui.error?.takeIf { it.isNotBlank() } ?: "网络连接失败，请重试"
         WaveDlState.INSTALLING -> "正在安装..."
         WaveDlState.DONE -> if (ui.isApk) "下载完成，可安装" else "下载完成"
         else -> ""
@@ -1158,6 +1230,45 @@ private fun downloadAndInstallResourceInApp(
  * 下载 Appteka 真实 APK 并在应用内直接拉起真实安装（免调用手机 DownloadManager）
  */
 private fun downloadApptekaApk(
+    context: Context,
+    item: ApptekaAppItem,
+    onProgress: (Boolean) -> Unit = {},
+    onCompleted: () -> Unit = {}
+) {
+    // 2026-10-24：改走 WaveDownloadManager 弹窗（用户要求搜索结果也显示下载弹窗）
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            withContext(Dispatchers.Main) { onProgress(true) }
+            val directUrl = item.directApkUrl ?: fetchApptekaDownloadUrl(item.appId)
+            item.directApkUrl = directUrl
+            if (directUrl.isNullOrBlank()) {
+                withContext(Dispatchers.Main) {
+                    onProgress(false)
+                    Toast.makeText(context, "未能获取到下载直链，请稍后重试", Toast.LENGTH_SHORT).show()
+                }
+                return@launch
+            }
+            val safeVer = if (item.verName.isNotBlank()) "_${item.verName}" else ""
+            val safeName = "${item.label}${safeVer}.apk"
+                .replace(" ", "_")
+                .replace(Regex("[\\\\/:*?\"<>|]"), "_")
+            withContext(Dispatchers.Main) {
+                onProgress(false)
+                onCompleted()
+                // 走统一下载弹窗
+                WaveDownloadManager.start(context, item.label, directUrl, safeName, isApk = true)
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                onProgress(false)
+                Toast.makeText(context, "下载失败，请检查网络后重试", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+}
+
+@Deprecated("已改走 WaveDownloadManager 弹窗，保留仅防外部引用")
+private fun downloadApptekaApkDirect(
     context: Context,
     item: ApptekaAppItem,
     onProgress: (Boolean) -> Unit = {},
