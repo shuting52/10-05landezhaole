@@ -4,13 +4,17 @@
     "name": "1.7.65",
     "changelog": [
       "✨ v1.7.65 更新来啦～",
+      "feat: Frutiger Aero 风格",
+      "feat: Frutiger Aero 风格",
+      "feat: Frutiger Aero 风格",
+      "feat: Frutiger Aero 风格",
       "feat: Frutiger Aero 风格"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.65-1792811072.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.65-1792811072.apk",
-    "lastBuildSha": "04ca3669c1a4bb702791b8ac226c8b63f3a33890",
-    "apkSize": 23931368
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.65-1792811477.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.65-1792811477.apk",
+    "lastBuildSha": "fc4ed41fb051858f7f0a8cbb63926d2212e40e1c",
+    "apkSize": 23947752
   },
   "home": {
     "categories": [
@@ -24331,6 +24335,10 @@
     "title": "懒得找了 v1.7.65 已上线",
     "changelog": [
       "✨ v1.7.65 更新来啦～",
+      "feat: Frutiger Aero 风格",
+      "feat: Frutiger Aero 风格",
+      "feat: Frutiger Aero 风格",
+      "feat: Frutiger Aero 风格",
       "feat: Frutiger Aero 风格"
     ],
     "confirmText": "立即更新",
@@ -24395,8 +24403,8 @@
     "lastRelease": {
       "version": "1.7.65",
       "code": 275,
-      "at": "2026-10-24T03:04:38Z",
-      "sha": "04ca3669c1a4bb702791b8ac226c8b63f3a33890"
+      "at": "2026-10-24T03:11:23Z",
+      "sha": "fc4ed41fb051858f7f0a8cbb63926d2212e40e1c"
     }
   },
   "_ai_notice": "内容由AI生成"
