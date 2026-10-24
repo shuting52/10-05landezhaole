@@ -161,7 +161,6 @@ import com.example.ui.theme.LocalThemeUiColors
 import com.example.ui.theme.LocalUiverseState
 import com.example.ui.uiverse.CardStylePreset
 import com.example.ui.uiverse.InputStylePreset
-import com.example.ui.uiverse.UiverseDialog
 import com.example.ui.viewmodel.AppBottomTab
 import com.example.ui.viewmodel.NavViewModel
 
@@ -187,8 +186,10 @@ fun MainScreen(
     val allUploadedResources by viewModel.allUploadedResources.collectAsStateWithLifecycle()
     val customSites by viewModel.customSites.collectAsStateWithLifecycle()
 
+    // 2026-10-24：站点数立即用本地 NavData 计算显示，不等云端；云端回来后 uiState.categories 更新会自动刷新数字
     val totalResourceCount = remember(uiState.categories, customSites) {
-        uiState.categories.sumOf { it.cards.size } + customSites.size
+        val cats = uiState.categories.ifEmpty { com.example.data.local.NavData.categories }
+        cats.sumOf { it.cards.size } + customSites.size
     }
 
     var showAddSiteDialog by remember { mutableStateOf(false) }
@@ -334,7 +335,6 @@ fun MainScreen(
                                 totalResourceCount = totalResourceCount,
                                 onOpenFavorites = { viewModel.setFavoritesModalVisible(true) },
                                 onOpenHistory = { viewModel.setHistoryModalVisible(true) },
-                                onOpenTheme = { viewModel.setThemeDialogVisible(true) },
                                 onOpenAddSite = { showAddSiteDialog = true },
                                 onTriggerSplash = { viewModel.showSplash() },
                                 cloudMarquee = uiState.cloudMarquee,
@@ -466,7 +466,6 @@ fun MainScreen(
                 }
                 AppBottomTab.SETTINGS -> {
                     SettingsScreen(
-                        onOpenThemeSwitcher = { viewModel.setThemeDialogVisible(true) },
                         cloudUpdate = uiState.cloudUpdate,
                         cloudVersion = uiState.cloudVersion,
                         cloudSettings = uiState.cloudSettings,
@@ -753,76 +752,6 @@ fun MainScreen(
         // Atmosphere Effect Overlay (Fireworks, Money, Dragon, God)
         AtmosphereOverlay(effect = uiState.atmosphereEffect)
 
-        // Uiverse.io Skin & UI Kit Studio Dialog
-        if (uiState.isThemeDialogVisible) {
-            val coroutineScope = rememberCoroutineScope()
-            // 选择背景文件 → 复制到应用私有目录（跨重启持久）→ 全局应用 → 关闭主题弹窗
-            fun applyCustomBg(uri: Uri?, type: String) {
-                if (uri == null) return
-                coroutineScope.launch {
-                    val result = withContext(Dispatchers.IO) {
-                        try {
-                            val dir = File(context.filesDir, "custom_bg")
-                            dir.mkdirs()
-                            val ext = if (type == "video") ".mp4" else ".jpg"
-                            val target = File(dir, "custom_bg_${System.currentTimeMillis()}$ext")
-                            context.contentResolver.openInputStream(uri)?.use { input ->
-                                target.outputStream().use { output -> input.copyTo(output) }
-                            }
-                            // 持久化类型与路径（App 重启后恢复）
-                            context.getSharedPreferences("lzdz_bg_prefs", Context.MODE_PRIVATE)
-                                .edit()
-                                .putString("bg_type", type)
-                                .putString("bg_path", target.absolutePath)
-                                .apply()
-                            "file://${target.absolutePath}"
-                        } catch (e: Exception) {
-                            // 复制失败：回退使用内容 URI（当前会话仍可用）
-                            try {
-                                context.contentResolver.takePersistableUriPermission(
-                                    uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                )
-                            } catch (e2: Exception) { }
-                            uri.toString()
-                        }
-                    }
-                    viewModel.setLocalBgMedia(type, result)
-                    // 关闭主题弹窗，让用户立刻看到全局背景效果
-                    viewModel.setThemeDialogVisible(false)
-                    Toast.makeText(
-                        context,
-                        if (type == "image") "已应用自定义图片背景，全局生效" else "已应用自定义视频背景，全局生效",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-            val bgImageLauncher = rememberLauncherForActivityResult(
-                androidx.activity.result.contract.ActivityResultContracts.OpenDocument()
-            ) { uri -> applyCustomBg(uri, "image") }
-            val bgVideoLauncher = rememberLauncherForActivityResult(
-                androidx.activity.result.contract.ActivityResultContracts.OpenDocument()
-            ) { uri -> applyCustomBg(uri, "video") }
-            UiverseDialog(
-                isOpen = true,
-                onClose = { viewModel.setThemeDialogVisible(false) },
-                // v1.4.22：自定义背景上传入口（v1.7.17：主题预设已删除，仅保留自定义背景+透明磨砂）
-                localBgMediaType = uiState.localBgMediaType,
-                bgFrosted = uiState.bgFrosted,
-                onPickLocalImage = { pickBgImageLauncher.launch("image/*") },
-                onPickLocalVideo = { pickBgVideoLauncher.launch("video/*") },
-                onClearLocalBgMedia = { clearCustomBackground() },
-                onToggleFrosted = { viewModel.setBgFrosted(it) },
-                // 2026-10-23：14 套新主题切换（点击即全局应用）
-                appThemeId = uiState.appThemeId,
-                onAppThemeChange = { viewModel.setAppTheme(it) },
-                uiScale = uiState.uiScale,
-                onUiScaleChange = { viewModel.setUiScale(it) },
-                hideTabLabels = uiState.hideTabLabels,
-                onHideTabLabelsChange = { viewModel.setHideTabLabels(it) },
-                glassBottomBar = uiState.glassBottomBar,
-                onGlassBottomBarChange = { viewModel.setGlassBottomBar(it) }
-            )
-        }
 
         // Add Site Dialog with Automatic Deduplication and Auto Metadata Fetching
         if (showAddSiteDialog) {
@@ -945,7 +874,6 @@ private fun HeaderBrandSection(
     totalResourceCount: Int,
     onOpenFavorites: () -> Unit,
     onOpenHistory: () -> Unit,
-    onOpenTheme: () -> Unit,
     onOpenAddSite: () -> Unit,
     onTriggerSplash: () -> Unit,
     cloudMarquee: com.example.data.remote.MarqueeDto? = null,
@@ -961,33 +889,15 @@ private fun HeaderBrandSection(
     val headerComp = com.example.ui.components.ComponentThemeResolver.resolve(componentThemes, "home_header")
 
     val headerShape = RoundedCornerShape(headerComp?.cornerRadius ?: 28.dp)
-    val headerBorderBrush = Brush.linearGradient(
-        listOf(
-            Color.White.copy(alpha = 0.94f),
-            Color.White.copy(alpha = 0.45f),
-            LocalThemeUiColors.current.primary.copy(alpha = 0.45f),
-            Color.White.copy(alpha = 0.90f)
-        )
-    )
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(elevation = 4.dp, shape = headerShape)
             .clip(headerShape)
-            .background(
-                brush = Brush.linearGradient(
-                    listOf(
-                        Color.White.copy(alpha = 0.56f),
-                        Color(0xFFF6F2FF).copy(alpha = 0.38f),
-                        Color(0xFFFFEEF5).copy(alpha = 0.42f),
-                        Color.White.copy(alpha = 0.60f)
-                    )
-                )
-            )
+            .background(Color.White.copy(alpha = 0.72f))
             .border(
-                width = 1.6.dp,
-                brush = headerBorderBrush,
+                width = 1.dp,
+                color = Color.White.copy(alpha = 0.85f),
                 shape = headerShape
             )
             .padding(horizontal = 14.dp, vertical = 10.dp)
@@ -1047,27 +957,11 @@ private fun HeaderBrandSection(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // 右侧区域：迷你3D翻牌时钟与主题快速切换按钮
+                // 右侧区域：迷你3D翻牌时钟
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     HeaderMiniFlipClock(
                         primaryColor = primaryColor
                     )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Box(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clip(CircleShape)
-                            .background(primaryColor.copy(alpha = 0.12f))
-                            .clickable { onOpenTheme() },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.ColorLens,
-                            contentDescription = "主题切换",
-                            tint = primaryColor,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
                 }
             }
 
