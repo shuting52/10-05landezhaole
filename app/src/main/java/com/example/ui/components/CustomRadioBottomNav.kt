@@ -279,6 +279,24 @@ fun CustomRadioBottomNav(
                 )
                 return
             }
+            // 2026-10-24：程序坞专属底栏（.dock 翻译）：白 12% 玻璃条 + 白 22% 描边，
+            // 选中为访达图标的蓝渐变 #7DB4FF→#2F6FE4
+            DesignStyle.DOCK -> {
+                SoftThemeBottomBar(
+                    navItems = navItems, selectedTab = selectedTab, onTabSelected = onTabSelected,
+                    badges = badges, hideLabels = hideLabels, modifier = modifier,
+                    barBg = Color.White.copy(alpha = 0.12f), barBorderColor = Color.White.copy(alpha = 0.22f),
+                    barBorderWidth = 1.dp, barRadius = 26.dp, pillRadius = 22.dp,
+                    shadowDp = 18.dp, shadowAmbient = Color.Black.copy(alpha = 0.50f),
+                    selectedBrush = Brush.linearGradient(
+                        listOf(Color(0xFF7DB4FF), Color(0xFF2F6FE4))
+                    ),
+                    selectedBorderColor = Color.White.copy(alpha = 0.20f),
+                    selectedText = Color.White, unselectedText = Color(0xFF9FB3D1),
+                    selectedIconTint = Color.White, unselectedIconTint = Color(0xFF9FB3D1)
+                )
+                return
+            }
             else -> { }
         }
     }

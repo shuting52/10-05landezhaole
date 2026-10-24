@@ -14,7 +14,7 @@ data class AppTheme(
     val colors: ThemeUiColors
 )
 
-/** 全局主题：千禧复兴 Frutiger Aero + 皮纹鞣制 + 柔影 / 柔光 / 黏土 / 液态玻璃（2026-10-24 用户新设计稿） */
+/** 全局主题：千禧复兴 Frutiger Aero + 皮纹鞣制 + 柔影 / 柔光 / 黏土 / 液态玻璃 / 程序坞（2026-10-24 用户新设计稿） */
 val APP_THEMES: List<AppTheme> = listOf(
     AppTheme(
         id = "minimal",
@@ -162,6 +162,36 @@ val APP_THEMES: List<AppTheme> = listOf(
                 Color(0xFF140A20)
             ),
             designStyle = DesignStyle.LIQUID
+        )
+    ),
+    AppTheme(
+        id = "dock",
+        name = "程序坞",
+        // 2026-10-24：用户发的 macOS 风格程序坞 HTML（复刻自 21st.dev）翻译进原生主题；
+        // Compose 没有 backdrop-filter，玻璃用半透明 + 描边近似，不承诺真模糊
+        isDark = true,
+        colors = ThemeUiColors(
+            primary = Color(0xFF5AA9FF),          // 标题句点蓝
+            secondary = Color(0xFF2F6FE4),        // 访达图标渐变深蓝
+            background = Color(0xFF0B1220),       // 背景渐变中段深海军蓝
+            surface = Color(0xFF1C2A44),          // 背景渐变顶段（面板色）
+            text = Color(0xFFE8EEF7),             // 正文浅灰蓝白
+            textMuted = Color(0xFF9FB3D1),        // 标签灰蓝
+            accent = Color(0xFF5AA9FF),           // 点缀蓝
+            onPrimary = Color(0xFFFFFFFF),
+            border = Color(0xFFFFFFFF).copy(alpha = 0.22f),  // 程序坞描边白 22%
+            // 程序坞玻璃：白 12%（blur 22px saturate 1.6 的半透明近似）
+            cardGradient = listOf(
+                Color(0xFFFFFFFF).copy(alpha = 0.12f),
+                Color(0xFFFFFFFF).copy(alpha = 0.06f)
+            ),
+            // body 径向渐变纵向近似：#1c2a44 → #0b1220 → #060a14
+            backgroundGradient = listOf(
+                Color(0xFF1C2A44),
+                Color(0xFF0B1220),
+                Color(0xFF060A14)
+            ),
+            designStyle = DesignStyle.DOCK
         )
     )
 )
