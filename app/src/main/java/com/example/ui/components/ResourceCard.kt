@@ -112,6 +112,8 @@ fun ResourceCard(
                 DesignStyle.BAUHAUS -> 4.dp
                 DesignStyle.FLAT_DESIGN -> 4.dp
                 DesignStyle.JICUN -> 20.dp
+                // 2026-10-24：Frutiger Aero 千禧复兴 24dp 水滴圆角（设计稿 --fa-r）
+                DesignStyle.AERO -> 24.dp
                 DesignStyle.RETROFUTURISM -> 10.dp
                 DesignStyle.ACID_GRAPHICS -> 8.dp
                 else -> it
@@ -131,6 +133,8 @@ fun ResourceCard(
         designStyle == DesignStyle.FLAT_DESIGN -> RoundedCornerShape(4.dp)
         // 2026-10-23：jicun 原生卡片 20dp 超椭圆圆角
         designStyle == DesignStyle.JICUN -> RoundedCornerShape(20.dp)
+        // 2026-10-24：Frutiger Aero 24dp 水滴圆角
+        designStyle == DesignStyle.AERO -> RoundedCornerShape(24.dp)
         designStyle == DesignStyle.MATERIAL_DESIGN -> RoundedCornerShape(16.dp)
         designStyle == DesignStyle.CLAYMORPHISM -> RoundedCornerShape(22.dp)
         designStyle == DesignStyle.MINIMALISM -> RoundedCornerShape(6.dp)
@@ -157,6 +161,8 @@ fun ResourceCard(
 
     val cardElevation = when {
         designStyle == DesignStyle.FLAT_DESIGN || designStyle == DesignStyle.BRUTALISM || designStyle == DesignStyle.MINIMALISM || designStyle == DesignStyle.JICUN -> 0.dp
+        // 2026-10-24：Frutiger Aero 柔和阴影（设计稿 --fa-shadow: 0 8px 24px rgba(10,37,64,.12)）
+        designStyle == DesignStyle.AERO -> 4.dp
         designStyle == DesignStyle.CLAYMORPHISM -> 5.dp
         designStyle == DesignStyle.NEO_BRUTALISM -> 4.dp
         designStyle == DesignStyle.GUOCHAO -> 2.dp
@@ -245,12 +251,13 @@ fun ResourceCard(
             else Brush.linearGradient(listOf(themeUi.surface, themeUi.surface))
         ).then(
             // 2026-10-23：玻璃系主题顶部高光（原稿 inset 高光签名）
-            if (designStyle == DesignStyle.GLASSMORPHISM || designStyle == DesignStyle.AURORA)
+            // 2026-10-24：Frutiger Aero 顶部高光（设计稿 --fa-hl: inset 0 1px 0 rgba(255,255,255,0.6)）
+            if (designStyle == DesignStyle.GLASSMORPHISM || designStyle == DesignStyle.AURORA || designStyle == DesignStyle.AERO)
                 Modifier.background(
                     Brush.verticalGradient(
                         listOf(
-                            Color.White.copy(alpha = 0.22f),
-                            Color.White.copy(alpha = 0.05f),
+                            Color.White.copy(alpha = 0.35f),
+                            Color.White.copy(alpha = 0.08f),
                             Color.Transparent
                         )
                     )
@@ -292,6 +299,8 @@ fun ResourceCard(
         designStyle == DesignStyle.RETROFUTURISM -> Modifier.border(1.5.dp, Brush.linearGradient(listOf(Color(0xFF00F0FF), Color(0xFFFF007F))), cardShape)
         // 2026-10-23：冰晶液态/雾面主题卡片保留白色亮边（原稿 1px 白色描边）
         designStyle == DesignStyle.GLASSMORPHISM -> Modifier.border(1.dp, Color.White.copy(alpha = 0.65f), cardShape)
+        // 2026-10-24：Frutiger Aero 1px 白色亮边（设计稿 border: 1px solid rgba(255,255,255,.8)）
+        designStyle == DesignStyle.AERO -> Modifier.border(1.dp, Color.White.copy(alpha = 0.8f), cardShape)
         designStyle == DesignStyle.NEUMORPHISM -> Modifier.border(1.2.dp, Brush.linearGradient(listOf(Color.White, Color(0xFFCBD5E1))), cardShape)
         // 2026-10-23：柔光拟物主题描边跟随主题 border（灰色），不再写死金色
         designStyle == DesignStyle.SKEUOMORPHISM ->
