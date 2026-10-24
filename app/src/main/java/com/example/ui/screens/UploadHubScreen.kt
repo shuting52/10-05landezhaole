@@ -6,6 +6,10 @@ import android.net.Uri
 import android.os.Environment
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import com.example.download.DownloadKeepAlive
+import com.example.download.DownloadListener
+import com.example.download.DownloadedFile
+import com.example.download.NativeDownloader
 import java.io.File
 import java.io.FileOutputStream
 import androidx.compose.animation.core.LinearEasing
@@ -597,19 +601,22 @@ private object WaveDownloadManager {
     private val _ui = MutableStateFlow(WaveDownloadUi())
     val ui: StateFlow<WaveDownloadUi> = _ui.asStateFlow()
 
-    private var call: Call? = null
-    private var job: Job? = null
+    // 2026-10-24：改用 NativeDownloader（多线程分段下载，移植自 shuiyingongju）
+    private var downloader: NativeDownloader? = null
+    private var taskId: Long? = null
     private var appCtx: Context? = null
     private var dlTitle = ""
     private var dlUrl = ""
     private var dlIsApk = false
     private var targetFile: File? = null
+    // 测速用
+    private var lastProgressTime = 0L
+    private var lastProgressBytes = 0L
 
     fun start(context: Context, title: String, url: String, fileName: String?, isApk: Boolean) {
         // 正在下载中则忽略重复触发
         if (_ui.value.visible && _ui.value.state == WaveDlState.DOWNLOADING) return
-        job?.cancel()
-        call?.cancel()
+        cancelTask()
         appCtx = context.applicationContext
         dlTitle = title
         dlUrl = url
@@ -620,41 +627,106 @@ private object WaveDownloadManager {
             .let { if (isApk && !it.endsWith(".apk", true)) "$it.apk" else it }
         val downloadDir = File(context.cacheDir, "apk_downloads").apply { mkdirs() }
         targetFile = File(downloadDir, safeName)
-        // 全新下载：删掉残留文件
+        // 全新下载：删掉残留文件（NativeDownloader 自己也会处理）
         if (targetFile!!.exists()) targetFile!!.delete()
         _ui.value = WaveDownloadUi(
             visible = true, state = WaveDlState.DOWNLOADING, title = title,
             progress = 0f, downloadedBytes = 0L, totalBytes = 0L, speedBps = 0.0,
             error = null, isApk = isApk
         )
-        doDownload(0L)
+        lastProgressTime = System.currentTimeMillis()
+        lastProgressBytes = 0L
+        val ctx = appCtx!!
+        downloader = NativeDownloader(
+            listener = object : DownloadListener {
+                override fun onProgress(id: Long, received: Long, total: Long) {
+                    if (id != taskId) return
+                    val now = System.currentTimeMillis()
+                    val dt = (now - lastProgressTime) / 1000.0
+                    val speed = if (dt > 0.2) (received - lastProgressBytes) / dt else _ui.value.speedBps
+                    if (dt > 0.2) {
+                        lastProgressTime = now
+                        lastProgressBytes = received
+                    }
+                    val p = if (total > 0) (received.toFloat() / total).coerceIn(0f, 1f) else 0f
+                    _ui.value = _ui.value.copy(
+                        progress = p, downloadedBytes = received,
+                        totalBytes = total, speedBps = speed
+                    )
+                }
+
+                override fun onDone(id: Long, files: List<DownloadedFile>, error: String?) {
+                    if (id != taskId) return
+                    // 保活：任务结束，同步活动数（NativeDownloader 内部已调 onActiveChanged）
+                    if (error == "cancelled") {
+                        // pause/cancel 主动取消，不改状态（调用方已设置）
+                        return
+                    }
+                    if (error != null) {
+                        _ui.value = _ui.value.copy(
+                            state = WaveDlState.FAILED,
+                            error = error, speedBps = 0.0
+                        )
+                        return
+                    }
+                    val total = _ui.value.totalBytes.coerceAtLeast(_ui.value.downloadedBytes)
+                    _ui.value = _ui.value.copy(progress = 1f, downloadedBytes = total)
+                    if (dlIsApk) {
+                        _ui.value = _ui.value.copy(state = WaveDlState.INSTALLING)
+                        CoroutineScope(Dispatchers.Main).launch {
+                            val ctx2 = appCtx
+                            val f = targetFile
+                            val ok = withContext(Dispatchers.IO) {
+                                ctx2 != null && f != null && f.exists() && installApkDirectly(ctx2, f)
+                            }
+                            _ui.value = _ui.value.copy(
+                                state = WaveDlState.DONE,
+                                error = if (ok) null else "安装器拉起失败，安装包已保存在应用缓存"
+                            )
+                        }
+                    } else {
+                        _ui.value = _ui.value.copy(state = WaveDlState.DONE)
+                    }
+                }
+            },
+            onActiveChanged = { active -> DownloadKeepAlive.sync(ctx, active) }
+        )
+        taskId = downloader!!.start(
+            rawItems = listOf(mapOf("url" to dlUrl, "path" to targetFile!!.absolutePath)),
+            segments = 32
+        )
+    }
+
+    private fun cancelTask() {
+        taskId?.let { downloader?.cancel(it) }
+        taskId = null
+        // 保活收摊
+        appCtx?.let { DownloadKeepAlive.sync(it, 0) }
     }
 
     fun pause() {
         if (_ui.value.state != WaveDlState.DOWNLOADING) return
-        call?.cancel()
-        job?.cancel()
-        _ui.value = _ui.value.copy(state = WaveDlState.PAUSED)
+        cancelTask()
+        _ui.value = _ui.value.copy(state = WaveDlState.PAUSED, speedBps = 0.0)
     }
 
     fun resume() {
         if (_ui.value.state != WaveDlState.PAUSED && _ui.value.state != WaveDlState.FAILED
             && _ui.value.state != WaveDlState.CANCELLED) return
-        val offset = if (targetFile?.exists() == true) targetFile!!.length() else 0L
-        _ui.value = _ui.value.copy(state = WaveDlState.DOWNLOADING, error = null)
-        doDownload(offset)
+        // NativeDownloader 不支持跨会话断点续传，resume 重新下一遍。
+        // 注意：先调 start（它内部会重置 UI 状态），不要提前设 DOWNLOADING 否则被防重复拦截。
+        val ctx = appCtx ?: return
+        start(ctx, dlTitle, dlUrl, targetFile?.name, dlIsApk)
     }
 
     fun cancel() {
-        call?.cancel()
-        job?.cancel()
+        cancelTask()
         try { targetFile?.delete() } catch (_: Exception) {}
         _ui.value = _ui.value.copy(state = WaveDlState.CANCELLED, speedBps = 0.0)
     }
 
     fun dismiss() {
-        call?.cancel()
-        job?.cancel()
+        cancelTask()
         _ui.value = WaveDownloadUi()
     }
 
@@ -673,94 +745,6 @@ private object WaveDownloadManager {
         }
     }
 
-    private fun doDownload(startOffset: Long) {
-        job = CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val client = OkHttpClient.Builder()
-                    .connectTimeout(20, TimeUnit.SECONDS)
-                    .readTimeout(180, TimeUnit.SECONDS)
-                    .followRedirects(true)
-                    .followSslRedirects(true)
-                    .build()
-                val reqBuilder = Request.Builder()
-                    .url(dlUrl)
-                    .header("User-Agent", "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/126.0 Mobile Safari/537.36")
-                if (startOffset > 0) reqBuilder.header("Range", "bytes=$startOffset-")
-                val c = client.newCall(reqBuilder.build())
-                call = c
-                val response = c.execute()
-                if (!response.isSuccessful && response.code != 206) {
-                    throw Exception("HTTP ${response.code}")
-                }
-                val body = response.body ?: throw Exception("响应内容为空")
-                val total: Long = if (startOffset > 0) {
-                    response.header("Content-Range")
-                        ?.substringAfterLast('/')?.toLongOrNull()
-                        ?: (body.contentLength() + startOffset)
-                } else {
-                    body.contentLength()
-                }
-                val file = targetFile ?: throw Exception("下载目录不可用")
-                var downloaded = startOffset
-                var lastTime = System.currentTimeMillis()
-                var lastBytes = downloaded
-                // 暂停/取消时直接抛 CancellationException，由调用方处理状态
-                body.byteStream().use { input ->
-                    (if (startOffset > 0) FileOutputStream(file, true) else file.outputStream()).use { out ->
-                        val buf = ByteArray(8192)
-                        while (true) {
-                            ensureActive()
-                            val n = input.read(buf)
-                            if (n == -1) break
-                            out.write(buf, 0, n)
-                            downloaded += n
-                            val now = System.currentTimeMillis()
-                            if (now - lastTime >= 250) {
-                                val dt = (now - lastTime) / 1000.0
-                                val speed = if (dt > 0) (downloaded - lastBytes) / dt else 0.0
-                                lastTime = now
-                                lastBytes = downloaded
-                                val p = if (total > 0) (downloaded.toFloat() / total).coerceIn(0f, 1f) else 0f
-                                _ui.value = _ui.value.copy(
-                                    progress = p, downloadedBytes = downloaded,
-                                    totalBytes = total, speedBps = speed
-                                )
-                            }
-                        }
-                    }
-                }
-                withContext(Dispatchers.Main) {
-                    _ui.value = _ui.value.copy(progress = 1f, downloadedBytes = total.coerceAtLeast(downloaded))
-                    if (dlIsApk) {
-                        _ui.value = _ui.value.copy(state = WaveDlState.INSTALLING)
-                        val ctx = appCtx
-                        val f = targetFile
-                        val ok = if (ctx != null && f != null && f.exists()) {
-                            installApkDirectly(ctx, f)
-                        } else false
-                        _ui.value = _ui.value.copy(
-                            state = WaveDlState.DONE,
-                            error = if (ok) null else "安装器拉起失败，安装包已保存在应用缓存"
-                        )
-                    } else {
-                        _ui.value = _ui.value.copy(state = WaveDlState.DONE)
-                    }
-                }
-            } catch (e: CancellationException) {
-                throw e // pause/cancel 主动取消，不改状态（调用方已设置）
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    if (_ui.value.state == WaveDlState.DOWNLOADING) {
-                        _ui.value = _ui.value.copy(
-                            state = WaveDlState.FAILED,
-                            error = e.message ?: "下载失败",
-                            speedBps = 0.0
-                        )
-                    }
-                }
-            }
-        }
-    }
 }
 
 /**

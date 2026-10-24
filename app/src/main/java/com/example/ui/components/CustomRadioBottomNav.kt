@@ -289,6 +289,7 @@ fun CustomRadioBottomNav(
         ),
         label = "liquidPillX"
     )
+    // 2026-10-24：改成 Apple iOS 26 Liquid Glass 风格 —— 更通透、高光克制
     val liquidPillBg = if (glassStyle) {
         Modifier.drawBehind {
             val tabW = size.width / navItems.size
@@ -302,20 +303,20 @@ fun CustomRadioBottomNav(
             val w = right - left
             val h = bottom - top
             if (w <= 0 || h <= 0) return@drawBehind
-            // 1. 底层柔光（模拟 SVG 高斯模糊的液体边缘）
+            // 1. 底层柔光（液体边缘）
             drawRoundRect(
-                color = Color.White.copy(alpha = 0.35f),
-                topLeft = Offset(left - 4.dp.toPx(), top - 2.dp.toPx()),
-                size = Size(w + 8.dp.toPx(), h + 4.dp.toPx()),
-                cornerRadius = CornerRadius(corner + 4.dp.toPx())
+                color = Color.White.copy(alpha = 0.28f),
+                topLeft = Offset(left - 6.dp.toPx(), top - 3.dp.toPx()),
+                size = Size(w + 12.dp.toPx(), h + 6.dp.toPx()),
+                cornerRadius = CornerRadius(corner + 6.dp.toPx())
             )
-            // 2. 主体：半透明白玻璃
+            // 2. 主体：高通透玻璃（Apple 风格比霜化玻璃更透）
             drawRoundRect(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color.White.copy(alpha = 0.82f),
-                        Color.White.copy(alpha = 0.68f),
-                        Color(0xFFF1F5F9).copy(alpha = 0.72f)
+                        Color.White.copy(alpha = 0.48f),
+                        Color.White.copy(alpha = 0.32f),
+                        Color.White.copy(alpha = 0.42f)
                     ),
                     startY = top,
                     endY = bottom
@@ -324,49 +325,35 @@ fun CustomRadioBottomNav(
                 size = Size(w, h),
                 cornerRadius = CornerRadius(corner)
             )
-            // 3. 顶部高光带（模拟 inset 高光）
+            // 3. 顶部镜面高光（Apple 标志性的一线高光）
             drawRoundRect(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color.White.copy(alpha = 0.55f),
+                        Color.White.copy(alpha = 0.85f),
                         Color.White.copy(alpha = 0.0f)
                     ),
                     startY = top,
-                    endY = top + h * 0.45f
+                    endY = top + h * 0.28f
                 ),
                 topLeft = Offset(left, top),
-                size = Size(w, h * 0.45f),
+                size = Size(w, h * 0.28f),
                 cornerRadius = CornerRadius(corner)
             )
-            // 4. 底部内阴影（玻璃厚度感）
+            // 4. 纤细亮边（0.8dp）
             drawRoundRect(
-                brush = Brush.verticalGradient(
+                brush = Brush.linearGradient(
                     colors = listOf(
-                        Color(0xFF0F172A).copy(alpha = 0.0f),
-                        Color(0xFF0F172A).copy(alpha = 0.08f)
+                        Color.White.copy(alpha = 0.9f),
+                        Color.White.copy(alpha = 0.25f),
+                        Color.White.copy(alpha = 0.55f)
                     ),
-                    startY = bottom - h * 0.35f,
-                    endY = bottom
-                ),
-                topLeft = Offset(left, bottom - h * 0.35f),
-                size = Size(w, h * 0.35f),
-                cornerRadius = CornerRadius(corner)
-            )
-            // 5. 亮边描边
-            drawRoundRect(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color.White.copy(alpha = 0.95f),
-                        Color.White.copy(alpha = 0.35f),
-                        Color.White.copy(alpha = 0.65f)
-                    ),
-                    startY = top,
-                    endY = bottom
+                    start = Offset(left, top),
+                    end = Offset(right, bottom)
                 ),
                 topLeft = Offset(left, top),
                 size = Size(w, h),
                 cornerRadius = CornerRadius(corner),
-                style = Stroke(1.dp.toPx())
+                style = Stroke(0.8.dp.toPx())
             )
         }
     } else Modifier

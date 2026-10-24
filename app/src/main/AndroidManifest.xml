@@ -18,6 +18,10 @@
     <!-- v1.0.19 修复「更新弹窗无法安装新版本」：声明安装未知应用权限，
          PackageInstaller 直装/系统安装器才能正常拉起安装确认页（Android 8+ 必需） -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- 2026-10-24：下载保活前台服务（移植 shuiyingongju DownloadKeepAlive） -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <queries>
         <!-- v1.4.16 修复「下载完成打不开系统安装器」：Android 11+ 包可见性限制，
@@ -106,6 +110,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- 2026-10-24：下载保活前台服务（移植 shuiyingongju DownloadKeepAlive） -->
+        <service
+            android:name="com.example.download.DownloadKeepingService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
     </application>
 
 </manifest>
