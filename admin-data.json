@@ -1,16 +1,15 @@
 {
   "version": {
-    "code": 292,
-    "name": "1.7.82",
+    "code": 293,
+    "name": "1.7.83",
     "changelog": [
-      "✨ v1.7.82 更新来啦～",
-      "fix: 补 fillMaxSize 导入（详情卡截图编译错误）",
-      "v1.7.82: 删除首页搜索框与收录行；站点详情卡加入站点首页预览截图"
+      "✨ v1.7.83 更新来啦～",
+      "v1.7.83: 新增程序坞主题（macOS Dock 深色玻璃翻译）"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.82-1792845228.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.82-1792845228.apk",
-    "lastBuildSha": "3bfae5e3f1e3130a0914b257fb96b05df4352b55",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.83-1792848272.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.83-1792848272.apk",
+    "lastBuildSha": "07abde06bc8dccc284408770354c17d5d2190872",
     "apkSize": 23996904
   },
   "home": {
@@ -24329,11 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.82 已上线",
+    "title": "懒得找了 v1.7.83 已上线",
     "changelog": [
-      "✨ v1.7.82 更新来啦～",
-      "fix: 补 fillMaxSize 导入（详情卡截图编译错误）",
-      "v1.7.82: 删除首页搜索框与收录行；站点详情卡加入站点首页预览截图"
+      "✨ v1.7.83 更新来啦～",
+      "v1.7.83: 新增程序坞主题（macOS Dock 深色玻璃翻译）"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24395,10 +24393,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.82",
-      "code": 292,
-      "at": "2026-10-24T12:33:58Z",
-      "sha": "3bfae5e3f1e3130a0914b257fb96b05df4352b55"
+      "version": "1.7.83",
+      "code": 293,
+      "at": "2026-10-24T13:24:39Z",
+      "sha": "07abde06bc8dccc284408770354c17d5d2190872"
     }
   },
   "_ai_notice": "内容由AI生成"
