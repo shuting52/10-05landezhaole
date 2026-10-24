@@ -719,6 +719,8 @@ fun SiteBrandIcon(
         DesignStyle.ACID_GRAPHICS -> RoundedCornerShape(6.dp)
         DesignStyle.HAND_DRAWN -> RoundedCornerShape(24.dp)
         DesignStyle.CARTOON -> RoundedCornerShape(28.dp)
+        // 2026-10-24：Frutiger Aero 图标 15dp 水滴圆角（设计稿 .fa-ico）
+        DesignStyle.AERO -> RoundedCornerShape(15.dp)
         else -> RoundedCornerShape(8.dp)
     }
 
@@ -736,6 +738,8 @@ fun SiteBrandIcon(
         DesignStyle.BAUHAUS -> 1.8.dp to Brush.linearGradient(listOf(Color.Black, Color(0xFFD62828)))
         DesignStyle.MATERIAL_DESIGN -> 1.dp to Brush.linearGradient(listOf(Color(0xFF6750A4).copy(alpha = 0.5f), Color(0xFF6750A4).copy(alpha = 0.2f)))
         DesignStyle.MINIMALISM -> 0.8.dp to Brush.linearGradient(listOf(Color(0xFF71717A).copy(alpha = 0.5f), Color(0xFF71717A).copy(alpha = 0.5f)))
+        // 2026-10-24：Frutiger Aero 白色亮边（设计稿 .fa-ico border）
+        DesignStyle.AERO -> 1.dp to Brush.linearGradient(listOf(Color.White.copy(alpha = 0.9f), Color.White.copy(alpha = 0.5f)))
         DesignStyle.FLAT_DESIGN -> 0.dp to Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
         else -> 0.8.dp to Brush.linearGradient(
             listOf(
@@ -756,6 +760,8 @@ fun SiteBrandIcon(
         DesignStyle.ACID_GRAPHICS -> 2.dp
         DesignStyle.AURORA -> 2.dp
         DesignStyle.GLASSMORPHISM -> 1.5.dp
+        // 2026-10-24：Frutiger Aero 柔和阴影
+        DesignStyle.AERO -> 2.dp
         else -> 1.5.dp
     }
 
@@ -774,6 +780,8 @@ fun SiteBrandIcon(
         DesignStyle.BRUTALISM -> Brush.linearGradient(listOf(Color(0xFFDCDDDE), Color(0xFFC8C9CB)))
         DesignStyle.ANTI_DESIGN -> Brush.linearGradient(listOf(Color(0xFF140024), Color(0xFF00FF66)))
         DesignStyle.ACID_GRAPHICS -> Brush.sweepGradient(listOf(Color(0xFFB026FF), Color(0xFFCCFF00), Color(0xFF00F0FF), Color(0xFFB026FF)))
+        // 2026-10-24：Frutiger Aero 玻璃白渐变（设计稿 .fa-ico）
+        DesignStyle.AERO -> Brush.linearGradient(listOf(Color.White.copy(alpha = 0.9f), Color(0xFFBEE1F5).copy(alpha = 0.7f)))
         else -> if (isGenuineIconLoaded) {
             Brush.linearGradient(listOf(Color.White, Color(0xFFF8FAFC)))
         } else {
