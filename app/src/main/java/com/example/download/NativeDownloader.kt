@@ -184,6 +184,18 @@ internal const val BILIBILI_UA =
 internal const val BILIBILI_REFERER = "https://www.bilibili.com/"
 
 /**
+ * Appteka 商店认的 UA —— v1.7.61 用 OkHttp 直接下载时带的，v1.7.63 改走
+ * WaveDownloadManager 时弄丢了，源站防盗链直接拒绝（用户问"1.7.61怎么可以"的根因）。
+ */
+internal const val APPTEKA_UA = "Appteka/23.0 Android"
+
+/** Appteka 商店认的 Referer（防盗链：不带直接拒绝）。 */
+internal const val APPTEKA_REFERER = "https://appteka.store/"
+
+/** 这条主机名是不是 Appteka 的下载域名。 */
+internal fun isApptekaHost(host: String): Boolean = host.contains("appteka")
+
+/**
  * 这条主机名是不是 B 站 CDN 上的。
  *
  * **镜像是挂在别家 CDN 上的,只认自家域名会漏一半**:实测(2026-10-05)同一条视频的
@@ -706,14 +718,22 @@ class NativeDownloader(
      */
     private fun platformReferer(url: String): String? {
         val host = runCatching { URL(url).host?.lowercase() }.getOrNull() ?: return null
-        return if (isBilibiliHost(host)) BILIBILI_REFERER else null
+        return when {
+            isApptekaHost(host) -> APPTEKA_REFERER
+            isBilibiliHost(host) -> BILIBILI_REFERER
+            else -> null
+        }
     }
 
     /** 这条地址该用哪个 UA。见 [BILIBILI_UA]。 */
     private fun platformUserAgent(url: String): String {
         val host = runCatching { URL(url).host?.lowercase() }.getOrNull()
             ?: return BROWSER_UA
-        return if (isBilibiliHost(host)) BILIBILI_UA else BROWSER_UA
+        return when {
+            isApptekaHost(host) -> APPTEKA_UA
+            isBilibiliHost(host) -> BILIBILI_UA
+            else -> BROWSER_UA
+        }
     }
 
     /**
