@@ -73,16 +73,30 @@ fun GlobalWindBackground(
     // 背景渐变取自主题 backgroundGradient（jicun 蓝灰）
     val themeGradientColors: List<Color> = theme.backgroundGradient
     val themePrimaryColor: Color = theme.primary
+    val themeDesignStyle = theme.designStyle
 
     Box(modifier = modifier.fillMaxSize()) {
         // ========== 1. jicun 式静态蓝灰背景 ==========
         Canvas(modifier = Modifier.fillMaxSize()) {
-            drawRect(
-                brush = Brush.verticalGradient(
-                    colors = if (themeGradientColors.size >= 2) themeGradientColors
-                    else listOf(theme.background, theme.background)
+            if (themeDesignStyle == DesignStyle.DOCK && themeGradientColors.size >= 2) {
+                // 2026-10-24：程序坞原稿是 radial-gradient(120% 90% at 50% 0%)，
+                // 之前竖向渐变把顶部中央亮、两侧暗的效果拉平了，这是变味之一；
+                // Compose 径向只能画圆，取半径 0.9*高近似原稿椭圆（纵向行为与原稿一致）
+                drawRect(
+                    brush = Brush.radialGradient(
+                        colors = themeGradientColors,
+                        center = Offset(size.width / 2f, 0f),
+                        radius = size.height * 0.9f
+                    )
                 )
-            )
+            } else {
+                drawRect(
+                    brush = Brush.verticalGradient(
+                        colors = if (themeGradientColors.size >= 2) themeGradientColors
+                        else listOf(theme.background, theme.background)
+                    )
+                )
+            }
         }
 
         // ========== 2. 自定义背景媒体（图片/视频）：以大胶囊容器裁剪呈现 ==========

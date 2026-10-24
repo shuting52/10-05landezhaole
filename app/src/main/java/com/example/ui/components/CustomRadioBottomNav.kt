@@ -18,6 +18,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -54,6 +55,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -77,6 +79,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -279,21 +282,12 @@ fun CustomRadioBottomNav(
                 )
                 return
             }
-            // 2026-10-24：程序坞专属底栏（.dock 翻译）：白 12% 玻璃条 + 白 22% 描边，
-            // 选中为访达图标的蓝渐变 #7DB4FF→#2F6FE4
+            // 2026-10-24：程序坞底栏不再套通用胶囊条，按 HTML .dock 原样复刻（见 DockBottomBar）：
+            // 居中悬浮坞 + 渐变方块图标 + 运行点 + 鱼眼放大，不带文字
             DesignStyle.DOCK -> {
-                SoftThemeBottomBar(
+                DockBottomBar(
                     navItems = navItems, selectedTab = selectedTab, onTabSelected = onTabSelected,
-                    badges = badges, hideLabels = hideLabels, modifier = modifier,
-                    barBg = Color.White.copy(alpha = 0.12f), barBorderColor = Color.White.copy(alpha = 0.22f),
-                    barBorderWidth = 1.dp, barRadius = 26.dp, pillRadius = 22.dp,
-                    shadowDp = 18.dp, shadowAmbient = Color.Black.copy(alpha = 0.50f),
-                    selectedBrush = Brush.linearGradient(
-                        listOf(Color(0xFF7DB4FF), Color(0xFF2F6FE4))
-                    ),
-                    selectedBorderColor = Color.White.copy(alpha = 0.20f),
-                    selectedText = Color.White, unselectedText = Color(0xFF9FB3D1),
-                    selectedIconTint = Color.White, unselectedIconTint = Color(0xFF9FB3D1)
+                    badges = badges, modifier = modifier
                 )
                 return
             }
@@ -882,6 +876,166 @@ private fun LightDockBottomBar(
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                             color = if (isSelected) Color(0xFF1F2937) else Color(0xFF64748B),
                             maxLines = 1
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * 2026-10-24：程序坞底栏 —— 用户 macOS 风格程序坞 HTML（复刻自 21st.dev）的 .dock 原样复刻，
+ * 不再套用通用胶囊条（之前几套主题变味就是因为只换色、形态仍是胶囊条）：
+ * - 居中悬浮、内容宽（非满宽条），padding 14dp/16dp，gap 10dp，圆角 26dp
+ * - 白 12% 底 + 白 22% 描边 + 18dp 黑 50% 阴影 + 顶部 1px 白 25% 内高光（HTML inset 高光近似）
+ * - 图标 52dp 方块、圆角 14dp、白 20% 描边，渐变直接取 HTML 各图标：
+ *   首页=访达蓝 #7DB4FF→#2F6FE4，软件=浏览器青 #5EEAD4→#0EA5E9，
+ *   工具箱=相机紫 #C4B5FD→#8B5CF6，设置=设置灰 #9CA3AF→#374151
+ * - 选中项下方 5dp 白 85% 运行点（HTML .dot-run）；设置前有 1dp 白 25% 分隔线
+ * - 鱼眼放大：HTML 原公式 MAX=1.8、SIGMA=62、上浮=(s-1)*34、原点底部居中；
+ *   手机无悬停，改为手指在坞上横向拖动时放大（HTML touchmove 同款），松手复位
+ * - 不带文字（HTML 坞本身无文字，标签只在悬停提示里，手机上无悬停故省略）；
+ *   角标红点保留（功能需要）
+ * - 注意：Compose 没有 backdrop-filter，玻璃仍是半透明近似，真模糊做不出来；
+ *   放大后的图标不被坞裁剪（背景层与图标层分离，外层不 clip）
+ */
+@Composable
+private fun DockBottomBar(
+    navItems: List<BottomNavTabItem>,
+    selectedTab: AppBottomTab,
+    onTabSelected: (AppBottomTab) -> Unit,
+    badges: Map<AppBottomTab, String>,
+    modifier: Modifier = Modifier
+) {
+    val density = LocalDensity.current
+    var focusX by remember { mutableStateOf<Float?>(null) }
+    val tileCenters = remember { mutableStateMapOf<AppBottomTab, Float>() }
+    val sigmaPx = with(density) { 62.dp.toPx() }
+    val liftPx = with(density) { 34.dp.toPx() }
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(bottom = 6.dp, top = 3.dp),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        // 背景层：圆角玻璃坞（不裁剪图标，放大时图标可伸出坞外，如 HTML）
+        Box(
+            modifier = Modifier
+                .shadow(18.dp, RoundedCornerShape(26.dp), ambientColor = Color.Black.copy(alpha = 0.50f))
+                .clip(RoundedCornerShape(26.dp))
+                .background(Color.White.copy(alpha = 0.12f))
+                .border(1.dp, Color.White.copy(alpha = 0.22f), RoundedCornerShape(26.dp))
+                .drawBehind {
+                    // inset 顶部高光近似：坞内顶边 1px 白 25% 线（两端留 26dp 圆角余量）
+                    drawLine(
+                        color = Color.White.copy(alpha = 0.25f),
+                        start = Offset(26.dp.toPx(), 1.dp.toPx()),
+                        end = Offset(size.width - 26.dp.toPx(), 1.dp.toPx()),
+                        strokeWidth = 1.dp.toPx()
+                    )
+                }
+                .padding(horizontal = 16.dp, vertical = 14.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.pointerInput(Unit) {
+                    detectHorizontalDragGestures(
+                        onDragStart = { focusX = it.x },
+                        onHorizontalDrag = { change, _ ->
+                            focusX = change.position.x
+                            change.consume()
+                        },
+                        onDragEnd = { focusX = null },
+                        onDragCancel = { focusX = null }
+                    )
+                }
+            ) {
+                navItems.forEachIndexed { idx, item ->
+                    if (idx == 3) {
+                        // 设置前的分隔线（HTML 第二组分隔：白 25%、上下各留 6dp）
+                        Box(
+                            modifier = Modifier
+                                .width(1.dp)
+                                .height(40.dp)
+                                .background(Color.White.copy(alpha = 0.25f))
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
+                    val isSelected = selectedTab == item.tab
+                    val center = tileCenters[item.tab]
+                    val fx = focusX
+                    val scale = if (fx != null && center != null) {
+                        val d = kotlin.math.abs(fx - center)
+                        1f + 0.8f * kotlin.math.exp(-(d * d) / (2f * sigmaPx * sigmaPx)).toFloat()
+                    } else 1f
+                    val lift = (scale - 1f) * liftPx
+                    val iconGradient = when (item.tab) {
+                        AppBottomTab.HOME -> listOf(Color(0xFF7DB4FF), Color(0xFF2F6FE4))
+                        AppBottomTab.SOFTWARE -> listOf(Color(0xFF5EEAD4), Color(0xFF0EA5E9))
+                        AppBottomTab.TOOLBOX -> listOf(Color(0xFFC4B5FD), Color(0xFF8B5CF6))
+                        AppBottomTab.SETTINGS -> listOf(Color(0xFF9CA3AF), Color(0xFF374151))
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Box(
+                            modifier = Modifier
+                                .onGloballyPositioned { coords ->
+                                    tileCenters[item.tab] =
+                                        coords.positionInParent().x + coords.size.width / 2f
+                                }
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                    translationY = -lift
+                                    transformOrigin = TransformOrigin(0.5f, 1f)
+                                }
+                                .size(52.dp)
+                                .shadow(6.dp, RoundedCornerShape(14.dp))
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(Brush.linearGradient(iconGradient))
+                                .border(1.dp, Color.White.copy(alpha = 0.20f), RoundedCornerShape(14.dp))
+                                .clickable { onTabSelected(item.tab) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = item.icon,
+                                contentDescription = item.title,
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            badges[item.tab]?.let { badgeText ->
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .offset(x = 8.dp, y = (-6).dp)
+                                        .size(16.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(0xFFFF3B30))
+                                        .border(1.5.dp, Color.White, CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = badgeText,
+                                        fontSize = 9.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White,
+                                        maxLines = 1
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(5.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    if (isSelected) Color.White.copy(alpha = 0.85f)
+                                    else Color.Transparent
+                                )
                         )
                     }
                 }
