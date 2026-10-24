@@ -135,6 +135,10 @@ fun ResourceCard(
         designStyle == DesignStyle.JICUN -> RoundedCornerShape(20.dp)
         // 2026-10-24：Frutiger Aero 24dp 水滴圆角
         designStyle == DesignStyle.AERO -> RoundedCornerShape(24.dp)
+        // 2026-10-24：新主题卡片圆角（HTML --r / 卡片 radius 原值）
+        designStyle == DesignStyle.NEU -> RoundedCornerShape(24.dp)
+        designStyle == DesignStyle.GLOSS -> RoundedCornerShape(18.dp)
+        designStyle == DesignStyle.CLAY -> RoundedCornerShape(28.dp)
         designStyle == DesignStyle.MATERIAL_DESIGN -> RoundedCornerShape(16.dp)
         designStyle == DesignStyle.CLAYMORPHISM -> RoundedCornerShape(22.dp)
         designStyle == DesignStyle.MINIMALISM -> RoundedCornerShape(6.dp)
@@ -164,6 +168,10 @@ fun ResourceCard(
         // 2026-10-24：Frutiger Aero 柔和阴影（设计稿 --fa-shadow: 0 8px 24px rgba(10,37,64,.12)）
         designStyle == DesignStyle.AERO -> 4.dp
         designStyle == DesignStyle.CLAYMORPHISM -> 5.dp
+        // 2026-10-24：新主题卡片阴影（黏土同黏土拟态 5dp，柔影同新拟态 3dp，柔光 2dp）
+        designStyle == DesignStyle.CLAY -> 5.dp
+        designStyle == DesignStyle.NEU -> 3.dp
+        designStyle == DesignStyle.GLOSS -> 2.dp
         designStyle == DesignStyle.NEO_BRUTALISM -> 4.dp
         designStyle == DesignStyle.GUOCHAO -> 2.dp
         designStyle == DesignStyle.SKEUOMORPHISM -> 4.dp

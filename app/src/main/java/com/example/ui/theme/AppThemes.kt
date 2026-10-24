@@ -14,7 +14,7 @@ data class AppTheme(
     val colors: ThemeUiColors
 )
 
-/** 全局主题：千禧复兴 Frutiger Aero + 皮纹鞣制 */
+/** 全局主题：千禧复兴 Frutiger Aero + 皮纹鞣制 + 柔影 / 柔光 / 黏土（2026-10-24 用户新设计稿） */
 val APP_THEMES: List<AppTheme> = listOf(
     AppTheme(
         id = "minimal",
@@ -65,6 +65,72 @@ val APP_THEMES: List<AppTheme> = listOf(
                 Color(0xFF14100C)
             ),
             designStyle = DesignStyle.LEATHER
+        )
+    ),
+    AppTheme(
+        id = "neu",
+        name = "柔影",
+        colors = ThemeUiColors(
+            primary = Color(0xFF5F9DE7),          // 柔影蓝
+            secondary = Color(0xFF3F7FC4),        // 深柔影蓝
+            background = Color(0xFFE0E8EF),       // 雾蓝灰
+            surface = Color(0xFFE0E8EF),          // 与背景同色（拟物靠阴影塑形）
+            text = Color(0xFF516D91),             // 深灰蓝
+            textMuted = Color(0xFF7E97B8),        // 文字灰蓝
+            accent = Color(0xFFF0A93C),           // 点缀金
+            onPrimary = Color(0xFFFFFFFF),
+            border = Color(0xFFFFFFFF).copy(alpha = 0.333f),  // 描边白 33%
+            cardGradient = listOf(Color(0xFFE0E8EF), Color(0xFFE5EDF5)),
+            backgroundGradient = listOf(
+                Color(0xFFC3CFDB),
+                Color(0xFFDDE6EE),
+                Color(0xFFE0E8EF)
+            ),
+            designStyle = DesignStyle.NEU
+        )
+    ),
+    AppTheme(
+        id = "gloss",
+        name = "柔光",
+        colors = ThemeUiColors(
+            primary = Color(0xFF007AFF),          // 品牌蓝
+            secondary = Color(0xFF0062CC),        // 深蓝
+            background = Color(0xFFE9EAEC),       // 背景灰
+            surface = Color(0xFFFFFFFF),          // 表面白
+            text = Color(0xFF3C3C3C),             // 文字灰
+            textMuted = Color(0xFF8E8E93),        // 系统灰
+            accent = Color(0xFFF5A623),           // 点缀金
+            onPrimary = Color(0xFFFFFFFF),
+            border = Color(0xFFC6C7C9),           // 描边灰
+            cardGradient = listOf(Color(0xFFFFFFFF), Color(0xFFF6F7F8)),
+            backgroundGradient = listOf(
+                Color(0xFFE9EAEC),
+                Color(0xFFEDEEF0),
+                Color(0xFFF6F7F8)
+            ),
+            designStyle = DesignStyle.GLOSS
+        )
+    ),
+    AppTheme(
+        id = "clay",
+        name = "黏土",
+        colors = ThemeUiColors(
+            primary = Color(0xFFFF9EBB),          // 奶油粉
+            secondary = Color(0xFF8EC9F5),        // 宝宝蓝
+            background = Color(0xFFEFE7F5),       // 淡紫底
+            surface = Color(0xFFF7F2FB),          // 奶白面板
+            text = Color(0xFF4A3F5C),             // 深紫灰
+            textMuted = Color(0xFF9A8FB0),        // 淡紫灰
+            accent = Color(0xFFFFD166),           // 芝士黄
+            onPrimary = Color(0xFFFFFFFF),
+            border = Color(0xFFFFFFFF).copy(alpha = 0.6f),
+            cardGradient = listOf(Color(0xFFFFFFFF), Color(0xFFF4EEFB)),
+            backgroundGradient = listOf(
+                Color(0xFFD9CFE8),
+                Color(0xFFEFE7F5),
+                Color(0xFFF7F2FB)
+            ),
+            designStyle = DesignStyle.CLAY
         )
     )
 )

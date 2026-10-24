@@ -207,6 +207,64 @@ fun CustomRadioBottomNav(
         return
     }
 
+    // 2026-10-24：新主题专属底栏（柔影 / 柔光 / 黏土，各按 HTML tabbar 翻译），仅跟随主题时生效
+    if (bottomBarStyle == "auto") {
+        when (themeColors.designStyle) {
+            DesignStyle.NEU -> {
+                SoftThemeBottomBar(
+                    navItems = navItems, selectedTab = selectedTab, onTabSelected = onTabSelected,
+                    badges = badges, hideLabels = hideLabels, modifier = modifier,
+                    barBg = Color(0xFFE0E8EF), barBorderColor = Color.White.copy(alpha = 0.333f),
+                    barBorderWidth = 2.dp, barRadius = 32.dp, pillRadius = 22.dp,
+                    shadowDp = 12.dp, shadowAmbient = Color(0xFF5F9DE7).copy(alpha = 0.48f),
+                    selectedBrush = Brush.linearGradient(
+                        listOf(
+                            Color(0xFF5F9DE7).copy(alpha = 0.08f),
+                            Color(0xFF5F9DE7).copy(alpha = 0.08f)
+                        )
+                    ),
+                    selectedBorderColor = Color.White.copy(alpha = 0.333f),
+                    selectedText = Color(0xFF3F7FC4), unselectedText = Color(0xFF7E97B8),
+                    selectedIconTint = Color(0xFF3F7FC4), unselectedIconTint = Color(0xFF7E97B8)
+                )
+                return
+            }
+            DesignStyle.GLOSS -> {
+                SoftThemeBottomBar(
+                    navItems = navItems, selectedTab = selectedTab, onTabSelected = onTabSelected,
+                    badges = badges, hideLabels = hideLabels, modifier = modifier,
+                    barBg = Color.White.copy(alpha = 0.92f), barBorderColor = Color(0xFFB9BABD),
+                    barBorderWidth = 1.dp, barRadius = 32.dp, pillRadius = 22.dp,
+                    shadowDp = 8.dp, shadowAmbient = Color.Black.copy(alpha = 0.14f),
+                    selectedBrush = Brush.linearGradient(
+                        listOf(Color(0xFF4DA3FF), Color(0xFF007AFF))
+                    ),
+                    selectedBorderColor = Color(0xFF0062CC),
+                    selectedText = Color.White, unselectedText = Color(0xFF8E8E93),
+                    selectedIconTint = Color.White, unselectedIconTint = Color(0xFF8E8E93)
+                )
+                return
+            }
+            DesignStyle.CLAY -> {
+                SoftThemeBottomBar(
+                    navItems = navItems, selectedTab = selectedTab, onTabSelected = onTabSelected,
+                    badges = badges, hideLabels = hideLabels, modifier = modifier,
+                    barBg = Color(0xFFF7F2FB).copy(alpha = 0.9f), barBorderColor = Color.Transparent,
+                    barBorderWidth = 0.dp, barRadius = 28.dp, pillRadius = 22.dp,
+                    shadowDp = 10.dp, shadowAmbient = Color(0xFF785AA0).copy(alpha = 0.25f),
+                    selectedBrush = Brush.linearGradient(
+                        listOf(Color(0xFFFFB3C9), Color(0xFFFF9EBB))
+                    ),
+                    selectedBorderColor = null,
+                    selectedText = Color.White, unselectedText = Color(0xFF9A8FB0),
+                    selectedIconTint = Color.White, unselectedIconTint = Color(0xFF9A8FB0)
+                )
+                return
+            }
+            else -> { }
+        }
+    }
+
     // 2026-10-24：显式底栏主题覆盖旧 glass 开关；auto 时沿用旧逻辑
     val effectiveGlassStyle = when (bottomBarStyle) {
         "glass" -> true
@@ -549,6 +607,118 @@ fun CustomRadioBottomNav(
                         )
                     }
                 } // Box 闭合
+            }
+        }
+    }
+}
+
+/**
+ * 2026-10-24：柔影 / 柔光 / 黏土三套主题共用的悬浮胶囊底栏（各按 HTML tabbar 参数传色）：
+ * - 外层悬浮胶囊（左右悬空 + 圆角 + 阴影），内层选中项为滑动胶囊的静态版（选中项背景即 pill）
+ * - 图标 22dp（HTML .tab svg）、文字 10sp，徽标沿用红点
+ * - 注意：HTML 的 inset 内阴影在 Compose 里没有直接等价物，选中凹陷感用描边 + 淡底近似，
+ *   不声称与 HTML 的 inset 阴影完全一致
+ */
+@Composable
+private fun SoftThemeBottomBar(
+    navItems: List<BottomNavTabItem>,
+    selectedTab: AppBottomTab,
+    onTabSelected: (AppBottomTab) -> Unit,
+    badges: Map<AppBottomTab, String>,
+    hideLabels: Boolean,
+    modifier: Modifier = Modifier,
+    barBg: Color,
+    barBorderColor: Color,
+    barBorderWidth: androidx.compose.ui.unit.Dp,
+    barRadius: androidx.compose.ui.unit.Dp,
+    pillRadius: androidx.compose.ui.unit.Dp,
+    shadowDp: androidx.compose.ui.unit.Dp,
+    shadowAmbient: Color,
+    selectedBrush: Brush,
+    selectedBorderColor: Color?,
+    selectedText: Color,
+    unselectedText: Color,
+    selectedIconTint: Color,
+    unselectedIconTint: Color
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(horizontal = 14.dp, vertical = 3.dp)
+            .shadow(shadowDp, RoundedCornerShape(barRadius), ambientColor = shadowAmbient)
+            .clip(RoundedCornerShape(barRadius))
+            .background(barBg)
+            .border(barBorderWidth, barBorderColor, RoundedCornerShape(barRadius))
+            .padding(6.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            navItems.forEach { item ->
+                val isSelected = selectedTab == item.tab
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(pillRadius))
+                            .let { m ->
+                                if (isSelected) {
+                                    m.background(selectedBrush)
+                                        .let { mm ->
+                                            if (selectedBorderColor != null) mm.border(1.dp, selectedBorderColor, RoundedCornerShape(pillRadius)) else mm
+                                        }
+                                } else m
+                            }
+                            .clickable { onTabSelected(item.tab) }
+                            .padding(vertical = 8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = item.icon,
+                                contentDescription = item.title,
+                                tint = if (isSelected) selectedIconTint else unselectedIconTint,
+                                modifier = Modifier.size(22.dp)
+                            )
+                            badges[item.tab]?.let { badgeText ->
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .offset(x = 8.dp, y = (-6).dp)
+                                        .size(16.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(0xFFFF3B30))
+                                        .border(1.5.dp, Color.White, CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = badgeText,
+                                        fontSize = 9.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White,
+                                        maxLines = 1
+                                    )
+                                }
+                            }
+                        }
+                        if (!hideLabels) {
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = item.title,
+                                fontSize = 10.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                color = if (isSelected) selectedText else unselectedText,
+                                maxLines = 1
+                            )
+                        }
+                    }
+                }
             }
         }
     }

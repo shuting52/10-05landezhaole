@@ -54,7 +54,10 @@ enum class DesignStyle(val displayName: String, val desc: String) {
     CYBERPUNK("Cyberpunk 赛博朋克", "高饱和度霓虹与深邃暗夜科技感。"),
     JICUN("Jicun 即存", "即存 jicun 原生主题：半透明白卡片 + 20dp 超椭圆圆角，无描边无阴影。"),
     AERO("Aero 千禧复兴", "Frutiger Aero：蓝天白云、玻璃高光、水滴气泡的千禧年数字自然主义。"),
-    LEATHER("Leather 皮纹鞣制", "深棕鞣制皮革：噪点皮纹 + 斜纹编织 + 虚线缝线，暖金点缀的复古手工质感。")
+    LEATHER("Leather 皮纹鞣制", "深棕鞣制皮革：噪点皮纹 + 斜纹编织 + 虚线缝线，暖金点缀的复古手工质感。"),
+    NEU("Neu 柔影", "NEU UI 柔影拟物：与背景同色的表面，靠左上白阴影 + 右下蓝阴影塑造体积，描边白 33%。"),
+    GLOSS("Gloss 柔光", "GLOSS UI 柔光拟物：白到灰的高光渐变 + 1px 灰描边 + 文字 1px 白高光，按下向内压缩。"),
+    CLAY("Clay 黏土", "CLAY UI 黏土立体：奶油粉/宝宝蓝/芝士黄，内高光 + 厚实彩色阴影，按下整体塌缩。")
 }
 
 val LocalUiverseState = staticCompositionLocalOf { ActiveUiverseState() }

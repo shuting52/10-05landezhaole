@@ -648,9 +648,11 @@ fun AeroSegmented(
             ) {
                 Text(
                     text = opt,
-                    fontSize = 14.sp,
+                    // 2026-10-24：主题五选一时字号收一档，避免“千禧复兴”四字换行
+                    fontSize = if (options.size >= 5) 12.sp else 14.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = if (selected) Color.White else Color(0xFF4A6B8A)
+                    color = if (selected) Color.White else Color(0xFF4A6B8A),
+                    maxLines = 1
                 )
             }
         }
