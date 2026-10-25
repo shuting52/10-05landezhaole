@@ -208,6 +208,19 @@ fun CustomRadioBottomNav(
         return
     }
 
+    // 2026-10-25：程序坞主题详细重写：坞是主题本身的一部分，
+    // 不再被存量玻璃/渐变开关盖住（浅色坞 light_dock 仍优先，它本身就是坞的变体）
+    if (themeColors.designStyle == DesignStyle.DOCK) {
+        DockBottomBar(
+            navItems = navItems,
+            selectedTab = selectedTab,
+            onTabSelected = onTabSelected,
+            badges = badges,
+            modifier = modifier
+        )
+        return
+    }
+
     // 2026-10-24：新主题专属底栏（柔影 / 柔光 / 黏土，各按 HTML tabbar 翻译），仅跟随主题时生效
     if (bottomBarStyle == "auto") {
         when (themeColors.designStyle) {
@@ -277,15 +290,6 @@ fun CustomRadioBottomNav(
                     selectedBorderColor = Color.White.copy(alpha = 0.30f),
                     selectedText = Color.White, unselectedText = Color.White.copy(alpha = 0.72f),
                     selectedIconTint = Color.White, unselectedIconTint = Color.White.copy(alpha = 0.72f)
-                )
-                return
-            }
-            // 2026-10-24：程序坞底栏不再套通用胶囊条，按 HTML .dock 原样复刻（见 DockBottomBar）：
-            // 居中悬浮坞 + 渐变方块图标 + 运行点 + 鱼眼放大，不带文字
-            DesignStyle.DOCK -> {
-                DockBottomBar(
-                    navItems = navItems, selectedTab = selectedTab, onTabSelected = onTabSelected,
-                    badges = badges, modifier = modifier
                 )
                 return
             }
@@ -1014,6 +1018,15 @@ private fun DockBottomBar(
                                 .shadow(6.dp, RoundedCornerShape(14.dp))
                                 .clip(RoundedCornerShape(14.dp))
                                 .background(Brush.linearGradient(iconGradient))
+                                .drawBehind {
+                                    // HTML 图标内阴影：inset 0 1px 0 白 35% 顶部高光
+                                    drawLine(
+                                        color = Color.White.copy(alpha = 0.35f),
+                                        start = Offset(14.dp.toPx(), 1.dp.toPx()),
+                                        end = Offset(size.width - 14.dp.toPx(), 1.dp.toPx()),
+                                        strokeWidth = 1.dp.toPx()
+                                    )
+                                }
                                 .border(1.dp, Color.White.copy(alpha = 0.20f), RoundedCornerShape(14.dp))
                                 .clickable { onTabSelected(item.tab) },
                             contentAlignment = Alignment.Center

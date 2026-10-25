@@ -28,6 +28,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -79,16 +80,34 @@ fun GlobalWindBackground(
         // ========== 1. jicun 式静态蓝灰背景 ==========
         Canvas(modifier = Modifier.fillMaxSize()) {
             if (themeDesignStyle == DesignStyle.DOCK && themeGradientColors.size >= 2) {
-                // 2026-10-24：程序坞原稿是 radial-gradient(120% 90% at 50% 0%)，
-                // 之前竖向渐变把顶部中央亮、两侧暗的效果拉平了，这是变味之一；
-                // Compose 径向只能画圆，取半径 0.9*高近似原稿椭圆（纵向行为与原稿一致）
-                drawRect(
-                    brush = Brush.radialGradient(
-                        colors = themeGradientColors,
-                        center = Offset(size.width / 2f, 0f),
-                        radius = size.height * 0.9f
+                // 2026-10-25：程序坞详细重写：原稿是 radial-gradient(120% 90% at 50% 0%)，
+                // 椭圆径向（横半径 1.2 倍宽、纵半径 0.9 倍高、中心顶部中央、色标 0/55%/100%）；
+                // Compose 径向只能画圆，改用缩放变换把圆拉成椭圆：先铺暗端底色，
+                // 再在平移 + 横向缩放后的空间里画圆，圆与渐变一同被拉成原稿椭圆
+                drawRect(color = themeGradientColors.last())
+                val rx = size.width * 1.2f
+                val ry = size.height * 0.9f
+                val dockStops = if (themeGradientColors.size >= 3) arrayOf(
+                    0.0f to themeGradientColors[0],
+                    0.55f to themeGradientColors[1],
+                    1.0f to themeGradientColors[2]
+                ) else themeGradientColors.mapIndexed { i, c ->
+                    (if (themeGradientColors.size == 1) 0f else i.toFloat() / (themeGradientColors.size - 1)) to c
+                }.toTypedArray()
+                withTransform({
+                    translate(left = size.width / 2f, top = 0f)
+                    scale(scaleX = rx / ry, scaleY = 1f)
+                }) {
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            colorStops = dockStops,
+                            center = Offset.Zero,
+                            radius = ry
+                        ),
+                        radius = ry,
+                        center = Offset.Zero
                     )
-                )
+                }
             } else {
                 drawRect(
                     brush = Brush.verticalGradient(
