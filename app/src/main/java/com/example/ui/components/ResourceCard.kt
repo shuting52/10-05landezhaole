@@ -143,6 +143,9 @@ fun ResourceCard(
         designStyle == DesignStyle.LIQUID -> RoundedCornerShape(34.dp)
         // 2026-10-24：程序坞 .dock border-radius 26px
         designStyle == DesignStyle.DOCK -> RoundedCornerShape(26.dp)
+        // 2026-10-25：拨杆卡片 18px / 雾面卡片 20px
+        designStyle == DesignStyle.LEVER -> RoundedCornerShape(18.dp)
+        designStyle == DesignStyle.GLASS -> RoundedCornerShape(20.dp)
         designStyle == DesignStyle.MATERIAL_DESIGN -> RoundedCornerShape(16.dp)
         designStyle == DesignStyle.CLAYMORPHISM -> RoundedCornerShape(22.dp)
         designStyle == DesignStyle.MINIMALISM -> RoundedCornerShape(6.dp)

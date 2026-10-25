@@ -59,7 +59,9 @@ enum class DesignStyle(val displayName: String, val desc: String) {
     GLOSS("Gloss 柔光", "GLOSS UI 柔光拟物：白到灰的高光渐变 + 1px 灰描边 + 文字 1px 白高光，按下向内压缩。"),
     CLAY("Clay 黏土", "CLAY UI 黏土立体：奶油粉/宝宝蓝/芝士黄，内高光 + 厚实彩色阴影，按下整体塌缩。"),
     LIQUID("Liquid Glass 液态玻璃", "液态玻璃交互预览（暗色流光）：深紫底 + 白 17%→5%→10% 玻璃渐变卡片 + 34dp 大圆角 + 1.2px 亮边 + 蓝紫徽标渐变。"),
-    DOCK("Dock 程序坞", "macOS 风格程序坞（复刻自 21st.dev）：深海军蓝底 + 白 12% 玻璃坞 + 26dp 圆角 + 白 22% 描边 + 点缀蓝 #5AA9FF。")
+    DOCK("Dock 程序坞", "macOS 风格程序坞（复刻自 21st.dev）：深海军蓝底 + 白 12% 玻璃坞 + 26dp 圆角 + 白 22% 描边 + 点缀蓝 #5AA9FF。"),
+    LEVER("Lever 拨杆", "LEVER UI 拨杆玩具：纸蓝 #DCEBF9 底 + 白卡 + 0 3px 硬阴影 + 拨杆蓝 #1269EF + 深海 #1A4766 描边。"),
+    GLASS("Glass 雾面", "GLASS UI 雾面玻璃：蓝橙光斑底 + 半透明白卡 + 12px 模糊近似 + 白 55% 描边 + 雾面蓝 #2879F3 / 橙 #F37E10。")
 }
 
 val LocalUiverseState = staticCompositionLocalOf { ActiveUiverseState() }

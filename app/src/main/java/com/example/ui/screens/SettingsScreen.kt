@@ -595,7 +595,6 @@ private fun AppearanceDialog(
     onClearBg: () -> Unit
 ) {
     val appearanceState by viewModel.uiState.collectAsStateWithLifecycle()
-    var showOriginals by remember { mutableStateOf(false) }
     com.example.ui.components.LiquidGlassDialogShell(
         onDismissRequest = onDismiss,
         title = "🎨 外观与背景",
@@ -650,10 +649,10 @@ private fun AppearanceDialog(
                     onClick = onClearBg
                 )
             }
-            // 底栏样式：2026-10-24 由单开关改为四选一（新增浅色毛玻璃程序坞）
+            // 底栏样式：2026-10-24 由单开关改为四选一（新增浅色毛玻璃程序坞）；2026-10-25 加粒子拖尾
             AeroSectionTitle(text = "底栏样式")
-            val bottomBarOptions = listOf("跟随主题", "液态玻璃", "渐变按钮", "毛玻璃坞")
-            val bottomBarIds = listOf("auto", "glass", "gradient", "light_dock")
+            val bottomBarOptions = listOf("跟随主题", "液态玻璃", "渐变按钮", "毛玻璃坞", "粒子拖尾")
+            val bottomBarIds = listOf("auto", "glass", "gradient", "light_dock", "particle")
             val bottomBarSelected = bottomBarIds.indexOf(appearanceState.bottomBarStyle).coerceAtLeast(0)
             AeroSegmented(
                 options = bottomBarOptions,
@@ -668,7 +667,8 @@ private fun AppearanceDialog(
                     1 -> "液态玻璃：现有滑动玻璃胶囊底栏"
                     2 -> "渐变按钮：选中为渐变底白字"
                     3 -> "浅色毛玻璃程序坞：你发的 Dock HTML，白 55% 毛玻璃、26dp 圆角、图标渐变底、选中放大"
-                    else -> "跟随主题：底栏用主题自带的样式（程序坞是坞，皮纹鞣制是皮革条，柔影/柔光/黏土/液态玻璃是各自的专属条，其余是玻璃胶囊）"
+                    4 -> "粒子拖尾：你发的粒子拖尾底栏，拖动时图标鱼眼放大 + 手指处冒上升粒子 + 最近图标名提示"
+                    else -> "跟随主题：底栏用主题自带的样式（程序坞是坞，皮纹鞣制是皮革条，柔影/柔光/黏土/液态玻璃/拨杆/雾面是各自的专属条，其余是玻璃胶囊）"
                 },
                 fontSize = 12.sp,
                 color = Color(0xFF5B7A90),
@@ -689,23 +689,8 @@ private fun AppearanceDialog(
                     valueRange = 0.8f..1.2f
                 )
             }
-            // 设计原稿（原封不动）：2026-10-24 用户要求原稿原样呈现，不翻译
-            AeroSectionTitle(text = "设计原稿（原封不动）")
-            SettingsClickableItem(
-                title = "查看设计原稿",
-                subtitle = "液态玻璃 / 程序坞 / AERO 原稿 + 演示页 + 源码，原样呈现",
-                icon = Icons.Filled.Palette,
-                iconColor = Color(0xFF8A3BFF),
-                onClick = { showOriginals = true }
-            )
             Spacer(modifier = Modifier.height(8.dp))
         }
-    }
-    if (showOriginals) {
-        com.example.ui.components.OriginalsViewer(
-            onDismiss = { showOriginals = false },
-            onApplyTheme = { viewModel.setAppTheme(it) }
-        )
     }
 }
 

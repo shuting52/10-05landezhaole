@@ -1,6 +1,7 @@
 package com.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 /**
  * 2026-10-24：用户要求删除全部 17 套主题，只保留一套极简默认。
@@ -192,6 +193,65 @@ val APP_THEMES: List<AppTheme> = listOf(
                 Color(0xFF060A14)
             ),
             designStyle = DesignStyle.DOCK
+        )
+    ),
+    AppTheme(
+        id = "lever",
+        name = "拨杆",
+        // 2026-10-25：用户发的 LEVER UI 拨杆组件库翻译进原生主题；
+        // 卡片硬阴影 0 3px #B9D2E6（原稿 .vcardbox），底栏白药丸 + 拨杆蓝 pill
+        isDark = false,
+        colors = ThemeUiColors(
+            primary = Color(0xFF1269EF),          // 拨杆蓝
+            secondary = Color(0xFF0D4FC0),        // 拨杆深蓝（阴影/渐变深端）
+            background = Color(0xFFDCEBF9),       // 纸蓝
+            surface = Color(0xFFFFFFFF),          // 卡片白
+            text = Color(0xFF085991),             // 墨水蓝
+            textMuted = Color(0xFF3D7CA8),        // 次要蓝
+            accent = Color(0xFFED487E),           // 拨杆粉
+            onPrimary = Color(0xFFFFFFFF),
+            border = Color(0xFF1A4766),           // 深海（顶栏/卡片描边）
+            hardShadowColor = Color(0xFFB9D2E6), // 卡片硬阴影
+            hardShadowDx = 0.dp,
+            hardShadowDy = 3.dp,
+            cardGradient = listOf(
+                Color(0xFFFFFFFF),
+                Color(0xFFFFFFFF)
+            ),
+            backgroundGradient = listOf(
+                Color(0xFFDCEBF9),
+                Color(0xFFDCEBF9)
+            ),
+            designStyle = DesignStyle.LEVER
+        )
+    ),
+    AppTheme(
+        id = "glass",
+        name = "雾面",
+        // 2026-10-25：用户发的 GLASS UI 雾面组件库翻译进原生主题；
+        // Compose 没有 backdrop-filter，玻璃用半透明 + 描边近似，不承诺真模糊；
+        // 背景三色渐变纵向近似（原稿 135deg），光斑模糊不做
+        isDark = false,
+        colors = ThemeUiColors(
+            primary = Color(0xFF2879F3),          // 雾面蓝
+            secondary = Color(0xFF0653C7),        // 深蓝
+            background = Color(0xFFEDF1F6),       // 渐变中段浅灰蓝
+            surface = Color(0xFFFFFFFF).copy(alpha = 0.55f),  // 玻璃白 55%
+            text = Color(0xFF22303F),             // 墨 slate
+            textMuted = Color(0xFF64748B),        // 次要灰
+            accent = Color(0xFFF37E10),           // 雾面橙
+            onPrimary = Color(0xFFFFFFFF),
+            border = Color(0xFFFFFFFF).copy(alpha = 0.55f),  // 描边白 55%
+            cardGradient = listOf(
+                Color(0xFFFFFFFF).copy(alpha = 0.45f),
+                Color(0xFFFFFFFF).copy(alpha = 0.32f)
+            ),
+            backgroundGradient = listOf(
+                Color(0xFFD3E3F8),
+                Color(0xFFEDF1F6),
+                Color(0xFFF8E9D4)
+            ),
+            designStyle = DesignStyle.GLASS
         )
     )
 )

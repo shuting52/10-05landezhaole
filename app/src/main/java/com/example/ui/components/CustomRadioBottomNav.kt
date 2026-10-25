@@ -81,6 +81,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -208,6 +209,19 @@ fun CustomRadioBottomNav(
         return
     }
 
+    // 2026-10-25：粒子拖尾底栏（用户发的粒子拖尾底栏 HTML）：显式样式优先于主题，
+    // 与浅色坞同级，拖动鱼眼放大 + 手指处冒上升粒子 + 最近图标名提示
+    if (bottomBarStyle == "particle") {
+        ParticleDockBar(
+            navItems = navItems,
+            selectedTab = selectedTab,
+            onTabSelected = onTabSelected,
+            badges = badges,
+            modifier = modifier
+        )
+        return
+    }
+
     // 2026-10-25：程序坞主题详细重写：坞是主题本身的一部分，
     // 不再被存量玻璃/渐变开关盖住（浅色坞 light_dock 仍优先，它本身就是坞的变体）
     if (themeColors.designStyle == DesignStyle.DOCK) {
@@ -290,6 +304,43 @@ fun CustomRadioBottomNav(
                     selectedBorderColor = Color.White.copy(alpha = 0.30f),
                     selectedText = Color.White, unselectedText = Color.White.copy(alpha = 0.72f),
                     selectedIconTint = Color.White, unselectedIconTint = Color.White.copy(alpha = 0.72f)
+                )
+                return
+            }
+            // 2026-10-25：拨杆专属底栏（LEVER UI .tabbar）：白药丸条 + 拨杆蓝 pill + 深海硬边近似（柔阴影）
+            DesignStyle.LEVER -> {
+                SoftThemeBottomBar(
+                    navItems = navItems, selectedTab = selectedTab, onTabSelected = onTabSelected,
+                    badges = badges, hideLabels = hideLabels, modifier = modifier,
+                    barBg = Color.White, barBorderColor = Color.Transparent,
+                    barBorderWidth = 0.dp, barRadius = 32.dp, pillRadius = 24.dp,
+                    shadowDp = 12.dp, shadowAmbient = Color(0xFF1A4766).copy(alpha = 0.18f),
+                    selectedBrush = Brush.linearGradient(
+                        listOf(Color(0xFF1269EF), Color(0xFF1269EF))
+                    ),
+                    selectedBorderColor = null,
+                    selectedText = Color.White, unselectedText = Color(0xFF7BA7C4),
+                    selectedIconTint = Color.White, unselectedIconTint = Color(0xFF7BA7C4)
+                )
+                return
+            }
+            // 2026-10-25：雾面专属底栏（GLASS UI .tabbar）：白 40% 雾面胶囊 + 白 55% 描边 + 白 65% pill
+            DesignStyle.GLASS -> {
+                SoftThemeBottomBar(
+                    navItems = navItems, selectedTab = selectedTab, onTabSelected = onTabSelected,
+                    badges = badges, hideLabels = hideLabels, modifier = modifier,
+                    barBg = Color.White.copy(alpha = 0.40f), barBorderColor = Color.White.copy(alpha = 0.55f),
+                    barBorderWidth = 1.dp, barRadius = 32.dp, pillRadius = 22.dp,
+                    shadowDp = 8.dp, shadowAmbient = Color(0xFF1F3A5F).copy(alpha = 0.18f),
+                    selectedBrush = Brush.linearGradient(
+                        listOf(
+                            Color(0xFFFFFFFF).copy(alpha = 0.65f),
+                            Color(0xFFFFFFFF).copy(alpha = 0.65f)
+                        )
+                    ),
+                    selectedBorderColor = Color.White.copy(alpha = 0.55f),
+                    selectedText = Color(0xFF0653C7), unselectedText = Color(0xFF64748B),
+                    selectedIconTint = Color(0xFF0653C7), unselectedIconTint = Color(0xFF64748B)
                 )
                 return
             }
@@ -1394,6 +1445,275 @@ private fun CuteFingerFollower(
                     fontWeight = FontWeight.Black,
                     color = item.color
                 )
+            }
+        }
+    }
+}
+
+// 2026-10-25：粒子拖尾底栏（用户发的「懒得找了 · 粒子拖尾底栏」HTML 翻译）：
+// 渐变玻璃坞 + 斜向流光 + 鱼眼放大 + 拖动粒子拖尾 + 最近图标名提示；
+// Compose 没有 backdrop-filter，玻璃用半透明渐变 + 描边近似；
+// 图标不用原稿 emoji，沿用软件 4 个 Tab 的矢量图标，渐变取原稿值
+private data class TrailParticle(
+    val id: Long,
+    val xPx: Float,
+    val yPx: Float,
+    val startMs: Long
+)
+
+@Composable
+private fun ParticleDockBar(
+    navItems: List<BottomNavTabItem>,
+    selectedTab: AppBottomTab,
+    onTabSelected: (AppBottomTab) -> Unit,
+    badges: Map<AppBottomTab, String>,
+    modifier: Modifier = Modifier
+) {
+    val density = LocalDensity.current
+    var focusX by remember { mutableStateOf<Float?>(null) }
+    var particles by remember { mutableStateOf<List<TrailParticle>>(emptyList()) }
+    var nowMs by remember { mutableStateOf(0L) }
+    var nextId by remember { mutableStateOf(0L) }
+    // 粒子时钟：有粒子时才逐帧跑，粒子 950ms 后过期摘掉（墙钟，与生成时同源）
+    LaunchedEffect(particles.isNotEmpty()) {
+        while (particles.isNotEmpty()) {
+            withFrameNanos {
+                nowMs = System.currentTimeMillis()
+                particles = particles.filter { nowMs - it.startMs < 950 }
+            }
+        }
+    }
+    // 与 DockBottomBar 相同的确定性布局：tile, tile, tile, sep, tile
+    val tileCentersPx = remember(density, navItems.size) {
+        if (navItems.size != 4) emptyMap()
+        else {
+            val tile = with(density) { 52.dp.toPx() }
+            val gap = with(density) { 10.dp.toPx() }
+            val sep = with(density) { 1.dp.toPx() }
+            val map = mutableMapOf<AppBottomTab, Float>()
+            var x = 0f
+            val tabs = listOf(navItems[0].tab, navItems[1].tab, navItems[2].tab, null, navItems[3].tab)
+            val widths = listOf(tile, tile, tile, sep, tile)
+            tabs.forEachIndexed { ci, tab ->
+                if (ci > 0) x += gap
+                if (tab != null) map[tab] = x + widths[ci] / 2f
+                x += widths[ci]
+            }
+            map
+        }
+    }
+    val sigmaPx = with(density) { 62.dp.toPx() }
+    val liftPx = with(density) { 34.dp.toPx() }
+    val padHPx = with(density) { 16.dp.toPx() }
+    val padTPx = with(density) { 14.dp.toPx() }
+    // 拖动时最近的 Tab（提示条用）
+    val nearestTab = focusX?.let { fx ->
+        tileCentersPx.minByOrNull { kotlin.math.abs(fx - it.value) }?.key
+    }
+    val nearestTitle = navItems.firstOrNull { it.tab == nearestTab }?.title
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(bottom = 6.dp, top = 3.dp),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            // 提示条：拖动时显示最近图标名（原稿 hover tip 的触屏等价）
+            if (focusX != null && nearestTitle != null) {
+                Box(
+                    modifier = Modifier
+                        .background(Color(0xFF141C2E).copy(alpha = 0.85f), RoundedCornerShape(8.dp))
+                        .border(1.dp, Color.White.copy(alpha = 0.14f), RoundedCornerShape(8.dp))
+                        .padding(horizontal = 12.dp, vertical = 5.dp)
+                ) {
+                    Text(text = nearestTitle, fontSize = 12.sp, color = Color(0xFFCFE0F7))
+                }
+                Spacer(modifier = Modifier.height(14.dp))
+            }
+            // 坞本体：不用 clip，背景用 shape 画，图标与粒子可伸出坞外（原稿 overflow 行为）
+            Box(
+                modifier = Modifier
+                    .shadow(18.dp, RoundedCornerShape(26.dp), ambientColor = Color.Black.copy(alpha = 0.45f))
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                Color(0xFFFFFFFF).copy(alpha = 0.18f),
+                                Color(0xFFFFFFFF).copy(alpha = 0.10f),
+                                Color(0xFFFFFFFF).copy(alpha = 0.16f)
+                            )
+                        ),
+                        RoundedCornerShape(26.dp)
+                    )
+                    .border(1.dp, Color.White.copy(alpha = 0.30f), RoundedCornerShape(26.dp))
+                    .drawBehind {
+                        // inset 顶部高光：1px 白 35% 线（两端留 26dp 圆角余量）
+                        drawLine(
+                            color = Color.White.copy(alpha = 0.35f),
+                            start = Offset(26.dp.toPx(), 1.dp.toPx()),
+                            end = Offset(size.width - 26.dp.toPx(), 1.dp.toPx()),
+                            strokeWidth = 1.dp.toPx()
+                        )
+                    }
+                    .padding(horizontal = 16.dp, vertical = 14.dp)
+                    .pointerInput(Unit) {
+                        detectHorizontalDragGestures(
+                            onDragStart = { offset ->
+                                focusX = offset.x
+                                val px = offset.x + padHPx
+                                val py = offset.y + padTPx
+                                particles = (particles + TrailParticle(nextId++, px, py, System.currentTimeMillis())).takeLast(40)
+                            },
+                            onHorizontalDrag = { change, _ ->
+                                focusX = change.position.x
+                                val px = change.position.x + padHPx
+                                val py = change.position.y + padTPx
+                                particles = (particles + TrailParticle(nextId++, px, py, System.currentTimeMillis())).takeLast(40)
+                                change.consume()
+                            },
+                            onDragEnd = { focusX = null },
+                            onDragCancel = { focusX = null }
+                        )
+                    }
+            ) {
+                // 斜向流光（原稿 .dock:after）：透明 → 白 20% → 透明
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.linearGradient(
+                                colorStops = arrayOf(
+                                    0.30f to Color.Transparent,
+                                    0.48f to Color.White.copy(alpha = 0.20f),
+                                    0.62f to Color.Transparent
+                                )
+                            ),
+                            RoundedCornerShape(26.dp)
+                        )
+                )
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    navItems.forEachIndexed { idx, item ->
+                        if (idx == 3) {
+                            Box(
+                                modifier = Modifier
+                                    .width(1.dp)
+                                    .height(40.dp)
+                                    .background(Color.White.copy(alpha = 0.25f))
+                                    .align(Alignment.CenterVertically)
+                            )
+                        }
+                        val isSelected = selectedTab == item.tab
+                        val center = tileCentersPx[item.tab]
+                        val fx = focusX
+                        val scale = if (fx != null && center != null) {
+                            val d = kotlin.math.abs(fx - center)
+                            1f + 0.8f * kotlin.math.exp(-(d * d) / (2f * sigmaPx * sigmaPx)).toFloat()
+                        } else 1f
+                        val lift = (scale - 1f) * liftPx
+                        val iconGradient = when (item.tab) {
+                            AppBottomTab.HOME -> listOf(Color(0xFF7DD3FC), Color(0xFF0369A1))
+                            AppBottomTab.SOFTWARE -> listOf(Color(0xFF38BDF8), Color(0xFF1D4ED8))
+                            AppBottomTab.TOOLBOX -> listOf(Color(0xFFA78BFA), Color(0xFF6D28D9))
+                            AppBottomTab.SETTINGS -> listOf(Color(0xFF94A3B8), Color(0xFF334155))
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Box(
+                                modifier = Modifier
+                                    .graphicsLayer {
+                                        scaleX = scale
+                                        scaleY = scale
+                                        translationY = -lift
+                                        transformOrigin = TransformOrigin(0.5f, 1f)
+                                    }
+                                    .size(52.dp)
+                                    .shadow(6.dp, RoundedCornerShape(14.dp))
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .background(Brush.linearGradient(iconGradient))
+                                    .drawBehind {
+                                        drawLine(
+                                            color = Color.White.copy(alpha = 0.35f),
+                                            start = Offset(14.dp.toPx(), 1.dp.toPx()),
+                                            end = Offset(size.width - 14.dp.toPx(), 1.dp.toPx()),
+                                            strokeWidth = 1.dp.toPx()
+                                        )
+                                    }
+                                    .border(1.dp, Color.White.copy(alpha = 0.20f), RoundedCornerShape(14.dp))
+                                    .clickable { onTabSelected(item.tab) },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = item.icon,
+                                    contentDescription = item.title,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                badges[item.tab]?.let { badgeText ->
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .offset(x = 8.dp, y = (-6).dp)
+                                            .size(16.dp)
+                                            .clip(CircleShape)
+                                            .background(Color(0xFFFF3B30))
+                                            .border(1.5.dp, Color.White, CircleShape),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = badgeText,
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White,
+                                            maxLines = 1
+                                        )
+                                    }
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(5.dp))
+                            Box(
+                                modifier = Modifier
+                                    .size(5.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        if (isSelected) Color.White.copy(alpha = 0.85f)
+                                        else Color.Transparent
+                                    )
+                            )
+                        }
+                    }
+                }
+                // 粒子层：盖在最上层，从手指处冒出、0.9 秒内上升 46dp 并淡出缩小到 0.3
+                Box(modifier = Modifier.fillMaxSize()) {
+                    val now = nowMs
+                    particles.forEach { p ->
+                        val progress = ((now - p.startMs) / 900f).coerceIn(0f, 1f)
+                        val risePx = with(density) { 46.dp.toPx() } * progress
+                        Box(
+                            modifier = Modifier
+                                .offset {
+                                    IntOffset(
+                                        (p.xPx - with(density) { 4.dp.toPx() }).toInt(),
+                                        (p.yPx - risePx - with(density) { 4.dp.toPx() }).toInt()
+                                    )
+                                }
+                                .graphicsLayer {
+                                    alpha = 1f - progress
+                                    scaleX = 1f - 0.7f * progress
+                                    scaleY = 1f - 0.7f * progress
+                                }
+                                .size(8.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    Brush.radialGradient(
+                                        listOf(Color.White, Color(0xFF7DD3FC))
+                                    )
+                                )
+                        )
+                    }
+                }
             }
         }
     }
