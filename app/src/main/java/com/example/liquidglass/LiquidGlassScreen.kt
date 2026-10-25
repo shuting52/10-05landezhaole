@@ -21,6 +21,7 @@ package com.example.liquidglass
  * 4. 组件：搜索框 / 播放器卡 / 按钮 / 设置行+开关 / 底部玻璃 Dock / 轻提示
  */
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
