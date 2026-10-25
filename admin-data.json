@@ -1,17 +1,15 @@
 {
   "version": {
-    "code": 298,
-    "name": "1.7.88",
+    "code": 299,
+    "name": "1.7.89",
     "changelog": [
-      "✨ v1.7.88 更新来啦～",
-      "v1.7.88修复2: 补 Animatable 显式 import（原稿无 wildcard import）",
-      "v1.7.88修复: 唱片旋转改 Animatable 循环 + 去重预览函数",
-      "v1.7.88: 液态玻璃演示页转换版可运行（原稿不动，另做可编过版本进原稿馆）"
+      "✨ v1.7.89 更新来啦～",
+      "v1.7.89: 程序坞详细重写（椭圆径向背景+坞不再被玻璃开关盖住+图标内高光）"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.88-1792889224.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.88-1792889224.apk",
-    "lastBuildSha": "48361664d2d48973333d2ea9c980bde3df1af4dc",
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.89-1792900827.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.89-1792900827.apk",
+    "lastBuildSha": "536b9be8c215cec4cc23c80a33d5e716027feaca",
     "apkSize": 24156230
   },
   "home": {
@@ -24330,12 +24328,10 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.88 已上线",
+    "title": "懒得找了 v1.7.89 已上线",
     "changelog": [
-      "✨ v1.7.88 更新来啦～",
-      "v1.7.88修复2: 补 Animatable 显式 import（原稿无 wildcard import）",
-      "v1.7.88修复: 唱片旋转改 Animatable 循环 + 去重预览函数",
-      "v1.7.88: 液态玻璃演示页转换版可运行（原稿不动，另做可编过版本进原稿馆）"
+      "✨ v1.7.89 更新来啦～",
+      "v1.7.89: 程序坞详细重写（椭圆径向背景+坞不再被玻璃开关盖住+图标内高光）"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24397,10 +24393,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.88",
-      "code": 298,
-      "at": "2026-10-25T00:47:11Z",
-      "sha": "48361664d2d48973333d2ea9c980bde3df1af4dc"
+      "version": "1.7.89",
+      "code": 299,
+      "at": "2026-10-25T04:00:33Z",
+      "sha": "536b9be8c215cec4cc23c80a33d5e716027feaca"
     }
   },
   "_ai_notice": "内容由AI生成"
