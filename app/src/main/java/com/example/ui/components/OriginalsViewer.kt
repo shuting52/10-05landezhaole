@@ -4,6 +4,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -42,13 +43,16 @@ import androidx.compose.ui.window.DialogProperties
  * 呈现方式按原稿类型区分，内容本身一律不改：
  * - HTML 原稿：放进 assets 原样文件，用 WebView 原样渲染（含真模糊与动效，不翻译成 Compose）
  * - LiquidGlassScreen.kt：原样放进 assets 以源码呈现；
- *   该文件直接进工程编不过（类型与版本两类问题），不动原文件、不强行改它跑起来
+ *   该文件直接进工程编不过（类型与版本两类问题），原稿不动；
+ *   2026-10-25 起另有转换版可运行（com.example.liquidglass.LiquidGlassScreen，
+ *   仅改 3 处兼容性问题，其余原样；入口在原稿馆「可运行演示」区）
  * - 两包源码（下载模块 / 主题模块）：原样放进 assets，以源码全文形式呈现；
  *   其中 Dart 是 Flutter 代码，在 Kotlin 软件里跑不起来，故只呈现不移植；
  *   下载模块的 Kotlin 版与软件现有下载器不是同一份，为避免弄坏正在用的下载，只呈现不替换
  */
 private sealed interface OriginalPage {
     object PageList : OriginalPage
+    object NativeGlass : OriginalPage
     data class Html(val title: String, val asset: String) : OriginalPage
     data class SourceDir(val title: String, val base: String, val files: List<String>) : OriginalPage
     data class SourceFile(val title: String, val asset: String) : OriginalPage
@@ -95,6 +99,14 @@ fun OriginalsViewer(onDismiss: () -> Unit, onApplyTheme: ((String) -> Unit)? = n
                     asset = p.asset,
                     onBack = { page = OriginalPage.PageList }
                 )
+                is OriginalPage.NativeGlass -> {
+                    ViewerTopBar(title = "液态玻璃演示页（转换版·可运行）", onBack = { page = OriginalPage.PageList })
+                    Box(modifier = Modifier.weight(1f)) {
+                        com.example.liquidglass.LiquidGlassTheme {
+                            com.example.liquidglass.LiquidGlassScreen()
+                        }
+                    }
+                }
                 is OriginalPage.SourceDir -> OriginalSourceDirPage(
                     title = p.title,
                     base = p.base,
@@ -173,6 +185,11 @@ private fun OriginalsList(
             onClick = { onOpen(OriginalPage.Html("AERO · 千禧复兴", "originals/aero.html")) },
             onApply = onApplyTheme?.let { apply -> { apply("minimal"); onDismiss() } }
         )
+        Spacer(modifier = Modifier.height(16.dp))
+        OriginalSectionTitle("可运行演示（转换版）")
+        OriginalRow("液态玻璃演示页（可运行）", "转换版：原稿不动，另做一份能编过的版本进软件运行") {
+            onOpen(OriginalPage.NativeGlass)
+        }
         Spacer(modifier = Modifier.height(16.dp))
         OriginalSectionTitle("演示页源码（原样呈现）")
         OriginalRow("液态玻璃演示页源码", "LiquidGlassScreen.kt 原样呈现，全文可看") {
