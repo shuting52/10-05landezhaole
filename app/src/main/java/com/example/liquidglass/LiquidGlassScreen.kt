@@ -5,7 +5,8 @@
  * 2. 玻璃面板去掉屏幕坐标对齐（positionInRoot 本工程解析不到）：折射层仍为屏尺寸背景副本 + 模糊 + 裁剪，
  *    只是不做负偏移对齐，视觉仍是毛玻璃，对齐精度略降；
  * 3. 开关背景两分支统一成 Brush（原稿 Brush/Color 两分支传 background，任何版本都编不过）；
- * 4. 唱片旋转的 animateFloat 保持原样，待 CI 校验（若仍解析不到则换 animateValue 等价写法）；
+ * 4. 唱片旋转的 animateFloat 本工程解析不到（CI 实测），改用 Animatable 循环实现同效果
+ *    （线性 4 秒转一圈，360° 回 0° 无缝衔接）；
  */
 package com.example.liquidglass
 
@@ -24,8 +25,6 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -508,8 +507,16 @@ fun LiquidGlassScreen() {
             GlassPanel(Modifier.fillMaxWidth(), corner = 30.dp) {
                 var isPlaying by remember { mutableStateOf(true) }
                 var progress by remember { mutableStateOf(0.38f) }
-                val infinite = rememberInfiniteTransition(label = "vinyl")
-                val angle by infinite.animateFloat(0f, 360f, infiniteRepeatable(tween(4000, easing = LinearEasing)), label = "angle")
+                // 转换注：本工程解析不到 InfiniteTransition.animateFloat，
+                // 改用 Animatable 循环实现同效果（线性 4 秒转一圈，360° 回 0° 无缝衔接）
+                val angleAnim = remember { Animatable(0f) }
+                LaunchedEffect(Unit) {
+                    while (true) {
+                        angleAnim.animateTo(360f, tween(4000, easing = LinearEasing))
+                        angleAnim.snapTo(0f)
+                    }
+                }
+                val angle by angleAnim.asState()
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
@@ -589,11 +596,6 @@ fun LiquidGlassScreen() {
 /** 入口 */
 @Composable
 fun App() {
-    LiquidGlassTheme { LiquidGlassScreen() }
-}
-
-@Composable
-private fun LiquidGlassScreenPreview() {
     LiquidGlassTheme { LiquidGlassScreen() }
 }
 
