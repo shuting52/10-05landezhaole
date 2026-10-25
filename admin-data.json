@@ -1,16 +1,18 @@
 {
   "version": {
-    "code": 297,
-    "name": "1.7.87",
+    "code": 298,
+    "name": "1.7.88",
     "changelog": [
-      "✨ v1.7.87 更新来啦～",
-      "v1.7.87: 原稿馆 HTML 支持一键应用为对应主题"
+      "✨ v1.7.88 更新来啦～",
+      "v1.7.88修复2: 补 Animatable 显式 import（原稿无 wildcard import）",
+      "v1.7.88修复: 唱片旋转改 Animatable 循环 + 去重预览函数",
+      "v1.7.88: 液态玻璃演示页转换版可运行（原稿不动，另做可编过版本进原稿馆）"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.87-1792886695.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.87-1792886695.apk",
-    "lastBuildSha": "bb433f083208f9f93c978e4755ada01cb0de54a8",
-    "apkSize": 24123462
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.88-1792889224.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.88-1792889224.apk",
+    "lastBuildSha": "48361664d2d48973333d2ea9c980bde3df1af4dc",
+    "apkSize": 24156230
   },
   "home": {
     "categories": [
@@ -24328,10 +24330,12 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.87 已上线",
+    "title": "懒得找了 v1.7.88 已上线",
     "changelog": [
-      "✨ v1.7.87 更新来啦～",
-      "v1.7.87: 原稿馆 HTML 支持一键应用为对应主题"
+      "✨ v1.7.88 更新来啦～",
+      "v1.7.88修复2: 补 Animatable 显式 import（原稿无 wildcard import）",
+      "v1.7.88修复: 唱片旋转改 Animatable 循环 + 去重预览函数",
+      "v1.7.88: 液态玻璃演示页转换版可运行（原稿不动，另做可编过版本进原稿馆）"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24393,10 +24397,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.87",
-      "code": 297,
-      "at": "2026-10-25T00:05:01Z",
-      "sha": "bb433f083208f9f93c978e4755ada01cb0de54a8"
+      "version": "1.7.88",
+      "code": 298,
+      "at": "2026-10-25T00:47:11Z",
+      "sha": "48361664d2d48973333d2ea9c980bde3df1af4dc"
     }
   },
   "_ai_notice": "内容由AI生成"
