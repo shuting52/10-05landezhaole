@@ -35,6 +35,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -116,7 +117,7 @@ fun ImageWatermarkSection() {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Filled.Image, contentDescription = null, tint = themeColors.primary, modifier = Modifier.size(22.dp))
+            Icon(Icons.Filled.Edit, contentDescription = null, tint = themeColors.primary, modifier = Modifier.size(22.dp))
             Spacer(modifier = Modifier.width(8.dp))
             Text("图片去水印", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = themeColors.text)
         }
@@ -254,7 +255,7 @@ fun ImageWatermarkSection() {
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(Icons.Filled.Image, contentDescription = null, tint = themeColors.textMuted, modifier = Modifier.size(44.dp))
+                    Icon(Icons.Filled.Edit, contentDescription = null, tint = themeColors.textMuted, modifier = Modifier.size(44.dp))
                     Spacer(modifier = Modifier.height(6.dp))
                     Text("选一张带水印的图片开始", fontSize = 12.sp, color = themeColors.textMuted)
                 }
