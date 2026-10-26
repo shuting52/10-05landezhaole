@@ -73,6 +73,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.EventNote
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.MonitorWeight
@@ -300,6 +301,13 @@ enum class ToolboxTab(
         shortLabel = "音乐播放器",
         icon = Icons.Filled.MusicNote,
         desc = "在线搜索 30 秒试听 · 本地音频播放 · 播放列表"
+    ),
+    // v1.7.91 图片去水印（复刻嗨小葩图片去水印：框选 + 本地修复，不走对方服务端）
+    IMAGE_WATERMARK(
+        title = "图片去水印 · 框选去除",
+        shortLabel = "图片去水印",
+        icon = Icons.Filled.Image,
+        desc = "框选水印区域 · 本地修复不上传 · 保存分享"
     )
 }
 
@@ -571,6 +579,7 @@ fun ToolboxScreen(
                     ToolboxTab.COUNTDOWN -> com.example.ui.screens.toolbox.CountdownSection()
                     ToolboxTab.RANDOM_DRAW -> com.example.ui.screens.toolbox.RandomDrawSection()
                     ToolboxTab.MUSIC_PLAYER -> com.example.ui.screens.toolbox.MusicPlayerSection()
+                    ToolboxTab.IMAGE_WATERMARK -> com.example.ui.screens.toolbox.ImageWatermarkSection()
                 }
             }
         }
@@ -953,6 +962,20 @@ private val RING_MENU_GROUPS: List<RingMenuGroup> = listOf(
                 tab = ToolboxTab.WORKTIME,
                 name = "工时打卡",
                 desc = "日历打卡 · 月度统计 · 薪资设置"
+            )
+        )
+    ),
+    RingMenuGroup(
+        id = "image_watermark",
+        entryLabel = "图片去水印",
+        sheetTitle = "图片去水印",
+        sheetSub = "框选水印 · 本地修复",
+        icon = ToolboxTab.IMAGE_WATERMARK.icon,
+        options = listOf(
+            RingMenuOption(
+                tab = ToolboxTab.IMAGE_WATERMARK,
+                name = "图片去水印",
+                desc = "框选水印区域 · 本地修复不上传"
             )
         )
     )
