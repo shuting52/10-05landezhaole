@@ -1,16 +1,17 @@
 {
   "version": {
-    "code": 300,
-    "name": "1.7.90",
+    "code": 301,
+    "name": "1.7.91",
     "changelog": [
-      "✨ v1.7.90 更新来啦～",
-      "v1.7.90: 加拨杆/雾面主题+粒子拖尾底栏，删设计原稿馆"
+      "✨ v1.7.91 更新来啦～",
+      "v1.7.91: 修复图片去水印图标引用（Icons.Filled.Image 改 Edit）",
+      "v1.7.91: 工具箱新增图片去水印（框选+本地修复）"
     ],
     "force": false,
-    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.90-1792909381.apk",
-    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.90-1792909381.apk",
-    "lastBuildSha": "e416e10b58a7dfb975b76e410de895b7f297a01e",
-    "apkSize": 24029672
+    "apkUrl": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/dist/apk/landezhao-v1.7.91-1792978203.apk",
+    "apkUrlRaw": "https://github.com/shuting52/10-05landezhaole/raw/main/dist/apk/landezhao-v1.7.91-1792978203.apk",
+    "lastBuildSha": "e1f3dd727ab94881b9a7a317fe678fabc0d548eb",
+    "apkSize": 24046056
   },
   "home": {
     "categories": [
@@ -24328,10 +24329,11 @@
     "buttonText": "知道了"
   },
   "updateDialog": {
-    "title": "懒得找了 v1.7.90 已上线",
+    "title": "懒得找了 v1.7.91 已上线",
     "changelog": [
-      "✨ v1.7.90 更新来啦～",
-      "v1.7.90: 加拨杆/雾面主题+粒子拖尾底栏，删设计原稿馆"
+      "✨ v1.7.91 更新来啦～",
+      "v1.7.91: 修复图片去水印图标引用（Icons.Filled.Image 改 Edit）",
+      "v1.7.91: 工具箱新增图片去水印（框选+本地修复）"
     ],
     "confirmText": "立即更新",
     "cancelText": "稍后再说",
@@ -24393,10 +24395,10 @@
     "repo": "10-05landezhaole",
     "workflow": "Auto Release (自动发布新版本)",
     "lastRelease": {
-      "version": "1.7.90",
-      "code": 300,
-      "at": "2026-10-25T06:23:07Z",
-      "sha": "e416e10b58a7dfb975b76e410de895b7f297a01e"
+      "version": "1.7.91",
+      "code": 301,
+      "at": "2026-10-26T01:30:11Z",
+      "sha": "e1f3dd727ab94881b9a7a317fe678fabc0d548eb"
     }
   },
   "_ai_notice": "内容由AI生成"
