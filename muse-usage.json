@@ -9,8 +9,8 @@
   "additional_remaining_pct": 97,
   "additional_left": "27B tokens left",
   "raw": "The user does not have a subscription.\nUsage: 100% of free weekly limit.\nWeekly limit resets Nov 11 at 5:19 PM CST\nAdditional tokens: 3% used (27B tokens left)",
-  "updated_at": "2026-11-10T18:58:47Z",
-  "updated_at_cst": "2026-11-11 02:58 CST",
+  "updated_at": "2026-11-10T19:13:45Z",
+  "updated_at_cst": "2026-11-11 03:13 CST",
   "source": "repo",
   "raw_url": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/muse-usage.json"
 }
