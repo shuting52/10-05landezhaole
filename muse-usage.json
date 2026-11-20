@@ -1,16 +1,16 @@
 {
   "plan": "free",
   "has_subscription": false,
-  "weekly_used_pct": 13,
-  "weekly_remaining_pct": 87,
+  "weekly_used_pct": 14,
+  "weekly_remaining_pct": 86,
   "reset_text": "Nov 25 at 5:29 PM CST",
   "reset_iso": "2026-11-25T17:29:00+08:00",
   "additional_used_pct": 4,
   "additional_remaining_pct": 96,
   "additional_left": "27B tokens left",
-  "raw": "The user does not have a subscription.\nUsage: 13% of free weekly limit.\nWeekly limit resets Nov 25 at 5:29 PM CST\nAdditional tokens: 4% used (27B tokens left)",
-  "updated_at": "2026-11-20T09:43:43Z",
-  "updated_at_cst": "2026-11-20 17:43 CST",
+  "raw": "The user does not have a subscription.\nUsage: 14% of free weekly limit.\nWeekly limit resets Nov 25 at 5:29 PM CST\nAdditional tokens: 4% used (27B tokens left)",
+  "updated_at": "2026-11-20T09:58:44Z",
+  "updated_at_cst": "2026-11-20 17:58 CST",
   "source": "repo",
   "raw_url": "https://raw.githubusercontent.com/shuting52/10-05landezhaole/main/muse-usage.json"
 }
